@@ -1,6 +1,6 @@
 import React from 'react'
 import {render} from 'react-dom'
-import OpinShare from './Components/OpinShare'
+import OpinShare from './components/OpinShare'
 
 
 render(<OpinShare />, document.getElementById("root"));

@@ -1,4 +1,4 @@
 import React from 'react'
-import '../CSS/OpinShareCSS.css'
+import '../css/OpinShareCSS.css'
 
 export default class OpinShare extends React.Component {

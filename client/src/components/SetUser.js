@@ -1,7 +1,7 @@
 import React from 'react'
 import PeopleAppsFiles from './PeopleAppsFiles'
 import AllUsedOfUser from './AllUsedOfUser'
-import '../CSS/OpinShareCSS.css'
+import '../css/OpinShareCSS.css'
 
 
 

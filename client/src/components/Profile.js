@@ -1,14 +1,14 @@
 import React from 'react'
-import '../CSS/OpinShareCSS.css'
-import edit from '../Images/edit.png';
+import '../css/OpinShareCSS.css'
+import edit from '../images/edit.png';
 
 export default class Profile extends React.Component {
   render () {
     return (
       <div className="user-info">
-      	<b className="name-user">Roman</b>
-		<p className="info-user">LRomanV</p>
-        <img src={edit} className="edit"/>
+      	<b className="main-font user-name">Roman</b>
+		<p className="main-font secondary-font">LRomanV</p>
+        <img src={edit} className="main-font edit"/>
       </div>
     )
   }

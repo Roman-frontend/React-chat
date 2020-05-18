@@ -1,14 +1,14 @@
 import React from 'react'
-import '../CSS/OpinShareCSS.css'
+import '../css/OpinShareCSS.css'
 import Search from './Search'
 import Profile from './Profile'
-import FieldMessage from './FieldMessage'
+import Messages from './Messages'
 import SetUser from './SetUser'
 
 export default class OpinShare extends React.Component {
   render() {
 	return (
-      <div>
+      <div className="style-div">
         <div className="style-fixed-div">
           <Search/>
           <Profile/>
@@ -17,7 +17,7 @@ export default class OpinShare extends React.Component {
           <SetUser/>
         </div>
         <div>
-          <FieldMessage/>
+          <Messages/>
         </div>
 
       </div>

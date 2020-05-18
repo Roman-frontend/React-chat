@@ -243,8 +243,8 @@
 
 .chat-with-people {
   position: fixed;
-  width: 95.5vw;
-  height: 96vh;
+  width: 81.5vw;
+  height: 83vh;
   top: 6.8rem;
   left: 15rem;
   border-color: #A7A7A7;
@@ -252,12 +252,12 @@
 
 .container {
   position: relative;
-  margin: 0.5rem;
+  margin: 1vh;
   width: 75vw;
   height: 3rem;
   left: 2rem;
   border-radius: 0.2rem;
-  top: 20rem;
+  top: 60vh;
 }
 
 
@@ -268,16 +268,7 @@ img.icon {
   top: 0rem;
 }
 
-p.messager {
-  font-size: 1.2rem;
-  margin: 0.3rem;
-  position: relative;
-  left: 2.4rem;
-  top: -3rem;
-  font-weight: 600;
-}
-
-p.time-of-send {
+.time-of-send {
   font-size: 0.9rem;
   position: relative;
   left: 5.4rem;
@@ -285,12 +276,12 @@ p.time-of-send {
   margin: 0.3rem;
 }
 
-p.message-from-people {
-  font-size: 15px;
-  margin: 0px;
-  position: absolute;
-  left: 49px;
-  top: 18px;
+.message {
+  position: relative;
+  margin: 0rem;
+  padding: 0rem 1rem;
+  top: -1.4rem;
+  left: 2.4rem;
 }
 
 
@@ -300,4 +291,22 @@ p.message-from-people {
   left: 881px;
   width: 78px;
   height: -webkit-fill-available;
+}
+
+.table {
+  position: absolute;
+  top: 0rem;
+  left: 1.5rem;
+}
+
+.messager {
+  margin: 0rem;
+  padding: 0rem 1rem;
+  font-weight: 600;
+  left: 0.7rem;
+  position: relative;
+}
+
+.date {
+  margin: 0rem;
 }

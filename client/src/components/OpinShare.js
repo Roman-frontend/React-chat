@@ -14,10 +14,10 @@ export default class OpinShare extends React.Component {
           <Search/>
           <Profile/>
         </div>
-        <div>
+        <div className="left-block">
           <SetUser/>
         </div>
-        <div>
+        <div className="right-block">
           <Messages/>
         </div>
 

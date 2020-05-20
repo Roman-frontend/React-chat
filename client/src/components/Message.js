@@ -6,12 +6,10 @@ export default class Message extends React.Component {
   render () {
   	const mes = this.props.messages.map((i, index) => 
       <div className="container">
-        <img src={iconPeople} className="icon"/>
-        <table className="table">
-          <tr><td><p className="messager">{this.props.messages[index].username}</p></td>
-          <td><p className="date">18:00 12.05.2020</p></td></tr>
-        </table>
-        <p className="message">{this.props.messages[index].text}</p>
+        <div className="icon"><img src={iconPeople}/></div>
+        <div className="messager"><p>{this.props.messages[index].username}</p></div>
+        <div className="date"><p>{this.props.messages[index].createdAt}</p></div>
+        <div className="message"><p>{this.props.messages[index].text}</p></div>
       </div>
     )
     return (

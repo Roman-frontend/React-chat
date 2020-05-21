@@ -1,52 +1,53 @@
-import React from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import '../css/OpinShareCSS.css'
 import iconPeople from '../images/icon-people.png'
 import Message from './Message'
 
-export default class Messages extends React.Component {
-  constructor(props) {
-    super(props)
-    this.inputRef = React.createRef()
-    this.state = {
-      messages : [
-        {username: 'Yulia', text: "Hi bro i'm glad to see you in my house", createdAt: '18:00 12.05.2020'},
-        {username: 'Yulia', text: "Hi bro i'm glad to see you in my house", createdAt: '18:00 12.05.2020'},
-      ]
-    }
-  }
+export default function Messages(props) {
+  const inputRef = useRef(null);
+  const [messages, setMessages] = useState([])
 
-  editDate(date) {
+  function editDate(date) {
   if (date < 10) { return `0${date}`}
   else { return date}
   }
 
-  handleClick(sliceMessages) {
+  function handleClick(sliceMessages) {
+    if (inputRef.current.value === "") {return}
     const sli = sliceMessages.slice(0, sliceMessages.length);
     const newDate = new Date();
-    const date = `${this.editDate(newDate.getHours())}:${this.editDate(newDate.getMinutes())}
-      ${newDate.getDate()}.${newDate.getMonth()}.${newDate.getFullYear()}`; 
-    sli.unshift({username: 'Yulia', text: this.inputRef.current.value, createdAt: date},)
-    this.setState({messages : sli});
+    const date = `${editDate(newDate.getHours())}:${editDate(newDate.getMinutes())}
+      ${editDate(newDate.getDate())}.${editDate(newDate.getMonth())}.${newDate.getFullYear()}`; 
+    sli.unshift({username: 'Yulia', text: inputRef.current.value, createdAt: date},)
+    setMessages(sli);
+    //onButtonClick();
   }
 
-  render () {
-    return(
-      <div>
-        <div className="nick-people">
-          <b className="main-font sets-peoples-of-chat"> ✩ Yulia</b>
-        </div>
-        <div className="chat-with-people">
-          <Message
-            messages={this.state.messages}/>
-          <div className="fild-for-message">
-            <input type="text" className="input-message"
-              ref={this.inputRef}/>
-            <button className="button"
-              onClick={sliceMessages => this.handleClick(this.state.messages)}>hi
-            </button>
-          </div>
+  //const onButtonClick = () => { inputRef.current.focus()};
+  useEffect(() => {
+    inputRef.current.focus()
+  })
+
+  function keyInput() {
+    if (event === "Enter") {alert("hi")}
+    return
+  }
+
+  return(
+    <div>
+      <div className="nick-people">
+        <b className="main-font sets-peoples-of-chat"> ✩ Yulia</b>
+      </div>
+      <div className="chat-with-people">
+        <Message
+          messages={messages}/>
+        <div className="fild-for-message">
+          <input type="text" className="input-message"
+            ref={inputRef}/>
+          <button className="button" onClick={sliceMessages => handleClick(messages)} onKeyup={event => keyInput(event.key)}>hi
+          </button>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }

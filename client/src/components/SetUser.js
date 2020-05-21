@@ -5,14 +5,12 @@ import '../css/OpinShareCSS.css'
 
 
 
-export default class SetUser extends React.Component {
-  render () {
-    return(
-      <div className="style">
-        <PeopleAppsFiles/>
-        <AllUsedOfUser/>
-      </div>
-    );
-  }
+export default function SetUser() {
+  return(
+    <div className="style">
+      <PeopleAppsFiles/>
+      <AllUsedOfUser/>
+    </div>
+  );
 }
 

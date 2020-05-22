@@ -20,6 +20,7 @@ export default function Messages(props) {
       ${editDate(newDate.getDate())}.${editDate(newDate.getMonth())}.${newDate.getFullYear()}`; 
     sli.unshift({username: 'Yulia', text: inputRef.current.value, createdAt: date},)
     setMessages(sli);
+    inputRef.current.value = null
     //onButtonClick();
   }
 
@@ -34,19 +35,20 @@ export default function Messages(props) {
   }
 
   return(
-    <div>
+    <div className="right-block">
       <div className="nick-people">
         <b className="main-font sets-peoples-of-chat"> ✩ Yulia</b>
       </div>
       <div className="chat-with-people">
         <Message
           messages={messages}/>
-        <div className="fild-for-message">
-          <input type="text" className="input-message"
-            ref={inputRef} onKeyUp={event => keyInput(event)}/>
-          <button className="button" onClick={sliceMessages => handleClick(messages)}>hi
-          </button>
-        </div>
+      </div>
+      <div className="fild-for-message">
+        <input type="text" className="input-message"
+          ref={inputRef} onKeyUp={event => keyInput(event)}/>
+        <button className="button" 
+        onClick={sliceMessages => handleClick(messages)}>
+        hi</button>
       </div>
     </div>
   )

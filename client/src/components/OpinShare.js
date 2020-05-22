@@ -8,15 +8,13 @@ import Message from './Message'
 
 export default function OpinShare() {
 	return (
-    <div className="style-div">
-      <div className="style-fixed-div">
-        <Search/>
-        <Profile/>
-      </div>
+    <div className="class-page">
+      <Search/>
       <div className="left-block">
+        <Profile/>
         <SetUser/>
       </div>
-      <div className="right-block">
+      <div>
         <Messages/>
       </div>
 

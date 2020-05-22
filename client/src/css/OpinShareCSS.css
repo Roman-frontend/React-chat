@@ -1,6 +1,49 @@
 
+.class-page {
+  position: relative;
+  display: grid;
+  grid-template-columns: 15rem auto;
+  grid-auto-rows: minmax(2.6rem, auto);
+  align-items: center;
+  grid-template-areas:
+    "search search"
+    "leftblock rightblock";
+  margin: -0.5rem;
+}
+
+.class-page div, p, b, img, input, button {
+  position: relative;
+}
+
+.search {
+  grid-area: search;
+  background: #3F0E40;
+  color: #ffffff;
+  height: 2.6rem;
+  width: 100vw;
+  margin: -0.5rem;
+}
+
+.left-block {
+  grid-area: leftblock;
+  background: #3F0E40;
+  overflow: auto;
+  height: 100vh;
+  width: 15rem;
+  color: #ffffff;
+  border-top: 0.1rem solid #80249C;
+}
+
+.right-block {
+  grid-area: rightblock;
+  height: 93.1vh;
+  width: 81vw;
+  margin: -1vh;
+  top: -3.5vh;
+  left: 0.4vw;
+}
+
 .main-font {
-  position: absolute;
   left: 1rem;
   font: 1rem serif;
   cursor: pointer;
@@ -9,29 +52,11 @@
 
 .secondary-font {
   color: #E6E6FA;
-  left: 1rem;
-  top: 2rem;
-}
-
-.style-fixed-div div {
-  position: fixed;
-  background: #3F0E40;
-  color: #ffffff;
-}
-
-.input-searcher {
-  position: fixed;
-  margin-top: -8px;
-  margin-left: -8px;
-  margin-right: -8px;
-  height: 2.6rem;
-  width: 100vw;
-  background: #57286C;
+  top: 0.5rem;
 }
 
 .set-search {
   top: 0.7rem;
-  position: absolute;
   height: 1.4rem;
   cursor: pointer;
 }
@@ -42,7 +67,7 @@
 }
 
 .input-name-user {
-  top: 0.6rem;
+  top: 0.2rem;
   left: 25rem;
   height: 1.1rem;
   width: 31rem;
@@ -54,37 +79,22 @@
 .icon-serch {
   height: 1.2rem;
   width: 1.3rem;
-  top: 0.7rem;
-  left: 54.8rem;
+  top: 0.5rem;
+  left: 23.6rem;
 }
 
 .help {
-  left: 77rem;
+  left: 44rem;
   width: 1.7rem;
 }
 
-.style  div {
-  position: absolute;
-  background: #3F0E40;
-  margin-left: -8px;
-  color: #ffffff;
-
-}
-
 .user-name {
-  top: 0.4rem;
+  top: 0.2rem;
   font-size: 1.3rem;
   left: 0.7rem;
 }
 .user-info {
-  background: #57286C;
-  margin-left: -8px;
-  color: #ffffff;
-  position: fixed;
-  top: 2.6rem;
-  width: 15rem;
   height: 4rem;
-  border-top: 0.1rem solid #80249C;
 }
 
 .info-user {
@@ -94,25 +104,20 @@
 
 .edit {
   left: 12rem;
-  top: 0.8rem;
+  top: -1.8rem;
 }
 
 .sets-img-get-user {
-  position: absolute;
   left: 0.6rem;
   width: 1rem;
   cursor: pointer;
 }
 
 .state-info {
-  width: 15rem;
   height: 11rem;
-  border-top: 0.1rem solid #80249C;
-  top: 6.7rem;
 }
 
 .set-info-user {
-  position: absolute;
   top: 5px;
   left: 10px;
   cursor: pointer;
@@ -120,10 +125,7 @@
 }
 
 .instruments {
-  width: 15rem;
   height: 88.8vh;
-  border-top: 0.1rem solid #80249C;
-  top: 17.8rem;
 }
 
 .all-done {
@@ -209,28 +211,22 @@
 }
 
 .fild-for-message {
-  position: fixed;
-  border: 0.1rem solid #665C5C;
-  width: 76vw;
   height: 3rem;
-  left: 21vw;
-  top: 87vh;
+  width: 76vw;
+  left: 2rem;
   border-radius: 0.4rem 0.4rem 0.4rem 0.4rem;
+  border: 0.1rem solid #665C5C;
 }
 
 .input-message {
-  position: absolute;
-  height: 2.7rem;
-  width: 75.7vw
+  height: 2.6rem;
+  width: 75.6vw;
 }
 
 .nick-people {
   border: 0.1rem solid #979797;
   width: 95.3vw;
   height: 4rem;
-  position: fixed;
-  top: 2.6rem;
-  left: 15rem;
 
 }
 
@@ -243,65 +239,38 @@
 
 .chat-with-people {
   display: flex;
-  position: fixed;
   width: 81.5vw;
-  height: 83vh;
-  top: 6.8rem;
-  left: 15rem;
+  height: 68vh;
   border-color: #A7A7A7;
   flex-direction: column-reverse;
+  overflow: auto;
 }
 
 .container {
   display: grid;
-  grid-template-columns: 3rem auto 59rem;
+  grid-template-columns: 3rem auto 236rem;
   grid-auto-rows: minmax(20px, auto);
   align-items: center;
   grid-template-areas:
     "icon messager date"
     "icon message message";
-  position: relative;
   margin: 1vh;
   width: 75vw;
   height: 3rem;
   left: 2rem;
-  top: -16vh;
 }
 
-.icon {
-  grid-area: icon;
-}
-.messager {
-  grid-area: messager;
-}
-.date {
-  grid-area: date;
-}
-.message {
-  grid-area: message;
-}
 
 img.icon {
+  grid-area: icon;
   width: 2.7rem;
 }
 
-.time-of-send {
-  font-size: 0.9rem;
-  margin: 0.3rem;
-}
 
 .message {
+  grid-area: message;
   margin: 0rem;
   padding: 1rem;
-}
-
-
-.button-send {
-  position: absolute;
-  top: 1px;
-  left: 881px;
-  width: 78px;
-  height: -webkit-fill-available;
 }
 
 
@@ -309,17 +278,19 @@ img.icon {
   margin: 0rem;
   padding: 0rem 1rem;
   font-weight: 600;
+  grid-area: messager;
 }
 
 .date {
   margin: 0rem;
+  grid-area: date;
 }
 
 .button {
-  position: relative;
   height: 2rem;
   width: 5rem;
-  top: 0.5rem;
-  left: 56rem;
+  top: -2.5rem;
+  left: 69vw;
   background: #e11;
 }
+

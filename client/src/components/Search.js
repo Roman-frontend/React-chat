@@ -6,7 +6,7 @@ import Help from '../images/Help.png'
 
 export default function Search() {
   return (
-    <div className="input-searcher">
+    <div className="search">
       <img src={iconHistori} className="set-search clock"/>
       <input type="text" name="users" className="set-search input-name-user" />
       <img src={serch} className="set-search icon-serch"/>

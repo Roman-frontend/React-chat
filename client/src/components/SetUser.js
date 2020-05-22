@@ -7,7 +7,7 @@ import '../css/OpinShareCSS.css'
 
 export default function SetUser() {
   return(
-    <div className="style">
+    <div>
       <PeopleAppsFiles/>
       <AllUsedOfUser/>
     </div>

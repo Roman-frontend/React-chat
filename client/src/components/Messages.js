@@ -28,8 +28,8 @@ export default function Messages(props) {
     inputRef.current.focus()
   })
 
-  function keyInput() {
-    if (event === "Enter") {alert("hi")}
+  function keyInput(event) {
+    if (event.key === "Enter") {handleClick(messages)}
     return
   }
 
@@ -43,8 +43,8 @@ export default function Messages(props) {
           messages={messages}/>
         <div className="fild-for-message">
           <input type="text" className="input-message"
-            ref={inputRef}/>
-          <button className="button" onClick={sliceMessages => handleClick(messages)} onKeyup={event => keyInput(event.key)}>hi
+            ref={inputRef} onKeyUp={event => keyInput(event)}/>
+          <button className="button" onClick={sliceMessages => handleClick(messages)}>hi
           </button>
         </div>
       </div>

@@ -8,7 +8,7 @@ export default function Search() {
   return (
     <div className="search">
       <img src={iconHistori} className="set-search clock"/>
-      <input type="text" name="users" className="set-search input-name-user" />
+      <input type="text" name="users" className="set-search fild-for-search" />
       <img src={serch} className="set-search icon-serch"/>
       <img src={Help} className="set-search help"/>
     </div>

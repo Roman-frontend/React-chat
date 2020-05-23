@@ -2,16 +2,15 @@
 .class-page {
   position: relative;
   display: grid;
-  grid-template-columns: 15rem auto;
-  grid-auto-rows: minmax(2.6rem, auto);
-  align-items: center;
+  grid-template-columns: 18.5vw auto;
+  grid-auto-rows: minmax(6.6vh, auto);
   grid-template-areas:
     "search search"
     "leftblock rightblock";
   margin: -0.5rem;
 }
 
-.class-page div, p, b, img, input, button {
+.class-page * {
   position: relative;
 }
 
@@ -19,31 +18,27 @@
   grid-area: search;
   background: #3F0E40;
   color: #ffffff;
-  height: 2.6rem;
-  width: 100vw;
-  margin: -0.5rem;
 }
 
 .left-block {
   grid-area: leftblock;
   background: #3F0E40;
-  overflow: auto;
-  height: 100vh;
-  width: 15rem;
+  overflow-y: auto;
   color: #ffffff;
   border-top: 0.1rem solid #80249C;
+  height: 91vh;
+  overflow-x: hidden;
 }
 
 .right-block {
   grid-area: rightblock;
-  height: 93.1vh;
-  width: 81vw;
-  margin: -1vh;
-  top: -3.5vh;
-  left: 0.4vw;
+  height: 92vh;
+  overflow-x: hidden;
 }
 
 .main-font {
+  display: grid;
+  grid-auto-columns: max-content;
   left: 1rem;
   font: 1rem serif;
   cursor: pointer;
@@ -66,7 +61,7 @@
   width: 1.5rem;
 }
 
-.input-name-user {
+.fild-for-search {
   top: 0.2rem;
   left: 25rem;
   height: 1.1rem;
@@ -117,50 +112,6 @@
   height: 11rem;
 }
 
-.set-info-user {
-  top: 5px;
-  left: 10px;
-  cursor: pointer;
-  width: 225px;
-}
-
-.instruments {
-  height: 88.8vh;
-}
-
-.all-done {
-  left: 1rem;
-  top: 1.8rem;
-}
-
-.icon-contacts {
-  top: 4rem;
-}
-
-.people {
-  left: 2rem;
-  top: 4rem;
-}
-
-
-.icon-apps {
-  top: 100px;
-}
-
-.apps-get-user {
-  left: 2rem;
-  top: 6.2rem;
-}
-
-.icon-files {
-  top: 8rem;
-}
-
-.files {
-  left: 2rem;
-  top: 8.2rem;
-}
-
 .text-chanels {
   top: 1rem;
 }
@@ -202,31 +153,22 @@
   top: 9.2rem;
 }
 
-.apps {
-  top: 11.4rem;
-}
-
-.three-plus {
-  top: 10.8rem;
-}
-
 .fild-for-message {
-  height: 3rem;
+  height: 7.6vh;
   width: 76vw;
-  left: 2rem;
+  left: 3vw;
   border-radius: 0.4rem 0.4rem 0.4rem 0.4rem;
   border: 0.1rem solid #665C5C;
 }
 
 .input-message {
-  height: 2.6rem;
+  height: 6.5vh;
   width: 75.6vw;
 }
 
 .nick-people {
   border: 0.1rem solid #979797;
-  width: 95.3vw;
-  height: 4rem;
+  height: 10vh;
 
 }
 
@@ -239,11 +181,11 @@
 
 .chat-with-people {
   display: flex;
-  width: 81.5vw;
-  height: 68vh;
+  height: 71vh;  
   border-color: #A7A7A7;
   flex-direction: column-reverse;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .container {
@@ -255,7 +197,6 @@
     "icon messager date"
     "icon message message";
   margin: 1vh;
-  width: 75vw;
   height: 3rem;
   left: 2rem;
 }
@@ -286,11 +227,6 @@ img.icon {
   grid-area: date;
 }
 
-.button {
-  height: 2rem;
-  width: 5rem;
-  top: -2.5rem;
-  left: 69vw;
-  background: #e11;
+.icon {
+  top: 0.9rem;
 }
-

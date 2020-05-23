@@ -12,27 +12,22 @@ export default function Messages(props) {
   else { return date}
   }
 
-  function handleClick(sliceMessages) {
-    if (inputRef.current.value === "") {return}
-    const sli = sliceMessages.slice(0, sliceMessages.length);
-    const newDate = new Date();
-    const date = `${editDate(newDate.getHours())}:${editDate(newDate.getMinutes())}
-      ${editDate(newDate.getDate())}.${editDate(newDate.getMonth())}.${newDate.getFullYear()}`; 
-    sli.unshift({username: 'Yulia', text: inputRef.current.value, createdAt: date},)
-    setMessages(sli);
-    inputRef.current.value = null
-    //onButtonClick();
+  function keyInput(event) {
+    if (event.key === "Enter") {
+      if (inputRef.current.value === "") {return}
+      const sli = messages.slice(0, messages.length);
+      const newDate = new Date();
+      const date = `${editDate(newDate.getHours())}:${editDate(newDate.getMinutes())}
+        ${editDate(newDate.getDate())}.${editDate(newDate.getMonth())}.${newDate.getFullYear()}`; 
+      sli.unshift({username: 'Yulia', text: inputRef.current.value, createdAt: date},)
+      setMessages(sli);
+      inputRef.current.value = null
+    }
   }
 
-  //const onButtonClick = () => { inputRef.current.focus()};
   useEffect(() => {
     inputRef.current.focus()
   })
-
-  function keyInput(event) {
-    if (event.key === "Enter") {handleClick(messages)}
-    return
-  }
 
   return(
     <div className="right-block">
@@ -46,9 +41,6 @@ export default function Messages(props) {
       <div className="fild-for-message">
         <input type="text" className="input-message"
           ref={inputRef} onKeyUp={event => keyInput(event)}/>
-        <button className="button" 
-        onClick={sliceMessages => handleClick(messages)}>
-        hi</button>
       </div>
     </div>
   )

@@ -14,8 +14,6 @@ export default class AllUsedOfUser extends React.Component {
         <b className="main-font plus two-plus">+</b>
         <p className="main-font different-messages">- Yulia</p>
         <p className="main-font invite-people">+ Invite people</p>
-        <p className="main-font apps">&#x25BC; Apps</p>
-        <b className="main-font plus three-plus">+</b>
       </div>
     )
   }

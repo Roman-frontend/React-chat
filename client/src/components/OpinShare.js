@@ -14,10 +14,7 @@ export default function OpinShare() {
         <Profile/>
         <SetUser/>
       </div>
-      <div>
-        <Messages/>
-      </div>
-
+      <Messages/>
     </div>
 	);
 }

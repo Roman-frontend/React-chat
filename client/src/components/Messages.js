@@ -31,9 +31,7 @@ export default function Messages(props) {
   })
 
   function renderMessages(messages) {
-    return messages.map((msg) => {
-      return <Message messages={msg}/>
-    })
+    return messages.map((msg) => {return <Message message={msg}/>})
   }
 
   return(

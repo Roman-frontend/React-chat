@@ -2,12 +2,13 @@
 .class-page {
   position: relative;
   display: grid;
-  grid-template-columns: 18.5vw auto;
-  grid-auto-rows: minmax(6.6vh, auto);
+  grid-template-columns: 16rem auto;
+  grid-auto-rows: minmax(2.6rem, auto);
   grid-template-areas:
     "search search"
     "leftblock rightblock";
   margin: -0.5rem;
+  overflow: hidden;
 }
 
 .class-page * {
@@ -18,6 +19,7 @@
   grid-area: search;
   background: #3F0E40;
   color: #ffffff;
+  display: flex;
 }
 
 .left-block {
@@ -59,11 +61,12 @@
 .clock {
   left: 28vw;
   width: 1.5rem;
+  padding-right: 30vw;
 }
 
 .fild-for-search {
-  top: 0.2rem;
-  left: 31vw;
+  top: 0.7rem;
+  left: 0vw;
   height: 1.1rem;
   width: 38vw;
   background: #821CB0;
@@ -74,13 +77,14 @@
 .icon-serch {
   height: 1.2rem;
   width: 1.3rem;
-  top: 0.5rem;
-  left: 29.1vw;
+  top: 0.8rem;
+  left: -1.5rem;
 }
 
 .help {
-  left: 44rem;
-  width: 1.7rem;
+  right: 3vw;
+  width: 2rem;
+  position: absolute;
 }
 
 .user-name {
@@ -157,18 +161,19 @@
   height: 7.6vh;
   width: 76vw;
   left: 3vw;
-  border-radius: 0.4rem 0.4rem 0.4rem 0.4rem;
-  border: 0.1rem solid #665C5C;
 }
 
 .input-message {
   height: 6.5vh;
   width: 75.6vw;
+  border: 0.15rem solid #665C5C;
+  border-radius: 0.5rem;
+
 }
 
 .nick-people {
   border: 0.1rem solid #979797;
-  height: 10vh;
+  height: 4rem;
 
 }
 

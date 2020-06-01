@@ -57,15 +57,15 @@
 }
 
 .clock {
-  left: 19rem;
+  left: 28vw;
   width: 1.5rem;
 }
 
 .fild-for-search {
   top: 0.2rem;
-  left: 25rem;
+  left: 31vw;
   height: 1.1rem;
-  width: 31rem;
+  width: 38vw;
   background: #821CB0;
   border: 0.1rem solid #D09EED;
   border-radius: 0.3rem;
@@ -75,7 +75,7 @@
   height: 1.2rem;
   width: 1.3rem;
   top: 0.5rem;
-  left: 23.6rem;
+  left: 29.1vw;
 }
 
 .help {

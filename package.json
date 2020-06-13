@@ -1,0 +1,32 @@
+{
+  "name": "react-chat",
+  "version": "1.0.0",
+  "description": "working with server",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roman-frontend/React-chat.git"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "Litsevitch Roman <romalicevich@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Roman-frontend/React-chat/issues"
+  },
+  "homepage": "https://github.com/Roman-frontend/React-chat#readme",
+  "dependencies": {
+    "concurrently": "^5.2.0",
+    "config": "^3.3.1",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "uuid": "^8.1.0"
+  }
+}

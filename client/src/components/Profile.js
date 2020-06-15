@@ -7,7 +7,7 @@ export default function Profile() {
     <div className="user-info">
       <b className="main-font user-name">Roman</b>
       <p className="main-font secondary-font">LRomanV</p>
-      <img src={edit} className="main-font edit"/>
+      <img src={edit} className="main-font edit" alt="edit info of user"/>
     </div>
   )
 }

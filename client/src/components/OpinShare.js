@@ -4,7 +4,6 @@ import Search from './Search'
 import Profile from './Profile'
 import Messages from './Messages'
 import SetUser from './SetUser'
-import Message from './Message'
 
 export default function OpinShare() {
 	return (

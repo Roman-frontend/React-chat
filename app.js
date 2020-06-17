@@ -7,33 +7,34 @@ const PORT = config.get('port') || 5000
 
 app.use(express.json({extended: true}))
 
-let CONTACTS = [
-  {username: "Yulia", text: "Message from CONTACTS", createdAt: "16:06 12.05.2020", id: 1591967167630}
-]
+let MESSAGES = []
 
 app.use(express.json())
 
 app.get('/api/contacts', (req, res) => {
-    res.status(200).json(CONTACTS)
+  console.log("get ", MESSAGES)
+  res.status(200).json(MESSAGES)
 })
 
 app.post('/api/contacts', (req, res) => {
-    const contact = {...req.body}
-    CONTACTS.unshift(contact)
-    console.log(CONTACTS)
-    res.status(201).json(CONTACTS)
+  console.log("post ", MESSAGES[0])
+  const contact = {...req.body}
+  MESSAGES.unshift(contact)
+  res.status(201).json(MESSAGES)
 })
 
-/*app.delete('/api/contacts/:id', (req, res) => {
-  CONTACTS = CONTACTS.filter(c => c.id !== req.params.id)
+app.delete('/api/contacts/:id', (req, res) => {
+  MESSAGES = MESSAGES.filter(c => c.id != req.params.id)
+  console.log("delete ", MESSAGES)
   res.status(200).json({message: 'Контакт был удален'})
 })
 
 app.put('/api/contacts/:id', (req, res) => {
-  const idx = CONTACTS.findIndex(c => c.id === req.params.id)
-  CONTACTS[idx] = req.body
-  res.json(CONTACTS[idx])
-})*/
+  const idx = MESSAGES.findIndex(c => c.id == req.params.id)
+  console.log("idx from put ", idx)
+  MESSAGES[idx] = req.body
+  res.json(MESSAGES[idx])
+})
 
 app.use(express.static(path.resolve(__dirname, 'client', "src", "component")))
 

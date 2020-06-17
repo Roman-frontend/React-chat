@@ -34,8 +34,13 @@
 
 .right-block {
   grid-area: rightblock;
-  height: 92vh;
   overflow-x: hidden;
+  display: grid;
+  grid-template-areas: 
+    "nick"
+    "chat"
+    "answer"
+    "fieldMsg"
 }
 
 .main-font {
@@ -64,7 +69,7 @@
   padding-right: 30vw;
 }
 
-.fild-for-search {
+.field-for-search {
   top: 0.7rem;
   left: 0vw;
   height: 1.1rem;
@@ -157,24 +162,25 @@
   top: 9.2rem;
 }
 
-.fild-for-message {
+.field-for-message {
+  display: grid;
   height: 7.6vh;
   width: 76vw;
   left: 3vw;
+  grid-area: fieldMsg;
 }
 
 .input-message {
-  height: 6.5vh;
+  height: 3rem;
   width: 75.6vw;
   border: 0.15rem solid #665C5C;
   border-radius: 0.5rem;
-
 }
 
 .nick-people {
   border: 0.1rem solid #979797;
   height: 4rem;
-
+  grid-area: nick;
 }
 
 .sets-peoples-of-chat {
@@ -186,21 +192,22 @@
 
 .chat-with-people {
   display: flex;
-  height: 71vh;  
+/*  height: 71vh;  */
   border-color: #A7A7A7;
   flex-direction: column-reverse;
   overflow-y: auto;
   overflow-x: hidden;
+  grid-area: chat;
 }
 
 .container {
   display: grid;
-  grid-template-columns: 3rem auto 236rem;
+  grid-template-columns: 3rem minmax(1rem, auto) 1fr 11.5vw;
   grid-auto-rows: minmax(20px, auto);
-  align-items: center;
+  align-items: start;
   grid-template-areas:
-    "icon messager date"
-    "icon message message";
+      "icon messager date more"
+      "icon message message .";
   margin: 1vh;
   height: 3rem;
   left: 2rem;
@@ -212,11 +219,57 @@ img.icon {
   width: 2.7rem;
 }
 
+.more {
+  grid-area: more;
+  align-items: center;
+  top: 0.1rem;
+  cursor: pointer;
+  justify-self: end;
+  left: -3rem;
+}
+
+.change-mes {
+  display: grid;
+  grid-template-areas:
+      "answer"
+      "edit"
+      "redirect"
+      "delete";
+  grid-row-gap: 0.3rem;
+  right: 1rem;
+}
+
+.change-mes > div {
+  border: 1px solid rebeccapurple;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.answer-mes {
+  grid-area: answer;
+  cursor: pointer;
+}
+
+.edit-mes {
+  grid-area: edit;
+  cursor: pointer;
+}
+
+.redirect-mes {
+  grid-area: redirect;
+  cursor: pointer;
+}
+
+.delete-mes {
+  grid-area: delete;
+  cursor: pointer;
+}
 
 .message {
   grid-area: message;
   margin: 0rem;
-  padding: 1rem;
+  top: -0.8rem;
+  left: 1rem;
 }
 
 
@@ -225,13 +278,36 @@ img.icon {
   padding: 0rem 1rem;
   font-weight: 600;
   grid-area: messager;
+  top: -0.8rem;
 }
 
 .date {
   margin: 0rem;
   grid-area: date;
+  top: -0.8rem;
 }
 
 .icon {
-  top: 0.9rem;
+  top: -0.1rem;
+}
+
+.button-text-edit {
+  height: 2rem;
+  width: 2rem;
+  bottom: 3rem;
+  background: #3F0E40;
+  color: #FFFFFF;
+  top: -3.3rem;
+  left: 72vw;
+  border-radius: 0.6rem;
+}
+
+.field-answer {
+  height: 4rem;
+  width: 76vw;
+  border-radius: 1rem 1rem 0rem 0rem;
+  border: 0.1rem solid #BEB7BD;
+  left: 3vw;
+  background: #DC85FF;
+  grid-area: answer;
 }

@@ -15,39 +15,39 @@ export default function Message(props) {
     if (event.key === "Enter") {
       if (inputRef.current.value === "") {return}
 
-        const sli = messages.slice(0, messages.length);
-        const idMasEd = messages.find(i => i.editText === true)
-        const indexMasEd = messages.indexOf(idMasEd, 0)
-        let editedMessages = []
+      const sli = messages.slice(0, messages.length);
+      const idMasEd = messages.find(i => i.editText === true)
+      const indexMasEd = messages.indexOf(idMasEd, 0)
+      let editedMessages = []
 
-        if (indexMasEd + 1) {
-          editedMessages = sli.map(i => {
-            if (i === idMasEd) {
-              i.text = inputRef.current.value
-              i.editText = false
-              return i
-            } else return i
-          })
-          mes = editedMessages
-          setMessages(editedMessages)
-          putData(idMasEd.id, setMessages, messages)
-        } else {
-          const newDate = new Date();         
-          const date = 
-          `${editDate(newDate.getHours())}:
-          ${editDate(newDate.getMinutes())}
-          ${editDate(newDate.getDate())}.
-          ${editDate(newDate.getMonth())}.
-          ${newDate.getFullYear()}`; 
+      if (indexMasEd + 1) {
+        editedMessages = sli.map(i => {
+          if (i === idMasEd) {
+            i.text = inputRef.current.value
+            i.editText = false
+            return i
+          } else return i
+        })
+        mes = editedMessages
+        setMessages(editedMessages)
+        putData(idMasEd.id, setMessages, messages)
+      } else {
+        const newDate = new Date();         
+        const date = 
+        `${editDate(newDate.getHours())}:
+        ${editDate(newDate.getMinutes())}
+        ${editDate(newDate.getDate())}.
+        ${editDate(newDate.getMonth())}.
+        ${newDate.getFullYear()}`; 
 
-          sli.unshift({username: 'Yulia', text: inputRef.current.value, 
-          createdAt: date, id: Date.now(), more: false, editText: false, answer: showAnswer},)        
-          mes = sli
-          setMessages(sli)
-          postData(mes)
-        }
-        setShowAnswer(false)
-        inputRef.current.value = null
+        sli.unshift({username: 'Yulia', text: inputRef.current.value, 
+        createdAt: date, id: Date.now(), more: false, editText: false, answer: showAnswer, index: false},)        
+        mes = sli
+        setMessages(sli)
+        postData(mes)
+      }
+      setShowAnswer(false)
+      inputRef.current.value = null
     }
   }
 

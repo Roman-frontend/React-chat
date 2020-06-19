@@ -33,7 +33,6 @@ export default function Message(props) {
     })
     setMessages(changeMas)
   }
-  console.log("Не по індексу")
   return (
     <div className="container" onClick={id, index => moreEdit(id, ind)}>
       <div className="icon"><img src={iconPeople} alt="icon-user"/></div>
@@ -46,7 +45,8 @@ export default function Message(props) {
           setMessages={props.setMessages}
           messages={props.messages}
           inputRef={props.inputRef}
-          fieldAnswer={props.fieldAnswer} />
+          fieldAnswer={props.fieldAnswer}
+          setShowAnswer={props.setShowAnswer} />
       </div>
       <div className="message"><p>{text}</p></div>
     </div>

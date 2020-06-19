@@ -14,64 +14,39 @@ export default function Messages(props) {
   let mes = []
   
   useEffect(() => {
-    document.addEventListener('onClick', fieldAnswer, console.log('onClick'))
     inputRef.current.focus()
     getData(setMessages)
-    return () => {
-      document.removeEventListener('onClick', fieldAnswer)
-      console.log('onClick')
-    }
   }, [])
 
   function hideButton() {
     const sli = messages.slice(0, messages.length);
+    let ifTrue = false
     const changeMas = sli.map(i => {
       if (i.editText) {
-        i.editText = !i.editText
+        ifTrue = true
+        i.editText = false
+        inputRef.current.value = ""
         return i
       } else return i
     })
-    setMessages(changeMas)
-    inputRef.current.value = ""
+    if (ifTrue) setMessages(changeMas)
   }
 
-  function fieldAnswer(id, index) {
-    try {
-      const sli = messages.slice(0, messages.length);
-      let answerTo = []
-      if (id) {
-        answerTo = sli.map(i => {
-          if (i.id === id) {
-            i.answer = !i.answer
-            i.more = false
-            return i
-          } else { 
-            i.answer = false
-            return i
-          }
-        })
-        if (messages !== answerTo) setMessages(answerTo)
-        answerTo = answerTo[index]
-        if (showAnswer !== false ) {setShowAnswer(false)}
-        putData(answerTo.id, setMessages, messages)
-        console.log("id", id)
-      } else {
-        answerTo = messages.find(i => i.answer === true)
-        if (answerTo) { return hideButton() }
-        console.log("!sli[index].an", answerTo)
-      }
-      if (answerTo) { return hideButton() }
-      console.log("end function")
-      return ( 
-        <div className="field-answer" style={{display: answerTo ? 'block' : 'none'}}>
-          <p>{answerTo ? answerTo.text : false}</p>
+  function fieldAnswer() {
+    const answerTo = messages.find(i => i.index !== false)
+    if (answerTo) {
+      hideButton()
+      return (<div className="field-answer" style={{display: answerTo.index ? 'block' : 'none'}}>
+          <p>{answerTo.text}</p>
         </div>)
-    } catch(e) {console.log("Помилка", e)}
+    } else {
+      return <div className="field-answer" style={{display: 'none'}}></div>
+    }
   }
 
   function renderMessages(messages) {
     return messages.map((msg, index) => {
-      return ( <Message key={messages[index].id} message={msg} ind={index} 
+      return ( <Message key={messages[index].id} message={msg} ind={index} setShowAnswer={setShowAnswer}
         setMessages={setMessages} messages={messages} inputRef={inputRef} fieldAnswer={fieldAnswer} />)
     })
   }

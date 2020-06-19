@@ -8,13 +8,14 @@ export default function EditMessage(props) {
   const {loading, request, error} = useHttp()
   const {removeData} = useServer()
   const {username, text, createdAt, id, more} = props.message
-  const {messages, setMessages, message, inputRef, ind} = props
+  const {messages, setMessages, message, inputRef, ind, setShowAnswer} = props
 
   function changeMessage(id, index) {
     const sli = messages.slice(0, messages.length);
+    let trueEdit = false
     let changeMas = []
 //Пошук по індексу
-    if (sli[index].editText) {
+    if (id) {
       changeMas = sli.map(i => {
         if (i.id === id) {
           i.editText = !i.editText;
@@ -24,15 +25,15 @@ export default function EditMessage(props) {
         } else return i
       })
 //Перевірка на наявність виклику змінити повідомлення при перереднерингу чи перезагрузці сторінки
-    } else changeMas = sli.map(i => {
-      if (i.id === id) {
-        i.editText = !i.editText; 
-        return i
-      } else if (i.editText) {
-        i.editText = !i.editText
-        return i
-      } else return i
-    })
+    } else { 
+      changeMas = sli.map(i => {
+        if (i.editText) {
+          trueEdit = true
+          i.editText = !i.editText; 
+          return i
+        } else return i
+      })
+    }  
     setMessages(changeMas)
     inputRef.current.value = messages[index].text
   }
@@ -42,7 +43,9 @@ export default function EditMessage(props) {
     const sli = messages.slice(0, messages.length);
     const answerTo = sli.map(i => {
       if (i.id === id) {
+        i.index = index
         i.answer = !i.answer
+        i.more = false
         return i
       } else { 
         i.answer = false
@@ -50,7 +53,7 @@ export default function EditMessage(props) {
       }
     })
     setMessages(answerTo)
-    props.fieldAnswer(id, index)
+    setShowAnswer(true)
   }
 
   function sets() {

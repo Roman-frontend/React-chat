@@ -18,14 +18,13 @@ export default function Messages(props) {
     getData(setMessages)
   }, [])
 
-  function hideButton() {
+  function hideButton(push=false) {
     const sli = messages.slice(0, messages.length);
     let ifTrue = false
     const changeMas = sli.map(i => {
       if (i.editText) {
+        if (push) {i.editText = !i.editText; inputRef.current.value = ""}
         ifTrue = true
-        i.editText = false
-        inputRef.current.value = ""
         return i
       } else return i
     })
@@ -36,7 +35,7 @@ export default function Messages(props) {
     const answerTo = messages.find(i => i.index !== false)
     if (answerTo) {
       hideButton()
-      return (<div className="field-answer" style={{display: answerTo.index ? 'block' : 'none'}}>
+      return (<div className="field-answer" style={{display: answerTo.index + 1 ? 'block' : 'none'}}>
           <p>{answerTo.text}</p>
         </div>)
     } else {

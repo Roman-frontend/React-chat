@@ -8,33 +8,38 @@ export default function Message(props) {
   const {messages, setMessages, ind} = props
   const {username, text, createdAt, id, more, editText, answer} = props.message
 
-  function moreEdit(id, index) {
-    const sli = messages.slice(0, messages.length);
-    let changeMas = []
-    if (sli[index].more) {
-      changeMas = sli.map(i => {
-        if (i.id === id) {
-          i.more = !i.more 
-          return i
-        } else {
-          return i
-        }
-      })
-    } else changeMas = sli.map(i => {
+  function moreEdit(id) {
+    let changeMas = messages.map(i => {
       if (i.id === id) {
         i.more = !i.more 
         return i
-      } else if (i.more) {
-        i.more = !i.more
-        return i
       } else {
+        i.more = false
         return i
       }
     })
     setMessages(changeMas)
   }
+
+  function reply() {
+    let changeMas = []
+    const sli = messages.slice(0, messages.length);
+    const hasReply = messages.find(i => i.reply !== false)
+    if (props.message.reply) {
+      debugger
+      changeMas = sli.map(i => {
+        if (i.reply !== false) {
+          i.answer = false
+          return i
+        } else return i
+      })
+      return <div><p>{hasReply.reply}</p></div>
+    } else return true
+  }
+
+
   return (
-    <div className="container" onClick={id, index => moreEdit(id, ind)}>
+    <div className="container" onClick={id => moreEdit(props.message.id)}>
       <div className="icon"><img src={iconPeople} alt="icon-user"/></div>
       <div className="messager"><p>{username}</p></div>
       <div className="date"><p>{createdAt}</p></div>
@@ -49,6 +54,7 @@ export default function Message(props) {
           setShowAnswer={props.setShowAnswer} />
       </div>
       <div className="message"><p>{text}</p></div>
+      {reply()}
     </div>
   )
 }

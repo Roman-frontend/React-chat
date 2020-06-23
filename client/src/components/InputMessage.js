@@ -17,10 +17,10 @@ export default function Message(props) {
 
       const sli = messages.slice(0, messages.length);
       const idMasEd = messages.find(i => i.editText === true)
-      const indexMasEd = messages.indexOf(idMasEd, 0)
+      const idMasAnswer = messages.find(i => i.answer === true)
       let editedMessages = []
-
-      if (indexMasEd + 1) {
+//Перевірка на зміну повідомлення
+      if (idMasEd) {
         editedMessages = sli.map(i => {
           if (i === idMasEd) {
             i.text = inputRef.current.value
@@ -31,6 +31,22 @@ export default function Message(props) {
         mes = editedMessages
         setMessages(editedMessages)
         putData(idMasEd.id, setMessages, messages)
+      } else if (idMasAnswer) {
+        const newDate = new Date();         
+        const date = 
+        `${editDate(newDate.getHours())}:
+        ${editDate(newDate.getMinutes())}
+        ${editDate(newDate.getDate())}.
+        ${editDate(newDate.getMonth())}.
+        ${newDate.getFullYear()}`; 
+
+        sli.unshift({username: 'Yulia', text: idMasAnswer.text, 
+        createdAt: date, id: Date.now(), more: false, editText: false, 
+        answer: false, index: false, reply: inputRef.current.value},)        
+        mes = sli
+        setMessages(sli)
+        postData(mes)
+//Якщо indexMasEd + 1 = false то створюєм нове повідомлення
       } else {
         const newDate = new Date();         
         const date = 
@@ -41,7 +57,8 @@ export default function Message(props) {
         ${newDate.getFullYear()}`; 
 
         sli.unshift({username: 'Yulia', text: inputRef.current.value, 
-        createdAt: date, id: Date.now(), more: false, editText: false, answer: showAnswer, index: false},)        
+        createdAt: date, id: Date.now(), more: false, editText: false, 
+        answer: showAnswer, index: false, reply: false},)        
         mes = sli
         setMessages(sli)
         postData(mes)

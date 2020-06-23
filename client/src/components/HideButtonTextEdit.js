@@ -13,7 +13,7 @@ export default function HideButtonTextEdit(props) {
     const idMasAnswer = messages.find((i) => i.answer === true)
     
     if (idMasEd) {
-      return <button className="button-text-edit" onClick={props.hideButton}>X</button>
+      return <button className="button-text-edit" onClick={push => props.hideButton(true)}>X</button>
     } else return true
   }
 

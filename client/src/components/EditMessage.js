@@ -12,6 +12,7 @@ export default function EditMessage(props) {
 
   function changeMessage(id, index) {
     const sli = messages.slice(0, messages.length);
+    const fintEditioner = sli.find(i => i.editText === true)
     let trueEdit = false
     let changeMas = []
 //Пошук по індексу
@@ -20,40 +21,58 @@ export default function EditMessage(props) {
         if (i.id === id) {
           i.editText = !i.editText;
           i.more = false
-          console.log("i.more ", i.more, "i.answer", i.answer)
+          i.answer = false
+          i.index = false
           return i
-        } else return i
+        } else {
+          i.answer = false
+          i.index = false
+          return i
+        }
       })
-//Перевірка на наявність виклику змінити повідомлення при перереднерингу чи перезагрузці сторінки
-    } else { 
+      setShowAnswer(false)
+      setMessages(changeMas)
+      inputRef.current.value = messages[index].text
+      return <button className="edit-mes" onClick={(id, index) => changeMessage(message.id, ind)}>Змінити</button>
+    } else if (fintEditioner) { 
       changeMas = sli.map(i => {
         if (i.editText) {
           trueEdit = true
-          i.editText = !i.editText; 
+          inputRef.current.value = i.text 
           return i
         } else return i
       })
-    }  
-    setMessages(changeMas)
-    inputRef.current.value = messages[index].text
+      return <button className="edit-mes" onClick={(id, index) => changeMessage(message.id, ind)}>Змінити</button>
+    } else { 
+      inputRef.current.value = ""
+      return <button className="edit-mes" onClick={(id, index) => changeMessage(message.id, ind)}>Змінити</button>
+    }
   }
 
   function answer(id, index) {
-    console.log("answer")
     const sli = messages.slice(0, messages.length);
     const answerTo = sli.map(i => {
       if (i.id === id) {
-        i.index = index
         i.answer = !i.answer
+        if (i.answer) {
+          i.index = index
+          i.more = false
+          setShowAnswer(true)
+        } else {
+          i.index = false
+          setShowAnswer(false)
+        }
+        i.editText = false
         i.more = false
         return i
       } else { 
         i.answer = false
+        i.editText = false
         return i
       }
     })
     setMessages(answerTo)
-    setShowAnswer(true)
+    console.log(messages)
   }
 
   function sets() {
@@ -61,7 +80,7 @@ export default function EditMessage(props) {
   	  return (
   	  	<div className="change-mes">
   	  	  <button className="answer-mes" onClick={(id, index) => answer(message.id, ind)}>Відповісти</button>
-  	  	  <button className="edit-mes" onClick={(id, index) => changeMessage(message.id, ind)}>Змінити</button>
+  	  	  {changeMessage()}
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" onClick={id, setMessages, msg => removeData(message.id, setMessages, messages)}>Видалити</button>
   	  	</div>

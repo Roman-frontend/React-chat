@@ -1,11 +1,10 @@
 import React from 'react'
-import '../css/OpinShareCSS.css'
 import Search from './Search'
 import Profile from './Profile'
 import Messages from './Messages'
 import SetUser from './SetUser'
 
-export default function OpinShare() {
+export default function App() {
 	return (
     <div className="class-page">
       <Search/>

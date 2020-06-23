@@ -1,5 +1,4 @@
 import React from 'react'
-import '../css/OpinShareCSS.css'
 
 export default class AllUsedOfUser extends React.Component {
   render() {

@@ -213,6 +213,19 @@
   left: 2rem;
 }
 
+.container-reply {
+  display: grid;
+  grid-template-columns: 3rem minmax(1rem, auto) 1fr 11.5vw;
+  grid-auto-rows: minmax(20px, auto);
+  align-items: start;
+  grid-template-areas:
+      "icon messager date more"
+      "icon message message ."
+      ". reply reply .";
+  margin: 1vh;
+  height: 3rem;
+  left: 2rem;
+}
 
 img.icon {
   grid-area: icon;
@@ -310,4 +323,8 @@ img.icon {
   left: 3vw;
   background: #DC85FF;
   grid-area: answer;
+}
+
+.reply {
+  grid-area: reply;
 }

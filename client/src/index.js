@@ -1,6 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
-import OpinShare from './components/OpinShare'
+import App from './components/App'
+import './css/OpinShareCSS.css'
 
 
-render(<OpinShare />, document.getElementById("root"));
+render(<App />, document.getElementById("root"));

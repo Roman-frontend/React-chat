@@ -1,5 +1,4 @@
 import React from 'react'
-import '../css/OpinShareCSS.css'
 import edit from '../images/edit.png';
 
 export default function Profile() {

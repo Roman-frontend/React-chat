@@ -30,8 +30,7 @@ export default function Message(props) {
   return (
     <div 
     className={ message.reply ? "container-reply" : "container" } 
-    onClick={id => moreEdit(message.id)}
-    >
+    onClick={id => moreEdit(message.id)}>
       <div className="icon">
         <img src={iconPeople} alt="icon-user"/>
       </div>

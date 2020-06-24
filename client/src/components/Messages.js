@@ -1,10 +1,10 @@
 import React, {useState, useRef, useEffect} from 'react'
-import iconPeople from '../images/icon-people.png'
+import {useServer} from '../hooks/Server'
+import {Context} from '../context/context'
 import Message from './Message'
 import InputMessage from './InputMessage'
-import {useServer} from '../hooks/Server'
+import iconPeople from '../images/icon-people.png'
 
-//index more
 
 export default function Messages(props) {
   const inputRef = useRef(null);
@@ -46,11 +46,7 @@ export default function Messages(props) {
       return ( 
       <Message key={messages[index].id} 
         message={msg} 
-        ind={index} 
-        setShowAnswer={setShowAnswer}
-        setMessages={setMessages} 
-        messages={messages} 
-        inputRef={inputRef} 
+        index={index} 
       />)
     })
   }
@@ -63,30 +59,28 @@ export default function Messages(props) {
     } else return true
   }
 
+
   return (
-    <div className="right-block"
-    style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
-      <div className="nick-people">
-        <b className="main-font sets-peoples-of-chat">
-         ✩ Yulia
-        </b>
+//З допомогою Context.provider з допомогою якого ми передаватимемо на дочерні елементи різні значення
+//Передаєм йому значення value куди оприділяємо обєкт який міститиме в собі функції дозволяючий змінити головний стан
+    <Context.Provider value={{messages, setMessages, showAnswer, setShowAnswer, inputRef}}>
+      <div className="right-block"
+      style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
+        <div className="nick-people">
+          <b className="main-font sets-peoples-of-chat">
+           ✩ Yulia
+          </b>
+        </div>
+        {fieldAnswer()}
+        <div className="chat-with-people">
+        {renderMessages(messages)}
+        </div>
+        <div className="field-for-message">
+          <InputMessage />
+          {buttonTextEdit()}
+        </div>
       </div>
-      {fieldAnswer()}
-      <div className="chat-with-people">
-      {renderMessages(messages)}
-      </div>
-      <div className="field-for-message">
-        <InputMessage 
-          inputRef={inputRef} 
-          setMessages={setMessages}
-          messages={messages} 
-          mes={mes} 
-          setShowAnswer={setShowAnswer} 
-          showAnswer={showAnswer}
-        />
-        {buttonTextEdit()}
-      </div>
-    </div>
+    </Context.Provider>
   )
 }
 

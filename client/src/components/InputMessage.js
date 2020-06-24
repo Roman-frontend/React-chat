@@ -1,9 +1,10 @@
-import React from 'react'
+import React, {useContext} from 'react'
+import {Context} from '../context/context'
 import {useServer} from '../hooks/Server'
 
 export default function InputMessage(props) {
-  const {messages, setMessages, inputRef, setShowAnswer, showAnswer} = props
-  const {getData, postData, putData} = useServer()
+  const {messages, setMessages, setShowAnswer, inputRef} = useContext(Context)
+  const {postData, putData} = useServer()
   const copyMessages = messages.slice(0, messages.length);
   const idMasEd = messages.find(i => i.editText === true)
   const idMasAnswer = messages.find(i => i.answer === true)
@@ -23,27 +24,9 @@ export default function InputMessage(props) {
     }
   }
 
-  function editDate(date) {
-    if (date < 10) return `0${date}`
-    else return date
-  }
-
-  function date() {
-
-    const newDate = new Date(); 
-
-    const date = `${editDate(newDate.getHours())}:
-    ${editDate(newDate.getMinutes())}
-    ${editDate(newDate.getDate())}.
-    ${editDate(newDate.getMonth())}.
-    ${newDate.getFullYear()}`; 
-
-    return date
-  }
-
   function changeTextMessage() {
 
-    editedMessages = copyMessages.map(i => {
+    editedMessages = messages.map(i => {
       if (i === idMasEd) {
         i.text = inputRef.current.value
         i.editText = false
@@ -56,15 +39,17 @@ export default function InputMessage(props) {
 
   function answerTo(response) {
 
-    copyMessages.unshift({username: 'Yulia', 
-    text: idMasAnswer.text, 
-    createdAt: date(), 
-    id: Date.now(), 
-    more: false, 
-    editText: false, 
-    answer: false, 
-    index: false, 
-    reply: response},) 
+    copyMessages.unshift({
+      username: 'Yulia', 
+      text: idMasAnswer.text, 
+      createdAt: new Date().toLocaleString(), 
+      id: Date.now(), 
+      more: false, 
+      editText: false, 
+      answer: false, 
+      index: false, 
+      reply: response},
+    ) 
 
     editedMessages = copyMessages.map(i => {
       if (i.index + 1) {
@@ -78,15 +63,17 @@ export default function InputMessage(props) {
 
   function newMessage(textMessage) {
     
-    copyMessages.unshift({username: 'Yulia', 
-    text: textMessage, 
-    createdAt: date(), 
-    id: Date.now(), 
-    more: false, 
-    editText: false, 
-    answer: false, 
-    index: false, 
-    reply: false},)  
+    copyMessages.unshift({
+      username: 'Yulia', 
+      text: textMessage, 
+      createdAt: new Date().toLocaleString(), 
+      id: Date.now(), 
+      more: false, 
+      editText: false, 
+      answer: false, 
+      index: false, 
+      reply: false},
+    )  
 
     editedMessages = copyMessages
     postData(editedMessages)

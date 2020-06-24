@@ -1,13 +1,15 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {useServer} from '../hooks/Server'
 import {useHttp} from '../hooks/http.hook'
+import {Context} from '../context/context'
 import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
-  const {loading, request, error} = useHttp()
+  const {request} = useHttp()
   const {removeData} = useServer()
   const {id, more} = props.message
-  const {messages, setMessages, message, inputRef, ind, setShowAnswer} = props
+  const {message, ind} = props
+  const {messages, setMessages, setShowAnswer, inputRef} = useContext(Context)
 
   function change(id, index) {
     if (!id) return button()
@@ -64,6 +66,7 @@ export default function EditMessage(props) {
         return i
       }
     })
+    setMessages(changeMas)
     return changeMas
   }
 
@@ -71,10 +74,18 @@ export default function EditMessage(props) {
     if (more) {
   	  return (
   	  	<div className="change-mes">
-  	  	  <button className="answer-mes" onClick={(id, index) => answer(message.id, ind)}>Відповісти</button>
+
+  	  	  <button className="answer-mes" 
+          onClick={(id, index) => answer(message.id, ind)}
+          >
+          Відповісти
+          </button>
+
   	  	  {change()}
+
   	  	  <button className="redirect-mes">Поділитись</button>
-  	  	  <button className="delete-mes" onClick={id, setMessages, msg => removeData(message.id, setMessages, messages)}>Видалити</button>
+  	  	  <button className="delete-mes" 
+          onClick={id, setMessages, msg => removeData(message.id, setMessages, messages)}>Видалити</button>
   	  	</div>
   	  )
     } else return <img src={iconMore} alt="icon-user"/>

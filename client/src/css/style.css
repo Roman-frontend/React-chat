@@ -223,7 +223,7 @@
       "icon message message ."
       ". reply reply .";
   margin: 1vh;
-  height: 3rem;
+  height: 5rem;
   left: 2rem;
 }
 
@@ -327,4 +327,6 @@ img.icon {
 
 .reply {
   grid-area: reply;
+  top: -1rem;
+  left: 1rem;
 }

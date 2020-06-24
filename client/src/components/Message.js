@@ -7,7 +7,6 @@ export default function Message(props) {
   const {message} = props
   const {username, text, createdAt, id, more} = props.message
   const {messages, setMessages} = useContext(Context)
-  const anything = []
 
   function moreEdit(id) {
     let changeMas = messages.map(i => {

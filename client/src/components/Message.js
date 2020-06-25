@@ -5,23 +5,23 @@ import iconPeople from '../images/icon-people.png'
 
 export default function Message(props) {
   const {message} = props
-  const {username, text, createdAt, id, more} = props.message
+  const {username, text, createdAt, id, listAction, reply} = props.message
   const {messages, setMessages} = useContext(Context)
 
   function moreEdit(id) {
-    let changeMas = messages.map(i => {
-      if (i.id === id) {
-        i.more = !i.more 
-        return i
+    let changeMas = messages.map(message => {
+      if (message.id === id) {
+        message.listAction = !message.listAction 
+        return message
       } else {
-        i.more = false
-        return i
+        message.listAction = false
+        return message
       }
     })
     setMessages(changeMas)
   }
 
-  function reply() {
+  function createMessageReply() {
     if (message.reply) return <div className="reply"><p>&#8593; {message.reply}</p></div>
     return true
   }
@@ -41,7 +41,6 @@ export default function Message(props) {
       <div className="more">
         <EditMessage 
           message={props.message}
-          ind={props.index}
          />
       </div>
 
@@ -49,7 +48,7 @@ export default function Message(props) {
         <p>{text}</p>
       </div>
 
-      {reply()}
+      {createMessageReply()}
     </div>
   )
 }

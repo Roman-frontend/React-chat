@@ -2,7 +2,8 @@ import React, {useState, useRef, useEffect} from 'react'
 import {useServer} from '../hooks/Server'
 import {Context} from '../context/context'
 import Message from './Message'
-import InputMessage from './InputMessage'
+import ButtonExitChangeMessage from './ButtonExitChangeMessage'
+import InputUpdateMessages from './InputUpdateMessages'
 import iconPeople from '../images/icon-people.png'
 
 
@@ -11,6 +12,7 @@ export default function Messages(props) {
   const [messages, setMessages] = useState([])
   const {getData} = useServer()
   const [showAnswer, setShowAnswer] = useState(false)
+  const [showButtonExit, setShowButtonExit] = useState(false)
   let mes = []
   
   useEffect(() => {
@@ -18,52 +20,28 @@ export default function Messages(props) {
     getData(setMessages)
   }, [])
 
-  function hideButton(push=false) {
-    let ifTrue = false
-    const changeMas = messages.map(i => {
-      if (i.editText) {
-        if (push) {i.editText = !i.editText; inputRef.current.value = ""}
-        ifTrue = true
-        return i
-      } else return i
-    })
-    if (ifTrue) setMessages(changeMas)
-  }
-
-  function fieldAnswer() {
-    const answerTo = messages.find(i => i.index !== false)
+  function fieldAnswerTo() {
+    const answerTo = messages.find(message => message.answer !== false)
     if (answerTo) {
-      hideButton()
+      if (showButtonExit) { setShowButtonExit(false) }
       return (<div className="field-answer" style={{display: 'block'}}>
-          <p>{answerTo.text}</p>
-        </div>)
+        <p>{answerTo.text}</p>
+      </div>)
     } else return <div className="field-answer" style={{display: 'none'}}></div>
   }
 
   function renderMessages(messages) {
 
-    return messages.map((msg, index) => {
+    return messages.map((message, index) => {
       return ( 
       <Message key={messages[index].id} 
-        message={msg} 
-        index={index} 
+        message={message} 
       />)
     })
   }
 
-  function buttonTextEdit() {
-    const idMasEd = messages.find((i) => i.editText === true)
-      
-    if (idMasEd) {
-      return <button className="button-text-edit" onClick={push => hideButton(true)}>X</button>
-    } else return true
-  }
-
-
   return (
-//З допомогою Context.provider з допомогою якого ми передаватимемо на дочерні елементи різні значення
-//Передаєм йому значення value куди оприділяємо обєкт який міститиме в собі функції дозволяючий змінити головний стан
-    <Context.Provider value={{messages, setMessages, showAnswer, setShowAnswer, inputRef}}>
+    <Context.Provider value={{messages, setMessages, showAnswer, setShowAnswer, inputRef, showButtonExit, setShowButtonExit}}>
       <div className="right-block"
       style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
         <div className="nick-people">
@@ -71,13 +49,13 @@ export default function Messages(props) {
            ✩ Yulia
           </b>
         </div>
-        {fieldAnswer()}
         <div className="chat-with-people">
         {renderMessages(messages)}
         </div>
+        {fieldAnswerTo()}
         <div className="field-for-message">
-          <InputMessage />
-          {buttonTextEdit()}
+          <InputUpdateMessages />
+          <ButtonExitChangeMessage />
         </div>
       </div>
     </Context.Provider>

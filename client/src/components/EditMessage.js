@@ -7,76 +7,61 @@ import iconMore from '../images/icon-more.png'
 export default function EditMessage(props) {
   const {request} = useHttp()
   const {removeData} = useServer()
-  const {id, more} = props.message
-  const {message, ind} = props
-  const {messages, setMessages, setShowAnswer, inputRef} = useContext(Context)
+  const {id} = props.message
+  const {message} = props
+  const {messages, setMessages, setShowAnswer, inputRef, setShowButtonExit} = useContext(Context)
 
-  function change(id, index) {
-    if (!id) return button()
-    const resultChange = changeMessages()
+  function change(id) {
+    if (!id) {
+      return ( <button className="edit-mes" 
+        onClick={(id) => change(id)}>
+        Змінити</button> )
+    }
+
+    setMessages(changeMessages())
     setShowAnswer(false)
-    setMessages(resultChange)
-    if (!resultChange[index].editText) inputRef.current.value = ""
-    return button()
+    debugger
   }
 
-  function answer(id, index) {
-    const answerTo = messages.map(i => {
-      if (i.id === id) {
-        i.answer = !i.answer
-        setShowAnswer(i.answer)
-        i.editText = false
-        i.more = false
-        if (i.answer) {
-          i.index = index
-        } else {
-          i.index = false
-        }
-        return i
+  function answer(id) {
+    const answerTo = messages.map(message => {
+      if (message.id === id) {
+        message.answer = !message.answer
+        message.changed = false
+        setShowAnswer(message.answer)
+        return message
       } else { 
-        i.answer = false
-        i.editText = false
-        return i
+        message.answer = false
+        message.changed = false
+        return message
       }
     })
     setMessages(answerTo)
     inputRef.current.value = ""
   }
 
-  function button() {
-    return (
-      <button className="edit-mes" 
-      onClick={(id, index) => change(message.id, ind)}
-      >Змінити</button>
-    )
-  }
-
   function changeMessages() {
-    const changeMas = messages.map(i => {
-      if (i.id === id) {
-        i.editText = !i.editText;
-        i.more = false
-        i.answer = false
-        i.index = false
-        inputRef.current.value = i.text
-        return i
+    const changeMas = messages.map(message => {
+      if (message.id === id) {
+        message.changed = !message.changed;
+        message.answer = false
+        inputRef.current.value = message.text
+        return message
       } else {
-        i.answer = false
-        i.index = false
-        return i
+        message.answer = false
+        return message
       }
     })
-    setMessages(changeMas)
     return changeMas
   }
 
   function sets() {
-    if (more) {
+    if (message.listAction) {
   	  return (
   	  	<div className="change-mes">
 
   	  	  <button className="answer-mes" 
-          onClick={(id, index) => answer(message.id, ind)}
+          onClick={(id) => answer(message.id)}
           >
           Відповісти
           </button>
@@ -85,7 +70,7 @@ export default function EditMessage(props) {
 
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" 
-          onClick={id, setMessages, msg => removeData(message.id, setMessages, messages)}>Видалити</button>
+          onClick={id, setMessages, msg => removeData(id, setMessages, messages)}>Видалити</button>
   	  	</div>
   	  )
     } else return <img src={iconMore} alt="icon-user"/>

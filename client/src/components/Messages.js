@@ -12,7 +12,6 @@ export default function Messages(props) {
   const {getData} = useServer()
   const [showAnswer, setShowAnswer] = useState(false)
   let mes = []
-  const a = []
   
   useEffect(() => {
     inputRef.current.focus()

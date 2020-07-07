@@ -8,8 +8,12 @@ export default function Message(props) {
   const {username, text, createdAt, id, listAction, reply} = props.message
   const {messages, setMessages} = useContext(Context)
 
-  function moreEdit(id) {
-    let changeMas = messages.map(message => {
+  /**
+  *Змінює значення свойства listAction яке
+  *відповідає за появу чи зникання списку дій над повідомленням
+  */
+  function moreEdit() {
+    const changeMas = messages.map(message => {
       if (message.id === id) {
         message.listAction = !message.listAction 
         return message
@@ -21,6 +25,7 @@ export default function Message(props) {
     setMessages(changeMas)
   }
 
+  /**Створює поле відповіді на повідомлення з текстом відповіді*/
   function createMessageReply() {
     if (message.reply) return <div className="reply"><p>&#8593; {message.reply}</p></div>
     return true
@@ -30,7 +35,7 @@ export default function Message(props) {
   return (
     <div 
     className={ message.reply ? "container-reply" : "container" } 
-    onClick={id => moreEdit(message.id)}>
+    onClick={id => moreEdit()}>
       <div className="icon">
         <img src={iconPeople} alt="icon-user"/>
       </div>

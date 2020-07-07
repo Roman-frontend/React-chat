@@ -1,21 +1,27 @@
 import React, {useContext} from 'react'
 import {useServer} from '../hooks/Server'
-import {useHttp} from '../hooks/http.hook'
 import {Context} from '../context/context'
 import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
-  const {request} = useHttp()
-  const {removeData} = useServer()
-  const {id} = props.message
-  const {message} = props
-  const {messages, setMessages, setShowAnswer, inputRef, setShowButtonExit} = useContext(Context)
+  const {removeData} = useServer();
+  const {id} = props.message;
+  const {message} = props;
+  const {
+    messages, 
+    setMessages, 
+    setShowAnswer, 
+    inputRef, 
+    showButtonExit, 
+    setShowButtonExit
+  } = useContext(Context);
 
   function change(id) {
     if (!id) {
-      return ( <button className="edit-mes" 
-        onClick={(id) => change(id)}>
-        Змінити</button> )
+      return (
+        <button className="edit-mes" onClick={(id) => change(id)}>
+        Змінити</button>
+        );
     }
 
     setMessages(changeMessages())
@@ -36,6 +42,7 @@ export default function EditMessage(props) {
         return message
       }
     })
+    if (showButtonExit) setShowButtonExit(false)
     setMessages(answerTo)
     inputRef.current.value = ""
   }
@@ -55,6 +62,7 @@ export default function EditMessage(props) {
     return changeMas
   }
 
+  /**Визначає показувати список для дій над повідомленням чи значак для активації списку */
   function sets() {
     if (message.listAction) {
   	  return (

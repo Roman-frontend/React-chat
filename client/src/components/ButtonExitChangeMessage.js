@@ -3,24 +3,22 @@ import {Context} from '../context/context'
 
 export default function ButtonExitChangeMessage(props) {
 
-  const {messages, setMessages, setShowAnswer, inputRef, showButtonExit, setShowButtonExit} = useContext(Context)
+  const {messages, setMessages, inputRef, showButtonExit, setShowButtonExit} = useContext(Context)
   const messageChanging = messages.find((message) => message.changed === true)
 
   function hideButtonExit() {
-  	if (showButtonExit) {
-      const changeMas = messages.map(message => {
-        if (message.changed) {
-          message.changed = !message.changed 
-          return message
-        } else return message
-      })
-      inputRef.current.value = ""
-      if (changeMas) setMessages(changeMas)
-    }
+    const changeMessages = messages.map(message => {
+      if (message.changed) {
+        message.changed = !message.changed 
+        return message
+      } else return message
+    })
+    inputRef.current.value = ""
+    setMessages(changeMessages)
   }
   
 
-  if (messageChanging + 1) {
+  if (messageChanging !== undefined) {
     setShowButtonExit(true)
     return <button className="button-text-edit" onClick={hideButtonExit}>X</button>
   } else return true

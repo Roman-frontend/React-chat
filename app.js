@@ -1,8 +1,9 @@
 const express = require('express')
 const path = require('path')
 const config = require('config')
-
+const mongoose = require('mongoose')
 const app = express()
+
 const PORT = config.get('port') || 5000
 
 app.use(express.json({extended: true}))
@@ -36,11 +37,27 @@ app.put('/api/contacts/:id', (req, res) => {
   res.json(MESSAGES[idx])
 })
 
-app.use(express.static(path.resolve(__dirname, 'client', "src", "component")))
+// /api - буде префікс для будь якого запиту, /auth - для роботи з авторизацією, 2-й параметр шлях до route що оброблятиме авторизацію
+app.use('/api/auth', require('./routes/auth.routes'))
+
+app.use(express.static(path.resolve(__dirname, 'client', "src", "components")))
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client', 'index.html'))
 })
 
-app.listen(PORT, () => console.log(`Server has been started on port ${PORT}...`))
+async function start() {
+  try {
+    await mongoose.connect(config.get('mongoUri'), {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true
+    })
+    app.listen(PORT, () => console.log(`Server has been started on port ${PORT}...`))
+  } catch (e) {
+    console.log("Чтото пошло не так ", e.message)
+    process.exit(1)
+  }
+}
 
+start()

@@ -8,40 +8,59 @@ import iconPeople from '../images/icon-people.png'
 
 
 export default function Messages(props) {
+  const [messages, setMessages] = useState([]);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [showButtonExit, setShowButtonExit] = useState(false);
   const inputRef = useRef(null);
-  const [messages, setMessages] = useState([])
-  const {getData} = useServer()
-  const [showAnswer, setShowAnswer] = useState(false)
-  const [showButtonExit, setShowButtonExit] = useState(false)
-  let mes = []
+  const {getData} = useServer();
   
   useEffect(() => {
-    inputRef.current.focus()
-    getData(setMessages)
-  }, [])
-
+    inputRef.current.focus();
+    /**
+    *Отримує з бази даних масив даних для опису повідомлень
+    *@param {setMessages} метод для зміни стану messages
+    */
+    getData(setMessages);
+  }, []);
+  
+  /**
+  *Показує поле з повідомленням на яке відповідає користувач
+  *якщо в масиві повідомлень messages є повідомлення для відповіді 
+  */
   function fieldAnswerTo() {
-    const answerTo = messages.find(message => message.answer !== false)
+    const answerTo = messages.find(message => message.answer === true);
     if (answerTo) {
-      if (showButtonExit) { setShowButtonExit(false) }
+      /**@return поле повідомлення на яке відповідає користувач*/
       return (<div className="field-answer" style={{display: 'block'}}>
         <p>{answerTo.text}</p>
-      </div>)
-    } else return <div className="field-answer" style={{display: 'none'}}></div>
+      </div>);
+    }
   }
 
+  /**
+  *Створює список повідомлень з масиву messages
+  *@param {messages} масив обєктів зі значеннями для створення списку повідомлень 
+  */
   function renderMessages(messages) {
-
     return messages.map((message, index) => {
+      /**@return повідомлення користувача */
       return ( 
       <Message key={messages[index].id} 
         message={message} 
-      />)
+      />);
     })
   }
 
   return (
-    <Context.Provider value={{messages, setMessages, showAnswer, setShowAnswer, inputRef, showButtonExit, setShowButtonExit}}>
+    <Context.Provider value={{
+      messages, 
+      setMessages, 
+      showAnswer, 
+      setShowAnswer, 
+      inputRef, 
+      showButtonExit, 
+      setShowButtonExit
+    }}>
       <div className="right-block"
       style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
         <div className="nick-people">

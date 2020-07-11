@@ -69,7 +69,7 @@ export default function InputUpdateMessages(props) {
       listAction: false, 
       changed: false, 
       answer: false, 
-      reply: false},
+      reply: ""},
     )  
 
     updatedArrayMessages = copyMessages

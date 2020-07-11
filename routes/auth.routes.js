@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 /**Дозволяє перевіряти прийшовші дані на коректність */
 const {check, validationResult} = require('express-validator')
 /**Дозволяє створити token для авторизації користувача */
+const config = require('config')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User.js')
 const router = Router()
@@ -36,7 +37,7 @@ router.post(
     const candidate = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
 
     if(candidate) {
-      res.status(400).json("Такой пользователь уже существует")
+      res.status(400).json({message: "Такой пользователь уже существует"})
     }
 
     /**якщо email не існує то .hash() хешуємо пароль, 12 - дозволяє ще білльше зашифрувати пароль */
@@ -91,11 +92,16 @@ router.post(
 
     /**Робимо авторизацію користувача */
     const token = jwt.sign(
-      {user.id: user.id},
-      
-      )
+      /**вказуємо дані що будуть зашифровані в jwt token */
+      {userId: user.id},
+      /**секретний ключ з папки config*/
+      config.get('jwtSecret'),
+      /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
+      { expiresIn: '1h'}
+    )
 
-    res.status(201).json({message : 'Вхід зроблено'})
+    res.json({token, userId: user.id})
+
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})
   }

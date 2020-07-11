@@ -31,6 +31,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.20",
     "nodemon": "^2.0.4",
+    "proxy": "^1.0.2",
     "uuid": "^8.1.0"
   }
 }

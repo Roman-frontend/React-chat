@@ -16,17 +16,9 @@ export default function EditMessage(props) {
     setShowButtonExit
   } = useContext(Context);
 
-  function change(id) {
-    if (!id) {
-      return (
-        <button className="edit-mes" onClick={(id) => change(id)}>
-        Змінити</button>
-        );
-    }
-
+  function change() {
     setMessages(changeMessages())
     setShowAnswer(false)
-    debugger
   }
 
   function answer(id) {
@@ -74,7 +66,9 @@ export default function EditMessage(props) {
           Відповісти
           </button>
 
-  	  	  {change()}
+  	  	  <button className="edit-mes" onClick={change}>
+            Змінити
+          </button>
 
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" 

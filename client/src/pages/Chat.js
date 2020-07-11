@@ -4,7 +4,7 @@ import Profile from '../components/Profile'
 import Messages from '../components/Messages'
 import SetUser from '../components/SetUser'
 
-export default function Chat() {
+export const Chat = () => {
 	return (
     <div className="class-page">
       <Search/>

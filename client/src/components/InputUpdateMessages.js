@@ -25,16 +25,18 @@ export default function InputUpdateMessages(props) {
   }
 
   function changeMessageText() {
+    let putMessage = []
 
     updatedArrayMessages = messages.map(message => {
       if (message === changedMessage) {
         message.text = inputRef.current.value
         message.changed = false
+        putMessage.push(message)
         return message
       } else return message
     })
-
-    putData(changedMessage.id, setMessages, messages)
+    
+    putData(putMessage[0], changedMessage._id, setMessages, messages)
   }
 
   function messageInReply(response) {
@@ -43,7 +45,7 @@ export default function InputUpdateMessages(props) {
       username: 'Yulia', 
       text: answerTo.text, 
       createdAt: new Date().toLocaleString(), 
-      id: Date.now(), 
+      _id: Date.now(), 
       listAction: false, 
       changed: false, 
       answer: false, 
@@ -56,7 +58,7 @@ export default function InputUpdateMessages(props) {
         return message
       } else return message
     })       
-    postData(updatedArrayMessages)
+    postData(updatedArrayMessages, setMessages)
   }
 
   function newMessage(textMessage) {
@@ -65,15 +67,15 @@ export default function InputUpdateMessages(props) {
       username: 'Yulia', 
       text: textMessage, 
       createdAt: new Date().toLocaleString(), 
-      id: Date.now(), 
+      _id: Date.now(), 
       listAction: false, 
       changed: false, 
       answer: false, 
-      reply: false},
+      reply: ""},
     )  
 
     updatedArrayMessages = copyMessages
-    postData(updatedArrayMessages)
+    postData(updatedArrayMessages, setMessages)
   }
 
   return <input type="text" className="input-message" placeholder="Enter Text" ref={inputRef} onKeyUp={event => inputUpdateMessages(event)}/>

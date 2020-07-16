@@ -9,13 +9,15 @@ export const useHttp = () => {
     try {
 
       if (body) {
+        /**передаємо body на сервер як строку а не обєкт */
         body = JSON.stringify(body)
+        /**Щоб на сервері пирйняти json */
         headers['Content-Type'] = 'application/json'
       }
       const response = await fetch(url, {method, body, headers})
       const data = await response.json()
 
-      if(!response.ok) {
+      if (!response.ok) {
       	throw new Error(data.message || 'Щось пішло не так ')
       }
 
@@ -30,7 +32,7 @@ export const useHttp = () => {
     }
   }, [])
 
-  const clearError = () => setError(null)
+  const clearError = useCallback(() => setError(null), [])
 
-  return { loading, request, error }
+  return { loading, request, error, clearError}
 }

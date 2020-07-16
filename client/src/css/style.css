@@ -1,9 +1,10 @@
 
+
 .class-page {
   position: relative;
   display: grid;
   grid-template-columns: 16rem auto;
-  grid-auto-rows: minmax(2.6rem, auto);
+  grid-auto-rows: minmax(9.9vh, auto);
   grid-template-areas:
     "search search"
     "leftblock rightblock";
@@ -279,6 +280,7 @@ img.icon {
 }
 
 .message {
+  word-break: break-all;
   grid-area: message;
   margin: 0rem;
   top: -0.8rem;
@@ -329,4 +331,86 @@ img.icon {
   grid-area: reply;
   top: -1rem;
   left: 1rem;
+}
+
+/*@import "~materialize-css/dist/css/materialize.min.css"; */
+.yellow-input {
+  padding: 0;
+  height: 2.3rem;
+  width: 27rem;
+  border-bottom: 0.2rem solid white;
+}
+/*
+input.yellow-input + label {
+  color: #ffffff;
+}
+
+input.yellow-input:focus + label {
+  color: #ffeb3b;
+}
+
+input.yellow-input:focus {
+  border-bottom: 1px solid #ffeb3b;
+  box-shadow: 0 1px 0 0 #ffeb3b;
+}*/
+
+.log-out {
+  background: #fff;
+  color: red;
+}
+
+.auth-field {
+  background: #6a1b9a;
+  padding: 0.5rem;
+  width: 28rem;
+  height: 12rem;
+  position: relative;
+  left: 27rem;
+  top: 3rem;
+  border-radius: 0.4rem;
+}
+
+.card-content {
+
+}
+
+.card-title {
+  color: white;
+  left: 7rem;
+  font-size: 2.5rem;
+  position: relative;
+}
+
+.auth-text {
+  color: #fff;
+}
+
+.input-field {
+
+}
+
+.btn-1 {
+  margin: 1rem 2rem;
+  height: 2rem;
+  background: orange;
+  border-radius: 0.4rem;
+  width: 5rem;
+}
+
+.btn-2 {
+  height: 2rem;
+  border-radius: 0.4rem;
+  width: 9rem;
+}
+
+
+.colore {
+  margin: 0;
+  left: 5rem;
+  padding: 0rem 35rem;
+}
+
+.b {
+  height: 40rem;
+  overflow-y: auto;
 }

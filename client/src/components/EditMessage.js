@@ -1,31 +1,29 @@
 import React, {useContext} from 'react'
 import {useServer} from '../hooks/Server'
-import {useHttp} from '../hooks/http.hook'
 import {Context} from '../context/context'
 import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
-  const {request} = useHttp()
-  const {removeData} = useServer()
-  const {id} = props.message
-  const {message} = props
-  const {messages, setMessages, setShowAnswer, inputRef, setShowButtonExit} = useContext(Context)
+  const {removeData} = useServer();
+  const {_id} = props.message;
+  const {message} = props;
+  const {
+    messages, 
+    setMessages, 
+    setShowAnswer, 
+    inputRef, 
+    showButtonExit, 
+    setShowButtonExit
+  } = useContext(Context);
 
-  function change(id) {
-    if (!id) {
-      return ( <button className="edit-mes" 
-        onClick={(id) => change(id)}>
-        Змінити</button> )
-    }
-
+  function change() {
     setMessages(changeMessages())
     setShowAnswer(false)
-    debugger
   }
 
-  function answer(id) {
+  function answer(_id) {
     const answerTo = messages.map(message => {
-      if (message.id === id) {
+      if (message._id === _id) {
         message.answer = !message.answer
         message.changed = false
         setShowAnswer(message.answer)
@@ -36,13 +34,14 @@ export default function EditMessage(props) {
         return message
       }
     })
+    if (showButtonExit) setShowButtonExit(false)
     setMessages(answerTo)
     inputRef.current.value = ""
   }
 
   function changeMessages() {
     const changeMas = messages.map(message => {
-      if (message.id === id) {
+      if (message._id === _id) {
         message.changed = !message.changed;
         message.answer = false
         inputRef.current.value = message.text
@@ -55,22 +54,25 @@ export default function EditMessage(props) {
     return changeMas
   }
 
+  /**Визначає показувати список для дій над повідомленням чи значак для активації списку */
   function sets() {
     if (message.listAction) {
   	  return (
   	  	<div className="change-mes">
 
   	  	  <button className="answer-mes" 
-          onClick={(id) => answer(message.id)}
+          onClick={(_id) => answer(message._id)}
           >
           Відповісти
           </button>
 
-  	  	  {change()}
+  	  	  <button className="edit-mes" onClick={change}>
+            Змінити
+          </button>
 
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" 
-          onClick={id, setMessages, msg => removeData(id, setMessages, messages)}>Видалити</button>
+          onClick={_id, setMessages, msg => removeData(_id, setMessages, messages)}>Видалити</button>
   	  	</div>
   	  )
     } else return <img src={iconMore} alt="icon-user"/>

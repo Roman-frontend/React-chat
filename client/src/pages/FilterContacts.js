@@ -1,8 +1,20 @@
 import React from 'react'
 
 export const FilterContacts = () => {
-	  let readyListContacts = []
+  console.log('FilterContacts')
 
+  function compareNambers() {
+  	const listContacts = prompt('введите штото')
+    if (!listContacts) return null
+
+    const arrayNumbers = createArrayNumbers(listContacts)
+    const arrayShortNumbers = cutNumbers(arrayNumbers)
+    const readyList = finishedListNumbers(arrayShortNumbers).join('\n-')
+
+    return finishedListNumbers(arrayShortNumbers).map(i => {
+      return <p key={Date.now} className="colore">{i}</p>
+    })
+  }
 
   function cutNumbers(arr) { 
     const listReducedNumbers = arr.map(element => {
@@ -14,12 +26,13 @@ export const FilterContacts = () => {
         return element.slice(2, 11)
       } else return element
     })
-    readyListContacts = listReducedNumbers
+
     return listReducedNumbers
   }
 
   function createArrayNumbers(listNumbers) {
     let numEl = ''
+
     for (let element of listNumbers) {
       if ( element === '0') {
         numEl +=  element
@@ -30,11 +43,8 @@ export const FilterContacts = () => {
       }
     }
 
-    readyListContacts = numEl.split(' ')
-    return readyListContacts
+    return numEl.split(' ')
   }
-
-  let l = false
 
   function finishedListNumbers(listContacts) {
     let arrayShortNumbers = listContacts
@@ -42,7 +52,9 @@ export const FilterContacts = () => {
     for (let index in arrayShortNumbers) {
       for (let secendIndex in arrayShortNumbers) {
 
-        if ((arrayShortNumbers[index] === arrayShortNumbers[secendIndex]) && (index !== secendIndex) && (arrayShortNumbers[index] !== undefined)) {
+        if ((arrayShortNumbers[index] === arrayShortNumbers[secendIndex]) && 
+        (index !== secendIndex) && 
+        (arrayShortNumbers[index] !== undefined)) {
           arrayShortNumbers.splice(index, 1)
         }
       }
@@ -51,21 +63,28 @@ export const FilterContacts = () => {
     return arrayShortNumbers
   }
 
-  function compareNambers() {
-    let listContacts = prompt('введите штото')
+  return <div className="b">{compareNambers()}</div>
+}
 
-    const arrayNumbers = createArrayNumbers(listContacts)
-    const arrayShortNumbers = cutNumbers(arrayNumbers)
-    const readyList = finishedListNumbers(arrayShortNumbers).join('\n-')
-    console.log(readyList)
-    return finishedListNumbers(arrayShortNumbers).map(i => {
-      return <p className="colore">{i}</p>
-    })
-  }
 
-/*  let numbersNames = []
 
-  function listContacts(listNumbers) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*function createArrayNumbersWithNames(listNumbers) {
     let yes = ''
     let numEl = ''
     let a = []
@@ -87,9 +106,3 @@ export const FilterContacts = () => {
     }
     return a
   }*/
-	return (
-      <div className="b">
-        {compareNambers()}
-      </div>
-	);
-}

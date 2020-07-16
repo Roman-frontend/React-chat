@@ -7,7 +7,6 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "materialize-css": "^1.0.0-rc.2",
-    "proxy": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -22,7 +21,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:5000/",
+  "proxy": "http://localhost:5000",
   "browserslist": {
     "production": [
       ">0.2%",

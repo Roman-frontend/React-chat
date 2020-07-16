@@ -5,7 +5,7 @@ import iconPeople from '../images/icon-people.png'
 
 export default function Message(props) {
   const {message} = props
-  const {username, text, createdAt, id, listAction, reply} = props.message
+  const {username, text, createdAt, _id, listAction, reply} = props.message
   const {messages, setMessages} = useContext(Context)
 
   /**
@@ -14,7 +14,7 @@ export default function Message(props) {
   */
   function moreEdit() {
     const changeMas = messages.map(message => {
-      if (message.id === id) {
+      if (message._id === _id) {
         message.listAction = !message.listAction 
         return message
       } else {
@@ -35,7 +35,7 @@ export default function Message(props) {
   return (
     <div 
     className={ message.reply ? "container-reply" : "container" } 
-    onClick={id => moreEdit()}>
+    onClick={_id => moreEdit()}>
       <div className="icon">
         <img src={iconPeople} alt="icon-user"/>
       </div>

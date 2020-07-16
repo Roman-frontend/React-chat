@@ -1,6 +1,7 @@
 import React from 'react'
 import {Chat} from './pages/Chat.js'
 import {FilterContacts} from './pages/FilterContacts.js'
+import WorkSpace from './pages/WorkSpace.js'
 import {Switch, Route, Redirect} from 'react-router-dom'
 import {AuthPage} from './pages/AuthPage'
 
@@ -8,17 +9,13 @@ export const useRoutes = isAuthenticated => {
   if (isAuthenticated) {
     return (
       <Switch>
-        /**За шляхом /chat відкриватиметься компонент Messages*/
-        <Route path="/chat" exact>
+        <Route exact path="/chat" >
           <Chat />
         </Route>
-        <Route path="/filterContacts" exact>
+        <Route exact path="/filterContacts" >
           <FilterContacts />
         </Route>
-        /**Якщо авторизований користувач на неоприділений глях */
-        <Route path="/">
-          <Chat />
-        </Route>
+        <Route component={Chat} />
       </Switch>
     )
   }
@@ -28,8 +25,7 @@ export const useRoutes = isAuthenticated => {
       <Route path="/" exact>
         <AuthPage />
       </Route>
-      /**Якщо неавторизований користувач на неоприділений глях */
-      <Redirect to="/" />
+      <Route component={AuthPage} />
     </Switch>
   )
 }

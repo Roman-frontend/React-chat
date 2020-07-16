@@ -4,7 +4,7 @@ import {Context} from '../context/context'
 export default function ButtonExitChangeMessage(props) {
 
   const {messages, setMessages, inputRef, showButtonExit, setShowButtonExit} = useContext(Context)
-  const messageChanging = messages.find((message) => message.changed === true)
+  const messageChanging = messages.find(message => message.changed === true)
 
   function hideButtonExit() {
     const changeMessages = messages.map(message => {

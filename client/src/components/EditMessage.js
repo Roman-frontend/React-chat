@@ -5,7 +5,7 @@ import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
   const {removeData} = useServer();
-  const {id} = props.message;
+  const {_id} = props.message;
   const {message} = props;
   const {
     messages, 
@@ -21,9 +21,9 @@ export default function EditMessage(props) {
     setShowAnswer(false)
   }
 
-  function answer(id) {
+  function answer(_id) {
     const answerTo = messages.map(message => {
-      if (message.id === id) {
+      if (message._id === _id) {
         message.answer = !message.answer
         message.changed = false
         setShowAnswer(message.answer)
@@ -41,7 +41,7 @@ export default function EditMessage(props) {
 
   function changeMessages() {
     const changeMas = messages.map(message => {
-      if (message.id === id) {
+      if (message._id === _id) {
         message.changed = !message.changed;
         message.answer = false
         inputRef.current.value = message.text
@@ -61,7 +61,7 @@ export default function EditMessage(props) {
   	  	<div className="change-mes">
 
   	  	  <button className="answer-mes" 
-          onClick={(id) => answer(message.id)}
+          onClick={(_id) => answer(message._id)}
           >
           Відповісти
           </button>
@@ -72,7 +72,7 @@ export default function EditMessage(props) {
 
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" 
-          onClick={id, setMessages, msg => removeData(id, setMessages, messages)}>Видалити</button>
+          onClick={_id, setMessages, msg => removeData(_id, setMessages, messages)}>Видалити</button>
   	  	</div>
   	  )
     } else return <img src={iconMore} alt="icon-user"/>

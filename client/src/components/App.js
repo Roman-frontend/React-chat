@@ -14,9 +14,9 @@ export default function App() {
   	  login, logout, token, userId, isAuthenticated
   	}}>
   	  <Router>
-        <>
+        <div>
 	        {routes}
-        </>
+        </div>
       </Router>
     </AuthContext.Provider>
   );

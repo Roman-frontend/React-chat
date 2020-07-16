@@ -41,11 +41,11 @@ export default function Messages(props) {
   *Створює список повідомлень з масиву messages
   *@param {messages} масив обєктів зі значеннями для створення списку повідомлень 
   */
-  function renderMessages(messages) {
+  function renderMessages() {
     return messages.map((message, index) => {
       /**@return повідомлення користувача */
       return ( 
-      <Message key={messages[index].id} 
+      <Message key={messages[index]._id} 
         message={message} 
       />);
     })
@@ -69,7 +69,7 @@ export default function Messages(props) {
           </b>
         </div>
         <div className="chat-with-people">
-        {renderMessages(messages)}
+        {renderMessages()}
         </div>
         {fieldAnswerTo()}
         <div className="field-for-message">

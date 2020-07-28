@@ -13,12 +13,12 @@ export const useServer = (props) => {
     } catch (e) {console.log(e.message, ", -  get-запит в catch попала помилка")}
   }
 
-  const postData = async (id, messages, setMessages) => {
+  const postData = async (_id, messages, setMessages) => {
     try {
-      const data = await request(`/api/chat/post-message${id}`, "POST", {...messages[0]})
+      const data = await request(`/api/chat/post-message${_id}`, "POST", {...messages[0]})
       setMessages(data.messages.reverse())
 
-    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка")}
+    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 
   const putData = async (putMessage, _id, setMessages, messages) => {

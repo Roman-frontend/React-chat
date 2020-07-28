@@ -69,7 +69,6 @@ export default function InputUpdateMessages(props) {
       username: name, 
       text: textMessage, 
       createdAt: new Date().toLocaleString(), 
-      _id: Date.now(), 
       listAction: false, 
       changed: false, 
       answer: false, 

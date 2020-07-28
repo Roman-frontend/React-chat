@@ -5,8 +5,8 @@ const mongoose = require('mongoose')
 
 const app = express()
 
-/**дозволить коректно парсити body який приходить з фронтента бо по замовчуванні node js сприймає body як 
-стріми(потік даних) - тобто як дані з фронтента що передаються частинами що не дозволить прочитати їх*/
+//дозволить коректно парсити body який приходить з фронтента бо по замовчуванні node js сприймає body як 
+//стріми(потік даних) - тобто як дані з фронтента що передаються частинами що не дозволить прочитати їх
 app.use(express.json({extended: true}))
 
 app.use(express.json())
@@ -31,7 +31,7 @@ async function start() {
     await mongoose.connect(config.get('mongoUri'), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      //useCreateIndex: true
+      useCreateIndex: true
     })
     app.listen(PORT, () => console.log(`Server has been started on port ${PORT}...`))
   } catch (e) {

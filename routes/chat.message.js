@@ -67,11 +67,13 @@ router.post(
   '/post-message:_id', [],
   async (req, res) => {
   try {
+    console.log(req.body)
     const createdMessage = await createMessage(req.body)
     console.log('createdMessage - ', createdMessage)
-    const addingMessageToUser = await addMessageToUser(req.params._id, createdMessage)
+    //const addingMessageToUser = await addMessageToUser(req.params._id, createdMessage)
+    res.status(201).json({message : 'Повідомлення змінене'})
   } catch (e) {
-  	res.status(500).json({message: "Что-то пошло не так "})
+  	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }
 })
 

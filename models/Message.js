@@ -1,7 +1,8 @@
 const {Schema, model} = require('mongoose')
+const User = require('./User.js')
 
 /** Модель повідомлення */
-const schema = new Schema({
+const Message = new Schema({
   username: {type: String, required: true},
   text: {type: String, required: true},
   /** default: Date.now - вказує дату по замовчуванні*/
@@ -13,6 +14,12 @@ const schema = new Schema({
   listAction: {type: Boolean, default: false }, 
   changed: {type: Boolean, default: false }, 
   answer: {type: Boolean, default: false }, 
+  userId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ]
 })
 
 /**
@@ -20,4 +27,4 @@ const schema = new Schema({
 * @params - Первый аргумент - уникальное имя создаваемой для модели коллекции(Mongoose создаст коллекцию для модели Message),
 * @params - Второй аргумент - схема, которая используется для создания модели.
 */
-module.exports = model('Message', schema)
+module.exports = model('Message', Message)

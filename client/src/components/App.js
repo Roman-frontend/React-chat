@@ -6,12 +6,12 @@ import {AuthContext} from '../context/AuthContext.js'
 //import 'materialize-css'
 
 export default function App() {
-  const {login, logout, token, userId} = useAuth()
+  const {login, logout, name, token, userId} = useAuth()
   const isAuthenticated = !!token
   const routes = useRoutes(isAuthenticated)
   return (
   	<AuthContext.Provider value={{
-  	  login, logout, token, userId, isAuthenticated
+  	  login, logout, name, token, userId, isAuthenticated
   	}}>
   	  <Router>
         <div>

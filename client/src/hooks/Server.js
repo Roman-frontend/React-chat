@@ -4,18 +4,18 @@ export const useServer = (props) => {
 
   const {request} = useHttp()
 
-  const getData = async (setMessages) => {
+  const getData = async (id, setMessages) => {
     try {
-      const data = await request('/api/chat/get-messages')
+      const data = await request(`/api/chat/get-messages${id}`)
       if (!data.messages) return setMessages([])
       setMessages(data.messages.reverse())
       return data.messages
     } catch (e) {console.log(e.message, ", -  get-запит в catch попала помилка")}
   }
 
-  const postData = async (messages, setMessages) => {
+  const postData = async (id, messages, setMessages) => {
     try {
-      const data = await request('/api/chat/post-message', "POST", {...messages[0]})
+      const data = await request(`/api/chat/post-message${id}`, "POST", {...messages[0]})
       setMessages(data.messages.reverse())
 
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка")}
@@ -30,8 +30,9 @@ export const useServer = (props) => {
     setMessages(updated.messages.reverse())
   }
 
-  const removeData = async (_id, setMessages, msg) => {
-    const message = await request(`/api/chat/delete-message${_id}`, 'DELETE')
+  const removeData = async (userId, setMessages, msg, _id, messagge) => {
+    console.log('messageId - ', _id)
+    const message = await request(`/api/chat/delete-message${userId}/message${_id}`, 'DELETE', messagge)
     const filteredMessage = msg.filter(c => c._id !== _id)
     setMessages(filteredMessage)
   }

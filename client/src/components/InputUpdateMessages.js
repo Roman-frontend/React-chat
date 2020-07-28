@@ -15,7 +15,6 @@ export default function InputUpdateMessages(props) {
   function inputUpdateMessages(event) {
     if (event.key === "Enter") {
       if (inputRef.current.value === "") return
-
       if (changedMessage) changeMessageText()
       else if (answerTo) messageInReply(inputRef.current.value)
       else newMessage(inputRef.current.value)
@@ -44,6 +43,7 @@ export default function InputUpdateMessages(props) {
   function messageInReply(response) {
 
     copyMessages.unshift({
+      userId: userId,
       username: name, 
       text: answerTo.text, 
       createdAt: new Date().toLocaleString(), 
@@ -66,6 +66,7 @@ export default function InputUpdateMessages(props) {
   function newMessage(textMessage) {
     
     copyMessages.unshift({
+      userId: userId,
       username: name, 
       text: textMessage, 
       createdAt: new Date().toLocaleString(), 

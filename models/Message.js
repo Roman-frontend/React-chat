@@ -1,8 +1,8 @@
 const {Schema, model} = require('mongoose')
-const User = require('./User.js')
 
 /** Модель повідомлення */
 const Message = new Schema({
+  userId: {type: String, required: true},
   username: {type: String, required: true},
   text: {type: String, required: true},
   /** default: Date.now - вказує дату по замовчуванні*/
@@ -14,12 +14,6 @@ const Message = new Schema({
   listAction: {type: Boolean, default: false }, 
   changed: {type: Boolean, default: false }, 
   answer: {type: Boolean, default: false }, 
-  userId: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ]
 })
 
 /**

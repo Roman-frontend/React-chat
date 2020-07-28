@@ -9,8 +9,8 @@ const app = express()
 //стріми(потік даних) - тобто як дані з фронтента що передаються частинами що не дозволить прочитати їх
 app.use(express.json({extended: true}))
 
-app.use(express.json())
-
+//app.use(express.json())
+console.log('here')
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/chat', require('./routes/chat.message'))
 
@@ -21,7 +21,7 @@ app.use(express.static(path.resolve(__dirname, 'client', "src", "components")))
 
 app.get('*', (req, res) => {
   console.log('Запит за неоприділеним URL')
-  res.status(200).json({ message: 'Запит за неоприділеним URL'}).sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
+  res.status(200).sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
 })
 
 const PORT = config.get('port') || 5000

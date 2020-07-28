@@ -15,14 +15,16 @@ export default function Messages(props) {
   const [showButtonExit, setShowButtonExit] = useState(false);
   const inputRef = useRef(null);
   const {getData} = useServer();
+
+  const getMessagesFromServer = async () => {
+    const b = await getData()
+    if (b) return setMessages(b.reverse())
+    return setMessages([]);
+  }
   
   useEffect(() => {
     inputRef.current.focus();
-    /**
-    *Отримує з бази даних масив даних для опису повідомлень
-    *@param {setMessages} метод для зміни стану messages
-    */
-    getData(userId, setMessages);
+    getMessagesFromServer()
     //document.addEventListener('click', handleClick)
   }, []);
   

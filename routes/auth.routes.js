@@ -16,7 +16,8 @@ router.post(
   	/**.isEmail() - Перевіряє на коректність email */
   	check('email', 'Некоректний email').isEmail(),
   	/**.isLength({min: 6}) - перевіряє чи довжина паролю не менше 6 символів */
-  	check('password', 'Мінімальна довжина паролю 6 символів').isLength({min: 6})
+  	check('password', 'Мінімальна довжина паролю 6 символів').isLength({min: 6}),
+    check('name', 'Мінімальна довжина имени 2 символів').isLength({min: 2})
   ],
   async (req, res) => {
   try {
@@ -32,7 +33,7 @@ router.post(
   	  })
   	}
 
-    const {email, password} = req.body	
+    const {name, email, password} = req.body	
 
     const candidate = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
 
@@ -43,7 +44,7 @@ router.post(
     /**якщо email не існує то .hash() хешуємо пароль, 12 - дозволяє ще білльше зашифрувати пароль */
     const hashPassword = await bcrypt.hash(password, 12)
     /**Створюю нового користувача з захешованим паролем */
-    const user = new User({email, password : hashPassword})
+    const user = new User({name, email, password : hashPassword})
     /**чекаємо реєстрації цієї людини */
     await user.save()
 
@@ -100,7 +101,7 @@ router.post(
       { expiresIn: '1h'}
     )
 
-    res.json({token, userId: user.id})
+    res.json({name: user.name, token, userId: user.id})
 
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})

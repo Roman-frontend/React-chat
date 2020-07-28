@@ -1,10 +1,12 @@
 import React, {useContext} from 'react'
 import {useServer} from '../hooks/Server'
+import {AuthContext} from '../context/AuthContext'
 import {Context} from '../context/context'
 import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
   const {removeData} = useServer();
+  const {userId} = useContext(AuthContext)
   const {_id} = props.message;
   const {message} = props;
   const {
@@ -72,7 +74,7 @@ export default function EditMessage(props) {
 
   	  	  <button className="redirect-mes">Поділитись</button>
   	  	  <button className="delete-mes" 
-          onClick={_id, setMessages, msg => removeData(_id, setMessages, messages)}>Видалити</button>
+          onClick={userId, setMessages, messages, _id, messagge => removeData(userId, setMessages, messages, props.message._id, message)}>Видалити</button>
   	  	</div>
   	  )
     } else return <img src={iconMore} alt="icon-user"/>

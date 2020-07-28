@@ -1,5 +1,6 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, useContext} from 'react'
 import {useServer} from '../hooks/Server'
+import {AuthContext} from '../context/AuthContext'
 import {Context} from '../context/context'
 import Message from './Message'
 import ButtonExitChangeMessage from './ButtonExitChangeMessage'
@@ -8,6 +9,7 @@ import iconPeople from '../images/icon-people.png'
 
 
 export default function Messages(props) {
+  const {name, userId} = useContext(AuthContext)
   const [messages, setMessages] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showButtonExit, setShowButtonExit] = useState(false);
@@ -20,7 +22,8 @@ export default function Messages(props) {
     *Отримує з бази даних масив даних для опису повідомлень
     *@param {setMessages} метод для зміни стану messages
     */
-    getData(setMessages);
+    getData(userId, setMessages);
+    //document.addEventListener('click', handleClick)
   }, []);
   
   /**
@@ -65,7 +68,7 @@ export default function Messages(props) {
       style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
         <div className="nick-people">
           <b className="main-font sets-peoples-of-chat">
-           ✩ Yulia
+           ✩ {name}
           </b>
         </div>
         <div className="chat-with-people">

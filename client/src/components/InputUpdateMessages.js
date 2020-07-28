@@ -1,8 +1,10 @@
 import React, {useContext} from 'react'
+import {AuthContext} from '../context/AuthContext'
 import {Context} from '../context/context'
 import {useServer} from '../hooks/Server'
 
 export default function InputUpdateMessages(props) {
+  const {name, userId} = useContext(AuthContext)
   const {messages, setMessages, setShowAnswer, inputRef} = useContext(Context)
   const {postData, putData} = useServer()
   const copyMessages = messages.slice(0, messages.length);
@@ -42,7 +44,7 @@ export default function InputUpdateMessages(props) {
   function messageInReply(response) {
 
     copyMessages.unshift({
-      username: 'Yulia', 
+      username: name, 
       text: answerTo.text, 
       createdAt: new Date().toLocaleString(), 
       _id: Date.now(), 
@@ -58,13 +60,13 @@ export default function InputUpdateMessages(props) {
         return message
       } else return message
     })       
-    postData(updatedArrayMessages, setMessages)
+    postData(userId, updatedArrayMessages, setMessages)
   }
 
   function newMessage(textMessage) {
     
     copyMessages.unshift({
-      username: 'Yulia', 
+      username: name, 
       text: textMessage, 
       createdAt: new Date().toLocaleString(), 
       _id: Date.now(), 
@@ -75,7 +77,7 @@ export default function InputUpdateMessages(props) {
     )  
 
     updatedArrayMessages = copyMessages
-    postData(updatedArrayMessages, setMessages)
+    postData(userId, updatedArrayMessages, setMessages)
   }
 
   return <input type="text" className="input-message" placeholder="Enter Text" ref={inputRef} onKeyUp={event => inputUpdateMessages(event)}/>

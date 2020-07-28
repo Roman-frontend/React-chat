@@ -5,6 +5,7 @@ import Messages from '../components/Messages'
 import SetUser from '../components/SetUser'
 
 export const Chat = () => {
+
 	return (
     <div className="class-page">
       <Search/>

@@ -21,18 +21,17 @@ app.use(express.static(path.resolve(__dirname, 'client', "src", "components")))
 
 app.get('*', (req, res) => {
   console.log('Запит за неоприділеним URL')
-  res.status(404).json({ message: 'Запит за неоприділеним URL'}).sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
+  res.status(200).json({ message: 'Запит за неоприділеним URL'}).sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
 })
 
 const PORT = config.get('port') || 5000
 
 async function start() {
   try {
-    console.log('app.js -> mongoose')
     await mongoose.connect(config.get('mongoUri'), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true
+      //useCreateIndex: true
     })
     app.listen(PORT, () => console.log(`Server has been started on port ${PORT}...`))
   } catch (e) {

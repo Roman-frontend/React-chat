@@ -9,6 +9,8 @@ export const AuthContext = createContext({
   login: noop,
   logout: noop,
   isAuthenticated: false,
-  messages: [],
-  setMessages: null
+/*  messages: [],
+  setMessages: null,
+  usersNames: [],
+  setUsersNames: null*/
 })

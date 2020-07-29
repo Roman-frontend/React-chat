@@ -10,6 +10,7 @@ export default function App() {
   const isAuthenticated = !!token
   const routes = useRoutes(isAuthenticated)
   const [messages, setMessages] = useState([]);
+  const [usersNames, setUsersNames] = useState([])
 
   if (!ready) {
     return <Loader />
@@ -17,7 +18,7 @@ export default function App() {
 
   return (
   	<AuthContext.Provider value={{
-  	  login, logout, name, token, userId, isAuthenticated, messages, setMessages
+  	  login, logout, name, token, userId, isAuthenticated, messages, setMessages, usersNames, setUsersNames
   	}}>
   	  <Router>
         <div>

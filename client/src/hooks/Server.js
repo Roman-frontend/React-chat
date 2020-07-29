@@ -3,25 +3,26 @@ import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
 
 export const useServer = (props) => {
-  const {userId, messages, setMessages} = useContext(AuthContext)
+  const {userId, messages, setMessages, setUsersNames} = useContext(AuthContext)
   const {request} = useHttp()
 
   const getData = async () => {
     try {
       const data = await request(`/api/chat/get-messages${userId}`)
-      return data.messages
+      console.log(data.usersNames)
+      setUsersNames(data.usersNames)
+      if (data.messages) return setMessages(data.messages.reverse())
     } catch (e) {console.log(e.message, e.error)}
   }
 
-  const postData = async (messages, setMessages) => {
+  const postData = async (updatedArrayMessages) => {
     try {
-      const data = await request(`/api/chat/post-message`, "POST", {...messages[0]})
+      const data = await request(`/api/chat/post-message`, "POST", {...updatedArrayMessages[0]})
       setMessages(data.messages.reverse())
-      return data.messages
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 
-  const putData = async (putMessage, _id, setMessages, messages) => {
+  const putData = async (putMessage, _id) => {
     const contact = messages.find(c => c._id === _id)
     const updated = await request(`/api/chat/put-message${_id}`, 'PUT', {
       ...putMessage,

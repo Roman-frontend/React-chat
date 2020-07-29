@@ -9,23 +9,15 @@ import iconPeople from '../images/icon-people.png'
 
 
 export default function Messages(props) {
-  //const {name, messages, setMessages} = useContext(AuthContext)
-  const {name} = useContext(AuthContext)
-  const [messages, setMessages] = useState([]);
+  const {name, messages, setMessages} = useContext(AuthContext)
   const [showAnswer, setShowAnswer] = useState(false);
   const [showButtonExit, setShowButtonExit] = useState(false);
   const inputRef = useRef(null);
   const {getData} = useServer();
 
-  const getMessagesFromServer = async () => {
-    const messagesFromServer = await getData()
-    if (messagesFromServer) return setMessages(messagesFromServer.reverse())
-    return setMessages([]);
-  }
-  
   useEffect(() => {
     inputRef.current.focus();
-    getMessagesFromServer()
+    getData()
   }, []);
   
   /**Показує поле з повідомленням на яке відповідає користувач якщо в масиві повідомлень messages є повідомлення для відповіді */

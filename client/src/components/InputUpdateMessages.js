@@ -37,7 +37,7 @@ export default function InputUpdateMessages(props) {
       } else return message
     })
     
-    putData(putMessage[0], changedMessage._id, setMessages, messages)
+    putData(putMessage[0], changedMessage._id)
   }
 
   function messageInReply(response) {
@@ -60,7 +60,7 @@ export default function InputUpdateMessages(props) {
         return message
       } else return message
     })       
-    postData(updatedArrayMessages, setMessages)
+    postData(updatedArrayMessages)
   }
 
   function newMessage(textMessage) {
@@ -77,7 +77,7 @@ export default function InputUpdateMessages(props) {
     )  
 
     updatedArrayMessages = copyMessages
-    postData(updatedArrayMessages, setMessages)
+    postData(updatedArrayMessages)
   }
 
   return <input type="text" className="input-message" placeholder="Enter Text" ref={inputRef} onKeyUp={event => inputUpdateMessages(event)}/>

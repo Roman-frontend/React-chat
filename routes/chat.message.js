@@ -8,8 +8,12 @@ router.get(`/get-messages:userId`, [],
   async (req, res) => {
   try {
     const userMessages = await Message.find({'userId': req.params.userId})
-    console.log('userMessages -', userMessages)
-    res.json({messages: userMessages, message : 'Повідомлення повернені'})
+    const users = await User.find({})
+    const usersNames = users.map(user => {
+      return user.name
+    })
+    console.log('users - ', usersNames)
+    res.json({messages: userMessages, usersNames: usersNames, message : 'Повідомлення повернені'})
   } catch (e) {
     console.log('failed in get-messages')
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})

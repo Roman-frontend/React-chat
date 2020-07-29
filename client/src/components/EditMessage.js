@@ -59,6 +59,7 @@ export default function EditMessage(props) {
   /**Визначає показувати список для дій над повідомленням чи значак для активації списку */
   function sets() {
     if (message.listAction) {
+
   	  return (
   	  	<div className="change-mes">
 
@@ -73,10 +74,14 @@ export default function EditMessage(props) {
           </button>
 
   	  	  <button className="redirect-mes">Поділитись</button>
+
   	  	  <button className="delete-mes" 
-          onClick={userId, setMessages, messages, _id, messagge => removeData(userId, setMessages, messages, props.message._id, message)}>Видалити</button>
+            onClick={message => removeData(props.message)}
+          >Видалити</button>
+
   	  	</div>
   	  )
+
     } else return <img src={iconMore} alt="icon-user"/>
   }
 

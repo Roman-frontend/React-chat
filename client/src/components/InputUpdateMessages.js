@@ -60,7 +60,7 @@ export default function InputUpdateMessages(props) {
         return message
       } else return message
     })       
-    postData(userId, updatedArrayMessages, setMessages)
+    postData(updatedArrayMessages, setMessages)
   }
 
   function newMessage(textMessage) {
@@ -77,7 +77,7 @@ export default function InputUpdateMessages(props) {
     )  
 
     updatedArrayMessages = copyMessages
-    postData(userId, updatedArrayMessages, setMessages)
+    postData(updatedArrayMessages, setMessages)
   }
 
   return <input type="text" className="input-message" placeholder="Enter Text" ref={inputRef} onKeyUp={event => inputUpdateMessages(event)}/>

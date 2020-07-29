@@ -318,6 +318,7 @@ img.icon {
 }
 
 .field-answer {
+  display: block;
   height: 4rem;
   width: 76vw;
   border-radius: 1rem 1rem 0rem 0rem;

@@ -1,10 +1,9 @@
 import {useContext} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
-import {Context} from '../context/context'
 
 export const useServer = (props) => {
-  const {userId} = useContext(AuthContext)
+  const {userId, messages, setMessages} = useContext(AuthContext)
   const {request} = useHttp()
 
   const getData = async () => {
@@ -14,9 +13,9 @@ export const useServer = (props) => {
     } catch (e) {console.log(e.message, e.error)}
   }
 
-  const postData = async (_id, messages, setMessages) => {
+  const postData = async (messages, setMessages) => {
     try {
-      const data = await request(`/api/chat/post-message${_id}`, "POST", {...messages[0]})
+      const data = await request(`/api/chat/post-message`, "POST", {...messages[0]})
       setMessages(data.messages.reverse())
       return data.messages
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
@@ -31,9 +30,9 @@ export const useServer = (props) => {
     setMessages(updated.messages.reverse())
   }
 
-  const removeData = async (userId, setMessages, msg, _id, messagge) => {
-    const message = await request(`/api/chat/delete-message${userId}/message${_id}`, 'DELETE', messagge)
-    const filteredMessage = msg.filter(c => c._id !== _id)
+  const removeData = async (message) => {
+    await request(`/api/chat/delete-message${message._id}`, 'DELETE')
+    const filteredMessage = messages.filter(c => c._id !== message._id)
     setMessages(filteredMessage)
   }
 

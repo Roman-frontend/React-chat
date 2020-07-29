@@ -9,7 +9,8 @@ import iconPeople from '../images/icon-people.png'
 
 
 export default function Messages(props) {
-  const {name, userId} = useContext(AuthContext)
+  //const {name, messages, setMessages} = useContext(AuthContext)
+  const {name} = useContext(AuthContext)
   const [messages, setMessages] = useState([]);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showButtonExit, setShowButtonExit] = useState(false);
@@ -17,28 +18,23 @@ export default function Messages(props) {
   const {getData} = useServer();
 
   const getMessagesFromServer = async () => {
-    const b = await getData()
-    if (b) return setMessages(b.reverse())
+    const messagesFromServer = await getData()
+    if (messagesFromServer) return setMessages(messagesFromServer.reverse())
     return setMessages([]);
   }
   
   useEffect(() => {
     inputRef.current.focus();
     getMessagesFromServer()
-    //document.addEventListener('click', handleClick)
   }, []);
   
-  /**
-  *Показує поле з повідомленням на яке відповідає користувач
-  *якщо в масиві повідомлень messages є повідомлення для відповіді 
-  */
+  /**Показує поле з повідомленням на яке відповідає користувач якщо в масиві повідомлень messages є повідомлення для відповіді */
   function fieldAnswerTo() {
     const answerTo = messages.find(message => message.answer === true);
+
     if (answerTo) {
       /**@return поле повідомлення на яке відповідає користувач*/
-      return (<div className="field-answer" style={{display: 'block'}}>
-        <p>{answerTo.text}</p>
-      </div>);
+      return <div className="field-answer"><p>{answerTo.text}</p></div>
     }
   }
 
@@ -49,10 +45,7 @@ export default function Messages(props) {
   function renderMessages() {
     return messages.map((message, index) => {
       /**@return повідомлення користувача */
-      return ( 
-      <Message key={messages[index]._id} 
-        message={message} 
-      />);
+      return <Message key={message._id} message={message} />
     })
   }
 
@@ -70,13 +63,13 @@ export default function Messages(props) {
       style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
         <div className="nick-people">
           <b className="main-font sets-peoples-of-chat">
-           ✩ {name}
+            ✩ {name}
           </b>
         </div>
         <div className="chat-with-people">
-        {renderMessages()}
+          {renderMessages()}
         </div>
-        {fieldAnswerTo()}
+          {fieldAnswerTo()}
         <div className="field-for-message">
           <InputUpdateMessages />
           <ButtonExitChangeMessage />

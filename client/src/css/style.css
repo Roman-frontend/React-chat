@@ -51,6 +51,8 @@
   font: 1rem serif;
   cursor: pointer;
   margin: 0rem;
+  color: #fff;
+  text-decoration: none;
 }
 
 .secondary-font {
@@ -334,26 +336,12 @@ img.icon {
   left: 1rem;
 }
 
-/*@import "~materialize-css/dist/css/materialize.min.css"; */
 .yellow-input {
   padding: 0;
   height: 2.3rem;
   width: 27rem;
   border-bottom: 0.2rem solid white;
 }
-/*
-input.yellow-input + label {
-  color: #ffffff;
-}
-
-input.yellow-input:focus + label {
-  color: #ffeb3b;
-}
-
-input.yellow-input:focus {
-  border-bottom: 1px solid #ffeb3b;
-  box-shadow: 0 1px 0 0 #ffeb3b;
-}*/
 
 .log-out {
   background: #fff;
@@ -416,14 +404,30 @@ input.yellow-input:focus {
   overflow-y: auto;
 }
 
-.create-channel {
+.button-create-channel {
   position: relative;
-  display: block;
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.5rem 1.4rem;
+  width: 9rem;
   height: 2rem;
-  width: 8rem;
+  left: 66vw;
+  bottom: 1.2rem;
+}
+
+.input-for-search-channel {
+  width: 77.3vw;
+  height: 2rem;
   border-radius: 0.3rem;
-  border: 0.1rem solid #BEB7BD;
-  background: blue;
-  top: 4rem;
-  left: 0.8rem;
+  margin: 1rem;
+}
+
+.block-create-channel {
+  border: solid 0.1rem gray;
+  border-radius: 0.5rem;
+  height: 22rem;
+  width: 44rem;
+  left: 10rem;
+  position: absolute;
 }

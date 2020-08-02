@@ -17,10 +17,24 @@ export function ChoiceChannel() {
   function createChannel() {
     if (showBlockCreateChannel) {
       return (
-        <div className="block-create-channel">
-          <label className="label-name">Name</label>
-          <input placeholder="Name channel" className="input-name-channel" />
-        </div>)
+        <>
+          <button className="button-create-channel" onClick={openCloseBlockCreateChannel}>Create channel</button>
+          <div className="block-create-channel">
+            <div>
+              <span className="title-create-channel">Create a channel</span>
+              <p className="discription-of-create-channel">
+                Channels are where your team communicates. They’re best when organized around a topic — #marketing, for example.
+              </p>
+              <label><b className="label-name-channel">Name</b></label>
+              <input placeholder="input-name-channel" className="input-name-channel" />
+            </div>
+            <div className="block-for-description">
+              <label><b className="label-description-channel">Discription</b></label>
+              <input placeholder="input-description-channel" className="input-description-channel" />
+            </div>
+            <button className="button-create">Create</button>
+          </div>
+        </>)
     } else {
       return <button className="button-create-channel" onClick={openCloseBlockCreateChannel}>Create channel</button>
     }

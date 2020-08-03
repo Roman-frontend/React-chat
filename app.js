@@ -10,9 +10,9 @@ const app = express()
 app.use(express.json({extended: true}))
 
 //app.use(express.json())
-console.log('here')
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/chat', require('./routes/chat.message'))
+app.use('/api/channel', require('./routes/chat.channel'))
 
 // /api - буде префікс для будь якого запиту, /auth - для роботи з авторизацією, 2-й параметр шлях до route що оброблятиме авторизацію
 //app.use('/api/auth', require('./routes/auth.routes'))

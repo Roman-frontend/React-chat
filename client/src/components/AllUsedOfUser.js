@@ -1,11 +1,9 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import {useServer} from '../hooks/Server'
 
 export default function AllUsedOfUser(props) {
-/*
-  function toGeneralChannel() {
-    <Link to={`/CreateChannel`}>Create channel</Link>
-  }*/
+  const {getData} = useServer()
 
   return (
     <div className="instruments">

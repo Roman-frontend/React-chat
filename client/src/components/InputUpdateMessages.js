@@ -60,7 +60,7 @@ export default function InputUpdateMessages(props) {
         return message
       } else return message
     })       
-    postData(updatedArrayMessages)
+    postData(`/api/chat/post-message`, updatedArrayMessages[0])
   }
 
   function newMessage(textMessage) {
@@ -77,7 +77,7 @@ export default function InputUpdateMessages(props) {
     )  
 
     updatedArrayMessages = copyMessages
-    postData(updatedArrayMessages)
+    postData(`/api/chat/post-message`, updatedArrayMessages[0])
   }
 
   return <input type="text" className="input-message" placeholder="Enter Text" ref={inputRef} onKeyUp={event => inputUpdateMessages(event)}/>

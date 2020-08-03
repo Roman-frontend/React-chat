@@ -15,9 +15,10 @@ export const useServer = (props) => {
     } catch (e) {console.log(e.message, e.error)}
   }
 
-  const postData = async (updatedArrayMessages) => {
+  const postData = async (url, updatedArrayMessages) => {
     try {
-      const data = await request(`/api/chat/post-message`, "POST", {...updatedArrayMessages[0]})
+      console.log("updatedArrayMessages -", updatedArrayMessages)
+      const data = await request(url, "POST", {...updatedArrayMessages})
       setMessages(data.messages.reverse())
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }

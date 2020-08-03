@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Link} from 'react-router-dom'
 import {AuthContext} from '../context/AuthContext'
 import {useServer} from '../hooks/Server'
 

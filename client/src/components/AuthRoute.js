@@ -1,11 +1,13 @@
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
-import {AuthPage} from './pages/AuthPage'
+import {SignUpPage} from '../pages/SignUpPage'
+import {SignInPage} from '../pages/SignInPage'
 
-export const AuthRoute = isAuthenticated => {
+export const AuthRoute = () => {
   return (
     <Switch>
-      <Route component={AuthPage} />
+      <Route path="/signUp" component={SignUpPage} />
+      <Route component={SignInPage} />
     </Switch>
   )
 }

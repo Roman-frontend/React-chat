@@ -4,7 +4,7 @@ import {FilterContacts} from '../pages/FilterContacts.js'
 import {AddChannel} from '../pages/AddChannel'
 import {Switch, Route, Redirect} from 'react-router-dom'
 
-export const PrivateRoute = isAuthenticated => {
+export const PrivateRoute = () => {
 
   return (
     <Switch>

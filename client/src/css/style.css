@@ -1,4 +1,11 @@
+body {
+  margin: 0; 
+  overflow: hidden;
+}
 
+* {
+  font-family: Helvetica, sans-serif;
+}
 
 .class-page {
   position: relative;
@@ -33,15 +40,26 @@
   overflow-x: hidden;
 }
 
-.right-block {
+.right-block-with-riply {
   grid-area: rightblock;
-  overflow-x: hidden;
   display: grid;
   grid-template-areas: 
     "nick"
     "chat"
     "answer"
-    "fieldMsg"
+    "fieldMsg";
+  grid-template-rows: 11vh 61vh 10vh;
+}
+
+.right-block-without-riply {
+  grid-area: rightblock;
+  display: grid;
+  grid-template-areas: 
+    "nick"
+    "chat"
+    "answer"
+    "fieldMsg";
+  grid-template-rows: 11vh 71vh;
 }
 
 .main-font {
@@ -347,14 +365,20 @@ img.icon {
   color: red;
 }
 
+.auth-body {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  background: #ededed;
+}
+
 .auth-field {
   background: #6a1b9a;
   padding: 0.5rem;
   width: 28rem;
-  height: 12rem;
+  height: 18rem;
   position: relative;
-  left: 27rem;
-  top: 3rem;
+  top: 25vh;
   border-radius: 0.4rem;
 }
 
@@ -369,7 +393,7 @@ img.icon {
   color: #fff;
 }
 
-.btn-1 {
+.button-login {
   margin: 1rem 2rem;
   height: 2rem;
   background: orange;
@@ -377,7 +401,7 @@ img.icon {
   width: 5rem;
 }
 
-.btn-2 {
+.button-register {
   height: 2rem;
   border-radius: 0.4rem;
   width: 9rem;

@@ -14,6 +14,7 @@ export default function Messages(props) {
   const [showButtonExit, setShowButtonExit] = useState(false);
   const inputRef = useRef(null);
   const {getData} = useServer();
+  let blockForChat = showAnswer ? "right-block-with-riply" : "right-block-without-riply";
 
   useEffect(() => {
     inputRef.current.focus();
@@ -51,8 +52,7 @@ export default function Messages(props) {
       showButtonExit, 
       setShowButtonExit
     }}>
-      <div className="right-block"
-      style={{gridTemplateRows: showAnswer ? "11vh 61vh 10vh" : "11vh 71vh"}}>
+      <div className={blockForChat}>
         <div className="nick-people">
           <b className="main-font sets-peoples-of-chat">
             ✩ {name}

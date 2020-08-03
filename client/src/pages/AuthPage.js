@@ -39,7 +39,7 @@ export const AuthPage = () => {
   }
 
   return (
-    <div>
+    <div className="auth-body">
       <div>
         <div className="auth-field">
           <div className="card-content">
@@ -89,15 +89,14 @@ export const AuthPage = () => {
           </div>
           <div className="card-action">
             <button
-              className="btn-1"
-              style={{marginRight: 10}}
+              className="button-login"
               disabled={loading}
               onClick={loginHandler}
             >
               Войти
             </button>
             <button
-              className="btn-2"
+              className="button-register"
               onClick={registerHandler}
               disabled={loading}
             >

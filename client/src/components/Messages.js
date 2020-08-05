@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect, useContext} from 'react'
-import {useServer} from '../hooks/Server'
 import {AuthContext} from '../context/AuthContext'
 import {Context} from '../context/context'
 import Message from './Message'
@@ -12,14 +11,7 @@ export default function Messages(props) {
   const {name, messages, setMessages} = useContext(AuthContext)
   const [showAnswer, setShowAnswer] = useState(false);
   const [showButtonExit, setShowButtonExit] = useState(false);
-  const inputRef = useRef(null);
-  const {getData} = useServer();
   let blockForChat = showAnswer ? "right-block-with-riply" : "right-block-without-riply";
-
-  useEffect(() => {
-    inputRef.current.focus();
-    getData()
-  }, []);
   
   /**Показує поле з повідомленням на яке відповідає користувач якщо в масиві повідомлень messages є повідомлення для відповіді */
   function fieldAnswerTo() {
@@ -48,7 +40,6 @@ export default function Messages(props) {
       setMessages, 
       showAnswer, 
       setShowAnswer, 
-      inputRef, 
       showButtonExit, 
       setShowButtonExit
     }}>

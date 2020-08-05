@@ -1,21 +1,18 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
-import {useMessage} from '../hooks/message.hook'
 import {AuthContext} from '../context/AuthContext'
 
 export const SignUpPage = () => {
   const auth = useContext(AuthContext)
-  const message = useMessage()
   const {loading, request, error, clearError} = useHttp()
   const [form, setForm] = useState({
     name: '', email: '', password: ''
   })
 
   useEffect(() => {
-    message(error)
     clearError()
-  }, [error, message, clearError])
+  }, [error, clearError])
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -24,14 +21,13 @@ export const SignUpPage = () => {
   const registerHandler = async () => {
     try {
       const data = await request('api/auth/register', 'POST', {...form})
-      message(data.message)
     } catch (e) {}
   }
 
   return (
     <div className="auth-body">
       <div className="auth-field">
-        <span className="card-title">Регистрация</span>
+        <span className="card-title">Реєстрація</span>
 
         <div className="input-field">
           <label 
@@ -88,13 +84,13 @@ export const SignUpPage = () => {
             onClick={registerHandler}
             disabled={loading}
           >
-            Регистрация
+            Реєстрація
           </button>
           <Link 
             to={`/signIn`}
           >
             <button className="button-pasive" >
-              Войти
+              Вхід
             </button>
           </Link>
         </div>

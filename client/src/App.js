@@ -17,7 +17,6 @@ export default function App() {
     return <Loader />
   }
 
-
   return (
   	<AuthContext.Provider value={{
   	  login, 

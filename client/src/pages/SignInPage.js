@@ -1,34 +1,23 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState, useRef} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
-import {useMessage} from '../hooks/message.hook'
 import {AuthContext} from '../context/AuthContext'
 
 export const SignInPage = () => {
 
   const auth = useContext(AuthContext)
-  const message = useMessage()
   const {loading, request, error, clearError} = useHttp()
-  const [form, setForm] = useState({
-    name: '', email: '', password: ''
-  })
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
   useEffect(() => {
-    message(error)
     clearError()
-  }, [error, message, clearError])
-
-  /*  useEffect(() => {
-    window.M.updateTextFields()
-  }, [])*/
-
-  const changeHandler = event => {
-    setForm({ ...form, [event.target.name]: event.target.value })
-  }
+  }, [error, clearError])
 
   const loginHandler = async () => {
     try {
-      const data = await request('/api/auth/login', 'POST', {...form})
+      const emailPassword = { email: emailRef.current.value, password: passwordRef.current.value }
+      const data = await request('/api/auth/login', 'POST', emailPassword)
       auth.login(data.name, data.token, data.userId)
     } catch (e) {}
   }
@@ -36,20 +25,7 @@ export const SignInPage = () => {
   return (
     <div className="auth-body">
       <div className="auth-field">
-        <span className="card-title">Авторизация</span>
-
-        <div className="input-field">
-          <label className="auth-text" htmlFor="email">Name</label>
-          <input
-            placeholder="Введите имя"
-            id="name"
-            type="text"
-            name="name"
-            className="yellow-input"
-            value={form.name}
-            onChange={changeHandler}
-          />
-        </div>
+        <span className="card-title">Авторизація</span>
 
         <div className="input-field">
           <label className="auth-text" htmlFor="email">Email</label>
@@ -59,8 +35,7 @@ export const SignInPage = () => {
             type="text"
             name="email"
             className="yellow-input"
-            value={form.email}
-            onChange={changeHandler}
+            ref={emailRef}
           />
         </div>
 
@@ -72,8 +47,7 @@ export const SignInPage = () => {
             type="password"
             name="password"
             className="yellow-input"
-            value={form.password}
-            onChange={changeHandler}
+            ref={passwordRef}
           />
         </div>
 
@@ -83,14 +57,10 @@ export const SignInPage = () => {
             onClick={loginHandler}
             disabled={loading}
           >
-            Войти
+            Війти
           </button>
-          <Link  
-            to={`/signUp`}
-          >
-            <button className="button-pasive">
-              Регистрация
-            </button>
+          <Link  to={`/signUp`}>
+            <button className="button-pasive">Зареєструватись</button>
           </Link>
         </div>
       </div>

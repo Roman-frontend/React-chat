@@ -1,16 +1,23 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {AuthContext} from '../context/AuthContext'
 import {Context} from '../context/context'
 import {useServer} from '../hooks/Server'
 
 export default function InputUpdateMessages(props) {
+
+  const inputRef = useRef(null);
   const {name, userId} = useContext(AuthContext)
-  const {messages, setMessages, setShowAnswer, inputRef} = useContext(Context)
-  const {postData, putData} = useServer()
+  const {messages, setMessages, setShowAnswer} = useContext(Context)
+  const {postData, putData, getData} = useServer()
   const copyMessages = messages.slice(0, messages.length);
   const changedMessage = messages.find(message => message.changed === true)
   const answerTo = messages.find(message => message.answer === true)
   let updatedArrayMessages = []
+
+  useEffect(() => {
+    inputRef.current.focus();
+    getData()
+  }, []);
 
   function inputUpdateMessages(event) {
     if (event.key === "Enter") {
@@ -73,7 +80,8 @@ export default function InputUpdateMessages(props) {
       listAction: false, 
       changed: false, 
       answer: false, 
-      reply: ""},
+      reply: ""
+      },
     )  
 
     updatedArrayMessages = copyMessages

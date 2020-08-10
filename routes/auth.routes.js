@@ -48,7 +48,15 @@ router.post(
     /**чекаємо реєстрації цієї людини */
     await user.save()
 
-    res.status(201).json({message : 'Пользователь создан'})
+    const finedUser = await User.findOne({email})
+
+    const token = jwt.sign(
+      {userId: user.id},
+      config.get('jwtSecret'),
+      { expiresIn: '1h'}
+    )
+
+    res.status(201).json({name: user.name, token, userId: user.id, message : 'Пользователь создан'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})
   }

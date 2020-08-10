@@ -1,9 +1,9 @@
 import React, {useContext} from 'react'
-import {Context} from '../context/context'
+import {MessagesContext} from '../context/MessagesContext'
 
 export default function ButtonExitChangeMessage(props) {
 
-  const {messages, setMessages, inputRef, showButtonExit, setShowButtonExit} = useContext(Context)
+  const {messages, setMessages, inputRef, showButtonExit, setShowButtonExit} = useContext(MessagesContext)
   const messageChanging = messages.find(message => message.changed === true)
 
   function hideButtonExit() {

@@ -1,12 +1,12 @@
 import React, {useContext} from 'react'
-import {Context} from '../context/context'
+import {MessagesContext} from '../context/MessagesContext'
 import EditMessage from './EditMessage'
 import iconPeople from '../images/icon-people.png'
 
 export default function Message(props) {
   const {message} = props
   const {username, text, createdAt, _id, listAction, reply} = props.message
-  const {messages, setMessages} = useContext(Context)
+  const {messages, setMessages} = useContext(MessagesContext)
 
   /**
   *Змінює значення свойства listAction яке

@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect, useContext} from 'react'
 import {AuthContext} from '../context/AuthContext'
-import {Context} from '../context/context'
+import {MessagesContext} from '../context/MessagesContext.js'
 import Message from './Message'
 import ButtonExitChangeMessage from './ButtonExitChangeMessage'
 import InputUpdateMessages from './InputUpdateMessages'
@@ -35,7 +35,7 @@ export default function Messages(props) {
   }
 
   return (
-    <Context.Provider value={{
+    <MessagesContext.Provider value={{
       messages, 
       setMessages, 
       showAnswer, 
@@ -58,7 +58,7 @@ export default function Messages(props) {
           <ButtonExitChangeMessage />
         </div>
       </div>
-    </Context.Provider>
+    </MessagesContext.Provider>
   )
 }
 

@@ -31,7 +31,6 @@ export const SignInPage = () => {
           <label className="auth-text" htmlFor="email">Email</label>
           <input
             placeholder="Введите email"
-            id="email"
             type="text"
             name="email"
             className="yellow-input"
@@ -43,7 +42,6 @@ export const SignInPage = () => {
           <label className="auth-text" htmlFor="email">Пароль</label>
           <input
             placeholder="Введите пароль"
-            id="password"
             type="password"
             name="password"
             className="yellow-input"
@@ -57,7 +55,7 @@ export const SignInPage = () => {
             onClick={loginHandler}
             disabled={loading}
           >
-            Війти
+            Ввійти
           </button>
           <Link  to={`/signUp`}>
             <button className="button-pasive">Зареєструватись</button>

@@ -4,15 +4,15 @@ const Message = require('../models/Message.js')
 const User = require('../models/User.js')
 const router = Router()
 
-router.get(`/get-messages:userId`, [],
+router.get(`/get-messages:userId`,
   async (req, res) => {
   try {
+    console.log("req.params.userId -", req.params.userId, )
     const userMessages = await Message.find({'userId': req.params.userId})
     const users = await User.find({})
     const usersNames = users.map(user => {
       return user.name
     })
-    console.log('users - ', usersNames)
     res.json({messages: userMessages, usersNames: usersNames, message : 'Повідомлення повернені'})
   } catch (e) {
     console.log('failed in get-messages')
@@ -21,7 +21,7 @@ router.get(`/get-messages:userId`, [],
 })
 
 router.post(
-  '/post-message', [],
+  '/post-message',
   async (req, res) => {
   try {
     const createdMessage = await Message.create(req.body)

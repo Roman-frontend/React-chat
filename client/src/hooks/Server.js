@@ -5,6 +5,7 @@ import {AuthContext} from '../context/AuthContext'
 export const useServer = (props) => {
   const {userId, messages, setMessages, setUsersNames} = useContext(AuthContext)
   const {request} = useHttp()
+  console.log('userId -', userId)
 
   const getData = async () => {
     try {

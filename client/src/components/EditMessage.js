@@ -1,7 +1,7 @@
 import React, {useContext} from 'react'
 import {useServer} from '../hooks/Server'
 import {AuthContext} from '../context/AuthContext'
-import {Context} from '../context/context'
+import {MessagesContext} from '../context/MessagesContext'
 import iconMore from '../images/icon-more.png'
 
 export default function EditMessage(props) {
@@ -16,7 +16,7 @@ export default function EditMessage(props) {
     inputRef, 
     showButtonExit, 
     setShowButtonExit
-  } = useContext(Context);
+  } = useContext(MessagesContext);
 
   function change() {
     setMessages(changeMessages())

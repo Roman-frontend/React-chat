@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {AuthContext} from '../context/AuthContext'
-import {Context} from '../context/context'
+import {MessagesContext} from '../context/MessagesContext'
 import {useServer} from '../hooks/Server'
 
 export default function InputUpdateMessages(props) {
 
   const inputRef = useRef(null);
   const {name, userId} = useContext(AuthContext)
-  const {messages, setMessages, setShowAnswer} = useContext(Context)
+  const {messages, setMessages, setShowAnswer} = useContext(MessagesContext)
   const {postData, putData, getData} = useServer()
   const copyMessages = messages.slice(0, messages.length);
   const changedMessage = messages.find(message => message.changed === true)

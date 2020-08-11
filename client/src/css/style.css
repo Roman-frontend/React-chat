@@ -353,11 +353,37 @@ img.icon {
   left: 1rem;
 }
 
-.yellow-input {
+.border-bottom-white {
   padding: 0;
-  height: 2.3rem;
+  height: 2.2rem;
   width: 27rem;
   border-bottom: 0.2rem solid white;
+}
+
+.border-bottom-red {
+  padding: 0;
+  height: 2.2rem;
+  width: 27rem;
+  border-bottom: 0.2rem solid red;
+}
+
+.border-bottom-green {
+  padding: 0;
+  height: 2.2rem;
+  width: 27rem;
+  border-bottom: 0.2rem solid green;
+}
+
+.form-error {
+  height: 1.5rem;
+  background: white;
+  width: 27.2rem;
+  margin: 0.3rem 0rem 0rem 0rem;
+  color: black;
+}
+
+.none-form-error {
+  display: none;
 }
 
 .log-out {
@@ -395,7 +421,7 @@ img.icon {
 
 .card-action {
   display: flex;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .button-active {

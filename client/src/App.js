@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {BrowserRouter as Router} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import {useAuth} from './hooks/auth.hook.js'
 import {AuthContext} from './context/AuthContext.js'
 import {PrivateRoute} from './components/PrivateRoute.js'
@@ -11,7 +11,6 @@ export default function App() {
   const isAuthenticated = !!token
   const [messages, setMessages] = useState([]);
   const [usersNames, setUsersNames] = useState([])
-  let routes = isAuthenticated ? <PrivateRoute /> : <AuthRoute />;
 
   if (!ready) {
     return <Loader />
@@ -31,7 +30,12 @@ export default function App() {
       setUsersNames
   	}}>
   	  <Router>
-	      {routes}
+        <Switch>
+  	      <PrivateRoute path="/chat" component={Chat} />
+          <PrivateRoute path="/filterContacts" component={FilterContacts} />
+          <PrivateRoute path="/addChannel" component={AddChannel} />
+          <Route path='/chat' component={Chat} />
+        </Switch>
       </Router>
     </AuthContext.Provider>
   );

@@ -353,18 +353,10 @@ img.icon {
   left: 1rem;
 }
 
-.border-bottom-white {
+.none-border-bottom {
   padding: 0;
   height: 2.2rem;
   width: 27rem;
-  border-bottom: 0.2rem solid white;
-}
-
-.border-bottom-red {
-  padding: 0;
-  height: 2.2rem;
-  width: 27rem;
-  border-bottom: 0.2rem solid red;
 }
 
 .border-bottom-green {
@@ -376,10 +368,14 @@ img.icon {
 
 .form-error {
   height: 1.5rem;
-  background: white;
-  width: 27.2rem;
-  margin: 0.3rem 0rem 0rem 0rem;
-  color: black;
+  width: 27.3rem;
+  margin: 0;
+  background: -webkit-linear-gradient(top, #782275, #ffcfcf);
+  border-radius: 0rem 0rem 0.7rem 0rem;
+/*  background: #ff0000;
+  background: -moz-radial-gradient(center, ellipse cover, #ff0000, #ffcfcf);
+  background: -o-linear-gradient(top, #ff0000, #ffcfcf);
+  background: -ms-linear-gradient(top, #ff0000, #ffcfcf);*/
 }
 
 .none-form-error {
@@ -399,12 +395,12 @@ img.icon {
 }
 
 .auth-field {
-  background: #6a1b9a;
-  padding: 0.5rem;
-  width: 28rem;
-  height: 18rem;
   position: relative;
   top: 25vh;
+  padding: 0.5rem;
+  width: 28rem;
+  background: #6a1b9a;
+  margin-block-end: auto;
   border-radius: 0.4rem;
 }
 
@@ -438,12 +434,6 @@ img.icon {
   border-radius: 0.4rem;
   width: 9rem;
   text-decoration: none;
-}
-
-.colore {
-  margin: 0;
-  left: 5rem;
-  padding: 0rem 35rem;
 }
 
 .b {
@@ -530,4 +520,22 @@ img.icon {
   height: 2.4rem;
   width: 6rem;
   border-radius: 0.3rem;
+}
+
+.filter-contacts {
+  display: flex;
+  justify-content: center;
+  background: blue;
+}
+
+.filter-contacts-label {
+  color: yellow;
+  font-weight: 600;
+  padding: 0.7rem;
+}
+
+.colore {
+  margin: 0;
+  left: 5rem;
+  padding: 0rem 35rem;
 }

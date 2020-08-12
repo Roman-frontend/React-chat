@@ -33,7 +33,7 @@ export const SignInPage = () => {
             placeholder="Введите email"
             type="text"
             name="email"
-            className="inputs border-bottom-red"
+            className="none-border-bottom"
             ref={emailRef}
           />
         </div>
@@ -44,7 +44,7 @@ export const SignInPage = () => {
             placeholder="Введите пароль"
             type="password"
             name="password"
-            className="inputs border-bottom-red"
+            className="none-border-bottom"
             ref={passwordRef}
           />
         </div>

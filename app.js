@@ -33,6 +33,7 @@ async function start() {
       useUnifiedTopology: true,
       useCreateIndex: true
     })
+    console.log("mongoose conected")
     app.listen(PORT, () => console.log(`Server has been started on port ${PORT}...`))
   } catch (e) {
     console.log("Чтото пошло не так ", e.message)

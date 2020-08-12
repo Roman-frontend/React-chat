@@ -82,8 +82,9 @@ router.post(
   	}
 
     const {email, password} = req.body	
-
+    console.log(email)
     const user = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
+    console.log(user)
 
     if(!user) {
       res.status(400).json("Такой пользователь не найден")
@@ -108,7 +109,7 @@ router.post(
       /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
       { expiresIn: '1h'}
     )
-
+    console.log(user.name, token, user.id)
     res.json({name: user.name, token, userId: user.id})
 
   } catch (e) {

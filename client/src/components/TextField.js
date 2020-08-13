@@ -1,22 +1,20 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {useServer} from '../hooks/Server'
 
 export function TextField(props) {
-  const {labelText, placeholder, correctForm} = props
+  const {label, placeholder, correctForm, inputRef} = props
 
   return (
     <div className="input-field">
-      <label className="auth-text" htmlFor="email">{labelText}</label>
+      <label className="auth-text" htmlFor="email">{label}</label>
       <input
         placeholder={placeholder}
         type="text"
-        className={correctForm.name === true ? "border-bottom-green" : "none-border-bottom"}
-        ref={nameRef}
+        className={correctForm === true ? "border-bottom-green" : "none-border-bottom"}
+        ref={inputRef}
       />
-      <p className={correctForm.name === undefined || correctForm.name === true ? 
+      <p className={correctForm === undefined || correctForm === true ? 
         "none-form-error" : "form-error" }>
-        {correctForm.name}
+        {correctForm}
       </p>
     </div>
   )

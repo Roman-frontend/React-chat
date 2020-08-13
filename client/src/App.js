@@ -5,6 +5,11 @@ import {AuthContext} from './context/AuthContext.js'
 import {PrivateRoute} from './components/PrivateRoute.js'
 import {AuthRoute} from './components/AuthRoute.js'
 import {Loader} from './components/Loader'
+import {SignUpPage} from './pages/SignUpPage'
+import {SignInPage} from './pages/SignInPage'
+import {Chat} from './pages/Chat.js'
+import {FilterContacts} from './pages/FilterContacts.js'
+import {AddChannel} from './pages/AddChannel'
 
 export default function App() {
   const {login, logout, name, token, userId, ready} = useAuth()
@@ -31,10 +36,12 @@ export default function App() {
   	}}>
   	  <Router>
         <Switch>
-  	      <PrivateRoute path="/chat" component={Chat} />
-          <PrivateRoute path="/filterContacts" component={FilterContacts} />
-          <PrivateRoute path="/addChannel" component={AddChannel} />
-          <Route path='/chat' component={Chat} />
+          <Route exact path="/signIn" component={SignInPage} />
+          <Route exact path="/signUp" component={SignUpPage} />
+  	      <PrivateRoute exact path="/chat" component={Chat} />
+          <PrivateRoute exact path="/filterContacts" component={FilterContacts} />
+          <PrivateRoute exact path="/addChannel" component={AddChannel} />
+          <PrivateRoute path='/' component={Chat} />
         </Switch>
       </Router>
     </AuthContext.Provider>

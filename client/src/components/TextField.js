@@ -1,14 +1,14 @@
 import React from 'react'
 
 export function TextField(props) {
-  const {label, placeholder, correctForm, inputRef} = props
+  const {label, placeholder, correctForm, inputRef, type} = props
 
   return (
     <div className="input-field">
       <label className="auth-text" htmlFor="email">{label}</label>
       <input
         placeholder={placeholder}
-        type="text"
+        type={type}
         className={correctForm === true ? "border-bottom-green" : "none-border-bottom"}
         ref={inputRef}
       />

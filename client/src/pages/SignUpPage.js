@@ -42,9 +42,9 @@ export const SignUpPage = () => {
       <div className="auth-field">
         <span className="card-title">Реєстрація</span>
 
-        <TextField label="Name" placeholder="Введите имя" correctForm={correctForm.name} inputRef={nameRef} />
-        <TextField label="Email" placeholder="Введите email" correctForm={correctForm.email} inputRef={emailRef} />
-        <TextField label="Password" placeholder="Введите пароль" correctForm={correctForm.password} inputRef={passwordRef} />
+        <TextField label="Name" placeholder="Введите имя" correctForm={correctForm.name} type="text" inputRef={nameRef} />
+        <TextField label="Email" placeholder="Введите email" correctForm={correctForm.email} type="email" inputRef={emailRef} />
+        <TextField label="Password" placeholder="Введите пароль" correctForm={correctForm.password} type="password" inputRef={passwordRef} />
 
         <div className="card-action">
           <button className="button-active" onClick={handleSubmit} disabled={loading}>

@@ -1,9 +1,9 @@
 import React, {useState} from 'react'
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import {useAuth} from './hooks/auth.hook.js'
 import {AuthContext} from './context/AuthContext.js'
 import {PrivateRoute} from './components/PrivateRoute.js'
-import {AuthRoute} from './components/AuthRoute.js'
+import {PubliсOnlyRoute} from './components/PubliсOnlyRoute.js'
 import {Loader} from './components/Loader'
 import {SignUpPage} from './pages/SignUpPage'
 import {SignInPage} from './pages/SignInPage'
@@ -36,8 +36,8 @@ export default function App() {
   	}}>
   	  <Router>
         <Switch>
-          <Route exact path="/signIn" component={SignInPage} />
-          <Route exact path="/signUp" component={SignUpPage} />
+          <PubliсOnlyRoute exact path="/signIn" component={SignInPage} />
+          <PubliсOnlyRoute exact path="/signUp" component={SignUpPage} />
   	      <PrivateRoute exact path="/chat" component={Chat} />
           <PrivateRoute exact path="/filterContacts" component={FilterContacts} />
           <PrivateRoute exact path="/addChannel" component={AddChannel} />

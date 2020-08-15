@@ -1,7 +1,7 @@
 import React from 'react'
 
 export function TextField(props) {
-  const {label, placeholder, correctForm, inputRef, type} = props
+  const {label, placeholder, type, name, correctForm, inputRef} = props
 
   return (
     <div className="input-field">
@@ -9,6 +9,7 @@ export function TextField(props) {
       <input
         placeholder={placeholder}
         type={type}
+        name={name}
         className={correctForm === true ? "border-bottom-green" : "none-border-bottom"}
         ref={inputRef}
       />

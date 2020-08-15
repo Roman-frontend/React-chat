@@ -6,6 +6,9 @@ export const FilterContacts = () => {
 
 
   function filterContactsWithNames(listContacts) {
+    const regExp = /(- 3|- 8|- 0|- +).+?\s(?=( - \d|- \d| - \+|- \+))/g;
+    const afterRegExp = listContacts.match(regExp)
+    console.log("afterRegExp -", afterRegExp)
     let splitOn = ''
     let contact = ''
     let arrayContacts = []
@@ -92,7 +95,7 @@ export const FilterContacts = () => {
           placeholder="Введите список контактів"
           type="text"
           name="email"
-          className="inputs border-bottom-red"
+          className="none-border-bottom"
           ref={inputContactsRef}
         />
         <button onClick={listContacts => filterContactsWithNames(inputContactsRef.current.value)}>With name</button>

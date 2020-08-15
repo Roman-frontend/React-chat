@@ -36,8 +36,21 @@ export const SignInPage = () => {
       <div className="auth-field">
         <span className="card-title">Авторизація</span>
 
-        <TextField label="Email" placeholder="Введите email" correctForm={correctForm.email} type="email" inputRef={emailRef} />
-        <TextField label="Password" placeholder="Введите password" correctForm={correctForm.password} type="password" inputRef={passwordRef} />
+        <TextField 
+          label="Email" 
+          placeholder="Введите email" 
+          name="email" 
+          correctForm={correctForm.email} 
+          type="email" inputRef={emailRef} 
+        />
+        <TextField 
+          label="Password" 
+          placeholder="Введите password" 
+          name="password" 
+          correctForm={correctForm.password} 
+          type="password" 
+          inputRef={passwordRef} 
+        />
 
         <div className="card-action">
           <button

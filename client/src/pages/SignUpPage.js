@@ -24,14 +24,22 @@ export const SignUpPage = () => {
 
 
   const handleSubmit = async () => {
+    const formNameRef = nameRef.current.value
+    const formEmailRef = emailRef.current.value
+    const formPasswordRef = passwordRef.current.value
 
-    const validatedName = validateName(nameRef.current.value)
-    const validatedEmail = validateEmail(emailRef.current.value)
-    const validatedPassword = validatePassword(passwordRef.current.value)
-    setCorrectForm({name: validatedName, email: validatedEmail, password: validatedPassword})
+    setCorrectForm({
+      name: validateName(formNameRef), 
+      email: validateEmail(formEmailRef), 
+      password: validatePassword(formPasswordRef)
+    })
 
     try {
-      const formData = {name: nameRef.current.value, email: emailRef.current.value, password: passwordRef.current.value}
+      const formData = {
+        name: formNameRef, 
+        email: formEmailRef, 
+        password: formPasswordRef
+      }
       const data = await request('api/auth/register', 'POST', formData)
       auth.login(data.name, data.token, data.userId)
     } catch (e) {}
@@ -42,9 +50,30 @@ export const SignUpPage = () => {
       <div className="auth-field">
         <span className="card-title">Реєстрація</span>
 
-        <TextField label="Name" placeholder="Введите имя" correctForm={correctForm.name} type="text" inputRef={nameRef} />
-        <TextField label="Email" placeholder="Введите email" correctForm={correctForm.email} type="email" inputRef={emailRef} />
-        <TextField label="Password" placeholder="Введите пароль" correctForm={correctForm.password} type="password" inputRef={passwordRef} />
+        <TextField 
+          label="Name" 
+          placeholder="Введите имя" 
+          name="name" 
+          correctForm={correctForm.name} 
+          type="text" 
+          inputRef={nameRef} 
+        />
+        <TextField 
+          label="Email" 
+          placeholder="Введите email" 
+          name="email" 
+          correctForm={correctForm.email} 
+          type="email" 
+          inputRef={emailRef} 
+        />
+        <TextField 
+          label="Password" 
+          placeholder="Введите пароль" 
+          name="password" 
+          correctForm={correctForm.password} 
+          type="password" 
+          inputRef={passwordRef} 
+        />
 
         <div className="card-action">
           <button className="button-active" onClick={handleSubmit} disabled={loading}>

@@ -36,10 +36,10 @@ export default function App() {
   	}}>
   	  <Router>
         <Switch>
+          <Route exact path='/filterContacts' component={FilterContacts} />
           <PubliсOnlyRoute exact path="/signIn" component={SignInPage} />
           <PubliсOnlyRoute exact path="/signUp" component={SignUpPage} />
   	      <PrivateRoute exact path="/chat" component={Chat} />
-          <PrivateRoute exact path="/filterContacts" component={FilterContacts} />
           <PrivateRoute exact path="/addChannel" component={AddChannel} />
           <PrivateRoute path='/' component={Chat} />
         </Switch>

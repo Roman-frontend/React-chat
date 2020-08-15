@@ -9,16 +9,10 @@ export const useValidate = () => {
   const NAME_MIN_LENGTH = 3
 
   function validateName(formDataName) {
+    const regExp = /[a-z]/gi
 
     for (let index = 0; index < formDataName.length; index++) {
-
-      if ( !((90 >= formDataName.codePointAt(index) && 
-      formDataName.codePointAt(index) >= 65) ||
-      (122 >= formDataName.codePointAt(index) && 
-      formDataName.codePointAt(index) >= 97)) ) {
-
-        return "Некоректное имя"
-      }
+      if ( !formDataName[index].match(regExp) ) return "Некоректное имя"
     }
 
     if (formDataName.length < NAME_MIN_LENGTH) {
@@ -31,16 +25,10 @@ export const useValidate = () => {
   }
 
   function validateEmail(formDataEmail) {
-
-    if ( (formDataEmail.indexOf("@") === -1) || 
-      (formDataEmail.indexOf(" ") !== -1) ) {
-      return "Некоректний емейл"
-
-    } else return true
+    return formDataEmail.match(/[@]\S/) ? true : "Некоректний емейл";
   }
 
   function validatePassword(formDataPassword) {
-
     if (formDataPassword.length < PASSWORD_MIN_LENGTH) {
       return "Слишком короткий пароль"
 

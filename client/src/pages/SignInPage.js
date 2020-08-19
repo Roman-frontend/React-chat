@@ -22,8 +22,7 @@ export const SignInPage = () => {
 
   const handleSubmit = async () => {
     const validatedEmail = validateEmail(emailRef.current.value)
-    const validatedPassword = validatePassword(passwordRef.current.value)
-    setCorrectForm({email: validatedEmail, password: validatedPassword})
+    setCorrectForm({email: validatedEmail})
     try {
       const emailPassword = { email: emailRef.current.value, password: passwordRef.current.value }
       const data = await request('/api/auth/login', 'POST', emailPassword)

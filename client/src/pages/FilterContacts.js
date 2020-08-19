@@ -1,90 +1,94 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 
 export const FilterContacts = () => {
   const inputContactsRef = useRef(null)
   const [listContacts, setListContacts] = useState(null)
+  const [storageContacts, setStorageContacts] = useState('')
 
+  useEffect(() => {
+    inputContactsRef.current.focus();
+  }, []);
 
-  function filterContactsWithNames(listContacts) {
-    const regExp = /(- 3|- 8|- 0|- +).+?\s(?=( - \d|- \d| - \+|- \+))/g;
-    const afterRegExp = listContacts.match(regExp)
-    console.log("afterRegExp -", afterRegExp)
-    let splitOn = ''
-    let contact = ''
-    let arrayContacts = []
-    for (let element of listContacts) {
-      if ((splitOn === '') && (element === '-')) {
-        splitOn += element
-      } else if ((splitOn === '-') && (element === ' ')) {
-        splitOn += element
-      } else if ((splitOn === '- ') && ((element === '+') || (element === '3') || (element === '8') || (element === '0'))) {
-        arrayContacts.push(contact)
-        splitOn = ''
-        if (element === '0') { 
-          contact = '0'
-        } else contact = ''
-      } else {
-        splitOn = ''
-        contact += element
-      }
+  useEffect(() => {
+    /** JSON.parse() - приводить результат до обєкта */
+    const storageContacts = JSON.parse(localStorage.getItem('storageContacts'))
+
+    if (storageContacts) {
+      setStorageContacts(storageContacts)
+      console.log(storageContacts, 'storageContacts')
     }
-    const readyList = arrayContacts.join('-\n')
+  }, [])
+
+
+  function compareContactsWithNames(listContacts) {
+    const contactsReadyToAudit = `${listContacts} - 3`
+    const regExp = /(- 3|- 8|- 0|- +).+?\s(?=(?:( ?- \d| ?- \+)))/g;
+    const afterAuditRegExp = contactsReadyToAudit.match(regExp)
+    const readyList = afterAuditRegExp.join('\n')
     setListContacts(readyList)
   }
 
-  function compareNambers(listContacts) {
-    const arrayNumbers = createArrayNumbers(listContacts)
-    const arrayShortNumbers = cutNumbers(arrayNumbers)
-    const readyList = finishedListNumbers(arrayShortNumbers).join('-\n')
+  function compareContactsWithoutNames(listContacts) {
+    const arrayNumbers = getArrayContacts(listContacts)
+    const readyList = finishedListNumbers(arrayNumbers).join('\n - ')
+
     setListContacts(readyList)
   }
 
-  function cutNumbers(arr) { 
-    const listReducedNumbers = arr.map(element => {
-      if (element.length === 10) {
-        return element
-      } else if (element.length === 11) {
-        return element.slice(1, 10)
-      } else if (element.length === 12) {
-        return element.slice(2, 11)
-      } else return element
+  function saveContactsToLocalStorage() {
+    const combinedArrayStorageAndInputNumbers = listContacts.concat(storageContacts)
+    localStorage.setItem('storageContacts', JSON.stringify(` - ${combinedArrayStorageAndInputNumbers}`))
+  }
+
+  function cleanStorage() {
+    localStorage.removeItem('storageContacts')
+  }
+
+  function getArrayContacts(listContacts) { 
+    const regExp = /[\d ]+\d/gi;
+
+    const arrayNumbers = listContacts.match(regExp)
+    const readyContactsArray = arrayNumbers.map(contact => {
+      const contactWithoutEmptyPlace = contact.split(' ').join('')
+      return contactWithoutEmptyPlace.split('').splice(-10, 10).join('')
     })
+    console.log('Short numbers -', readyContactsArray)
 
-    return listReducedNumbers
-  }
-
-  function createArrayNumbers(listNumbers) {
-    let numEl = ''
-
-    for (let element of listNumbers) {
-      if ( element === '0') {
-        numEl +=  element
-      } else if ( parseInt( element) ) {
-        numEl +=  element
-      } else if (( element !== ' ') && (numEl[numEl.length - 1] !== ' ')) {
-        numEl += ' '
-      }
-    }
-
-    return numEl.split(' ')
+    return readyContactsArray
   }
 
   function finishedListNumbers(listContacts) {
-    let arrayShortNumbers = listContacts
+    let inputContacts = listContacts
+    let storageArrayContacts = []
+    if (storageContacts) {
+      storageArrayContacts = getArrayContacts(storageContacts)
+    } 
 
-    for (let index in arrayShortNumbers) {
-      for (let secendIndex in arrayShortNumbers) {
+    for (let index in inputContacts) {
 
-        if ((arrayShortNumbers[index] === arrayShortNumbers[secendIndex]) && 
+      for (let secendIndex in inputContacts) {
+        if ((inputContacts[index] === inputContacts[secendIndex]) && 
         (index !== secendIndex) && 
-        (arrayShortNumbers[index] !== undefined)) {
-          console.log(arrayShortNumbers[index])
-          arrayShortNumbers.splice(index, 1)
+        (inputContacts[index] !== undefined)) {
+          console.log(`Повторний з індексами - ${index} i ${secendIndex}`, inputContacts[index])
+          inputContacts.splice(index, 1)
+        }
+      }
+
+      for (let secendIndex in storageArrayContacts) {
+        if (inputContacts[index] === storageArrayContacts[secendIndex]) {
+          console.log(`Введений контакт -${index}`, 
+            inputContacts[index], 
+            `Контакт з localStorage -${secendIndex}`, 
+            storageArrayContacts[secendIndex]
+          )
+          inputContacts.splice(index, 1)
         }
       }
     }
 
-    return arrayShortNumbers
+    setListContacts(inputContacts)
+    return inputContacts
   }
 
   return (
@@ -98,28 +102,11 @@ export const FilterContacts = () => {
           className="none-border-bottom"
           ref={inputContactsRef}
         />
-        <button onClick={listContacts => filterContactsWithNames(inputContactsRef.current.value)}>With name</button>
-        <button onClick={listContacts => compareNambers(inputContactsRef.current.value)}>Without name</button>
+        <button onClick={listContacts => compareContactsWithNames(inputContactsRef.current.value)}>With name</button>
+        <button onClick={listContacts => compareContactsWithoutNames(inputContactsRef.current.value)}>Without name</button>
+        <button onClick={saveContactsToLocalStorage}>Save contacts</button>
+        <button onClick={cleanStorage}>Clean contacts</button>
       </div>
       <div className="b">{listContacts}</div>
     </div>)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

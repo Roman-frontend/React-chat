@@ -1,8 +1,11 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
 import {useServer} from '../hooks/Server'
 
 export const useValidate = () => {
+  const [errors, setErrors] = useState({
+    name: undefined, email: undefined, password: undefined
+  })
   const PASSWORD_MAX_LENGTH = 50
   const PASSWORD_MIN_LENGTH = 8
   const NAME_MAX_LENGTH = 15

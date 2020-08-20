@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState, useRef} from 'react'
+import {useFormik} from 'formik'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {useValidate} from '../hooks/validate.hook.js'
@@ -6,6 +7,14 @@ import {AuthContext} from '../context/AuthContext'
 import {TextField} from '../components/TextField.js'
 
 export const SignUpPage = () => {
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: ''
+    }
+  })
 
   const auth = useContext(AuthContext)
   const {loading, request, error, clearError} = useHttp()
@@ -45,6 +54,8 @@ export const SignUpPage = () => {
     } catch (e) {}
   }
 
+  console.log('form values ', formik.values)
+
   return ( 
     <div className="auth-body">
       <div className="auth-field">
@@ -53,26 +64,35 @@ export const SignUpPage = () => {
         <TextField 
           label="Name" 
           placeholder="Введите имя" 
+          id="name"
           name="name" 
           correctForm={correctForm.name} 
-          type="text" 
+          type="name" 
           inputRef={nameRef} 
+          value={formik.values.name}
+          onChange={formik.handleChange}
         />
         <TextField 
           label="Email" 
           placeholder="Введите email" 
+          id="email"
           name="email" 
           correctForm={correctForm.email} 
           type="email" 
-          inputRef={emailRef} 
+          inputRef={emailRef}
+          value={formik.values.email} 
+          onChange={formik.handleChange}
         />
         <TextField 
           label="Password" 
           placeholder="Введите пароль" 
+          id="password"
           name="password" 
           correctForm={correctForm.password} 
           type="password" 
           inputRef={passwordRef} 
+          value={formik.values.password}
+          onChange={formik.handleChange}
         />
 
         <div className="card-action">

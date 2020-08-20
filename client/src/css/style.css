@@ -537,3 +537,8 @@ img.icon {
   left: 5rem;
   padding: 0rem 35rem;
 }
+
+.errors {
+  color: red;
+  margin: 0.2rem;
+}

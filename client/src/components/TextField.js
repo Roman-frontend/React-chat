@@ -1,4 +1,5 @@
 import React from 'react'
+import { Field } from 'formik'
 
 export function TextField(props) {
   const {label, placeholder, type, id, name, correctForm, inputRef, value, onChange, onBlur} = props
@@ -6,16 +7,13 @@ export function TextField(props) {
   return (
     <div className="input-field">
       <label className="auth-text" htmlFor="email">{label}</label>
-      <input
+      <Field
         placeholder={placeholder}
         type={type}
         id={id}
         name={name}
         className={correctForm === true ? "border-bottom-green" : "none-border-bottom"}
         ref={inputRef}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
       />
       <p className={correctForm === undefined || correctForm === true ? 
         "none-form-error" : "form-error" }>

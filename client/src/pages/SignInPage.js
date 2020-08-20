@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState, useRef} from 'react'
 import {useFormik} from 'formik'
-//import * as Yup from 'yup'
+//https://github.com/jquense/yup  - Силка на додаткові методи yup
+import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
@@ -34,15 +35,15 @@ export const SignInPage = () => {
     return errors
   }
 
-/*  const validationSchema = Yup.object({
+  const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
-    password: Yup.string().password('Invalid password format').required('Required')
-  })*/
+    password: Yup.string().required('Required')
+  })
 
   const formik = useFormik({
     initialValues,
     onSubmit,
-    validate
+    validationSchema
   })
 
   console.log('form touched ', formik.touched)

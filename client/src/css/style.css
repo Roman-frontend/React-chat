@@ -390,8 +390,6 @@ img.icon {
 .auth-body {
   display: flex;
   justify-content: center;
-  height: 100vh;
-  background: #ededed;
 }
 
 .auth-field {
@@ -538,4 +536,9 @@ img.icon {
   margin: 0;
   left: 5rem;
   padding: 0rem 35rem;
+}
+
+.errors {
+  color: red;
+  margin: 0.2rem;
 }

@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState, useRef} from 'react'
+import {useFormik} from 'formik'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {useValidate} from '../hooks/validate.hook.js'
@@ -6,6 +7,14 @@ import {AuthContext} from '../context/AuthContext'
 import {TextField} from '../components/TextField.js'
 
 export const SignUpPage = () => {
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: ''
+    }
+  })
 
   const auth = useContext(AuthContext)
   const {loading, request, error, clearError} = useHttp()
@@ -24,27 +33,67 @@ export const SignUpPage = () => {
 
 
   const handleSubmit = async () => {
+    const formNameRef = nameRef.current.value
+    const formEmailRef = emailRef.current.value
+    const formPasswordRef = passwordRef.current.value
 
-    const validatedName = validateName(nameRef.current.value)
-    const validatedEmail = validateEmail(emailRef.current.value)
-    const validatedPassword = validatePassword(passwordRef.current.value)
-    setCorrectForm({name: validatedName, email: validatedEmail, password: validatedPassword})
+    setCorrectForm({
+      name: validateName(formNameRef), 
+      email: validateEmail(formEmailRef), 
+      password: validatePassword(formPasswordRef)
+    })
 
     try {
-      const formData = {name: nameRef.current.value, email: emailRef.current.value, password: passwordRef.current.value}
+      const formData = {
+        name: formNameRef, 
+        email: formEmailRef, 
+        password: formPasswordRef
+      }
       const data = await request('api/auth/register', 'POST', formData)
       auth.login(data.name, data.token, data.userId)
     } catch (e) {}
   }
+
+  console.log('form values ', formik.values)
 
   return ( 
     <div className="auth-body">
       <div className="auth-field">
         <span className="card-title">Реєстрація</span>
 
-        <TextField label="Name" placeholder="Введите имя" correctForm={correctForm.name} inputRef={nameRef} />
-        <TextField label="Email" placeholder="Введите email" correctForm={correctForm.email} inputRef={emailRef} />
-        <TextField label="Password" placeholder="Введите пароль" correctForm={correctForm.password} inputRef={passwordRef} />
+        <TextField 
+          label="Name" 
+          placeholder="Введите имя" 
+          id="name"
+          name="name" 
+          correctForm={correctForm.name} 
+          type="name" 
+          inputRef={nameRef} 
+          value={formik.values.name}
+          onChange={formik.handleChange}
+        />
+        <TextField 
+          label="Email" 
+          placeholder="Введите email" 
+          id="email"
+          name="email" 
+          correctForm={correctForm.email} 
+          type="email" 
+          inputRef={emailRef}
+          value={formik.values.email} 
+          onChange={formik.handleChange}
+        />
+        <TextField 
+          label="Password" 
+          placeholder="Введите пароль" 
+          id="password"
+          name="password" 
+          correctForm={correctForm.password} 
+          type="password" 
+          inputRef={passwordRef} 
+          value={formik.values.password}
+          onChange={formik.handleChange}
+        />
 
         <div className="card-action">
           <button className="button-active" onClick={handleSubmit} disabled={loading}>

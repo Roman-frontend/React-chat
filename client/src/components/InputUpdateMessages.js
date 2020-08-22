@@ -17,7 +17,7 @@ export default function InputUpdateMessages(props) {
   useEffect(() => {
     inputRef.current.focus();
     getData()
-  }, []);
+  }, [ , userId]);
 
   function inputUpdateMessages(event) {
     if (event.key === "Enter") {

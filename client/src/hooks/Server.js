@@ -9,10 +9,13 @@ export const useServer = (props) => {
 
   const getData = async () => {
     try {
-      const data = await request(`/api/chat/get-messages${userId}`)
-      console.log(data.usersNames)
-      setUsersNames(data.usersNames)
-      if (data.messages) return setMessages(data.messages.reverse())
+      console.log("Server userId: ", userId)
+      if (userId) {
+        const data = await request(`/api/chat/get-messages${userId}`)
+        console.log(data.usersNames, data.messages, userId)
+        setUsersNames(data.usersNames)
+        if (data.messages) return setMessages(data.messages.reverse())
+      }
     } catch (e) {console.log(e.message, e.error)}
   }
 

@@ -1,11 +1,11 @@
-import React, {useContext, useEffect, useState, useRef} from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import React, {useContext, useEffect, useState, useRef, useCallback} from 'react'
+import { Formik, Form, ErrorMessage} from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
-import {TextField} from '../components/TextField.js'
+import {TextFieldSignIn} from '../components/TextFieldSignIn.js'
 
 export const SignInPage = () => {
   const auth = useContext(AuthContext)
@@ -15,6 +15,7 @@ export const SignInPage = () => {
     clearError()
   }, [error, clearError])
 
+
   const initialValues = {
     email: '',
     password: ''
@@ -22,7 +23,10 @@ export const SignInPage = () => {
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
-    password: Yup.string().required('Required')
+    password: Yup.string()
+      .min(2, 'Too Short!')
+      .max(15, 'Too Long')
+      .required('Required')
   })
 
   const onSubmit = async values => {
@@ -34,29 +38,32 @@ export const SignInPage = () => {
   }
 
   return (
-    <Formik 
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
-    >
-      <div className="auth-body">
-        <Form className="auth-field">
-          <span className="card-title">Авторизація</span>
+    <div>
+      <Formik 
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        <div className="auth-body">
+          <Form className="auth-field">
 
-          <TextField label="Email" placeholder="Введите email" id="email" name="email" type="email" />
-          <ErrorMessage name='email' />
+            <span className="card-title">Авторизація</span>
 
-          <TextField label="Password" placeholder="Введите password" id="password" name="password" type="password" />
-          <ErrorMessage name='password' />
+            <TextFieldSignIn label="Email" placeholder="Введите email" id="email" name="email" type="email" />
+            <TextFieldSignIn label="Password" placeholder="Введите password" id="password" name="password" type="password" />
 
-          <div className="card-action">
-            <button className="button-active" type="submit" disabled={loading}>Ввійти</button>
-            <Link  to={`/signUp`}>
-              <button className="button-pasive">Зареєструватись</button>
-            </Link>
-          </div>
-        </Form>
-      </div>
-    </Formik>
+            <div className="card-action">
+
+              <button className="button-active" type="submit" disabled={loading}>Ввійти</button>
+
+              <Link  to={`/signUp`}>
+                <button className="button-pasive">Зареєструватись</button>
+              </Link>
+
+            </div>
+          </Form>
+        </div>
+      </Formik>
+    </div>
   )
 }

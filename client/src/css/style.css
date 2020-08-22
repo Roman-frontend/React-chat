@@ -366,20 +366,19 @@ img.icon {
   border-bottom: 0.2rem solid green;
 }
 
+.border-bottom-red {
+  padding: 0;
+  height: 2.2rem;
+  width: 27rem;
+  border-bottom: 0.2rem solid red;
+}
+
 .form-error {
   height: 1.5rem;
   width: 27.3rem;
   margin: 0;
-  background: -webkit-linear-gradient(top, #782275, #ffcfcf);
-  border-radius: 0rem 0rem 0.7rem 0rem;
-/*  background: #ff0000;
-  background: -moz-radial-gradient(center, ellipse cover, #ff0000, #ffcfcf);
-  background: -o-linear-gradient(top, #ff0000, #ffcfcf);
-  background: -ms-linear-gradient(top, #ff0000, #ffcfcf);*/
-}
-
-.none-form-error {
-  display: none;
+  padding: 0.5rem 0 0 0;
+  color: #ffd4d4;
 }
 
 .log-out {

@@ -1,31 +1,21 @@
-import React, {useContext, useEffect, useState, useRef} from 'react'
-import {useFormik} from 'formik'
+import React, {useContext, useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
 import {useValidate} from '../hooks/validate.hook.js'
 import {AuthContext} from '../context/AuthContext'
-import {TextField} from '../components/TextField.js'
+import {TextFieldSignUp} from '../components/TextFieldSignUp.js'
 
 export const SignUpPage = () => {
-
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      email: '',
-      password: ''
-    }
-  })
+  const {errors, validate} = useValidate();
 
   const auth = useContext(AuthContext)
   const {loading, request, error, clearError} = useHttp()
-  const {validateName, validateEmail, validatePassword} = useValidate()
   
-  const nameRef = useRef(undefined)
-  const emailRef = useRef(undefined);
-  const passwordRef = useRef(undefined);
-  const [correctForm, setCorrectForm] = useState({
-    name: undefined, email: undefined, password: undefined
-  })
+  const ref = {
+    name: useRef(undefined),
+    email: useRef(undefined),
+    password: useRef(undefined)
+  }
 
   useEffect(() => {
     clearError()
@@ -33,66 +23,51 @@ export const SignUpPage = () => {
 
 
   const handleSubmit = async () => {
-    const formNameRef = nameRef.current.value
-    const formEmailRef = emailRef.current.value
-    const formPasswordRef = passwordRef.current.value
+    const formData = {
+      name: ref.name.current.value, 
+      email: ref.email.current.value,
+      password: ref.password.current.value
+    }
 
-    setCorrectForm({
-      name: validateName(formNameRef), 
-      email: validateEmail(formEmailRef), 
-      password: validatePassword(formPasswordRef)
-    })
+    validate({...formData})
 
     try {
-      const formData = {
-        name: formNameRef, 
-        email: formEmailRef, 
-        password: formPasswordRef
-      }
       const data = await request('api/auth/register', 'POST', formData)
       auth.login(data.name, data.token, data.userId)
     } catch (e) {}
   }
-
-  console.log('form values ', formik.values)
 
   return ( 
     <div className="auth-body">
       <div className="auth-field">
         <span className="card-title">Реєстрація</span>
 
-        <TextField 
+        <TextFieldSignUp 
           label="Name" 
           placeholder="Введите имя" 
           id="name"
           name="name" 
-          correctForm={correctForm.name} 
+          correctForm={errors.name} 
           type="name" 
-          inputRef={nameRef} 
-          value={formik.values.name}
-          onChange={formik.handleChange}
+          inputRef={ref.name}
         />
-        <TextField 
+        <TextFieldSignUp 
           label="Email" 
           placeholder="Введите email" 
           id="email"
           name="email" 
-          correctForm={correctForm.email} 
+          correctForm={errors.email} 
           type="email" 
-          inputRef={emailRef}
-          value={formik.values.email} 
-          onChange={formik.handleChange}
+          inputRef={ref.email}
         />
-        <TextField 
+        <TextFieldSignUp 
           label="Password" 
           placeholder="Введите пароль" 
           id="password"
           name="password" 
-          correctForm={correctForm.password} 
+          correctForm={errors.password} 
           type="password" 
-          inputRef={passwordRef} 
-          value={formik.values.password}
-          onChange={formik.handleChange}
+          inputRef={ref.password} 
         />
 
         <div className="card-action">

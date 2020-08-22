@@ -1,13 +1,12 @@
 import React from 'react'
-import { Field } from 'formik'
 
-export function TextField(props) {
-  const {label, placeholder, type, id, name, correctForm, inputRef, value, onChange, onBlur} = props
+export function TextFieldSignUp(props) {
+  const {label, placeholder, type, id, name, correctForm, inputRef} = props
 
   return (
     <div className="input-field">
       <label className="auth-text" htmlFor="email">{label}</label>
-      <Field
+      <input
         placeholder={placeholder}
         type={type}
         id={id}

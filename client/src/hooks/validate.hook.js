@@ -2,96 +2,89 @@ import React, {useState, useReducer, useCallback, useMemo} from 'react'
 import {Link} from 'react-router-dom'
 import {useServer} from '../hooks/Server'
 
-export const useValidate = (validateObject) => {
-  const PASSWORD_MAX_LENGTH = 50
-  const PASSWORD_MIN_LENGTH = 8
-  const NAME_MAX_LENGTH = 15
-  const NAME_MIN_LENGTH = 3
+const PASSWORD_MAX_LENGTH = 50
+const PASSWORD_MIN_LENGTH = 8
+const NAME_MAX_LENGTH = 15
+const NAME_MIN_LENGTH = 3
 
-  const [errors, setErrors] = useState({
-    name: undefined, email: undefined, password: undefined
-  })
-  
-  const [formValue, setFormValue] = useState({
-    name: '', email: '', password: ''
-  })
+export const useMethodsValidations = () => {
 
-  const reducer = (state, action) => { 
-    switch(action.type) { 
-    case 'name': return validateName(action.text)
-    case 'email': return validateEmail(action.text)
-    case 'password': return validatePassword(action.text)
-    default: return state 
-    }
-  }
-
-  const [state, dispatch] = useReducer(reducer, {text: " "})
-
-  const name = useMemo(() =>  { 
-    dispatch({ type: 'name', text: formValue.name })
-  }, [formValue.name])
-
-  const email = useMemo(() =>  { 
-    dispatch({ type: 'email', text: formValue.email })
-  }, [formValue.email])
-
-  const password = useMemo(() =>  { 
-    dispatch({ type: 'password', text: formValue.password })
-  }, [formValue.password])
-
-  const validate = (formValue) => {
-    setFormValue({...formValue})
-  }
-
-  function validateName(formName) {
+  const validateName = useCallback(formName => {
+    const name = formName.name
     const regExp = /[A-Z0-9]/gi
 
-    for (let index = 0; index < formName.length; index++) {
-      if ( !formName[index].match(regExp) ) { 
-        return setErrors({name: "Некоректное имя"})
+    if (!name) {
+      return {name: undefined}
+
+    } else if (name.length < NAME_MIN_LENGTH) {
+      return {name: "Слишком короткое имя"}
+    }
+
+    for (let index = 0; index < name.length; index++) {
+      if ( !name[index].match(regExp) ) { 
+        return {name: "Некоректное имя"}
       }
     }
 
-    if (!formName) {
-      return null
+    if (name.length > NAME_MAX_LENGTH) {
+      return {name: "Слишком длинное имя"}
 
-    } else if (formName.length < NAME_MIN_LENGTH) {
-      return setErrors({name: "Слишком короткое имя"})
+    } else return {name: true}
+  }, [])
 
-    } else if (formName.length > NAME_MAX_LENGTH) {
-      return setErrors({name: "Слишком длинное имя"})
-
-    } else return setErrors({name: true})
-  }
-
-  function validateEmail(formEmail) {
+  const validateEmail = useCallback( formEmail => {
+    const email = formEmail.email
+    console.log(email)
     const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
 
-    if (!formEmail) {
-      return null
+    if (!email) {
+      return {email: undefined}
 
-    } else if (formEmail.match(regExp)) {
-      return setErrors({email: true})
+    } else if (email.match(regExp)) {
+      return {email: true}
 
-    } else if (!formEmail.match(regExp)) {
-      return setErrors({email: "Некоректний емейл"})
+    } else if (!email.match(regExp)) {
+      return {email: "Некоректний емейл"}
 
     }
-  }
+  }, [])
 
-  function validatePassword(formPassword) {
+  const validatePassword = useCallback( formPassword => {
+    const password = formPassword.password
+    console.log(password)
 
-    if (!formPassword) {
-      return null
+    if (!password) {
+      return {password: undefined}
 
-    } else if (formPassword.length < PASSWORD_MIN_LENGTH) {
-      return setErrors({password: "Слишком короткий пароль"})
+    } else if (password.length < PASSWORD_MIN_LENGTH) {
+      return {'password': "Слишком короткий пароль"}
 
-    } else if (formPassword.length > PASSWORD_MAX_LENGTH) {
-      return setErrors({password: "Слишком длинний пароль"})
+    } else if (password.length > PASSWORD_MAX_LENGTH) {
+      return {'password': "Слишком длинний пароль"}
 
-    } else return setErrors({password: true})
-  }
+    } else return {password: true}
+
+  }, [])
+
+  return {validateName, validateEmail, validatePassword}
+}
+
+export const useValidate = (validateObject) => {
+  const [errors, setErrors] = useState({
+    name: undefined, email: undefined, password: undefined
+  })
+
+  const validate = useCallback( formValue => {
+    let a = {}
+
+    for (let key in validateObject) {
+      const validatedForm = validateObject[key](formValue)
+      a = Object.assign(a, validatedForm)
+    }
+
+    setErrors({...a})
+
+  }, [validateObject])
 
   return {errors, validate}
 }

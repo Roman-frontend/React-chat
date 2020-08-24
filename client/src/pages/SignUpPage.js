@@ -1,12 +1,17 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
-import {useValidate} from '../hooks/validate.hook.js'
+import {useMethodsValidations, useValidate} from '../hooks/validate.hook.js'
 import {AuthContext} from '../context/AuthContext'
 import {TextFieldSignUp} from '../components/TextFieldSignUp.js'
 
 export const SignUpPage = () => {
-  const {errors, validate} = useValidate();
+  const {validateName, validateEmail, validatePassword} = useMethodsValidations()
+  const {errors, validate} = useValidate({
+    name: validateName,
+    email: validateEmail,
+    password: validatePassword
+  })
 
   const auth = useContext(AuthContext)
   const {loading, request, error, clearError} = useHttp()
@@ -29,7 +34,8 @@ export const SignUpPage = () => {
       password: ref.password.current.value
     }
 
-    validate({...formData})
+    validate(formData)
+    console.log(errors)
 
     try {
       const data = await request('api/auth/register', 'POST', formData)

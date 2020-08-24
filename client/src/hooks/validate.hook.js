@@ -1,6 +1,4 @@
-import React, {useState, useReducer, useCallback, useMemo} from 'react'
-import {Link} from 'react-router-dom'
-import {useServer} from '../hooks/Server'
+import {useState, useReducer, useCallback, useMemo} from 'react'
 
 const PASSWORD_MAX_LENGTH = 50
 const PASSWORD_MIN_LENGTH = 8
@@ -11,52 +9,35 @@ export const useMethodsValidations = () => {
 
   const validateName = useCallback(formName => {
     const name = formName.name
+    console.log(name)
     const regExp = /[A-Z0-9]/gi
 
-    if (!name) {
-      return {name: undefined}
-
-    } else if (name.length < NAME_MIN_LENGTH) {
-      return {name: "Слишком короткое имя"}
-    }
+    if (name.length < NAME_MIN_LENGTH) return {name: "Слишком короткое имя"}
 
     for (let index = 0; index < name.length; index++) {
-      if ( !name[index].match(regExp) ) { 
-        return {name: "Некоректное имя"}
-      }
+      if ( !name[index].match(regExp) ) return {name: "Некоректное имя"}
     }
 
-    if (name.length > NAME_MAX_LENGTH) {
-      return {name: "Слишком длинное имя"}
+    if (name.length > NAME_MAX_LENGTH) return {name: "Слишком длинное имя"}
 
-    } else return {name: true}
+    return {name: true}
+
   }, [])
 
   const validateEmail = useCallback( formEmail => {
     const email = formEmail.email
-    console.log(email)
     const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
 
-    if (!email) {
-      return {email: undefined}
+    if (email.match(regExp)) return {email: true}
+      
+    if (!email.match(regExp)) return {email: "Некоректний емейл"}
 
-    } else if (email.match(regExp)) {
-      return {email: true}
-
-    } else if (!email.match(regExp)) {
-      return {email: "Некоректний емейл"}
-
-    }
   }, [])
 
   const validatePassword = useCallback( formPassword => {
     const password = formPassword.password
-    console.log(password)
 
-    if (!password) {
-      return {password: undefined}
-
-    } else if (password.length < PASSWORD_MIN_LENGTH) {
+    if (password.length < PASSWORD_MIN_LENGTH) {
       return {'password': "Слишком короткий пароль"}
 
     } else if (password.length > PASSWORD_MAX_LENGTH) {

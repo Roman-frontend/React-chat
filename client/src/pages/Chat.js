@@ -1,9 +1,9 @@
 import React from 'react'
+import {MessagesContext} from '../context/MessagesContext'
 import Search from '../components/Search'
 import Profile from '../components/Profile'
-import Messages from '../components/Messages'
 import SetUser from '../components/SetUser'
-import {MessagesContext} from '../context/MessagesContext'
+import Conversation from '../components/Conversation'
 
 export const Chat = () => {
 
@@ -14,7 +14,7 @@ export const Chat = () => {
         <Profile/>
         <SetUser/>
       </div>
-      <MessagesContext component={<Messages/>} />
+      <MessagesContext component={<Conversation />} />       
     </div>
 	)
 }

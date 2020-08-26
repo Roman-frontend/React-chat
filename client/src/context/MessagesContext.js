@@ -5,21 +5,18 @@ export const useMessagesContext = () => {
   return useContext(Context) 
 }
 
-export const MessagesContext = ({component}) => {  
+export const MessagesContext = ({component}) => { 
+  const inputRef = useRef() 
   const [messages, setMessages] = useState([]);
-  const [messageActions, setMessageActions] = useState(null)
-  const [action, setAction] = useState({})
-  const inputRef = useRef()
+  const [messageActions, setMessageActions] = useState({})
 
   return (
     <Context.Provider value={{
+      inputRef,
       messages,
       setMessages,
       messageActions,
-      setMessageActions,
-      action,
-      setAction,
-      inputRef
+      setMessageActions
     }}>  
       {component}  
     </Context.Provider>

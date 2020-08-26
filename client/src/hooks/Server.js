@@ -22,6 +22,7 @@ export const useServer = (props) => {
     try {
       const data = await request(url, "POST", {...updatedArrayMessages})
       setMessages(data.messages.reverse())
+      console.log(data.messages)
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 

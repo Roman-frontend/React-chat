@@ -2,16 +2,16 @@ import React from 'react'
 import {useMessagesContext} from '../context/MessagesContext'
 
 export default function ButtonExitChangeMessage(props) {
-  const {messages, setMessages, action, setAction, inputRef} = useMessagesContext()
+  const {messageActions, setMessageActions, inputRef} = useMessagesContext()
 
   function hideButtonExit() {
-    const object = Object.assign({}, {...action}, {'change': null})
-    setAction({...object})
-    inputRef.current.value = ""
+    const object = Object.assign({}, {...messageActions}, {change: null}, {answerTo: null});
+    setMessageActions({...object});
+    inputRef.current.value = "";
   }
   
 
-  if (action.change) {
+  if (messageActions.change || messageActions.answerTo) {
     return <button className="button-text-edit" onClick={hideButtonExit}>X</button>
   } 
 

@@ -6,10 +6,9 @@ import {useServer} from '../hooks/Server'
 export default function InputUpdateMessages(props) {
 
   const {name, userId} = useAuthContext()
-  const {messages, setMessages, action, setAction, inputRef} = useMessagesContext()
+  const {messages, setMessages, messageActions, setMessageActions, inputRef} = useMessagesContext()
   const {postData, putData, getData} = useServer()
   const copyMessages = messages.slice(0, messages.length);
-  const answerTo = messages.find(message => message._id === action.answerTo)
   let updatedArrayMessages = []
 
   useEffect(() => {
@@ -18,10 +17,9 @@ export default function InputUpdateMessages(props) {
   }, [ , userId]);
 
   function inputUpdateMessages(event) {
-    if (event.key === "Enter") {
-      if (inputRef.current.value === "") return
-      if (action.change) changeMessageText()
-      else if (action.answerTo) messageInReply(inputRef.current.value)
+    if ((event.key === "Enter") && !(inputRef.current.value === "")) {
+      if (messageActions.change) changeMessageText()
+      else if (messageActions.answerTo) messageInReply(inputRef.current.value)
       else newMessage(inputRef.current.value)
       
       setMessages(updatedArrayMessages)   
@@ -33,20 +31,20 @@ export default function InputUpdateMessages(props) {
     let putMessage = []
 
     updatedArrayMessages = messages.map(message => {
-      if (message._id === action.change) {
+      if (message._id === messageActions.change) {
         message.text = inputRef.current.value
         putMessage.push(message)
         return message
       } else return message
     })
     
-    await putData(putMessage[0], action.change)
-    const object = Object.assign({}, {...action}, {'change': null})
-    setAction({...object})
+    await putData(putMessage[0], messageActions.change)
+    const object = Object.assign({}, {...messageActions}, {'change': null})
+    setMessageActions({...object})
   }
 
   function messageInReply(response) {
-
+    const answerTo = messages.find(message => message._id === messageActions.answerTo);
     copyMessages.unshift({
       userId: userId,
       username: name, 
@@ -55,16 +53,10 @@ export default function InputUpdateMessages(props) {
       _id: Date.now(), 
       reply: response
     },) 
-
-    updatedArrayMessages = copyMessages.map(message => {
-      if (message.answer) {
-        message.answer = false
-        return message
-      } else return message
-    })   
-    const object = Object.assign({}, {...action}, {answerTo: null})
-    setAction({...object})    
-    postData(`/api/chat/post-message`, updatedArrayMessages[0])
+ 
+    const object = Object.assign({}, {...messageActions}, {answerTo: null})
+    setMessageActions({...object})    
+    postData(`/api/chat/post-message`, copyMessages[0])
   }
 
   function newMessage(textMessage) {

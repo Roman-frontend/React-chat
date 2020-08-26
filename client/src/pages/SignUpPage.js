@@ -1,19 +1,19 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
-import {useMethodsValidations, useValidate} from '../hooks/validate.hook.js'
-import {AuthContext} from '../context/AuthContext'
+import {useValidate} from '../hooks/validate.hook.js'
+import {useAuthContext} from '../context/AuthContext'
+import {validateName, validateEmail, validatePassword} from '../components/validateMethods'
 import {TextFieldSignUp} from '../components/TextFieldSignUp.js'
 
 export const SignUpPage = () => {
-  const {validateName, validateEmail, validatePassword} = useMethodsValidations()
   const {errors, validate} = useValidate({
     name: validateName,
     email: validateEmail,
     password: validatePassword
   })
 
-  const auth = useContext(AuthContext)
+  const {login} = useAuthContext()
   const {loading, request, error, clearError} = useHttp()
   
   const ref = {
@@ -35,11 +35,10 @@ export const SignUpPage = () => {
     }
 
     validate(formData)
-    console.log(errors)
 
     try {
       const data = await request('api/auth/register', 'POST', formData)
-      auth.login(data.name, data.token, data.userId)
+      login(data.name, data.token, data.userId)
     } catch (e) {}
   }
 
@@ -53,7 +52,7 @@ export const SignUpPage = () => {
           placeholder="Введите имя" 
           id="name"
           name="name" 
-          correctForm={errors.name} 
+          fieldError={errors.name} 
           type="name" 
           inputRef={ref.name}
         />
@@ -62,7 +61,7 @@ export const SignUpPage = () => {
           placeholder="Введите email" 
           id="email"
           name="email" 
-          correctForm={errors.email} 
+          fieldError={errors.email} 
           type="email" 
           inputRef={ref.email}
         />
@@ -71,7 +70,7 @@ export const SignUpPage = () => {
           placeholder="Введите пароль" 
           id="password"
           name="password" 
-          correctForm={errors.password} 
+          fieldError={errors.password} 
           type="password" 
           inputRef={ref.password} 
         />

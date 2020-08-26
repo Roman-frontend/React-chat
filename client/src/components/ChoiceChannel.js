@@ -7,9 +7,7 @@ export function ChoiceChannel(props) {
   const inputRef = useRef(null);
   const [showBlockCreateChannel, setShowBlockCreateChannel] = useState(false)
   const [showBlockAddPeople, setShowBlockAddPeople] = useState(false)
-  const [form, setForm] = useState({
-    name: '', discription: '', people: ''
-  })
+  const [form, setForm] = useState({})
 
   useEffect(() => {
     inputRef.current.focus();
@@ -19,7 +17,7 @@ export function ChoiceChannel(props) {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
-  function openCloseBlockCreateChannel() {
+  function showCreate() {
     setShowBlockCreateChannel(!showBlockCreateChannel)
   }
 
@@ -28,10 +26,9 @@ export function ChoiceChannel(props) {
     setShowBlockCreateChannel(false)
   }
 
-  const doneCreateChannel = () => {
+  const doneCreate = () => {
     setShowBlockAddPeople(false)
     postData(`/api/channel/post-channel`, form)
-    console.log("form.name, form.discription - ", form.name, form.discription, form.people)
   }
 
   function createChannel() {
@@ -40,36 +37,36 @@ export function ChoiceChannel(props) {
 
       return (
         <>
-          <button className="button-create-channel" onClick={openCloseBlockCreateChannel}>Create channel</button>
+          <button className="button-create-channel" onClick={showCreate}>Create channel</button>
           <div className="block-create-channel">
 
             <div>
-              <span className="title-create-channel">Create a channel</span>
+              <span className="title">Create a channel</span>
               <p className="discription-of-create-channel">
                 Channels are where your team communicates. They’re best when organized around a topic — #marketing, for example.
               </p>
-              <label><b className="label-name-channel">Name</b></label>
+              <label><b className="label-name">Name</b></label>
               <input 
-              placeholder="input-name-channel" 
-              className="input-name-channel"
-              type="text"
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={changeHandler} 
+                placeholder="input-name-channel" 
+                className="input-name"
+                type="text"
+                id="name"
+                name="name"
+                value={form.name}
+                onChange={changeHandler} 
               />
             </div>
 
-            <div className="block-for-description">
-              <label><b className="label-description-channel">Discription</b></label>
+            <div className="description-block">
+              <label><b className="label-description">Discription</b></label>
               <input 
-              placeholder="input-description-channel" 
-              className="input-description-channel"
-              type="text"
-              id="discription"
-              name="discription"
-              value={form.discription}
-              onChange={changeHandler} 
+                placeholder="input-description-channel" 
+                className="input-description"
+                type="text"
+                id="discription"
+                name="discription"
+                value={form.discription}
+                onChange={changeHandler} 
               />
             </div>
 
@@ -84,22 +81,22 @@ export function ChoiceChannel(props) {
           <div className="block-create-channel">
 
             <div>
-              <span className="title-create-channel">Add people</span>
+              <span className="title">Add people</span>
               <p className="discription-of-create-channel">
                 #example
               </p>
               <label><b className="label-name-channel">People</b></label>
               <input 
-              placeholder="input-name-channel" 
-              className="input-name-channel"
-              type="text"
-              id="people"
-              name="people"
-              value={form.people}
-              onChange={changeHandler} 
+                placeholder="input-name-channel" 
+                className="input-name-channel"
+                type="text"
+                id="people"
+                name="people"
+                value={form.people}
+                onChange={changeHandler} 
               />
             </div>
-            <button className="button-create" onClick={doneCreateChannel}>Done</button>
+            <button className="button-create" onClick={doneCreate}>Done</button>
 
           </div>
         </>
@@ -113,7 +110,7 @@ export function ChoiceChannel(props) {
     <div className="right-block">
       <div className="nick-people">
         <b className="main-font sets-peoples-of-chat">Channel browser</b>
-        <button className="button-create-channel" onClick={openCloseBlockCreateChannel}>Create channel</button>
+        <button className="button-create-channel" onClick={showCreate}>Create channel</button>
         {createChannel()}
         <input type="text" className="input-for-search-channel" ref={inputRef} placeholder="Search by channel name or description"/>
       </div>

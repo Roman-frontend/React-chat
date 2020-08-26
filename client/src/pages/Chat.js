@@ -3,6 +3,7 @@ import Search from '../components/Search'
 import Profile from '../components/Profile'
 import Messages from '../components/Messages'
 import SetUser from '../components/SetUser'
+import {MessagesContext} from '../context/MessagesContext'
 
 export const Chat = () => {
 
@@ -13,7 +14,7 @@ export const Chat = () => {
         <Profile/>
         <SetUser/>
       </div>
-      <Messages/>
+      <MessagesContext component={<Messages/>} />
     </div>
-	);
+	)
 }

@@ -301,8 +301,8 @@ img.icon {
 .message {
   word-break: break-all;
   grid-area: message;
-  margin: 0rem;
-  top: -0.8rem;
+  margin: 1rem 0rem;
+  top: -1rem;
   left: 1rem;
 }
 
@@ -312,13 +312,13 @@ img.icon {
   padding: 0rem 1rem;
   font-weight: 600;
   grid-area: messager;
-  top: -0.8rem;
+  top: 0.2rem;
 }
 
 .date {
   margin: 0rem;
   grid-area: date;
-  top: -0.8rem;
+  top: 0.2rem;
 }
 
 .icon {
@@ -349,11 +349,11 @@ img.icon {
 
 .reply {
   grid-area: reply;
-  top: -1rem;
+  top: -0.5rem;
   left: 1rem;
 }
 
-.none-border-bottom {
+.without-border-bottom {
   padding: 0;
   height: 2.2rem;
   width: 27rem;
@@ -469,7 +469,7 @@ img.icon {
   position: absolute;
 }
 
-.title-create-channel {
+.title {
   font-size: 2rem;
   font-weight: 600;
   top: 1rem;
@@ -483,11 +483,11 @@ img.icon {
   top: 1rem;
 }
 
-.label-name-channel {
+.label-name {
   padding: 1rem 2rem;
 }
 
-.input-name-channel {
+.input-name {
   border-radius: 0.3rem;
   left: -4.5rem;
   top: 2rem;
@@ -495,15 +495,15 @@ img.icon {
   height: 2rem;
 }
 
-.block-for-description {
+.description-block {
   top: 3rem;
 }
 
-.label-description-channel {
+.label-description {
   padding: 0rem 2rem;
 }
 
-.input-description-channel {
+.input-description {
   border-radius: 0.3rem;
   left: 2.1rem;
   top: 0.5rem;

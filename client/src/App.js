@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import {useAuth} from './hooks/auth.hook.js'
 import {AuthContext} from './context/AuthContext.js'
@@ -12,28 +12,12 @@ import {FilterContacts} from './pages/FilterContacts.js'
 import {AddChannel} from './pages/AddChannel'
 
 export default function App() {
-  const {login, logout, name, token, userId, ready} = useAuth()
-  const isAuthenticated = !!token
-  const [messages, setMessages] = useState([]);
-  const [usersNames, setUsersNames] = useState([])
+  const {ready} = useAuth()
 
-  if (!ready) {
-    return <Loader />
-  }
+  if (!ready) return <Loader />
 
   return (
-  	<AuthContext.Provider value={{
-  	  login, 
-      logout, 
-      name, 
-      token, 
-      userId, 
-      isAuthenticated, 
-      messages, 
-      setMessages, 
-      usersNames, 
-      setUsersNames
-  	}}>
+  	<AuthContext>
   	  <Router>
         <Switch>
           <Route exact path='/filterContacts' component={FilterContacts} />
@@ -44,7 +28,6 @@ export default function App() {
           <PrivateRoute path='/' component={Chat} />
         </Switch>
       </Router>
-    </AuthContext.Provider>
+    </AuthContext>
   );
 }
-

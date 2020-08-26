@@ -1,7 +1,7 @@
 import React from 'react'
 
 export function TextFieldSignUp(props) {
-  const {label, placeholder, type, id, name, correctForm, inputRef} = props
+  const {label, placeholder, type, id, name, fieldError, inputRef} = props
 
   return (
     <div className="input-field">
@@ -11,12 +11,11 @@ export function TextFieldSignUp(props) {
         type={type}
         id={id}
         name={name}
-        className={correctForm === true ? "border-bottom-green" : "none-border-bottom"}
+        className={fieldError === true ? "border-bottom-green" : "without-border-bottom"}
         ref={inputRef}
       />
-      <p className={correctForm === undefined || correctForm === true ? 
-        "none-form-error" : "form-error" }>
-        {correctForm}
+      <p className={fieldError === undefined || fieldError === true ? null : "form-error" }>
+        {fieldError}
       </p>
     </div>
   )

@@ -1,6 +1,5 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-import {AuthContext} from '../context/AuthContext'
+import {MessagesContext} from '../context/MessagesContext'
 import Search from '../components/Search'
 import Profile from '../components/Profile'
 import SetUser from '../components/SetUser'
@@ -15,7 +14,7 @@ export function AddChannel() {
           <Profile/>
           <SetUser/>
         </div>
-        <ChoiceChannel />
+        <MessagesContext component={<ChoiceChannel />} />
       </div>
     )
 }

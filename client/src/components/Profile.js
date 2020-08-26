@@ -1,11 +1,11 @@
 import React, {useContext} from 'react'
 import {NavLink, useHistory} from 'react-router-dom'
-import {AuthContext} from '../context/AuthContext'
+import {useAuthContext} from '../context/AuthContext'
 import edit from '../images/edit.png';
 
 export default function Profile() {
   const history = useHistory()
-  const auth = useContext(AuthContext)
+  const auth = useAuthContext()
 
   const logoutHandler = event => {
     event.preventDefault()

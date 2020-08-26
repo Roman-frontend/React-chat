@@ -4,11 +4,11 @@ import { Formik, Form, ErrorMessage} from 'formik'
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
-import {AuthContext} from '../context/AuthContext'
+import {useAuthContext} from '../context/AuthContext'
 import {TextFieldSignIn} from '../components/TextFieldSignIn.js'
 
 export const SignInPage = () => {
-  const auth = useContext(AuthContext)
+  const auth = useAuthContext()
   const {loading, request, error, clearError} = useHttp()
 
   useEffect(() => {

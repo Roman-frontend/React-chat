@@ -1,9 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {useServer} from '../hooks/Server'
 
 export default function AllUsedOfUser(props) {
-  const {getData} = useServer()
 
   return (
     <div className="instruments">

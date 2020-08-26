@@ -13,8 +13,8 @@ export function TextFieldSignIn(props) {
           return (
             <div>
               <input 
-                className={!meta.touched ? "none-border-bottom" : 
-                  meta.touched && meta.error ? "border-bottom-red" : "border-bottom-green"}
+                className={!meta.touched ? "without-border-bottom" : 
+                  meta.touched && meta.error ? "without-border-bottom" : "border-bottom-green"}
                 placeholder={placeholder}
                 type={type}
                 id={id}

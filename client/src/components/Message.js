@@ -6,37 +6,33 @@ import iconMore from '../images/icon-more.png'
 
 export default function Message(props) {
   const {removeData} = useServer()
-  const { messageActions, setMessageActions, inputRef } = useMessagesContext()
   const {username, text, createdAt, _id} = props.message
-  const {message} = props
-  let typeMessage = message.reply ? "container-reply" : "container"
+  const {message, activeMessage, setActiveMessage} = props
+  const typeMessage = message.reply ? "container-reply" : "container"
   const replyMessage = message.reply ? <div className="reply"><p>&#8593; {message.reply}</p></div> : null
 
   const moreEdit = () => { 
-    if (messageActions.messageActions === _id) { 
-      const object = Object.assign({}, {...messageActions}, {messageActions: null})
-      setMessageActions(object) 
-
-    } else {
-      const object = Object.assign({}, {...messageActions}, {messageActions: _id})
-      setMessageActions(object) 
-    }
+    const changedActions = activeMessage.showActions === _id ? {showActions: undefined} : {showActions: _id}
+    const object = Object.assign({}, {...activeMessage}, changedActions)
+    setActiveMessage({...object})
   }
 
   const answerTo = () => {
-    const object = Object.assign({}, {...messageActions}, {answerTo: _id}, {messageActions: null})
-    setMessageActions({...object})
-    inputRef.current.value = ""
+    activeMessage.idMessageForAnswer === _id ? 
+      setActiveMessage({idMessageForAnswer: undefined}) : 
+      setActiveMessage({idMessageForAnswer: _id})
   }
 
-  function change() {
-    const object = Object.assign({}, {...messageActions}, {change: _id}, {messageActions: null})
-    setMessageActions({...object})
-    inputRef.current.value = message.text
+  const change = () => {
+    activeMessage.idMessageForChange === _id ? 
+      setActiveMessage({idMessageForChange: undefined}) : 
+      setActiveMessage({idMessageForChange: _id})
   }
+
+  const onDelete = () => setActiveMessage({idMessageForDelete: _id})
 
   const handlerEvent = () => {
-    if (messageActions.messageActions === _id) {  
+    if (activeMessage.showActions === _id) {  
 
       return (
         <div className="change-mes">
@@ -45,7 +41,7 @@ export default function Message(props) {
           <button className="edit-mes" onClick={change} >Змінити</button>
           <button className="redirect-mes">Поділитись</button>
           <button className="delete-mes" 
-            onClick={message => removeData(props.message)}
+            onClick={onDelete}
           >Видалити</button>
         </div>
       )

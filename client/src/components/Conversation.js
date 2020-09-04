@@ -9,14 +9,13 @@ export default function Conversation(props) {
   const {name} = useAuthContext();
   const {messages} = useMessagesContext();
   const [activeMessage, setActiveMessage] = useState({})
-  const className = activeMessage.idMessageForAnswer ? "right-block-with-riply" : "right-block-without-riply";
-  const buttonEndActive = activeMessage.idMessageForAnswer || activeMessage.idMessageForChange ? 
+  const className = activeMessage.answering ? "right-block-with-riply" : "right-block-without-riply";
+  const buttonEndActive = activeMessage.answering || activeMessage.changing ? 
     <EndActionButton  activeMessage={activeMessage} setActiveMessage={setActiveMessage} /> : null;
 
   const fieldAnswerTo = () => {
-    if (activeMessage.idMessageForAnswer) {
-      const answerTo = messages.find(message => message._id === activeMessage.idMessageForAnswer);
-      return <div className="field-answer"><p>{answerTo.text}</p></div>
+    if (activeMessage.answering) {
+      return <div className="field-answer">{activeMessage.answering.text}</div>
     }
   }
 

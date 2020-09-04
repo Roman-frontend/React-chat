@@ -6,7 +6,7 @@ export default function EndActionButton(props) {
   const { activeMessage, setActiveMessage } = props
 
   function hideButtonExit() {
-    const object = Object.assign({}, {...activeMessage}, {idMessageForAnswer: undefined}, {idMessageForChange: undefined});
+    const object = Object.assign({}, {...activeMessage}, {answering: undefined}, {changing: undefined});
     setActiveMessage({...object});
     inputRef.current.value = "";
   }

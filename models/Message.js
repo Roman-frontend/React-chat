@@ -11,9 +11,6 @@ const Message = new Schema({
   * для типу Numder - min: 1, max: 100 - встроєний валідатор що вказує доступні дані для запису: від 1 до 100
   * required: true - вказує що поле обовʼязково має бути задане перед збереженням  */
   reply: {type: String},
-  listAction: {type: Boolean, default: false }, 
-  changed: {type: Boolean, default: false }, 
-  answer: {type: Boolean, default: false }, 
 })
 
 /**

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useLayoutEffect} from 'react'
 import {useAuthContext} from '../context/AuthContext'
 import {useMessagesContext} from '../context/MessagesContext'
 import {useServer} from '../hooks/Server'
@@ -11,10 +11,10 @@ export default function InputUpdateMessages(props) {
   const copyMessages = messages.slice(0, messages.length);
   let updatedArrayMessages = []
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     inputRef.current.focus();
     getData()
-  }, [ , userId]);
+  }, [userId]);
 
   function inputUpdateMessages(event) {
     if ((event.key === "Enter") && !(inputRef.current.value === "")) {

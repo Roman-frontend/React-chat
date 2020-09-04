@@ -1,28 +1,72 @@
-import React from 'react'
+import React, {useEffect, useState, useCallback} from 'react'
+import Tippy from '@tippy.js/react'
+import 'tippy.js/dist/tippy.css'
 import {useMessagesContext} from '../context/MessagesContext'
 import {useServer} from '../hooks/Server'
-import iconPeople from '../images/icon-people.png'
 import iconMore from '../images/icon-more.png'
 
 export default function MessageActionsPopup(props) {
-  const {removeData} = useServer()
-  const { messages, inputRef } = useMessagesContext()
-  const {activeMessage} = props
+  const { removeData } = useServer();
+  const { inputRef } = useMessagesContext();
+  const { activeMessage, setActiveMessage } = props;
+  const [block, setBlock] = useState(true)
+  let element = document.getElementById(activeMessage.id)
+  let topActiveMessageRelativeTopPage = null
 
-  const action = () => {
+  if (element) topActiveMessageRelativeTopPage = element.getBoundingClientRect().top + 3
 
-    if (activeMessage.idMessageForAnswer) {
-      inputRef.current.value = ""
+  useEffect(() => {
+    setBlock(true)
+  }, [activeMessage.id])
 
-    } else if (activeMessage.idMessageForChange) {
-      const messageForChange = messages.find(message => message._id === activeMessage.idMessageForChange);
-      inputRef.current.value = messageForChange.text
-
-    } else if (activeMessage.idMessageForDelete) {
-      const messageForRemove = messages.find(message => message._id === activeMessage.idMessageForRemove);
-      removeData(messageForRemove)
-    }
+  const handleAnswer = () => {
+    setBlock(false)
+    const valueAnsweringActiveMessage = activeMessage.answering ? undefined : activeMessage.message;
+    const object = Object.assign({}, {...activeMessage}, {answering: valueAnsweringActiveMessage})
+    setActiveMessage({...object});
+    inputRef.current.value = "";
   }
 
-  return null
+  const handleChange = () => {
+    let valueChangingActiveMessage
+    setBlock(false)
+
+    if (activeMessage.changing) {
+      valueChangingActiveMessage = undefined;
+      inputRef.current.value = '';
+
+    } else {
+      valueChangingActiveMessage = activeMessage.message;
+      inputRef.current.value = activeMessage.message.text;
+    }
+
+    const object = Object.assign({}, {...activeMessage}, {changing: valueChangingActiveMessage})
+    setActiveMessage({...object});
+  }
+
+  const handleDelete = () => {
+    setBlock(false)
+    removeData(activeMessage.message);
+  }
+
+  if (block) {
+    return (
+      <Tippy content='more actions'>
+        <img 
+          className="actions"
+          style={{top: `${topActiveMessageRelativeTopPage}px`}} 
+          src={iconMore} 
+          onClick={() => setBlock(false)}
+        />
+      </Tippy>
+    )
+  }
+  return (
+    <div className="change-mes actions" style={{top: `${topActiveMessageRelativeTopPage}px`}}>
+      <button className="answer-mes" onClick={handleAnswer} >Відповісти</button>
+      <button className="edit-mes" onClick={handleChange} >Змінити</button>
+      <button className="redirect-mes">Поділитись</button>
+      <button className="delete-mes" onClick={handleDelete} >Видалити</button>
+    </div>
+  )
 }

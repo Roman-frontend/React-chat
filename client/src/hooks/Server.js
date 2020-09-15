@@ -1,7 +1,7 @@
 import {useContext} from 'react'
-import {useHttp} from '../hooks/http.hook'
-import {useAuthContext} from '../context/AuthContext'
-import {useMessagesContext} from '../context/MessagesContext'
+import {useHttp} from '../hooks/http.hook.js'
+import {useAuthContext} from '../context/AuthContext.js'
+import {useMessagesContext} from '../context/MessagesContext.js'
 
 export const useServer = (props) => {
   const {userId, setUsersNames} = useAuthContext()

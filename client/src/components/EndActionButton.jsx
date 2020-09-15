@@ -1,5 +1,5 @@
 import React from 'react'
-import {useMessagesContext} from '../context/MessagesContext'
+import {useMessagesContext} from '../context/MessagesContext.js'
 
 export default function EndActionButton(props) {
   const {inputRef} = useMessagesContext()
@@ -12,5 +12,5 @@ export default function EndActionButton(props) {
   }
   
 
-  return <button className="button-text-edit" onClick={hideButtonExit}>X</button>
+  return <button className="right-block__button-hide-answer-change" onClick={hideButtonExit}>X</button>
 }

@@ -3,9 +3,9 @@ import { Formik, Form, ErrorMessage} from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
-import {useHttp} from '../hooks/http.hook'
-import {useAuthContext} from '../context/AuthContext'
-import {TextFieldSignIn} from '../components/TextFieldSignIn.js'
+import {useHttp} from '../hooks/http.hook.js'
+import {useAuthContext} from '../context/AuthContext.js'
+import {TextFieldSignIn} from '../components/TextFieldSignIn.jsx'
 
 export const SignInPage = () => {
   const auth = useAuthContext()
@@ -38,31 +38,31 @@ export const SignInPage = () => {
   }
 
   return (
-    <div>
+    <div className="auth-body">
       <Formik 
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
-        <div className="auth-body">
-          <Form className="auth-field">
+        <Form className="auth-form">
+          <span className="auth-form__title">Авторизація</span>
 
-            <span className="card-title">Авторизація</span>
+          <TextFieldSignIn label="Email" placeholder="Введите email" id="email" name="email" type="email" />
+          <TextFieldSignIn label="Password" placeholder="Введите password" id="password" name="password" type="password" />
 
-            <TextFieldSignIn label="Email" placeholder="Введите email" id="email" name="email" type="email" />
-            <TextFieldSignIn label="Password" placeholder="Введите password" id="password" name="password" type="password" />
+          <button 
+            className="auth-form__button-active" 
+            type="submit" 
+            disabled={loading}
+          >
+            Ввійти
+          </button>
 
-            <div className="card-action">
+          <Link  to={`/signUp`}>
+            <button className="auth-form__button-pasive">Зареєструватись</button>
+          </Link>
 
-              <button className="button-active" type="submit" disabled={loading}>Ввійти</button>
-
-              <Link  to={`/signUp`}>
-                <button className="button-pasive">Зареєструватись</button>
-              </Link>
-
-            </div>
-          </Form>
-        </div>
+        </Form>
       </Formik>
     </div>
   )

@@ -1,8 +1,8 @@
-import React, {useEffect, useState, useCallback} from 'react'
+import React, {useEffect, useState} from 'react'
 import Tippy from '@tippy.js/react'
 import 'tippy.js/dist/tippy.css'
-import {useMessagesContext} from '../context/MessagesContext'
-import {useServer} from '../hooks/Server'
+import {useMessagesContext} from '../context/MessagesContext.js'
+import {useServer} from '../hooks/Server.js'
 import iconMore from '../images/icon-more.png'
 
 export default function MessageActionsPopup(props) {
@@ -51,9 +51,9 @@ export default function MessageActionsPopup(props) {
 
   if (block) {
     return (
-      <Tippy content='more actions'>
+      <Tippy content='Actions'>
         <img 
-          className="actions"
+          className="chat-actions"
           style={{top: `${topActiveMessageRelativeTopPage}px`}} 
           src={iconMore} 
           onClick={() => setBlock(false)}
@@ -62,11 +62,11 @@ export default function MessageActionsPopup(props) {
     )
   }
   return (
-    <div className="change-mes actions" style={{top: `${topActiveMessageRelativeTopPage}px`}}>
-      <button className="answer-mes" onClick={handleAnswer} >Відповісти</button>
-      <button className="edit-mes" onClick={handleChange} >Змінити</button>
-      <button className="redirect-mes">Поділитись</button>
-      <button className="delete-mes" onClick={handleDelete} >Видалити</button>
+    <div className="field-actions chat-actions" style={{top: `${topActiveMessageRelativeTopPage}px`}}>
+      <button className="field-actions__answer" onClick={handleAnswer} >Відповісти</button>
+      <button className="field-actions__edit" onClick={handleChange} >Змінити</button>
+      <button className="field-actions__redirect">Поділитись</button>
+      <button className="field-actions__delete" onClick={handleDelete} >Видалити</button>
     </div>
   )
 }

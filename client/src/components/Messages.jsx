@@ -1,7 +1,7 @@
 import React from 'react'
-import {useMessagesContext} from '../context/MessagesContext'
-import Message from './Message'
-import MessageActionsPopup from './MessageActionsPopup'
+import {useMessagesContext} from '../context/MessagesContext.js'
+import Message from './Message.jsx'
+import MessageActionsPopup from './MessageActionsPopup.jsx'
 
 export default function Messages(props) {
   const {messages} = useMessagesContext()
@@ -20,7 +20,7 @@ export default function Messages(props) {
   }
 
   return (
-    <div className="chat-with-people">
+    <div className="chat">
       {renderMessages()}
       <MessageActionsPopup activeMessage={props.activeMessage} setActiveMessage={props.setActiveMessage} />
     </div>

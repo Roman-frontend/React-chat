@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {AuthContext} from '../context/AuthContext'
-import {useServer} from '../hooks/Server'
+import {AuthContext} from '../context/AuthContext.js'
+import {useServer} from '../hooks/Server.js'
 
 export function ChoiceChannel(props) {
   const {postData} = useServer()

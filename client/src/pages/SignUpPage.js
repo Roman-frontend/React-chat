@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
-import {useHttp} from '../hooks/http.hook'
+import {useHttp} from '../hooks/http.hook.js'
 import {useValidate} from '../hooks/validate.hook.js'
-import {useAuthContext} from '../context/AuthContext'
-import {validateName, validateEmail, validatePassword} from '../components/validateMethods'
-import {TextFieldSignUp} from '../components/TextFieldSignUp.js'
+import {useAuthContext} from '../context/AuthContext.js'
+import {validateName, validateEmail, validatePassword} from '../components/validateMethods.jsx'
+import {TextFieldSignUp} from '../components/TextFieldSignUp.jsx'
 
 export const SignUpPage = () => {
   const {errors, validate} = useValidate({
@@ -44,8 +44,8 @@ export const SignUpPage = () => {
 
   return ( 
     <div className="auth-body">
-      <div className="auth-field">
-        <span className="card-title">Реєстрація</span>
+      <div className="auth-form">
+        <span className="auth-form__title">Реєстрація</span>
 
         <TextFieldSignUp 
           label="Name" 
@@ -75,14 +75,17 @@ export const SignUpPage = () => {
           inputRef={ref.password} 
         />
 
-        <div className="card-action">
-          <button className="button-active" onClick={handleSubmit} disabled={loading}>
-            Реєстрація
-          </button>
-          <Link to={`/signIn`}>
-            <button className="button-pasive">Вхід</button>
-          </Link>
-        </div>
+        <button 
+          className="auth-form__button-active" 
+          onClick={handleSubmit} 
+          disabled={loading}
+        >
+          Реєстрація
+        </button>
+
+        <Link to={`/signIn`}>
+          <button className="auth-form__button-pasive">Вхід</button>
+        </Link>
       </div>
     </div>
   )

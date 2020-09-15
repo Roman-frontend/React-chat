@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect} from 'react'
-import {useAuthContext} from '../context/AuthContext'
-import {useMessagesContext} from '../context/MessagesContext'
-import {useServer} from '../hooks/Server'
+import {useAuthContext} from '../context/AuthContext.js'
+import {useMessagesContext} from '../context/MessagesContext.js'
+import {useServer} from '../hooks/Server.js'
 
 export default function InputUpdateMessages(props) {
 
@@ -75,7 +75,7 @@ export default function InputUpdateMessages(props) {
   return (
     <input 
       type="text" 
-      className="input-message" 
+      className="right-block__input-message" 
       placeholder="Enter Text" 
       ref={inputRef} 
       onKeyUp={event => inputUpdateMessages(event)}

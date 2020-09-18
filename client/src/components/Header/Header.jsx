@@ -1,7 +1,8 @@
 import React from 'react'
-import iconHistori from '../images/iconHistori.png'
-import serch from '../images/serch.png'
-import Help from '../images/Help.png'
+import iconHistori from '../../images/iconHistori.png'
+import serch from '../../images/serch.png'
+import Help from '../../images/Help.png'
+import './header.sass'
 
 export default function Header() {
   return (

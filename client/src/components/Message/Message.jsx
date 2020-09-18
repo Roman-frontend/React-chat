@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
-import iconPeople from '../images/icon-people.png'
+import iconPeople from '../../images/icon-people.png'
+import './message.sass'
 
 export default function Message(props) {
   const {message, activeMessage, setActiveMessage} = props
@@ -13,10 +14,10 @@ export default function Message(props) {
 
   return (
     <div className={classMessage} id={_id} onMouseEnter={reportsClick} >
-      <img className="container__icon" src={iconPeople} alt="icon-user"/>
-      <p className="container__messager">{username}</p>
-      <p className="container__date">{createdAt}</p>
-      <p className="container__message">{text}</p>
+      <img className={`${classMessage}__icon`} src={iconPeople} alt="icon-user"/>
+      <p className={`${classMessage}__messager`}>{username}</p>
+      <p className={`${classMessage}__date`}>{createdAt}</p>
+      <p className={`${classMessage}__message`}>{text}</p>
       {replyMessage}
     </div>
   )

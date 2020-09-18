@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 
-export default function AllUsedOfUser(props) {
+export default function SetsUser(props) {
 
   return (
     <div className="user-sets main-font">

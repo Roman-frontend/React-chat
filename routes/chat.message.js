@@ -1,6 +1,6 @@
 const {Router} = require('express')
 const config = require('config')
-const Message = require('../models/Message.js')
+const Message = require('../models/Message')
 const User = require('../models/User.js')
 const router = Router()
 
@@ -12,7 +12,7 @@ router.get(`/get-messages:userId`,
     const usersNames = users.map(user => {
       return user.name
     })
-    res.json({messages: userMessages, usersNames: usersNames, message : 'Повідомлення повернені'})
+    res.json({messages: userMessages, usersNames, message : 'Повідомлення повернені'})
   } catch (e) {
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})
   }
@@ -23,7 +23,7 @@ router.post(
   async (req, res) => {
   try {
     const createdMessage = await Message.create(req.body)
-    res.status(201).json({message : 'Повідомлення змінене'})
+    res.status(201).json({createdMessage, message : 'Повідомлення змінене'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }

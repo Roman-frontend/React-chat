@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
-import {useHttp} from '../hooks/http.hook.js'
-import {useValidate} from '../hooks/validate.hook.js'
-import {useAuthContext} from '../context/AuthContext.js'
-import {validateName, validateEmail, validatePassword} from '../components/validateMethods.jsx'
-import {TextFieldSignUp} from '../components/TextFieldSignUp.jsx'
+import {useHttp} from '../../hooks/http.hook.js'
+import {useValidate} from '../../hooks/validate.hook.js'
+import {useAuthContext} from '../../context/AuthContext.js'
+import {validateName, validateEmail, validatePassword} from '../../components/validateMethods.jsx'
+import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
 
 export const SignUpPage = () => {
   const {errors, validate} = useValidate({
@@ -47,7 +47,7 @@ export const SignUpPage = () => {
       <div className="auth-form">
         <span className="auth-form__title">Реєстрація</span>
 
-        <TextFieldSignUp 
+        <SignUpForm 
           label="Name" 
           placeholder="Введите имя" 
           id="name"
@@ -56,7 +56,7 @@ export const SignUpPage = () => {
           type="name" 
           inputRef={ref.name}
         />
-        <TextFieldSignUp 
+        <SignUpForm 
           label="Email" 
           placeholder="Введите email" 
           id="email"
@@ -65,7 +65,7 @@ export const SignUpPage = () => {
           type="email" 
           inputRef={ref.email}
         />
-        <TextFieldSignUp 
+        <SignUpForm 
           label="Password" 
           placeholder="Введите пароль" 
           id="password"

@@ -3,9 +3,10 @@ import { Formik, Form, ErrorMessage} from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
-import {useHttp} from '../hooks/http.hook.js'
-import {useAuthContext} from '../context/AuthContext.js'
-import {TextFieldSignIn} from '../components/TextFieldSignIn.jsx'
+import {useHttp} from '../../hooks/http.hook.js'
+import {useAuthContext} from '../../context/AuthContext.js'
+import {SignInForm} from '../../components/SignInForm/SignInForm.jsx'
+import './auth-body.sass'
 
 export const SignInPage = () => {
   const auth = useAuthContext()
@@ -47,8 +48,8 @@ export const SignInPage = () => {
         <Form className="auth-form">
           <span className="auth-form__title">Авторизація</span>
 
-          <TextFieldSignIn label="Email" placeholder="Введите email" id="email" name="email" type="email" />
-          <TextFieldSignIn label="Password" placeholder="Введите password" id="password" name="password" type="password" />
+          <SignInForm label="Email" placeholder="Введите email" id="email" name="email" type="email" />
+          <SignInForm label="Password" placeholder="Введите password" id="password" name="password" type="password" />
 
           <button 
             className="auth-form__button-active" 

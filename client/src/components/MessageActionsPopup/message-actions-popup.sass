@@ -1,0 +1,29 @@
+.chat-actions 
+  cursor: pointer
+  position: fixed !important
+  right: 1.3rem
+
+.field-actions 
+  align-items: center
+  display: grid
+  grid-template-areas: "answer" "edit" "redirect" "delete"
+  grid-row-gap: 0.3rem
+  justify-self: end
+  width: min-content
+
+.field-actions button
+  border: 1px solid rebeccapurple
+  border-radius: 0.3rem
+  cursor: pointer
+
+  .field-actions__answer
+    grid-area: answer
+
+  .field-actions__edit
+    grid-area: edit
+
+  .field-actions__redirect
+    grid-area: redirect
+
+  .field-actions__delete
+    grid-area: delete

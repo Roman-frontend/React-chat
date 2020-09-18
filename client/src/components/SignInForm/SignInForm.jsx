@@ -1,7 +1,8 @@
 import React from 'react'
 import { Field, ErrorMessage } from 'formik'
+import './auth-form.sass'
 
-export function TextFieldSignIn(props) {
+export function SignInForm(props) {
   const {label, placeholder, type, id, name} = props
 
   return (

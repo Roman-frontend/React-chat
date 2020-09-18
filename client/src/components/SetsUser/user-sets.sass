@@ -1,0 +1,36 @@
+.user-sets
+  display: grid
+  grid-template-areas: "channel first-plus" "different-channels different-channels" "direct-messages second-plus" "users users"
+  grid-template-rows: 3rem 3rem
+  grid-template-columns: 1fr 3rem
+  justify-content: space-between
+  align-items: center
+  left: 1rem
+
+  .user-sets__text-chanels
+    grid-area: channel
+    
+  .plus 
+    font: 2rem serif
+    left: 0
+
+  .plus__first-plus 
+    grid-area: first-plus
+
+  .user-sets__different-channels
+    grid-area: different-channels
+
+  .user-sets__different-channels > a
+    margin: 0.5rem 1rem
+
+  .user-sets__direct-messages 
+    grid-area: direct-messages
+
+  .plus__second-plus 
+    grid-area: second-plus
+
+  .user-sets__users
+    grid-area: users
+
+  .user-sets__users > p, a
+    margin: 0.5rem 1rem

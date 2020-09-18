@@ -13,6 +13,7 @@ export const useServer = (props) => {
       if (userId) {
         const data = await request(`/api/chat/get-messages${userId}`)
         setUsersNames(data.usersNames)
+        console.log(data.message, data.usersNames)
         if (data.messages) return setMessages(data.messages.reverse())
       }
     } catch (e) {console.log(e.message, e.error)}
@@ -21,8 +22,9 @@ export const useServer = (props) => {
   const postData = async (url, updatedArrayMessages) => {
     try {
       const data = await request(url, "POST", {...updatedArrayMessages})
-      setMessages(data.messages.reverse())
-      console.log(data.messages)
+      //setMessages(data.messages.reverse())
+
+      return data.createdMessage
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 

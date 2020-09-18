@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function TextFieldSignUp(props) {
+export function SignUpForm(props) {
   const {label, placeholder, type, id, name, fieldError, inputRef} = props
 
   return (

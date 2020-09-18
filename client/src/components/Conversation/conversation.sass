@@ -1,0 +1,52 @@
+.conversation
+  grid-area: rightblock
+  display: grid
+  grid-template-areas: "nick" "messages" "fieldMsg"
+  grid-template-rows: 4.2rem 77vh
+
+  .conversation__field-name
+    border: 0.1rem solid #979797
+    height: 4rem
+    grid-area: nick
+
+    .conversation__name 
+      font: 1.5rem serif
+      top: 1.1rem
+      color: #353535
+      left: 1rem
+
+.conversation-with-riply 
+  grid-area: rightblock
+  display: grid
+  grid-template-areas: "nick" "messages" "answer" "fieldMsg"
+  grid-template-rows: 4.2rem 67vh 10vh
+
+  .conversation-with-riply__field-name
+    border: 0.1rem solid #979797
+    height: 4rem
+    grid-area: nick
+
+    .conversation-with-riply__name 
+      font: 1.5rem serif
+      top: 1.1rem
+      color: #353535
+      left: 1rem
+
+  .conversation-with-riply__answer 
+    display: block
+    height: 3rem
+    width: 74.7vw
+    border-radius: 1rem 1rem 0rem 0rem
+    border: 0.1rem solid #BEB7BD
+    left: 3vw
+    background: #80249C
+    color: white
+    grid-area: answer
+    padding: 1rem 0rem 0rem 1rem
+
+.conversation-input
+  display: grid
+  height: 7.6vh
+  width: 76vw
+  left: 3vw
+  grid-area: fieldMsg

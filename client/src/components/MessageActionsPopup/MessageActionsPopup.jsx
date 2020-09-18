@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import Tippy from '@tippy.js/react'
 import 'tippy.js/dist/tippy.css'
-import {useMessagesContext} from '../context/MessagesContext.js'
-import {useServer} from '../hooks/Server.js'
-import iconMore from '../images/icon-more.png'
+import {useMessagesContext} from '../../context/MessagesContext.js'
+import {useServer} from '../../hooks/Server.js'
+import iconMore from '../../images/icon-more.png'
+import './message-actions-popup.sass'
 
 export default function MessageActionsPopup(props) {
   const { removeData } = useServer();
@@ -21,8 +22,8 @@ export default function MessageActionsPopup(props) {
 
   const handleAnswer = () => {
     setBlock(false)
-    const valueAnsweringActiveMessage = activeMessage.answering ? undefined : activeMessage.message;
-    const object = Object.assign({}, {...activeMessage}, {answering: valueAnsweringActiveMessage})
+    const valueAnsweringActiveMessage = activeMessage.reply ? undefined : activeMessage.message;
+    const object = Object.assign({}, {...activeMessage}, {reply: valueAnsweringActiveMessage})
     setActiveMessage({...object});
     inputRef.current.value = "";
   }
@@ -46,6 +47,8 @@ export default function MessageActionsPopup(props) {
 
   const handleDelete = () => {
     setBlock(false)
+    const object = Object.assign({}, {...activeMessage}, {id: undefined})
+    setActiveMessage({...object});
     removeData(activeMessage.message);
   }
 
@@ -62,7 +65,7 @@ export default function MessageActionsPopup(props) {
     )
   }
   return (
-    <div className="field-actions chat-actions" style={{top: `${topActiveMessageRelativeTopPage}px`}}>
+    <div className="field-actions chat-actions" style={{top: `${topActiveMessageRelativeTopPage}px`}} >
       <button className="field-actions__answer" onClick={handleAnswer} >Відповісти</button>
       <button className="field-actions__edit" onClick={handleChange} >Змінити</button>
       <button className="field-actions__redirect">Поділитись</button>

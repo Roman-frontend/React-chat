@@ -1,4 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
+import {Link} from 'react-router-dom'
+import './filter-contacts.sass'
 
 export const FilterContacts = () => {
   const inputContactsRef = useRef(null)
@@ -27,7 +29,7 @@ export const FilterContacts = () => {
       const contactsWithoutEmptyElements = filterList.filter(contact => contact !== '')
       const filteredList = contactsWithoutEmptyElements.join(' - ')
       console.log('readyList -', filteredList)
-      setListContacts(filteredList)
+      setListContacts(`- ${filteredList}`)
     }
   }
 
@@ -94,9 +96,9 @@ export const FilterContacts = () => {
   console.log("storageContacts -", storageContacts)
 
   return (
-    <div>
-      <div className="filter-contacts">
-        <label className="filter-contacts-label" htmlFor="email">Filter Contacts</label>
+    <div className="filter">
+      <div className="filter-header">
+        <label className="filter-header__label" htmlFor="email">Filter Contacts</label>
         <input
           placeholder="Введите список контактів"
           type="text"
@@ -107,7 +109,9 @@ export const FilterContacts = () => {
         <button onClick={filterContacts}>Filter contacts</button>
         <button onClick={saveContactsToLocalStorage}>Save contacts</button>
         <button onClick={cleanStorage}>Clean contacts</button>
+        <button className="sign-up"><Link to={`/chat`}>SignUp</Link></button>
       </div>
-      <div className="b">{listContacts}</div>
-    </div>)
+      <div className="filter__list-result">{listContacts}</div>
+    </div>
+  )
 }

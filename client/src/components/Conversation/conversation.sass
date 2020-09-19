@@ -2,7 +2,7 @@
   grid-area: rightblock
   display: grid
   grid-template-areas: "nick" "messages" "fieldMsg"
-  grid-template-rows: 4.2rem 77vh
+  grid-template-rows: 4.2rem 71vh
 
   .conversation__field-name
     border: 0.1rem solid #979797
@@ -15,24 +15,24 @@
       color: #353535
       left: 1rem
 
-.conversation-with-riply 
+.conversation-riply 
   grid-area: rightblock
   display: grid
   grid-template-areas: "nick" "messages" "answer" "fieldMsg"
   grid-template-rows: 4.2rem 67vh 10vh
 
-  .conversation-with-riply__field-name
+  .conversation-riply__field-name
     border: 0.1rem solid #979797
     height: 4rem
     grid-area: nick
 
-    .conversation-with-riply__name 
+    .conversation-riply__name 
       font: 1.5rem serif
       top: 1.1rem
       color: #353535
       left: 1rem
 
-  .conversation-with-riply__answer 
+  .conversation-riply__answer 
     display: block
     height: 3rem
     width: 74.7vw
@@ -50,3 +50,7 @@
   width: 76vw
   left: 3vw
   grid-area: fieldMsg
+
+.Example-Modal
+  height: 40rem
+  color: #faa

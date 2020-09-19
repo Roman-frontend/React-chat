@@ -6,7 +6,7 @@ export default function Message(props) {
   const {message, activeMessage, setActiveMessage} = props
   const {username, text, createdAt, _id} = message
   const classMessage = message.reply ? "container-reply" : "container"
-  const replyMessage = message.reply ? <div className="container__reply"><p>&#8593; {message.reply}</p></div> : null
+  const replyMessage = message.reply ? <p className={`${classMessage}__reply`}>&#8593; {message.reply}</p> : null
   const reportsClick = () => {
     const object = Object.assign({}, {...activeMessage}, {id: _id}, {message})
     setActiveMessage({...object})

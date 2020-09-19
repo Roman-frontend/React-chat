@@ -10,13 +10,13 @@ export default function Conversation(props) {
   const {name} = useAuthContext();
   const {messages} = useMessagesContext();
   const [activeMessage, setActiveMessage] = useState({})
-  const className = activeMessage.reply ? "conversation-with-riply" : "conversation";
+  const className = activeMessage.reply ? "conversation-riply" : "conversation";
   const buttonEndActive = activeMessage.reply || activeMessage.changing ? 
     <EndActionButton  activeMessage={activeMessage} setActiveMessage={setActiveMessage} /> : null;
 
   const fieldAnswerTo = () => {
     if (activeMessage.reply) {
-      return <div className="conversation-with-riply__answer">{activeMessage.reply.text}</div>
+      return <div className="conversation-riply__answer">{activeMessage.reply.text}</div>
     }
   }
 

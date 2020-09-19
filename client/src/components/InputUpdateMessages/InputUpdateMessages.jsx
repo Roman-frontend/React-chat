@@ -14,10 +14,10 @@ export default function InputUpdateMessages(props) {
   const copyMessages = messages.slice(0, messages.length);
   let updatedArrayMessages = []
 
-  useLayoutEffect(() => {
+/*  useLayoutEffect(() => {
     inputRef.current.focus();
-    getData()
-  }, [userId]);
+    getData(`/api/chat/get-messages${userId}`)
+  }, [userId]);*/
 
   function inputUpdateMessages(event) {
     if ((event.key === "Enter") && !(inputRef.current.value === "")) {

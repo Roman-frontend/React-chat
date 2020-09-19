@@ -8,7 +8,7 @@ export default function Messages(props) {
   const {messages} = useMessagesContext()
 
   function renderMessages() {
-    return messages.map((message) => {
+    return messages.map((message, index) => {
       return ( 
         <Message 
           key={message._id} 

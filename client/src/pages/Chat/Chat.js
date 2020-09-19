@@ -1,5 +1,4 @@
 import React from 'react'
-import {MessagesContext} from '../../context/MessagesContext.js'
 import Header from '../../components/Header/Header.jsx'
 import Profile from '../../components/Profile/Profile.jsx'
 import SetsUser from '../../components/SetsUser/SetsUser.jsx'
@@ -13,9 +12,9 @@ export const Chat = () => {
       <Header/>
       <div className="left-block">
         <Profile/>
-        <SetsUser/>
+        <SetsUser />
       </div>
-      <MessagesContext component={<Conversation />} />       
+      <Conversation />
     </div>
 	)
 }

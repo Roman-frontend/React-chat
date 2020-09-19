@@ -8,8 +8,7 @@ import {Loader} from './components/Loader.jsx'
 import {SignUpPage} from './pages/SignUpPage/SignUpPage.js'
 import {SignInPage} from './pages/SignInPage/SignInPage.js'
 import {Chat} from './pages/Chat/Chat.js'
-import {FilterContacts} from './pages/FilterContacts.js'
-import {AddChannel} from './pages/AddChannel/AddChannel.js'
+import {FilterContacts} from './pages/FilterContacts/FilterContacts.jsx'
 import './css/style.sass'
 
 export default function App() {
@@ -25,7 +24,6 @@ export default function App() {
           <PubliсOnlyRoute exact path="/signIn" component={SignInPage} />
           <PubliсOnlyRoute exact path="/signUp" component={SignUpPage} />
   	      <PrivateRoute exact path="/chat" component={Chat} />
-          <PrivateRoute exact path="/addChannel" component={AddChannel} />
           <PrivateRoute path='/' component={Chat} />
         </Switch>
       </Router>

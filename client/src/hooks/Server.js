@@ -1,4 +1,3 @@
-import {useContext} from 'react'
 import {useHttp} from '../hooks/http.hook.js'
 import {useAuthContext} from '../context/AuthContext.js'
 import {useMessagesContext} from '../context/MessagesContext.js'
@@ -8,28 +7,51 @@ export const useServer = (props) => {
   const {messages, setMessages} = useMessagesContext()
   const {request} = useHttp()
 
-  const getData = async (url) => {
+  const getUsers = async (url) => {
+    try {
+      const users = await request(url)
+      setUsersNames(users.names)
+      return users
+    } catch (e) {console.log(e.message, e.error)}    
+  }
+
+  const getChannels = async (url) => {
+    try {
+      const channels = await request(url)
+      return channels
+    } catch (e) {console.log(e.message, e.error)}
+  }
+
+  const getMessages = async (url) => {
     try {
       if (userId) {
-        const data = await request(url)
-        setUsersNames(data.usersNames)
-        if (data.messages) return setMessages(data.messages.reverse())
-        console.log(data.userChannels)
-        if (data.userChannels) {
-          console.log('messages ', data.userMessages, 'channels ', data.userChannels)
-          setMessages(data.userMessages.reverse())
-          return data.userChannels
-        }
+        const messages = await request(url)
+        console.log(messages)
+        return setMessages(messages.messages.reverse())
       }
     } catch (e) {console.log(e.message, e.error)}
   }
 
-  const postData = async (url, updatedArrayMessages) => {
+  const postMessage = async (url, message) => {
     try {
-      const data = await request(url, "POST", {...updatedArrayMessages})
+      const data = await request(url, "POST", {...message})
+      console.log(data.channelMessages)
+
+      if (data.channelMessages) setMessages(data.channelMessages.reverse())
 
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
+
+
+  const postChannel = async (url, channel) => {
+    try {
+      const data = await request(url, "POST", {...channel})
+      console.log(data.channel)
+
+      return data.channel
+    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
+  }
+
 
   const putData = async (putMessage, _id) => {
     const contact = messages.find(c => c._id === _id)
@@ -46,5 +68,5 @@ export const useServer = (props) => {
     setMessages(filteredMessage)
   }
 
-  return {getData, postData, putData, removeData}
+  return {getUsers, getChannels, getMessages, postMessage, postChannel, putData, removeData}
 }

@@ -1,4 +1,5 @@
 import React, {createContext, useState, useContext, useRef} from 'react'
+import {useAuthContext} from './AuthContext.js'
 const Context = createContext()
 
 export const useMessagesContext = () => {
@@ -6,9 +7,12 @@ export const useMessagesContext = () => {
 }
 
 export const MessagesContext = ({component}) => { 
+  const {userId} = useAuthContext()
   const inputRef = useRef() 
   const [messages, setMessages] = useState([]);
   const [messageActions, setMessageActions] = useState({})
+  const [activeChannelId, setActiveChannelId] = useState(userId);
+  console.log(activeChannelId)
 
   return (
     <Context.Provider value={{
@@ -16,7 +20,9 @@ export const MessagesContext = ({component}) => {
       messages,
       setMessages,
       messageActions,
-      setMessageActions
+      setMessageActions,
+      activeChannelId,
+      setActiveChannelId
     }}>  
       {component}  
     </Context.Provider>

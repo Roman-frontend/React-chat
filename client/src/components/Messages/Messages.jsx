@@ -6,15 +6,16 @@ import './messages.sass'
 
 export default function Messages(props) {
   const {messages} = useMessagesContext()
+  const {activeMessage, setActiveMessage} = props
 
   function renderMessages() {
     return messages.map((message, index) => {
       return ( 
         <Message 
-          key={message._id} 
+          key={message._id || message.id} 
           message={message} 
-          activeMessage={props.activeMessage}
-          setActiveMessage={props.setActiveMessage} 
+          activeMessage={activeMessage}
+          setActiveMessage={setActiveMessage} 
         />
       )
     })
@@ -23,7 +24,10 @@ export default function Messages(props) {
   return (
     <div className="messages">
       {renderMessages()}
-      <MessageActionsPopup activeMessage={props.activeMessage} setActiveMessage={props.setActiveMessage} />
+      <MessageActionsPopup 
+        activeMessage={activeMessage} 
+        setActiveMessage={setActiveMessage} 
+      />
     </div>
   )
 }

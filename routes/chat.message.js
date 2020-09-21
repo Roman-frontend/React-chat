@@ -4,26 +4,44 @@ const Message = require('../models/Message')
 const User = require('../models/User.js')
 const router = Router()
 
-router.get(`/get-messages:userId`,
+//coming from SetUser
+router.get(`/get-users:userId`,
   async (req, res) => {
   try {
-    const userMessages = await Message.find({'userId': req.params.userId})
     const users = await User.find({})
-    const usersNames = users.map(user => {
+    const names = users.map(user => {
       return user.name
     })
-    res.json({messages: userMessages, usersNames, message : 'Повідомлення повернені'})
+    res.json({names, message : 'Імена повернені'})
   } catch (e) {
-    res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})
+    res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})
   }
 })
 
-router.post(
-  '/post-message',
+//Coming from SetUser
+router.get(`/get-messages:activeChannelId`,
   async (req, res) => {
   try {
+    console.log('channelId ', req.params.activeChannelId)
+    const messages = await Message.find({'channelId': req.params.activeChannelId})
+    res.json({messages, message : 'Повідомлення повернені'})
+  } catch (e) {
+    res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})
+  }
+})
+
+//Coming from InputUpdateMessages
+router.post(
+  '/post-message:activeChannelId',
+  async (req, res) => {
+  try {
+    let channelMessages
     const createdMessage = await Message.create(req.body)
-    res.status(201).json({createdMessage, message : 'Повідомлення змінене'})
+    if (req.params.activeChannelId) {
+      channelMessages = await Message.find({'channelId': req.params.activeChannelId})
+    }
+    console.log('post-message: ', req.params.activeChannelId, channelMessages)
+    res.status(201).json({channelMessages, message : 'Повідомлення змінене'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }

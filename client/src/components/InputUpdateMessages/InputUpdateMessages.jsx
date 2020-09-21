@@ -5,19 +5,18 @@ import {useServer} from '../../hooks/Server.js'
 import './input-message.sass'
 
 export default function InputUpdateMessages(props) {
-
   const {name, userId} = useAuthContext()
-  const {messages, setMessages, inputRef} = useMessagesContext()
-  const {postData, putData, getData} = useServer()
+  const {messages, setMessages, inputRef, activeChannelId} = useMessagesContext()
+  const {postMessage, putData, getMessages} = useServer()
   const {activeMessage, setActiveMessage} = props
 
   const copyMessages = messages.slice(0, messages.length);
   let updatedArrayMessages = []
 
-/*  useLayoutEffect(() => {
+  useLayoutEffect(() => {
     inputRef.current.focus();
-    getData(`/api/chat/get-messages${userId}`)
-  }, [userId]);*/
+    getMessages(`/api/chat/get-messages${activeChannelId}`)
+  }, [userId]);
 
   function inputUpdateMessages(event) {
     if ((event.key === "Enter") && !(inputRef.current.value === "")) {
@@ -49,14 +48,16 @@ export default function InputUpdateMessages(props) {
   const messageInReply = async response => {
     const answerTo = messages.find(message => message._id === activeMessage.reply);
     copyMessages.unshift({
+      id: Date.now(),
       userId: userId,
       username: name, 
       text: activeMessage.reply.text, 
       createdAt: new Date().toLocaleString(), 
+      channelId: activeChannelId,
       reply: response,
     },) 
    
-    postData(`/api/chat/post-message`, copyMessages[0])
+    postMessage(`/api/chat/post-message${activeChannelId}`, copyMessages[0])
     updatedArrayMessages = copyMessages
     const object = Object.assign({}, {...activeMessage}, {reply: null})
     setActiveMessage({...object}) 
@@ -65,14 +66,16 @@ export default function InputUpdateMessages(props) {
   function newMessage(textMessage) {
     
     copyMessages.unshift({
+      id: Date.now(),
       userId: userId,
       username: name, 
       text: textMessage, 
-      createdAt: new Date().toLocaleString(), 
+      createdAt: new Date().toLocaleString(),
+      channelId: activeChannelId,
     },)  
 
     updatedArrayMessages = copyMessages
-    postData(`/api/chat/post-message`, updatedArrayMessages[0])
+    postMessage(`/api/chat/post-message${activeChannelId}`, updatedArrayMessages[0])
   }
 
   return (

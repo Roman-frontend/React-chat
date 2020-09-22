@@ -5,15 +5,18 @@ import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import {useServer} from '../../hooks/Server.js'
 import {AddChannel} from '../AddChannel/AddChannel.jsx'
+import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 import './user-sets.sass'
 Modal.setAppElement('#root')
 
 export default function SetsUser(props) {
   const {userId} = useAuthContext();
-  const {activeChannelId, setActiveChannelId} = useMessagesContext()
+  const {activeChannelId, setActiveChannelId} = useMessagesContext();
   const {getUsers, getChannels, getMessages} = useServer();
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
+  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const [listChannels, setListChannels] = useState(null);
+  const [activeChannelName, setActiveChannelName] = useState("general")
 
   useEffect(() => {
     async function getData() {
@@ -38,7 +41,7 @@ export default function SetsUser(props) {
         key='1' 
         id='1'
         className="user-sets__channel user-sets__channel_active" 
-        onClick={idActive => toActiveChannel(1)}
+        onClick={(idActive, nameActive) => toActiveChannel(1, "general")}
       >
         <Link className="main-font" to={`/chat`} >&#128274;general</Link>
       </div>
@@ -54,17 +57,18 @@ export default function SetsUser(props) {
         key={channel._id} 
         id={channel._id}
         className="user-sets__channel" 
-        onClick={idActive => toActiveChannel(channel._id)}
+        onClick={(idActive, nameActive) => toActiveChannel(channel._id, `#${channel.name}`)}
       >
         <Link className="main-font" to={`/chat`}>{`#${channel.name}`}</Link>
       </div>
     )
   }
 
-  async function toActiveChannel(idActive) {
+  async function toActiveChannel(idActive, nameActive) {
     document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
     document.getElementById(idActive).classList.add('user-sets__channel_active')
     await getMessages(`/api/chat/get-messages${idActive}`)
+    setActiveChannelName(nameActive)
     setActiveChannelId(idActive)
   }
 
@@ -75,15 +79,15 @@ export default function SetsUser(props) {
         <b className="plus user-sets__nav-channels-plus">+</b>
       </div>
       <div className="user-sets__different-channels">
-        <div className="user-sets__channel"><p className="main-font" onClick={() => setModalIsOpen(true)}>Add channel</p></div>
+        <div className="user-sets__channel"><p className="main-font" onClick={() => setModalAddChannelIsOpen(true)}>Add channel</p></div>
         <Modal 
-          isOpen={modalIsOpen}
-          onRequestClose={() => setModalIsOpen(false)}
+          isOpen={modalAddChannelIsOpen}
+          onRequestClose={() => setModalAddChannelIsOpen(false)}
           className={"modal-content"}
           overlayClassName={"modal-overlay"}
         >
           <AddChannel 
-            setModalIsOpen={setModalIsOpen} 
+            setModalAddChannelIsOpen={setModalAddChannelIsOpen} 
             setListChannels={setListChannels}
             createLinkChannel={createLinkChannel}
           />
@@ -96,7 +100,20 @@ export default function SetsUser(props) {
       </div>
       <div className="user-sets__users">
         <div className="user-sets__people"><Link className="main-font" to={`/chat`}>- Yulia</Link></div>
-        <div className="user-sets__people"><Link className="main-font" to={`/chat`}>+ Invite people</Link></div>
+        <div className="user-sets__people">
+          <Link className="main-font" onClick={() => setModalAddPeopleIsOpen(true)} to={`/chat`}>+ Invite people</Link>
+        </div>
+        <Modal 
+          isOpen={modalAddPeopleIsOpen}
+          onRequestClose={() => setModalAddPeopleIsOpen(false)}
+          className={"modal-content"}
+          overlayClassName={"modal-overlay"}
+        >
+          <AddPeopleToChannel 
+            setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
+            activeChannelName={activeChannelName} 
+          />
+        </Modal>
         <div className="user-sets__people"><Link className="main-font" to={`/filterContacts`}>Filter Contants</Link></div>
       </div>
     </div>

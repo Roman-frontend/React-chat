@@ -9,9 +9,11 @@ export const useServer = (props) => {
 
   const getUsers = async (url) => {
     try {
-      const users = await request(url)
-      setUsersNames(users.names)
-      return users
+      const serverUsers = await request(url)
+      const usersNames = serverUsers.users.map(user => { return user.name })
+      console.log(usersNames)
+      setUsersNames(usersNames)
+      return usersNames
     } catch (e) {console.log(e.message, e.error)}    
   }
 

@@ -11,7 +11,7 @@ export function AddChannel(props) {
   const [form, setForm] = useState({
     name: '', discription: '', people: ''
   })
-  const { setModalIsOpen, setListChannels, createLinkChannel } = props
+  const { setModalAddChannelIsOpen, setListChannels, createLinkChannel } = props
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value, creator: userId })
@@ -22,18 +22,16 @@ export function AddChannel(props) {
 
     if (newChannel) {
       const linkChannel = createLinkChannel(newChannel)
-      setListChannels(prevChannels => { 
-        return prevChannels.concat(linkChannel) 
-      })
 
-      setModalIsOpen(false)
+      setListChannels(prevChannels => { return prevChannels.concat(linkChannel) })
+      setModalAddChannelIsOpen(false)
     }
   }
 
   function createForm(param) {
     const {...rest} = param
     return (
-      <div>
+      <div className="set-channel-forms">
         <label className={param.labelClassName}>{param.labelName}</label>
         <input 
           placeholder={param.placeholder} 
@@ -45,32 +43,33 @@ export function AddChannel(props) {
           onChange={changeHandler} 
         />
       </div>
-      )
+    )
   }
 
 
   return (
-    <div className="new-channel">
-      <label className="new-channel__label-create">Create a channel</label>
-      <p className="new-channel__discription-create">
+    <div className="set-channel">
+      <label>Create a channel</label>
+      <p className="set-channel__discription-create">
         Channels are where your team communicates. They’re best when organized around a topic — #marketing, for example.
       </p>
 
-      <div className="new-channel__forms">
+      <form>
         {createForm({
           labelName: "Name", 
-          labelClassName: "label-name",
+          labelClassName: "set-channel-forms__label",
           placeholder: "input name channel", 
-          className: null,
+          className: "set-channel-forms__input",
           id: "name", 
           name: "name", 
           value: form.name
         })}
 
-        <div>
-          <label className="label-description">Discription</label>
+        <div className="set-channel-forms">
+          <label className="set-channel-forms__label">Discription</label>
           <input 
             placeholder="input description channel" 
+            className="set-channel-forms__input"
             type="text"
             id="discription"
             name="discription"
@@ -79,11 +78,11 @@ export function AddChannel(props) {
           />
         </div>
 
-        <div>
-          <label className="label-description">Peoples</label>
+        <div className="set-channel-forms">
+          <label className="set-channel-forms__label">Peoples</label>
           <input 
             placeholder="add peoples to channel" 
-            className="new-channel__forms_left"
+            className="set-channel-forms__input"
             type="text"
             id="people"
             name="people"
@@ -91,10 +90,11 @@ export function AddChannel(props) {
             onChange={changeHandler} 
           />
         </div>
-      </div>
+        <div className="a"></div>
+      </form>
 
-      <button className="new-channel__button" onClick={() => setModalIsOpen(false)}>Close</button>
-      <button className="new-channel__button" onClick={doneCreate}>Create</button>
+      <button className="set-channel__button" onClick={() => setModalAddChannelIsOpen(false)}>Close</button>
+      <button className="set-channel__button" onClick={doneCreate}>Create</button>
     </div>
   )
 }

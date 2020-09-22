@@ -23,8 +23,8 @@ router.get(`/get-users:userId`, [],
   async (req, res) => {
   try {
     const users = await User.find({})
-    const usersNames = users.map(user => { return user.name })
-    res.json({usersNames, message : 'Users responsed'})
+    //const usersNames = users.map(user => { return user.name })
+    res.json({users, message : 'Users responsed'})
   } catch (e) {
     console.log('failed in get-users')
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})

@@ -12,7 +12,6 @@ export const MessagesContext = ({component}) => {
   const [messages, setMessages] = useState([]);
   const [messageActions, setMessageActions] = useState({})
   const [activeChannelId, setActiveChannelId] = useState(userId);
-  console.log(activeChannelId)
 
   return (
     <Context.Provider value={{

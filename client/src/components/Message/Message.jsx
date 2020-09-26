@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import iconPeople from '../../images/icon-people.png'
 import './message.sass'
 

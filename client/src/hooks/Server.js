@@ -9,27 +9,21 @@ export const useServer = (props) => {
 
   const getUsers = async (url) => {
     try {
-      const serverUsers = await request(url)
-      const usersNames = serverUsers.users.map(user => { return user.name })
-      console.log(usersNames)
-      setUsersNames(usersNames)
-      return usersNames
+      return await request(url) 
     } catch (e) {console.log(e.message, e.error)}    
   }
 
   const getChannels = async (url) => {
     try {
-      const channels = await request(url)
-      return channels
+      return await request(url)
     } catch (e) {console.log(e.message, e.error)}
   }
 
   const getMessages = async (url) => {
     try {
       if (userId) {
-        const messages = await request(url)
-        console.log(messages)
-        return setMessages(messages.messages.reverse())
+        const serverMessages = await request(url)
+        return setMessages(serverMessages.messages.reverse())
       }
     } catch (e) {console.log(e.message, e.error)}
   }
@@ -54,6 +48,12 @@ export const useServer = (props) => {
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 
+  const postAddPeoplesToChannel = async (url, peoples) => {
+    try {
+      const resInvite = await request(url, "POST", peoples)
+      console.log(resInvite.error)
+    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
+  }
 
   const putData = async (putMessage, _id) => {
     const contact = messages.find(c => c._id === _id)
@@ -70,5 +70,14 @@ export const useServer = (props) => {
     setMessages(filteredMessage)
   }
 
-  return {getUsers, getChannels, getMessages, postMessage, postChannel, putData, removeData}
+  return {
+    getUsers, 
+    getChannels, 
+    getMessages, 
+    postMessage, 
+    postChannel, 
+    postAddPeoplesToChannel, 
+    putData, 
+    removeData
+  }
 }

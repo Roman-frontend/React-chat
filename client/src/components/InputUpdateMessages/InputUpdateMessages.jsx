@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect} from 'react'
+import React, {useLayoutEffect} from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import {useServer} from '../../hooks/Server.js'
@@ -46,7 +46,6 @@ export default function InputUpdateMessages(props) {
   }
 
   const messageInReply = async response => {
-    const answerTo = messages.find(message => message._id === activeMessage.reply);
     copyMessages.unshift({
       id: Date.now(),
       userId: userId,

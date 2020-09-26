@@ -10,7 +10,6 @@ router.get(`/get-chunnels:userId`, [],
   try {
     //const userMessages = await Message.find({})
     const userChannels = await Channel.find({'creator': req.params.userId})
-    console.log('userChannels', userChannels)
     res.json({userChannels, message : 'Channels responsed'})
   } catch (e) {
     console.log('failed in get-messages')
@@ -23,7 +22,6 @@ router.get(`/get-users:userId`, [],
   async (req, res) => {
   try {
     const users = await User.find({})
-    //const usersNames = users.map(user => { return user.name })
     res.json({users, message : 'Users responsed'})
   } catch (e) {
     console.log('failed in get-users')
@@ -41,6 +39,22 @@ router.post(
     res.status(201).json({channel, message : 'Канал створено'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
+  }
+})
+
+router.post(
+  '/post-add-members-to-channel:activeChannelId',
+  async (req, res) => {
+  try {
+    const channelWithMembers = Channel.findOneAndUpdate(
+      { _id: req.params.activeChannelId }, 
+      { $push: { members: req.body[0]  } }, 
+      function (error, success) { console.log(error ? error : success) }
+    );
+    const activeChannel = await Channel.find({'_id': req.params.activeChannelId})
+    res.status(201).json({message : 'Канал створено'})
+  } catch (e) {
+    res.status(500).json({message: "Что-то пошло не так -", error: e})
   }
 })
 

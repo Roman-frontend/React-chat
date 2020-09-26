@@ -1,5 +1,5 @@
-import React, {useContext} from 'react'
-import {NavLink, useHistory} from 'react-router-dom'
+import React from 'react'
+import {useHistory} from 'react-router-dom'
 import {useAuthContext} from '../../context/AuthContext.js'
 import edit from '../../images/edit.png';
 import './profile.sass'

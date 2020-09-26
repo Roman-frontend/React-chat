@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useRef, useCallback} from 'react'
+import React, {useEffect} from 'react'
 import { Formik, Form, ErrorMessage} from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
@@ -34,6 +34,7 @@ export const SignInPage = () => {
     try {
       const formData = { email: values.email, password: values.password }
       const data = await request('/api/auth/login', 'POST', formData)
+      console.log(data)
       auth.login(data.name, data.token, data.userId)
     } catch (e) {console.error(e)}
   }

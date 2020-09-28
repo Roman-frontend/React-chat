@@ -22,7 +22,6 @@ router.get(`/get-users:userId`,
 router.get(`/get-messages:activeChannelId`,
   async (req, res) => {
   try {
-    console.log('channelId ', req.params.activeChannelId)
     const messages = await Message.find({'channelId': req.params.activeChannelId})
     res.json({messages, message : 'Повідомлення повернені'})
   } catch (e) {
@@ -40,7 +39,6 @@ router.post(
     if (req.params.activeChannelId) {
       channelMessages = await Message.find({'channelId': req.params.activeChannelId})
     }
-    console.log('post-message: ', req.params.activeChannelId, channelMessages)
     res.status(201).json({channelMessages, message : 'Повідомлення змінене'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
@@ -64,9 +62,7 @@ router.delete(
   '/delete-message:id', 
   async (req, res) => {
   try {
-    console.log('post-delete -> before remove id', req.params.id)
     await Message.findByIdAndRemove(req.params.id)
-    console.log('post-delete -> after remove id')
 
     res.status(201).json({message : 'Сообщение удалено'})
   } catch (e) {

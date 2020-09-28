@@ -13,9 +13,9 @@ export const useServer = (props) => {
     } catch (e) {console.log(e.message, e.error)}    
   }
 
-  const getChannels = async (url) => {
+  const getChannels = async (url, channels) => {
     try {
-      return await request(url)
+      return await request(url, "POST", channels)
     } catch (e) {console.log(e.message, e.error)}
   }
 

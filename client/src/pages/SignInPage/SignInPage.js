@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import { Formik, Form, ErrorMessage} from 'formik'
+import React, { useEffect } from 'react'
+import { Formik, Form, ErrorMessage } from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
@@ -11,16 +11,12 @@ import './auth-body.sass'
 export const SignInPage = () => {
   const auth = useAuthContext()
   const {loading, request, error, clearError} = useHttp()
+  
+  const initialValues = { email: '', password: '' }
 
   useEffect(() => {
     clearError()
   }, [error, clearError])
-
-
-  const initialValues = {
-    email: '',
-    password: ''
-  }
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
@@ -35,7 +31,7 @@ export const SignInPage = () => {
       const formData = { email: values.email, password: values.password }
       const data = await request('/api/auth/login', 'POST', formData)
       console.log(data)
-      auth.login(data.name, data.token, data.userId)
+      auth.login(data.userData, data.name, data.token, data.userId)
     } catch (e) {console.error(e)}
   }
 

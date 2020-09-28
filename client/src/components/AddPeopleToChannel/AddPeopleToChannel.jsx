@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
@@ -12,71 +12,74 @@ export function AddPeopleToChannel(props) {
   const {
   	setModalAddPeopleIsOpen, 
   	channelName, 
-  	notParticipantsChannel, 
+  	notParticipantsChannel,
+  	setNotParticipantsChannel,
   	channelMembers
   } = props
 
-  const [form, setForm] = useState({people: ''})
-  const [invitedPeoples, setInvitedPeoples] = useState([])
-  const [focusSelectPeople, setFocusSelectPeople] = useState(false)
-  const [peoplesNotInvited, setPeoplesNotInvited] = useState(null)
+  const [invited, setInvited] = useState([])
+  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
+  const [focusSelectTag, setFocusSelectTag] = useState(false)
+
+  const inputRef = useRef()
+
+  const selectClassName = focusSelectTag ? 
+  	"set-channel-forms__list-peoples-invite_is-focus" : 
+  	"set-channel-forms__list-peoples-invite_is-not-focus";
 
   useEffect(() => {
-  	const listPeoplesForInvite = document.querySelector(".set-channel-forms__list-peoples-invite");
-		const parrentBlock = document.querySelector(".set-channel");
-		const buttons = document.querySelectorAll(".set-channel__button");
-
-		function pp(a) {
-			alert(a)
-		}
-
-  	listPeoplesForInvite.addEventListener('focus', (event) => {
-  		buttons.forEach(button => {
-  			button.classList.add('set-channel__button_top')
-  		})
-  		parrentBlock.classList.add('set-channel_height')
-		  setFocusSelectPeople(true)   
-		});
-
-		listPeoplesForInvite.addEventListener('blur', (event) => {
-		  buttons.forEach(button => {
-		  	button.classList.remove('set-channel__button_top')
-		  })
-		  parrentBlock.classList.remove('set-channel_height')
-		  setFocusSelectPeople(false)
-		});
-
+  	const tagInput = document.querySelector(".set-channel-forms__input");
+  	const tagSelect = document.querySelector(`.${selectClassName}`);
+  	addEvents(tagInput)
+  	addEvents(tagSelect)
   }, [])
 
+  function addEvents(tag) {
+  	const parrentDiv = document.querySelector(".set-channel");
+  	const tagInput = document.querySelector(".set-channel-forms__input");
+		const buttons = document.querySelectorAll(".set-channel__button");
+
+
+		tag.addEventListener('focus', () => {
+  		buttons.forEach(button => button.classList.add('set-channel__button_top'))
+  		parrentDiv.classList.add('set-channel_height')
+		  setFocusSelectTag(true)   
+		});
+
+		tag.addEventListener('blur', () => {
+  		buttons.forEach(button => button.classList.remove('set-channel__button_top'))
+  		parrentDiv.classList.remove('set-channel_height')
+		  if ( document.hasFocus(tagInput) ) setFocusSelectTag(false)
+		});
+  }
+
   function createMainLabel() {
-    if(channelName.match(/^#/)) {
-    	return (
-    		<p className="set-channel-forms__main-label-text">Invite people to {`${channelName}`}</p>
-    	)
-    } else {
-    	return (
-    		<p className="set-channel-forms__main-label-text">Invite people to &#128274;{channelName}</p>
-    	)
-    }
+    return channelName.match(/^#/) ? (
+    	<p className="set-channel-forms__main-label-text">
+    		Invite people to {`${channelName}`}
+    	</p>
+    ) : (
+    	<p className="set-channel-forms__main-label-text">
+    		Invite people to &#128274;{channelName}
+    	</p>
+    )
   }
 
-  const changeHandler = event => {
-  	const regExp = new RegExp(`^${event.target.value}`)
-  	console.log(event.cancelable)
-    setForm({people: event.target.value})
-  }
+  function getSelectElements() {
+  	console.log("getSelect ", !focusSelectTag)
+  	if (!focusSelectTag) {
+  		return [<option key="1"></option>]
 
-  function getPeopleNames() {
-  	if (peoplesNotInvited) {
-  		return createElementsSelectPeoples(peoplesNotInvited)
+  	} else if (notInvited) {
+  		return createSelectElements(notInvited)
 
   	} else if (notParticipantsChannel) {
-  		return createElementsSelectPeoples(notParticipantsChannel)
-  	}
-  }
+  		return createSelectElements(notParticipantsChannel)
+  	} 
+	}
 
-  function createElementsSelectPeoples(peoplesNoInvited) {
-		const listPeoplesInvite = peoplesNoInvited.map(people => { 
+	function createSelectElements(arrPeoples) {
+		return arrPeoples.map(people => { 
   		return (
   			<option 
 	  			key={people._id} 
@@ -86,69 +89,92 @@ export function AddPeopleToChannel(props) {
 	  		></option> 
 	  	)
   	})
-
-  	return [<option key="1"></option>].concat(listPeoplesInvite)
 	}
 
   async function doneCreate() {
-  	await postAddPeoplesToChannel(`/api/channel/post-add-members-to-channel${activeChannelId}`, invitedPeoples)
+  	console.log(invited)
+  	await postAddPeoplesToChannel(`/api/channel/post-add-members-to-channel${activeChannelId}`, invited)
   	setModalAddPeopleIsOpen(false)
   }
 
   function addPeopleToInvited(idElectPeople) {
-  	let noInvited = notParticipantsChannel;
-  	const allInvitedPeoples = invitedPeoples.concat(idElectPeople);
+  	if (focusSelectTag) {
+  		console.log("addPeopleToInvited")
+  		const allInvited = invited.concat(idElectPeople);
 
-  	if (focusSelectPeople) {
-  		allInvitedPeoples.forEach(peopleId => {
-  			noInvited = noInvited.filter(people => people._id !== peopleId)
-  		})
+  		if (notInvited) {
+	  		setNotInvited(prevPeoples => {
+			  	let noInvited = prevPeoples;
+		  		allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+		  		return noInvited
+  			})
+  		}
+	  	let noInvited = notParticipantsChannel;
+  		allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+
+  		setInvited(prev => prev.concat(idElectPeople))
+  		setNotParticipantsChannel(noInvited)
   	}
-  	console.log(noInvited)
-  	console.log(invitedPeoples)
-  	setInvitedPeoples(prev => prev.concat(idElectPeople))
-  	setPeoplesNotInvited(noInvited)
   }
 
-  function inputUpdateMessages(event) {
-  	console.log(event.key)
+  function handleInput(event) {
+  	changeListPeoples()
+  	if (event.key === "Enter") addToInvitedInputPeople()
+
+    setFocusSelectTag(true)
   }
 
-  console.log(channelMembers, notParticipantsChannel)
+  function changeListPeoples() {
+  	const regExp = new RegExp(`^${inputRef.current.value}`)
+
+		setNotInvited(peoples => {
+			let matchingEmailes = []
+			notParticipantsChannel.forEach(people => {
+				if ( people.email.match(regExp) ) matchingEmailes.push(people)
+			})
+			return matchingEmailes
+    })
+  }
+
+  function addToInvitedInputPeople() {
+  	let peoplesHasInputEmail = []
+  	notParticipantsChannel.forEach(people => { 
+  		if (people.email === inputRef.current.value) peoplesHasInputEmail = people._id
+  	})
+
+  	addPeopleToInvited(peoplesHasInputEmail)
+  	inputRef.current.value = ""
+  }
 
 
 	return (
 		<div className="set-channel">
+      <label>{createMainLabel()}</label>
+    	<div className="set-channel-forms">
+        <label className="set-channel-forms__label">Add a people</label>
+        <input 
+          placeholder="add peoples to channel" 
+          className="set-channel-forms__input"
+          type="text"
+          ref={inputRef}
+          onKeyUp={event => handleInput(event)}
+        />
+      </div>
 
-      <form className="set-channel__main-label">
-      	<label>{createMainLabel()}</label>
-
-	      	<div className="set-channel-forms">
-	          <label className="set-channel-forms__label">Add a people</label>
-	          <input 
-	            placeholder="add peoples to channel" 
-	            className="set-channel-forms__input"
-	            type="text"
-	            id="people"
-	            name="people"
-	            value={form.people}
-	            onChange={changeHandler} 
-	            onKeyUp={event => inputUpdateMessages(event)}
-	          />
-	        </div>
-
-	        <div className="set-channel-forms">
-	        	<label className="set-channel-forms__label">List peoples</label>
-	        	<select 
-	        		className="set-channel-forms__list-peoples-invite" 
-	        		name="peoples" 
-	        		id="peoples" 
-	        		size="3" 
-	        		multiple
-	        	>
-		        	{getPeopleNames()}
-	        	</select>
-	        </div>
+	   	<form>
+        <div className="set-channel-forms">
+        	<label className="set-channel-forms__label">List peoples</label>
+        	<select 
+        		className={selectClassName} 
+        		name="peoples" 
+        		id="peoples" 
+        		size="3" 
+        		multiple
+        		onClick={() => setFocusSelectTag(true)}
+        	>
+	        	{getSelectElements()}
+        	</select>
+        </div>
 
 	      <button 
 	      	className="set-channel__button" 

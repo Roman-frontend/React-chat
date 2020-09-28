@@ -10,26 +10,30 @@ import './user-sets.sass'
 Modal.setAppElement('#root')
 
 export default function SetsUser(props) {
-  const {userId} = useAuthContext();
+  const {userId, userData} = useAuthContext();
   const {activeChannelId, setActiveChannelId} = useMessagesContext();
   const {getUsers, getChannels, getMessages} = useServer();
 
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
-  const [listChannels, setListChannels] = useState(null);
+  const [listChannels, setListChannels] = useState([]);
   const [notParticipantsChannel, setNotParticipantsChannel] = useState(null)
   const [channelMembers, setChannelMembers] = useState([])
   const [isNotMembersChannel, setIsNotMembersChannel] = useState([])
+  const [dataChannels, setDataChannels] = useState(null)
   const [channelName, setChannelName] = useState("general")
 
   useEffect(() => {
-    async function setListChannels() {
-      const serverChunnels = await getChannels(`/api/channel/get-chunnels${userId}`)
-      if (serverChunnels) createListChannels(serverChunnels.userChannels)
+    async function createListChannels() {
+      const serverChunnels = await getChannels(`/api/channel/post-chunnels`, userData.channels )
+      if (serverChunnels) { 
+        createChannels(serverChunnels.userChannels)
+        setDataChannels(serverChunnels.userChannels)
+      }
     }
 
-    setListChannels()
-  }, [])
+    if (userData) createListChannels()
+  }, [userData])
 
   useEffect(() => {
     async function getPeoples() {
@@ -44,7 +48,7 @@ export default function SetsUser(props) {
     getPeoples()
   }, [])
 
-  function createListChannels(channels) {
+  function createChannels(channels) {
     const dataBaseChannels = channels.map(channel => { return {name: channel.name, _id: channel._id} })
     
     const linksChannels = createLinksChannels(dataBaseChannels)
@@ -84,16 +88,21 @@ export default function SetsUser(props) {
     document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
     document.getElementById(idActive).classList.add('user-sets__channel_active')
     await getMessages(`/api/chat/get-messages${idActive}`)
-    const chunnels = await getChannels(`/api/channel/get-chunnels${userId}`)
+    getListMembersAndNot(idActive)
 
-    if (chunnels) getListMembersAndNot(chunnels, idActive)
     setChannelName(nameActive)
     setActiveChannelId(idActive)
   }
 
-  function getListMembersAndNot(chunnels, idActive) {
-    chunnels.userChannels.map(channel => {
-      if (channel._id === idActive && channel.members[0]) {
+  function getListMembersAndNot(idActive) {
+    let chunnels
+    setDataChannels(serverChannels => {
+      chunnels = serverChannels
+      return serverChannels
+    })
+    console.log(chunnels)
+    chunnels.map(channel => {
+      if (channel._id === idActive) {
         let isNotMembers
         setIsNotMembersChannel(peoplesId => { 
           isNotMembers = peoplesId
@@ -179,6 +188,7 @@ export default function SetsUser(props) {
             setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
             channelName={channelName} 
             notParticipantsChannel={notParticipantsChannel}
+            setNotParticipantsChannel={setNotParticipantsChannel}
             channelMembers={channelMembers}
           />
         </Modal>

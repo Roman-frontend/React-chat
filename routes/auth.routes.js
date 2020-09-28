@@ -56,7 +56,7 @@ router.post(
       { expiresIn: '1h'}
     )
 
-    res.status(201).json({name: user.name, token, userId: user.id, message : 'Пользователь создан'})
+    res.status(201).json({userData: finedUser, name: user.name, token, userId: user.id, message : 'Пользователь создан'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})
   }
@@ -82,11 +82,10 @@ router.post(
   	}
 
     const {email, password} = req.body	
-    console.log(email)
-    const user = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
-    console.log(user)
+    const userData = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
+    console.log("logined userData ........................", userData)
 
-    if(!user) {
+    if(!userData) {
       res.status(400).json("Такой пользователь не найден")
     }
 
@@ -94,7 +93,7 @@ router.post(
     *bcrypt.compare() - порівнює паролі де перший аргумент пароль що прийшов 
     *другий - пароль з бази даних. Цей метод поверне true якщо паролі не співпадають
     */
-    const isMatch = await bcrypt.compare(password, user.password)
+    const isMatch = await bcrypt.compare(password, userData.password)
 
     if (!isMatch) {
       return res.status(400).json({ message: 'Невірний пароль, спробуйте знову'})
@@ -103,14 +102,14 @@ router.post(
     /**Робимо авторизацію користувача */
     const token = jwt.sign(
       /**вказуємо дані що будуть зашифровані в jwt token */
-      {userId: user.id},
+      {userDataId: userData.id},
       /**секретний ключ з папки config*/
       config.get('jwtSecret'),
       /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
       { expiresIn: '1h'}
     )
-    console.log(user.name, token, user.id)
-    res.json({name: user.name, token, userId: user.id})
+    console.log(userData.name, token, userData.id)
+    res.json({userData, name: userData.name, token, userId: userData.id})
 
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})

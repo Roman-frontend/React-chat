@@ -13,11 +13,12 @@ export function AddChannel(props) {
   const { setModalAddChannelIsOpen, setListChannels, createLinkChannel } = props
 
   const changeHandler = event => {
-    setForm({ ...form, [event.target.name]: event.target.value, creator: userId })
+    setForm({ ...form, [event.target.name]: event.target.value, creator: userId, members: [userId] })
   }
 
   const doneCreate = async () => {
-    const newChannel = await postChannel('/api/channel/post-channel', form)
+    console.log("doneCreate")
+    const newChannel = await postChannel(`/api/channel/post-channel${userId}`, form)
 
     if (newChannel) {
       const linkChannel = createLinkChannel(newChannel)

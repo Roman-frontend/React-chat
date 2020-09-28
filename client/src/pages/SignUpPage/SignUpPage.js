@@ -38,7 +38,7 @@ export const SignUpPage = () => {
 
     try {
       const data = await request('api/auth/register', 'POST', formData)
-      login(data.name, data.token, data.userId)
+      login(data.userData, data.name, data.token, data.userId)
     } catch (e) {}
   }
 

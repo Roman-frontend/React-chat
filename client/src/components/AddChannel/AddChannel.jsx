@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useServer} from '../../hooks/Server.js'
+import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
 import './add-channel.sass'
 
 
@@ -10,7 +11,23 @@ export function AddChannel(props) {
   const [form, setForm] = useState({
     name: '', discription: '', people: ''
   })
-  const { setModalAddChannelIsOpen, setListChannels, createLinkChannel } = props
+  const {
+    notParticipantsChannel,
+    setNotParticipantsChannel,
+    channelMembers,
+    setInvited,
+    invited,
+    setChannelMembers,
+
+
+    setModalAddChannelIsOpen, 
+    setListChannels, 
+    setDataChannels,
+    setUserData,
+    createLinkChannel 
+  } = props
+
+  const heightParrentDiv = 'set-channel__add_height'
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value, creator: userId, members: [userId] })
@@ -21,9 +38,21 @@ export function AddChannel(props) {
     const newChannel = await postChannel(`/api/channel/post-channel${userId}`, form)
 
     if (newChannel) {
+      console.log(newChannel)
       const linkChannel = createLinkChannel(newChannel)
 
-      setListChannels(prevChannels => { return prevChannels.concat(linkChannel) })
+      setUserData(prevUserData => {
+        return {
+          ...prevUserData,
+          channels: prevUserData.channels.concat(newChannel._id)
+        }
+      })
+/*      setDataChannels(prevData => { 
+        const a = prevData.concat(newChannel) 
+        console.log(a)
+        return a
+      })*/
+      setListChannels(prevList => { return prevList.concat(linkChannel) })
       setModalAddChannelIsOpen(false)
     }
   }
@@ -78,19 +107,13 @@ export function AddChannel(props) {
           />
         </div>
 
-        <div className="set-channel-forms">
-          <label className="set-channel-forms__label">Peoples</label>
-          <input 
-            placeholder="add peoples to channel" 
-            className="set-channel-forms__input"
-            type="text"
-            id="people"
-            name="people"
-            value={form.people}
-            onChange={changeHandler} 
-          />
-        </div>
-        <div className="a"></div>
+        <SelectPeople 
+          notParticipantsChannel={notParticipantsChannel}
+          setNotParticipantsChannel={setNotParticipantsChannel}
+          invited={invited}
+          setInvited={setInvited}
+          heightParrentDiv={heightParrentDiv}
+        />
       </form>
 
       <button className="set-channel__button" onClick={() => setModalAddChannelIsOpen(false)}>Close</button>

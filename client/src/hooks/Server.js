@@ -51,7 +51,7 @@ export const useServer = (props) => {
   const postAddPeoplesToChannel = async (url, peoples) => {
     try {
       const resInvite = await request(url, "POST", peoples)
-      console.log(resInvite.error)
+      return resInvite.dataMember
     } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
   }
 

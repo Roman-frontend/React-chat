@@ -14,6 +14,7 @@ export const useAuth = () => {
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
   const login = useCallback((userData, name, jwtToken, id) => {
+    console.log("userData ", userData, "name ", name, "jwtToken ", jwtToken, "id ", id)
     setUserData(userData)
     setName(name)
     setToken(jwtToken)
@@ -33,6 +34,14 @@ export const useAuth = () => {
     localStorage.removeItem(storageName)
   }, [])
 
+  const changeLocalStorageUserData = useCallback((newData) => {
+    const data = JSON.parse(localStorage.getItem(storageName))
+    const object = Object.assign({}, {...data}, {userData: newData})
+    localStorage.setItem(storageName, JSON.stringify({
+      ...object
+    }))
+  }, [])
+
   /**
   *При загрузці додатку по замовчуванні буде перевірятись чи в localStorage є дані і якщо вони є то 
   *викличеться login() і змінить states хука useAuth 
@@ -48,5 +57,5 @@ export const useAuth = () => {
   }, [login])
   
 
-  return { login, logout, userData, name, token, userId, ready }
+  return { login, logout, changeLocalStorageUserData, userData, setUserData, name, token, userId, ready }
 }

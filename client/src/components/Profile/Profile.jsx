@@ -6,17 +6,17 @@ import './profile.sass'
 
 export default function Profile() {
   const history = useHistory()
-  const auth = useAuthContext()
+  const { logout, name  } = useAuthContext()
 
   const logoutHandler = event => {
     event.preventDefault()
-    auth.logout()
+    logout()
     history.push('/')
   }
 
   return (
     <div className="profile">
-      <b className="main-font profile__name">Roman</b>
+      <b className="main-font profile__name">{name}</b>
       <b className="main-font profile__log-out" onClick={logoutHandler} >Log out</b>
       <img src={edit} className="main-font profile__edit" alt="edit info of user"/>
     </div>

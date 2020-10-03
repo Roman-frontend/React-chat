@@ -8,18 +8,20 @@ export const useAuthContext = () => {
 }
 
 export const AuthContext = ({children}) => {
-  const {login, logout, userData, name, token, userId, ready} = useAuth()
+  const {login, logout, changeLocalStorageUserData, userData, setUserData, name, token, userId, ready} = useAuth()
   const [usersNames, setUsersNames] = useState([])
   const isAuthenticated = !!token
 
   return (
   	<Context.Provider value={{
       userData,
+      setUserData,
       name, 
       token,
   	  userId,
   	  login,
   	  logout,
+      changeLocalStorageUserData,
       isAuthenticated, 
       usersNames, 
       setUsersNames

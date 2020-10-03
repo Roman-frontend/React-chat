@@ -11,7 +11,7 @@ export const useHttp = () => {
       if (body) {
         /**передаємо body на сервер як строку а не обєкт */
         body = JSON.stringify(body)
-        console.log('url-date - ', body)
+        //console.log('url-date - ', body)
         /**Щоб на сервері пирйняти json */
         headers['Content-Type'] = 'application/json'
       }

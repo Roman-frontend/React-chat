@@ -21,14 +21,17 @@ router.post(
   '/post-channel:userId', [],
   async (req, res) => {
   try {
-    const channel = await Channel.create(req.body)
+    const newChannel = await Channel.create(req.body)
+    const userData = await User.findOne({ _id: req.params.userId })
+    const idChunnels = userData.channels.concat(newChannel._id)
     const addChannelToUser = await User.findOneAndUpdate(
       { _id: req.params.userId }, 
-      { $push: { channels: channel._id  } }, 
+      { channels: idChunnels },
+      //без {new: true} - в addChannelToUser буде поміщено старе значення.
+      {new: true},
       function (error, success) { console.log(error ? error : success) }
     );
-    console.log("channel ", channel, "addChannelToUser ", addChannelToUser)
-    res.status(201).json({channel, message : 'Канал створено'})
+    res.status(201).json({channel: newChannel, message : 'Канал створено'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }
@@ -39,17 +42,19 @@ router.post(
   '/post-add-members-to-channel:activeChannelId',
   async (req, res) => {
   try {
-    const channelWithMembers = await Channel.findOneAndUpdate(
+    console.log("add members ==>>")
+    const channelWithPushedMember = await Channel.findOneAndUpdate(
       { _id: req.params.activeChannelId }, 
       { $push: { members: req.body[0]  } }, 
-      function (error, success) { console.log(error ? error : success) }
+      function (error, success) { console.log(error ? error : null) }
     );
-    const pushedChannelUser = await User.findOneAndUpdate(
+    const userWithPushedChannel = await User.findOneAndUpdate(
       { _id: req.body[0] }, 
       { $push: { channels: req.params.activeChannelId } }, 
-      function (error, success) { console.log(error ? error : success) }
+      function (error, success) { console.log(error ? error : null) }
     );
-    res.status(201).json({message : 'Учасника додано'})
+    console.log("userWithPushedChannel ", userWithPushedChannel)
+    res.status(201).json({dataMember: userWithPushedChannel, message : 'Учасника додано'})
   } catch (e) {
     res.status(500).json({message: "Что-то пошло не так -", error: e})
   }
@@ -61,12 +66,12 @@ router.post(
   '/post-chunnels',
   async (req, res) => {
   try {
-    //const userMessages = await Message.find({})
-    console.log("get-channels ", req.body)
     let userChannels = []
     for (const channelId of req.body ) {
-      userChannels = await Channel.find({ _id: channelId })
+      const channel = await Channel.find({ _id: channelId })
+      userChannels = userChannels.concat(channel)
     }
+    //console.log("get-channels ", req.body, userChannels)
     res.json({userChannels, message : 'Channels responsed'})
   } catch (e) {
     console.log('failed in get-messages')

@@ -108,7 +108,7 @@ router.post(
       /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
       { expiresIn: '1h'}
     )
-    console.log(userData.name, token, userData.id)
+    console.log("userData ===>>> ", userData)
     res.json({userData, name: userData.name, token, userId: userData.id})
 
   } catch (e) {

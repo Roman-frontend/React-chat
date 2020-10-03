@@ -10,25 +10,31 @@ import './user-sets.sass'
 Modal.setAppElement('#root')
 
 export default function SetsUser(props) {
-  const {userId, userData} = useAuthContext();
+  const {changeLocalStorageUserData, userId, userData, setUserData} = useAuthContext();
   const {activeChannelId, setActiveChannelId} = useMessagesContext();
   const {getUsers, getChannels, getMessages} = useServer();
 
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const [listChannels, setListChannels] = useState([]);
-  const [notParticipantsChannel, setNotParticipantsChannel] = useState(null)
+  const [notParticipantsChannel, setNotParticipantsChannel] = useState([])
   const [channelMembers, setChannelMembers] = useState([])
-  const [isNotMembersChannel, setIsNotMembersChannel] = useState([])
+  const [allUsersWithoutActive, setAllUsersWithoutActive] = useState([])
   const [dataChannels, setDataChannels] = useState(null)
+  const [invited, setInvited] = useState([])
   const [channelName, setChannelName] = useState("general")
 
   useEffect(() => {
     async function createListChannels() {
+      console.log(userData)
       const serverChunnels = await getChannels(`/api/channel/post-chunnels`, userData.channels )
+      changeLocalStorageUserData(userData)
+      const data = JSON.parse(localStorage.getItem('userData'))
       if (serverChunnels) { 
-        createChannels(serverChunnels.userChannels)
         setDataChannels(serverChunnels.userChannels)
+        //console.log(serverChunnels.userChannels)
+        const linksChannels = createLinksChannels(serverChunnels.userChannels)
+        setListChannels(linksChannels)
       }
     }
 
@@ -41,21 +47,14 @@ export default function SetsUser(props) {
 
       if (serverUsers) {
         const otherUsers = serverUsers.users.filter(people => people._id !== userId)
-        setIsNotMembersChannel(otherUsers)
+        setAllUsersWithoutActive(otherUsers)
       }
     }
 
     getPeoples()
   }, [])
 
-  function createChannels(channels) {
-    const dataBaseChannels = channels.map(channel => { return {name: channel.name, _id: channel._id} })
-    
-    const linksChannels = createLinksChannels(dataBaseChannels)
-    setListChannels(linksChannels)
-  }
-
-  function createLinksChannels(dataBaseChannels) {
+  function createLinksChannels(channelsData) {
     let allChannels = [
       <div 
         key='1' 
@@ -67,7 +66,7 @@ export default function SetsUser(props) {
       </div>
     ]
 
-    if (dataBaseChannels) dataBaseChannels.map(channel => { allChannels.push(createLinkChannel(channel)) } )
+    if (channelsData) channelsData.map(channel => { allChannels.push(createLinkChannel(channel)) } )
     return allChannels
   }
 
@@ -95,43 +94,44 @@ export default function SetsUser(props) {
   }
 
   function getListMembersAndNot(idActive) {
+    let isMembers = []
+    let allUsers
     let chunnels
-    setDataChannels(serverChannels => {
-      chunnels = serverChannels
-      return serverChannels
-    })
-    console.log(chunnels)
+    let userId
+
+    setAllUsersWithoutActive(users => { allUsers = users; return users })
+    setDataChannels(serverChannels => { chunnels = serverChannels; return serverChannels })
+    setUserData(data => { userId = data._id; return data })
+    allUsers.filter(people => people._id === userId)
+
+    let isNotMembers = allUsers
     chunnels.map(channel => {
       if (channel._id === idActive) {
-        let isNotMembers
-        setIsNotMembersChannel(peoplesId => { 
-          isNotMembers = peoplesId
-          return peoplesId
-        })
-        channel.members.forEach(member => {
-          isNotMembers = isNotMembers.filter(people => people._id !== member) 
-        })
-        setChannelMembers(channel.members)
-        setNotParticipantsChannel(isNotMembers)
+        for (const user of allUsers) {
+          for (const member of channel.members) {
+            if ( isMembers.includes(user) ) break
+            else if ( user._id === member ) {
+              isMembers = isMembers.concat(user)
+              isNotMembers = isNotMembers.filter(member => member !== user)
+            }
+          }
+        }
       }
     })
+    console.log("isNotMembers ", isNotMembers, "isMembers ", isMembers)
+    setChannelMembers(isMembers)
+    setNotParticipantsChannel(isNotMembers)
   }
 
-  function createListMembers() {
-    if (isNotMembersChannel && channelMembers[0]) {
-      return isNotMembersChannel.map(member => {
-        for (const memberId of channelMembers) {
-          if (member._id === memberId) {
-            return (
-              <div key={member._id} id={member._id} className="user-sets__people">
-                <Link className="main-font" to={`/chat`}>{member.name}</Link>
-              </div>
-            )
-          } 
-        }
-      })
-    }
-  }
+  const createListMembers = useCallback(() => {
+    return channelMembers.map( member => {
+      return (
+        <div key={member._id} id={member._id} className="user-sets__people">
+          <Link className="main-font" to={`/chat`}>{member.name}</Link>
+        </div>
+      )
+    })
+  }, [channelMembers])
 
 
   return (
@@ -155,8 +155,17 @@ export default function SetsUser(props) {
           overlayClassName={"modal-overlay"}
         >
           <AddChannel 
+            notParticipantsChannel={notParticipantsChannel}
+            setNotParticipantsChannel={setNotParticipantsChannel}
+            channelMembers={channelMembers}
+            invited={invited}
+            setInvited={setInvited}
+            setChannelMembers={setChannelMembers}
+
             setModalAddChannelIsOpen={setModalAddChannelIsOpen} 
             setListChannels={setListChannels}
+            setDataChannels={setDataChannels}
+            setUserData={setUserData}
             createLinkChannel={createLinkChannel}
           />
         </Modal>
@@ -190,6 +199,9 @@ export default function SetsUser(props) {
             notParticipantsChannel={notParticipantsChannel}
             setNotParticipantsChannel={setNotParticipantsChannel}
             channelMembers={channelMembers}
+            invited={invited}
+            setInvited={setInvited}
+            setChannelMembers={setChannelMembers}
           />
         </Modal>
         <div className="user-sets__people">

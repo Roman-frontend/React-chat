@@ -1,83 +1,52 @@
 import {useHttp} from '../hooks/http.hook.js'
-import {useAuthContext} from '../context/AuthContext.js'
-import {useMessagesContext} from '../context/MessagesContext.js'
 
 export const useServer = (props) => {
-  const {userId, setUsersNames} = useAuthContext()
-  const {messages, setMessages} = useMessagesContext()
   const {request} = useHttp()
 
-  const getUsers = async (url) => {
+  const getData = async (method, param=null, channels=null) => {
     try {
-      return await request(url) 
-    } catch (e) {console.log(e.message, e.error)}    
-  }
+      switch (method) {
+        case "getUsers":
+          return await request(`/api/channel/get-users${param}`) 
+          break;
 
-  const getChannels = async (url, channels) => {
-    try {
-      return await request(url, "POST", channels)
-    } catch (e) {console.log(e.message, e.error)}
-  }
+        case "getChannels":
+          return await request("/api/channel/post-chunnels", "POST", channels);
+          break;
 
-  const getMessages = async (url) => {
-    try {
-      if (userId) {
-        const serverMessages = await request(url)
-        return setMessages(serverMessages.messages.reverse())
+        case "getMessages":
+          return await request(`/api/chat/get-messages${param}`)
+          break;
       }
-    } catch (e) {console.log(e.message, e.error)}
+    } catch (e) { console.log(e.message, e.error) }
   }
 
-  const postMessage = async (url, message) => {
+  const postData = async (method, param=null, body=null) => {
     try {
-      const data = await request(url, "POST", {...message})
-      console.log(data.channelMessages)
+      switch (method) {
+        case "postMessage":
+          return await request(`/api/chat/post-message${param}`, "POST", {...body})
+          break;
 
-      if (data.channelMessages) setMessages(data.channelMessages.reverse())
+        case "postChannel":
+          return await request(`/api/channel/post-channel${param}` , "POST", {...body})
+          break;
 
-    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
+        case "postAddPeoplesToChannel":
+          return await request(`/api/channel/post-add-members-to-channel${param}`, "POST", body)
+          break;
+      }
+    } catch (e) { console.log(e.message, e.error) }
+  }
+
+  const putData = async (putMessage, id) => {
+    return await request(`/api/chat/put-message${id}`, 'PUT', { ...putMessage })
+  }
+
+  const removeData = async (id) => {
+    return await request(`/api/chat/delete-message${id}`, 'DELETE')
   }
 
 
-  const postChannel = async (url, channel) => {
-    try {
-      const data = await request(url, "POST", {...channel})
-      console.log(data.channel)
-
-      return data.channel
-    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
-  }
-
-  const postAddPeoplesToChannel = async (url, peoples) => {
-    try {
-      const resInvite = await request(url, "POST", peoples)
-      return resInvite.dataMember
-    } catch (e) {console.log(e.message, ", -  post-запит в catch попала помилка", e.error)}
-  }
-
-  const putData = async (putMessage, _id) => {
-    const contact = messages.find(c => c._id === _id)
-    const updated = await request(`/api/chat/put-message${_id}`, 'PUT', {
-      ...putMessage,
-    })
-    
-    setMessages(updated.messages.reverse())
-  }
-
-  const removeData = async (message) => {
-    await request(`/api/chat/delete-message${message._id}`, 'DELETE')
-    const filteredMessage = messages.filter(c => c._id !== message._id)
-    setMessages(filteredMessage)
-  }
-
-  return {
-    getUsers, 
-    getChannels, 
-    getMessages, 
-    postMessage, 
-    postChannel, 
-    postAddPeoplesToChannel, 
-    putData, 
-    removeData
-  }
+  return { getData, postData, putData, removeData }
 }

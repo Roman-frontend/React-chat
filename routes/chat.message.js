@@ -23,6 +23,7 @@ router.get(`/get-messages:activeChannelId`,
   async (req, res) => {
   try {
     const messages = await Message.find({'channelId': req.params.activeChannelId})
+    console.log("messages ==>> ", messages, req.params.activeChannelId)
     res.json({messages, message : 'Повідомлення повернені'})
   } catch (e) {
     res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})
@@ -64,10 +65,10 @@ router.delete(
   try {
     await Message.findByIdAndRemove(req.params.id)
 
-    res.status(201).json({message : 'Сообщение удалено'})
+    res.status(201).json({removed: true, message : 'Сообщение удалено'})
   } catch (e) {
     console.log("catch - delete-message")
-    res.status(500).json({message: "Что-то пошло не так "})
+    res.status(500).json({removed: false, message: "Что-то пошло не так "})
   }
 })
 

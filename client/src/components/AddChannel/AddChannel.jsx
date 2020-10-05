@@ -6,52 +6,48 @@ import './add-channel.sass'
 
 
 export function AddChannel(props) {
-  const {userId} = useAuthContext();
-  const {postChannel} = useServer()
-  const [form, setForm] = useState({
-    name: '', discription: '', people: ''
-  })
+  const {userId, setUserData} = useAuthContext();
+  const {postData} = useServer();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
-    channelMembers,
     setInvited,
     invited,
-    setChannelMembers,
-
 
     setModalAddChannelIsOpen, 
     setListChannels, 
     setDataChannels,
-    setUserData,
     createLinkChannel 
   } = props
+  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
+  const [form, setForm] = useState({
+    name: '', discription: '', people: ''
+  })
 
   const heightParrentDiv = 'set-channel__add_height'
 
   const changeHandler = event => {
-    setForm({ ...form, [event.target.name]: event.target.value, creator: userId, members: [userId] })
+    let invitedWithUser
+    console.log(invited)
+    setInvited(invitedd => {
+      invitedWithUser = invitedd
+      console.log(invitedd)
+      return invitedd
+    })
+    invitedWithUser = invitedWithUser.concat(userId)
+    setForm({ ...form, [event.target.name]: event.target.value, creator: userId, members: invitedWithUser })
   }
 
   const doneCreate = async () => {
-    console.log("doneCreate")
-    const newChannel = await postChannel(`/api/channel/post-channel${userId}`, form)
+    const resServer = await postData("postChannel", userId, form)
 
-    if (newChannel) {
-      console.log(newChannel)
+    if (resServer.channel) {
+      const newChannel = resServer.channel
       const linkChannel = createLinkChannel(newChannel)
 
       setUserData(prevUserData => {
-        return {
-          ...prevUserData,
-          channels: prevUserData.channels.concat(newChannel._id)
-        }
+        return { ...prevUserData, channels: prevUserData.channels.concat(newChannel._id) }
       })
-/*      setDataChannels(prevData => { 
-        const a = prevData.concat(newChannel) 
-        console.log(a)
-        return a
-      })*/
       setListChannels(prevList => { return prevList.concat(linkChannel) })
       setModalAddChannelIsOpen(false)
     }
@@ -73,6 +69,12 @@ export function AddChannel(props) {
         />
       </div>
     )
+  }
+
+  function closeAddChannel() {
+    setNotInvited(notParticipantsChannel)
+    setInvited([])
+    setModalAddChannelIsOpen(false)
   }
 
 
@@ -112,11 +114,13 @@ export function AddChannel(props) {
           setNotParticipantsChannel={setNotParticipantsChannel}
           invited={invited}
           setInvited={setInvited}
+          notInvited={notInvited}
+          setNotInvited={setNotInvited}
           heightParrentDiv={heightParrentDiv}
         />
       </form>
 
-      <button className="set-channel__button" onClick={() => setModalAddChannelIsOpen(false)}>Close</button>
+      <button className="set-channel__button" onClick={closeAddChannel}>Close</button>
       <button className="set-channel__button" onClick={doneCreate}>Create</button>
     </div>
   )

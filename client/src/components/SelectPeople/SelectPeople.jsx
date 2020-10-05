@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
@@ -12,10 +12,11 @@ export function SelectPeople(props) {
     setNotParticipantsChannel,
     setInvited,
     invited,
+    notInvited,
+    setNotInvited,
     heightParrentDiv
   } = props
 
-  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
   const [focusSelectTag, setFocusSelectTag] = useState(false)
 
   const inputRef = useRef()
@@ -25,7 +26,7 @@ export function SelectPeople(props) {
     "set-channel-forms__list-peoples-invite_is-not-focus";
 
   useEffect(() => {
-    const tagInput = document.querySelector(".set-channel-forms__input");
+    const tagInput = document.querySelector(".set-channel-forms__input-people-invite");
     const tagSelect = document.querySelector(`.${selectClassName}`);
     addEvents(tagInput)
     addEvents(tagSelect)
@@ -33,7 +34,7 @@ export function SelectPeople(props) {
 
   function addEvents(tag) {
     const parrentDiv = document.querySelector(".set-channel");
-    const tagInput = document.querySelector(".set-channel-forms__input");
+    const tagInput = document.querySelector(".set-channel-forms__input-people-invite");
     const buttons = document.querySelectorAll(".set-channel__button");
 
 
@@ -51,8 +52,7 @@ export function SelectPeople(props) {
   }
 
 
-  function getSelectElements() {
-    console.log("getSelect ", !focusSelectTag)
+  const getSelectElements = useCallback(() => {
     if (!focusSelectTag) {
       return [<option key="1"></option>]
 
@@ -61,8 +61,8 @@ export function SelectPeople(props) {
 
     } else if (notParticipantsChannel) {
       return createSelectElements(notParticipantsChannel)
-    } 
-  }
+    }
+  }, [focusSelectTag, notInvited])
 
   function createSelectElements(arrPeoples) {
     return arrPeoples.map(people => { 
@@ -78,41 +78,41 @@ export function SelectPeople(props) {
   }
 
   function addPeopleToInvited(idElectPeople) {
-    if (focusSelectTag) {
-      console.log("addPeopleToInvited")
-      const allInvited = invited.concat(idElectPeople);
+    console.log("addPeopleToInvited")
+    changeNoInvited(idElectPeople)
+    setInvited(prev => {
+      const allInvited = prev.concat(idElectPeople)
+      console.log(allInvited)
+      return allInvited
+    })
+  }
 
-      if (notInvited) {
-        setNotInvited(prevPeoples => {
-          let noInvited = prevPeoples;
-          allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
-          return noInvited
-        })
-      }
-      let noInvited = notParticipantsChannel;
-      allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+  function changeNoInvited(idElectPeople) {
+    const allInvited = invited.concat(idElectPeople);
 
-      setInvited(prev => prev.concat(idElectPeople))
-      setNotParticipantsChannel(noInvited)
+    if (notInvited) {
+      setNotInvited(prevPeoples => {
+        let noInvited = prevPeoples;
+        allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+        return noInvited
+      })
     }
+    let noInvited = notParticipantsChannel;
+    allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+    setNotParticipantsChannel(noInvited)
   }
 
   function handleInput(event) {
     changeListPeoples()
     if (event.key === "Enter") addToInvitedInputPeople()
-
     setFocusSelectTag(true)
   }
 
   function changeListPeoples() {
-    const regExp = new RegExp(`^${inputRef.current.value}`)
-
-    setNotInvited(peoples => {
-      let matchingEmailes = []
-      notParticipantsChannel.forEach(people => {
-        if ( people.email.match(regExp) ) matchingEmailes.push(people)
-      })
-      return matchingEmailes
+    //const regExp = new RegExp(`^${inputRef.current.value}`)
+    const regExp = new RegExp(`${inputRef.current.value}`)
+    setNotInvited(() => {
+      return notParticipantsChannel.filter(people => people.email.match(regExp) ? people : null)
     })
   }
 
@@ -133,7 +133,7 @@ export function SelectPeople(props) {
         <label className="set-channel-forms__label">Add a people</label>
         <input 
           placeholder="add peoples to channel" 
-          className="set-channel-forms__input"
+          className="set-channel-forms__input-people-invite"
           type="text"
           ref={inputRef}
           onKeyUp={event => handleInput(event)}

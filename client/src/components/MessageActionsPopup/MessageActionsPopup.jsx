@@ -8,7 +8,7 @@ import './message-actions-popup.sass'
 
 export default function MessageActionsPopup(props) {
   const { removeData } = useServer();
-  const { inputRef } = useMessagesContext();
+  const { messages, setMessages, inputRef } = useMessagesContext();
   const { activeMessage, setActiveMessage } = props;
   const [block, setBlock] = useState(true)
   let element = document.getElementById(activeMessage.id)
@@ -45,11 +45,16 @@ export default function MessageActionsPopup(props) {
     setActiveMessage({...object});
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setBlock(false)
     const object = Object.assign({}, {...activeMessage}, {id: undefined})
     setActiveMessage({...object});
-    removeData(activeMessage.message);
+    const removeMessage = await removeData(activeMessage.message._id);
+    const isComplitedRemove = removeMessage.removed
+    if (isComplitedRemove) {
+      const newArrMessages = messages.filter(message => message._id !== activeMessage.message._id)
+      setMessages(newArrMessages)
+    }
   }
 
   if (block) {

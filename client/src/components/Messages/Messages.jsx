@@ -1,12 +1,25 @@
-import React from 'react'
-import {useMessagesContext} from '../../context/MessagesContext.js'
+import React, { useLayoutEffect } from 'react'
+import { useAuthContext } from '../../context/AuthContext.js'
+import { useMessagesContext } from '../../context/MessagesContext.js'
+import { useServer } from '../../hooks/Server.js'
 import Message from '../Message/Message.jsx'
 import MessageActionsPopup from '../MessageActionsPopup/MessageActionsPopup.jsx'
 import './messages.sass'
 
 export default function Messages(props) {
-  const {messages} = useMessagesContext()
-  const {activeMessage, setActiveMessage} = props
+  const { userId } = useAuthContext()
+  const { messages, setMessages, activeChannelId } = useMessagesContext()
+  const { getData } = useServer()
+  const { activeMessage, setActiveMessage } = props
+
+  useLayoutEffect(() => {
+    async function fetchMessages() {
+      const receivedServerMessages = await getData("getMessages", activeChannelId)
+      if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
+    }
+
+    fetchMessages()
+  }, [userId]);
 
   function renderMessages() {
     return messages.map((message, index) => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import {useAuthContext} from '../context/AuthContext.js'
-import {MessagesContext} from '../context/MessagesContext.js'
+import {useAuthContext} from '../../context/AuthContext.js'
+import {MessagesContext} from '../../context/MessagesContext.js'
 
 export const PrivateRoute = ({component: Component, ...rest}) => {
   const {isAuthenticated} = useAuthContext()

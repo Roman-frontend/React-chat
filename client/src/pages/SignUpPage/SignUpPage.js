@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import {useHttp} from '../../hooks/http.hook.js'
 import {useValidate} from '../../hooks/validate.hook.js'
 import {useAuthContext} from '../../context/AuthContext.js'
-import {validateName, validateEmail, validatePassword} from '../../components/validateMethods.jsx'
+import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
 import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
 
 export const SignUpPage = () => {

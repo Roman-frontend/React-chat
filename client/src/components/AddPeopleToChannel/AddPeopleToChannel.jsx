@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
@@ -8,17 +7,17 @@ import './add-people-to-channel.sass';
 
 export function AddPeopleToChannel(props) {
   const { activeChannelId } = useMessagesContext();
-  const {postAddPeoplesToChannel} = useServer();
+  const { postData } = useServer();
   const {
   	setModalAddPeopleIsOpen, 
   	channelName, 
   	notParticipantsChannel,
   	setNotParticipantsChannel,
-  	channelMembers,
     invited,
     setInvited,
     setChannelMembers
   } = props
+  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
   const heightParrentDiv = 'set-channel__invite_height'
 
   function createMainLabel() {
@@ -30,20 +29,29 @@ export function AddPeopleToChannel(props) {
     	<p className="set-channel-forms__main-label-text">
     		Invite people to &#128274;{channelName}
     	</p>
-    )
+    );
   }
 
   async function doneInvite() {
-  	console.log("invited ", invited)
-  	const resInviting = await postAddPeoplesToChannel(`/api/channel/post-add-members-to-channel${activeChannelId}`, invited)
-    if (resInviting) {
+  	const resInviting = await postData("postAddPeoplesToChannel", activeChannelId, invited)
+    if (resInviting.dataMember) {
+      const newMember = resInviting.dataMember
       setChannelMembers(prev => {
-        const newArrMembers = prev.concat(resInviting)
-        console.log("channelMembers ", newArrMembers)
+        const newArrMembers = prev.concat(newMember)
         return newArrMembers
       })
+      setNotParticipantsChannel(beforeNoMembers => {
+        const nowNoMembers = beforeNoMembers.filter(member => member._id !== newMember._id)
+        return nowNoMembers
+      })
     }
-  	setModalAddPeopleIsOpen(false)
+    setModalAddPeopleIsOpen(false)
+  }
+
+  function closeInvite() {
+    setNotInvited(notParticipantsChannel)
+    setInvited([])
+    setModalAddPeopleIsOpen(false)
   }
 
 
@@ -55,12 +63,14 @@ export function AddPeopleToChannel(props) {
         setNotParticipantsChannel={setNotParticipantsChannel}
         invited={invited}
         setInvited={setInvited}
+        notInvited={notInvited}
+        setNotInvited={setNotInvited}
         heightParrentDiv={heightParrentDiv}
       />
 
       <button 
       	className="set-channel__button" 
-      	onClick={() => setModalAddPeopleIsOpen(false)}
+      	onClick={closeInvite}
       >
       	Close
       </button>

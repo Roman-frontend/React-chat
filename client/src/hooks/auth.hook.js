@@ -14,7 +14,7 @@ export const useAuth = () => {
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
   const login = useCallback((userData, name, jwtToken, id) => {
-    console.log("userData ", userData, "name ", name, "jwtToken ", jwtToken, "id ", id)
+    //console.log("userData ", userData, "name ", name, "jwtToken ", jwtToken, "id ", id)
     setUserData(userData)
     setName(name)
     setToken(jwtToken)

@@ -53,7 +53,6 @@ router.post(
       { $push: { channels: req.params.activeChannelId } }, 
       function (error, success) { console.log(error ? error : null) }
     );
-    console.log("userWithPushedChannel ", userWithPushedChannel)
     res.status(201).json({dataMember: userWithPushedChannel, message : 'Учасника додано'})
   } catch (e) {
     res.status(500).json({message: "Что-то пошло не так -", error: e})

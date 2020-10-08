@@ -1,8 +1,14 @@
 const {Router} = require('express')
 const config = require('config')
+const Channel = require('../models/Channel.js')
 const Message = require('../models/Message')
 const User = require('../models/User.js')
 const router = Router()
+
+async function checkBelongToPrivatChannel(channelId, userId) {
+  const activeChannel = await Channel.findOne({ _id: channelId })
+  return activeChannel.isPrivate && !activeChannel.members.includes(userId) ? true : false
+}
 
 //coming from SetUser
 router.get(`/get-users:userId`,
@@ -19,12 +25,18 @@ router.get(`/get-users:userId`,
 })
 
 //Coming from Channels, Messages
-router.get(`/get-messages:activeChannelId`,
+router.post('/get-messages:activeChannelId',
   async (req, res) => {
   try {
-    const messages = await Message.find({'channelId': req.params.activeChannelId})
-    //console.log("messages ==>> ", messages, req.params.activeChannelId, req.body)
-    res.json({messages, message : 'Повідомлення повернені'})
+    const userIsNotMemberPrivatChannel = checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
+
+    if (userIsNotMemberPrivatChannel) {
+      res.status(403).json({message: "Ви не є учасником приватного чату"})
+
+    } else {
+      const messages = await Message.find({'channelId': req.params.activeChannelId})
+      res.json({messages, message : 'Повідомлення повернені'})
+    }
   } catch (e) {
     res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})
   }
@@ -35,12 +47,19 @@ router.post(
   '/post-message:activeChannelId',
   async (req, res) => {
   try {
-    let channelMessages
-    const createdMessage = await Message.create(req.body)
-    if (req.params.activeChannelId) {
-      channelMessages = await Message.find({'channelId': req.params.activeChannelId})
+    const userIsNotMemberPrivatChannel = checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
+
+    if (userIsNotMemberPrivatChannel) {
+      res.status(403).json({message: "Ви не є учасником приватного чату"})
+
+    } else {
+      let channelMessages
+      const createdMessage = await Message.create(req.body)
+      if (req.params.activeChannelId) {
+        channelMessages = await Message.find({'channelId': req.params.activeChannelId})
+      }
+      res.status(201).json({channelMessages, message : 'Повідомлення змінене'})
     }
-    res.status(201).json({channelMessages, message : 'Повідомлення змінене'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }

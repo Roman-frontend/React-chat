@@ -11,11 +11,11 @@ export const useServer = (props) => {
           break;
 
         case "getChannels":
-          return await request("/api/channel/post-chunnels", "POST", body);
+          return await request("/api/channel/get-chunnels", "POST", body);
           break;
 
         case "getMessages":
-          return await request(`/api/chat/get-messages${param}`, "GET", body)
+          return await request(`/api/chat/get-messages${param}`, "POST", body)
           break;
       }
     } catch (e) { console.log(e.message, e.error) }
@@ -25,7 +25,7 @@ export const useServer = (props) => {
     try {
       switch (method) {
         case "postMessage":
-          return await request(`/api/chat/post-message${param}`, "POST", {...body})
+          return await request(`/api/chat/post-message${param}`, "POST", body)
           break;
 
         case "postChannel":

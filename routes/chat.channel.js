@@ -62,7 +62,7 @@ router.post(
 
 //Coming from SetUser
 router.post(
-  '/post-chunnels',
+  '/get-chunnels',
   async (req, res) => {
   try {
 /*    //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)

@@ -1,14 +1,15 @@
-import React, {useLayoutEffect, useEffect} from 'react'
+import React, {useState, useLayoutEffect, useEffect} from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import {useServer} from '../../hooks/Server.js'
 import './input-message.sass'
 
 export default function InputUpdateMessages(props) {
-  const {name, userId} = useAuthContext()
-  const {messages, setMessages, inputRef, activeChannelId} = useMessagesContext()
-  const {postData, putData} = useServer()
-  const {activeMessage, setActiveMessage} = props
+  const { name, userId } = useAuthContext()
+  const { messages, setMessages, inputRef, activeChannelId, setIsBlockedInput } = useMessagesContext()
+  const { postData, putData } = useServer()
+  const { activeMessage, setActiveMessage } = props
+
 
   const copyMessages = messages.slice(0, messages.length);
   let updatedArrayMessages = []
@@ -46,7 +47,7 @@ export default function InputUpdateMessages(props) {
   const messageInReply = async response => {
     copyMessages.unshift({
       id: Date.now(),
-      userId: userId,
+      userId,
       username: name, 
       text: activeMessage.reply.text, 
       createdAt: new Date().toLocaleString(), 
@@ -54,28 +55,32 @@ export default function InputUpdateMessages(props) {
       reply: response,
     },) 
    
-    const resPost = postData("postMessage", activeChannelId, copyMessages[0])
-    if (resPost.channelMessages) setMessages(resPost.channelMessages.reverse())
+    const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
+    if (resPost.channelMessages) {
+      setMessages(resPost.channelMessages.reverse())
+    } else setIsBlockedInput(true)
     updatedArrayMessages = copyMessages
     const object = Object.assign({}, {...activeMessage}, {reply: null})
     setActiveMessage({...object}) 
   }
 
-  function newMessage(textMessage) {
+  async function newMessage(textMessage) {
     
     copyMessages.unshift({
       id: Date.now(),
-      userId: userId,
+      userId,
       username: name, 
       text: textMessage, 
       createdAt: new Date().toLocaleString(),
       channelId: activeChannelId,
     }, )  
 
-    updatedArrayMessages = copyMessages
-    const resPost = postData("postMessage", activeChannelId, updatedArrayMessages[0])
+    const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
     if (resPost) {
-      if (resPost.channelMessages) setMessages(resPost.channelMessages.reverse())
+      if (resPost.channelMessages) {
+        setMessages(resPost.channelMessages.reverse())
+      } else setIsBlockedInput(true)
+      updatedArrayMessages = copyMessages
     }
   }
 

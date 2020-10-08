@@ -9,8 +9,8 @@ import './channels.sass';
 Modal.setAppElement('#root');
 
 export function Channels(props) {
-  const {changeLocalStorageUserData, userData} = useAuthContext();
-  const {setMessages, activeChannelId, setActiveChannelId, setDataChannels } = useMessagesContext();
+  const {changeLocalStorageUserData, userData, userId} = useAuthContext();
+  const {setMessages, activeChannelId, setActiveChannelId, setDataChannels, setIsBlockedInput } = useMessagesContext();
   const {getData} = useServer();
   const {
     notParticipantsChannel,
@@ -74,22 +74,37 @@ export function Channels(props) {
     );
   }
 
-  const toActiveChannel = (idActive, nameActive) => {
-    document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
-    document.getElementById(idActive).classList.add('user-sets__channel_active')
-    /*const receivedServerMessages = await getData("getMessages", idActive)
-    if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())*/
-    let channels
-    setDataChannels(serverChannels => {
-      channels = serverChannels;
-      console.log(serverChannels);
-      return serverChannels 
-    })
-    console.log(channels)
-    getListMembersAndNot(idActive, channels)
+  async function toActiveChannel(idActive, nameActive) {
+    markActiveLinkChannel(idActive)
+
+    await getMessagesChannel(idActive)
+
+    redrawListMembersAndNo(idActive)
 
     setChannelName(nameActive)
     setActiveChannelId(idActive)
+    setIsBlockedInput(false)
+  }
+
+  function markActiveLinkChannel(idActiveChannel) {
+    document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
+    document.getElementById(idActiveChannel).classList.add('user-sets__channel_active')
+  }
+
+  async function getMessagesChannel(idActiveChannel) {
+    console.log(userId)
+    const receivedServerMessages = await getData("getMessages", idActiveChannel, {userId})
+    if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
+  }
+
+  function redrawListMembersAndNo(idActiveChannel) {
+    let channels
+    setDataChannels(serverChannels => {
+      channels = serverChannels;
+      return serverChannels 
+    })
+
+    getListMembersAndNot(idActiveChannel, channels)
   }
 
 

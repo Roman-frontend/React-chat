@@ -13,6 +13,7 @@ export const MessagesContext = ({component}) => {
   const [messageActions, setMessageActions] = useState({})
   const [activeChannelId, setActiveChannelId] = useState(1);
   const [dataChannels, setDataChannels] = useState(null);
+  const [isBlockedInput, setIsBlockedInput] = useState(false)
 
   return (
     <Context.Provider value={{
@@ -24,7 +25,9 @@ export const MessagesContext = ({component}) => {
       activeChannelId,
       setActiveChannelId,
       dataChannels,
-      setDataChannels
+      setDataChannels,
+      isBlockedInput,
+      setIsBlockedInput
     }}>  
       {component}  
     </Context.Provider>

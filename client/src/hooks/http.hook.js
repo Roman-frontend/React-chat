@@ -29,6 +29,7 @@ export const useHttp = () => {
     } catch (e) {
       setLoading(false)
       setError(e.message)
+      if ( url.match(/\/api\/chat\/post-message/gi) ) return true
       throw e
     }
   }, [])

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import Messages from '../Messages/Messages.jsx'
 import InputUpdateMessages from '../InputUpdateMessages/InputUpdateMessages.jsx'
@@ -6,7 +6,7 @@ import EndActionButton from '../EndActionButton/EndActionButton.jsx'
 import './conversation.sass'
 
 export default function Conversation(props) {
-  const {name} = useAuthContext();
+  const { name } = useAuthContext();
   const [activeMessage, setActiveMessage] = useState({})
   const className = activeMessage.reply ? "conversation-riply" : "conversation";
   const buttonEndActive = activeMessage.reply || activeMessage.changing ? 

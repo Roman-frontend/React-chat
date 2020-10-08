@@ -7,6 +7,7 @@ const User = model(
     creator: { type: String, required: true},
     description: {type: String},
     members: {type: Array},
+    isPrivate: {type: Boolean, default: false}
   }, { timestamps: true })
 );
 

@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
+import './select-people.sass'
 
 export function SelectPeople(props) {
   const {name, userId} = useAuthContext();
@@ -35,18 +36,21 @@ export function SelectPeople(props) {
   function addEvents(tag) {
     const parrentDiv = document.querySelector(".set-channel");
     const tagInput = document.querySelector(".set-channel-forms__input-people-invite");
+    const checkbox = document.getElementById("add-private-channel");
     const buttons = document.querySelectorAll(".set-channel__button");
 
 
     tag.addEventListener('focus', () => {
-      buttons.forEach(button => button.classList.add('set-channel__button_top'))
       parrentDiv.classList.add(heightParrentDiv)
+      if (checkbox) checkbox.classList.add('set-channel-forms_top')
+      buttons.forEach(button => button.classList.add('set-channel__button_top'))
       setFocusSelectTag(true)   
     });
 
     tag.addEventListener('blur', () => {
-      buttons.forEach(button => button.classList.remove('set-channel__button_top'))
       parrentDiv.classList.remove(heightParrentDiv)
+      if (checkbox) checkbox.classList.remove('set-channel-forms_top')
+      buttons.forEach(button => button.classList.remove('set-channel__button_top'))
       if ( document.hasFocus(tagInput) ) setFocusSelectTag(false)
     });
   }
@@ -82,7 +86,6 @@ export function SelectPeople(props) {
     changeNoInvited(idElectPeople)
     setInvited(prev => {
       const allInvited = prev.concat(idElectPeople)
-      console.log(allInvited)
       return allInvited
     })
   }

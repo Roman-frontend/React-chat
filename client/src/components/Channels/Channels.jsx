@@ -10,7 +10,7 @@ Modal.setAppElement('#root');
 
 export function Channels(props) {
   const {changeLocalStorageUserData, userData} = useAuthContext();
-  const {setMessages, activeChannelId, setActiveChannelId} = useMessagesContext();
+  const {setMessages, activeChannelId, setActiveChannelId, setDataChannels } = useMessagesContext();
   const {getData} = useServer();
   const {
     notParticipantsChannel,
@@ -21,7 +21,6 @@ export function Channels(props) {
     getListMembersAndNot
   } = props
 	const [listChannels, setListChannels] = useState([]);
-  const [dataChannels, setDataChannels] = useState(null);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
@@ -29,6 +28,7 @@ export function Channels(props) {
       const serverChunnels = await getData("getChannels", null, userData.channels)
       changeLocalStorageUserData(userData)
       if (serverChunnels) { 
+        console.log(serverChunnels.userChannels)
         setDataChannels(serverChunnels.userChannels)
         const linksChannels = createLinksChannels(serverChunnels.userChannels)
         setListChannels(linksChannels)
@@ -62,19 +62,31 @@ export function Channels(props) {
         className="user-sets__channel" 
         onClick={(idActive, nameActive) => toActiveChannel(channel._id, `#${channel.name}`)}
       >
-        <Link className="main-font" to={`/chat`}>{`#${channel.name}`}</Link>
+        {createName(channel.isPrivate, channel.name)}
       </div>
     )
   }
 
-  async function toActiveChannel(idActive, nameActive) {
+  function createName(isPrivate, name) {
+    return ( isPrivate ? 
+      <Link className="main-font" to={`/chat`}>&#128274;{name}</Link> :
+      <Link className="main-font" to={`/chat`}>{`#${name}`}</Link>
+    );
+  }
+
+  const toActiveChannel = (idActive, nameActive) => {
     document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
     document.getElementById(idActive).classList.add('user-sets__channel_active')
-    const receivedServerMessages = await getData("getMessages", idActive)
-    if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
-    let chunnels
-    setDataChannels(serverChannels => { chunnels = serverChannels; return serverChannels })
-    getListMembersAndNot(idActive, chunnels)
+    /*const receivedServerMessages = await getData("getMessages", idActive)
+    if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())*/
+    let channels
+    setDataChannels(serverChannels => {
+      channels = serverChannels;
+      console.log(serverChannels);
+      return serverChannels 
+    })
+    console.log(channels)
+    getListMembersAndNot(idActive, channels)
 
     setChannelName(nameActive)
     setActiveChannelId(idActive)

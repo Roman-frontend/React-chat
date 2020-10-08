@@ -4,7 +4,7 @@ import Modal from 'react-modal'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 Modal.setAppElement('#root')
 
-export function DirectMessages(props) {
+export function ChannelMembers(props) {
   const { channelMembers } = props
 
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);

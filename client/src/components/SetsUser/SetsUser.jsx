@@ -4,7 +4,7 @@ import Modal from 'react-modal'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useServer} from '../../hooks/Server.js'
 import {Channels} from '../Channels/Channels.jsx'
-import {DirectMessages} from '../DirectMessages/DirectMessages.jsx'
+import {ChannelMembers} from '../ChannelMembers/ChannelMembers.jsx'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 import './user-sets.sass'
 Modal.setAppElement('#root')
@@ -26,26 +26,38 @@ export default function SetsUser(props) {
       const serverUsers = await getData("getUsers", userId)
 
       if (serverUsers) {
-        const otherUsers = serverUsers.users.filter(people => people._id !== userId)
-        setAllUsersWithoutActive(otherUsers)
+        //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
+        /*const otherUsers = serverUsers.users.filter(people => people._id !== userId)
+        setAllUsersWithoutActive(otherUsers)*/
+
+        //Тимчасовий сетСтейт
+        console.log(serverUsers.users)
+        setAllUsersWithoutActive(serverUsers.users)
       }
     }
 
     getPeoples()
   }, [])
 
-  function getListMembersAndNot(idActive, chunnels) {
+  function getListMembersAndNot(idActive, channels) {
     let isMembers = []
-    let allUsers, userId
-    setAllUsersWithoutActive(users => { allUsers = users; return users })
+    let allUsers
+    let userId
+    setAllUsersWithoutActive(users => { 
+      allUsers = users; 
+      console.log("users", users)
+      return users 
+    })
     setUserData(data => { userId = data._id; return data })
 
-    allUsers = allUsers.filter(people => people._id !== userId)
+    //НЕ ВИДАЛЯТИ!!! Фільтрує список учасників чату видаляючи залогіненого користувача
+    //allUsers = allUsers.filter(people => people._id !== userId)
 
     let isNotMembers = allUsers
-
-    chunnels.map(channel => {
+    console.log(allUsers, channels)
+    channels.map(channel => {
       if (channel._id === idActive) {
+        console.log(allUsers)
         for (const user of allUsers) {
           for (const member of channel.members) {
             if ( isMembers.includes(user) ) break
@@ -106,7 +118,7 @@ export default function SetsUser(props) {
         <b className="plus user-sets__nav-messages-plus">+</b>
       </div>
       { drawLists(
-        <DirectMessages 
+        <ChannelMembers 
           channelMembers={channelMembers}
           channelName={channelName} 
           notParticipantsChannel={notParticipantsChannel}

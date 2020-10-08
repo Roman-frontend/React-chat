@@ -3,7 +3,7 @@ import {useHttp} from '../hooks/http.hook.js'
 export const useServer = (props) => {
   const {request} = useHttp()
 
-  const getData = async (method, param=null, channels=null) => {
+  const getData = async (method, param=null, body=null) => {
     try {
       switch (method) {
         case "getUsers":
@@ -11,11 +11,11 @@ export const useServer = (props) => {
           break;
 
         case "getChannels":
-          return await request("/api/channel/post-chunnels", "POST", channels);
+          return await request("/api/channel/post-chunnels", "POST", body);
           break;
 
         case "getMessages":
-          return await request(`/api/chat/get-messages${param}`)
+          return await request(`/api/chat/get-messages${param}`, "GET", body)
           break;
       }
     } catch (e) { console.log(e.message, e.error) }
@@ -29,7 +29,7 @@ export const useServer = (props) => {
           break;
 
         case "postChannel":
-          return await request(`/api/channel/post-channel${param}` , "POST", {...body})
+          return await request(`/api/channel/post-channel${param}` , "POST", body)
           break;
 
         case "postAddPeoplesToChannel":

@@ -18,12 +18,12 @@ router.get(`/get-users:userId`,
   }
 })
 
-//Coming from SetUser
+//Coming from Channels, Messages
 router.get(`/get-messages:activeChannelId`,
   async (req, res) => {
   try {
     const messages = await Message.find({'channelId': req.params.activeChannelId})
-    console.log("messages ==>> ", messages, req.params.activeChannelId)
+    //console.log("messages ==>> ", messages, req.params.activeChannelId, req.body)
     res.json({messages, message : 'Повідомлення повернені'})
   } catch (e) {
     res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})

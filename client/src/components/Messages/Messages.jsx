@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react'
+import React, { useLayoutEffect, useEffect } from 'react'
 import { useAuthContext } from '../../context/AuthContext.js'
 import { useMessagesContext } from '../../context/MessagesContext.js'
 import { useServer } from '../../hooks/Server.js'
@@ -12,14 +12,14 @@ export default function Messages(props) {
   const { getData } = useServer()
   const { activeMessage, setActiveMessage } = props
 
-  useLayoutEffect(() => {
-    async function fetchMessages() {
+  useEffect(() => {
+    async function getMessages() {
       const receivedServerMessages = await getData("getMessages", activeChannelId)
       if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
     }
 
-    fetchMessages()
-  }, [userId]);
+    getMessages()
+  }, [activeChannelId])
 
   function renderMessages() {
     return messages.map((message, index) => {

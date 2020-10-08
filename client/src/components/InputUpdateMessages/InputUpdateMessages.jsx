@@ -74,7 +74,9 @@ export default function InputUpdateMessages(props) {
 
     updatedArrayMessages = copyMessages
     const resPost = postData("postMessage", activeChannelId, updatedArrayMessages[0])
-    if (resPost) setMessages(resPost.channelMessages.reverse())
+    if (resPost) {
+      if (resPost.channelMessages) setMessages(resPost.channelMessages.reverse())
+    }
   }
 
   return (

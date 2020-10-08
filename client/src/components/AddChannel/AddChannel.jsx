@@ -16,30 +16,24 @@ export function AddChannel(props) {
 
     setModalAddChannelIsOpen, 
     setListChannels, 
-    setDataChannels,
     createLinkChannel 
   } = props
   const [notInvited, setNotInvited] = useState(notParticipantsChannel)
+  const [isPrivate, setIsPrivate] = useState(false)
   const [form, setForm] = useState({
-    name: '', discription: '', people: ''
+    name: '', discription: '', isPrivate: false, members: []
   })
 
   const heightParrentDiv = 'set-channel__add_height'
 
   const changeHandler = event => {
-    let invitedWithUser
-    console.log(invited)
-    setInvited(invitedd => {
-      invitedWithUser = invitedd
-      console.log(invitedd)
-      return invitedd
-    })
-    invitedWithUser = invitedWithUser.concat(userId)
-    setForm({ ...form, [event.target.name]: event.target.value, creator: userId, members: invitedWithUser })
+    setForm({ ...form, [event.target.name]: event.target.value })
   }
 
   const doneCreate = async () => {
-    const resServer = await postData("postChannel", userId, form)
+    const members = invited[0] ? invited.concat(userId) : [userId]
+    console.log({ ...form, creator: userId, members })
+    const resServer = await postData("postChannel", userId, { ...form, creator: userId, members })
 
     if (resServer.channel) {
       const newChannel = resServer.channel
@@ -69,6 +63,16 @@ export function AddChannel(props) {
         />
       </div>
     )
+  }
+
+  function changeIsPrivate() {
+    setForm(prev => {
+      return { 
+        ...prev, 
+        isPrivate: !isPrivate 
+      } 
+    })
+    setIsPrivate(!isPrivate)
   }
 
   function closeAddChannel() {
@@ -118,6 +122,17 @@ export function AddChannel(props) {
           setNotInvited={setNotInvited}
           heightParrentDiv={heightParrentDiv}
         />
+
+        <div className="set-channel-forms" id="add-private-channel">
+          <label className="set-channel-forms__label" >Private channel</label>
+          <input 
+            className="set-channel-forms__input set-channel-forms__input_width" 
+            type="checkbox" 
+            id="checkbox" 
+            name="checkbox" 
+            onClick={changeIsPrivate}
+          />
+        </div>
       </form>
 
       <button className="set-channel__button" onClick={closeAddChannel}>Close</button>

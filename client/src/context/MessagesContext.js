@@ -11,7 +11,8 @@ export const MessagesContext = ({component}) => {
   const inputRef = useRef() 
   const [messages, setMessages] = useState([]);
   const [messageActions, setMessageActions] = useState({})
-  const [activeChannelId, setActiveChannelId] = useState(userId);
+  const [activeChannelId, setActiveChannelId] = useState(1);
+  const [dataChannels, setDataChannels] = useState(null);
 
   return (
     <Context.Provider value={{
@@ -21,7 +22,9 @@ export const MessagesContext = ({component}) => {
       messageActions,
       setMessageActions,
       activeChannelId,
-      setActiveChannelId
+      setActiveChannelId,
+      dataChannels,
+      setDataChannels
     }}>  
       {component}  
     </Context.Provider>

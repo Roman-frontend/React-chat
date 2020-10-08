@@ -65,12 +65,13 @@ router.post(
   '/post-chunnels',
   async (req, res) => {
   try {
+/*    //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)
     let userChannels = []
     for (const channelId of req.body ) {
       const channel = await Channel.find({ _id: channelId })
       userChannels = userChannels.concat(channel)
-    }
-    //console.log("get-channels ", req.body, userChannels)
+    }*/
+    const userChannels = await Channel.find({})
     res.json({userChannels, message : 'Channels responsed'})
   } catch (e) {
     console.log('failed in get-messages')

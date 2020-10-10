@@ -15,6 +15,8 @@ export default function Conversation(props) {
   const buttonEndActive = activeMessage.reply || activeMessage.changing ? 
     <EndActionButton  activeMessage={activeMessage} setActiveMessage={setActiveMessage} /> : null;
 
+  console.log(isBlockedInput)
+
   const contentMessages = isBlockedInput ? <img src={imageError} /> :
     <Messages activeMessage={activeMessage} setActiveMessage={setActiveMessage} />;
 //НЕ ВИДАЛЯТИ перевіряє чи активний канал не закритий для юзера

@@ -8,6 +8,7 @@ export const useHttp = () => {
   	setLoading(true)
     try {
 
+      console.log("url ", url)
       if (body) {
         /**передаємо body на сервер як строку а не обєкт */
         body = JSON.stringify(body)
@@ -17,6 +18,8 @@ export const useHttp = () => {
       }
       const response = await fetch(url, {method, body, headers})
       const data = await response.json()
+
+      console.log(response)
 
       if (!response.ok) {
       	throw new Error(data.message || 'Щось пішло не так ')
@@ -29,7 +32,7 @@ export const useHttp = () => {
     } catch (e) {
       setLoading(false)
       setError(e.message)
-      if ( url.match(/\/api\/chat\/post-message/gi) ) return true
+      if ( url.match(/\/api\/chat\/post-message/gi) ) return "403"
       throw e
     }
   }, [])

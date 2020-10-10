@@ -28,7 +28,7 @@ router.get(`/get-users:userId`,
 router.post('/get-messages:activeChannelId',
   async (req, res) => {
   try {
-    const userIsNotMemberPrivatChannel = checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
+    const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
 
     if (userIsNotMemberPrivatChannel) {
       res.status(403).json({message: "Ви не є учасником приватного чату"})
@@ -47,7 +47,7 @@ router.post(
   '/post-message:activeChannelId',
   async (req, res) => {
   try {
-    const userIsNotMemberPrivatChannel = checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
+    const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
 
     if (userIsNotMemberPrivatChannel) {
       res.status(403).json({message: "Ви не є учасником приватного чату"})

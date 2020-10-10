@@ -107,8 +107,8 @@ export const FilterContacts = () => {
           ref={inputContactsRef}
         />
         <button onClick={filterContacts}>Filter contacts</button>
-        <button onClick={saveContactsToLocalStorage}>Save contacts</button>
-        <button onClick={cleanStorage}>Clean contacts</button>
+        <button onClick={saveContactsToLocalStorage}>Save in storage</button>
+        <button onClick={cleanStorage}>Clean storage</button>
         <button className="sign-up"><Link to={`/chat`}>SignUp</Link></button>
       </div>
       <div className="filter__list-result">{listContacts}</div>

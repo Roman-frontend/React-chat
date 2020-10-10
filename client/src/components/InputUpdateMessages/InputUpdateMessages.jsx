@@ -56,9 +56,11 @@ export default function InputUpdateMessages(props) {
     },) 
    
     const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
+
     if (resPost.channelMessages) {
       setMessages(resPost.channelMessages.reverse())
-    } else setIsBlockedInput(true)
+    } else if (resPost === "403") { setIsBlockedInput(true) }
+
     updatedArrayMessages = copyMessages
     const object = Object.assign({}, {...activeMessage}, {reply: null})
     setActiveMessage({...object}) 
@@ -77,9 +79,11 @@ export default function InputUpdateMessages(props) {
 
     const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
     if (resPost) {
+
       if (resPost.channelMessages) {
         setMessages(resPost.channelMessages.reverse())
-      } else setIsBlockedInput(true)
+      } else if (resPost === "403") { setIsBlockedInput(true) }
+
       updatedArrayMessages = copyMessages
     }
   }

@@ -65,12 +65,12 @@ router.post(
   '/get-chunnels',
   async (req, res) => {
   try {
-/*    //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)
-    let userChannels = []
-    for (const channelId of req.body ) {
-      const channel = await Channel.find({ _id: channelId })
-      userChannels = userChannels.concat(channel)
-    }*/
+    //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)
+    //let userChannels = []
+    //for (const channelId of req.body ) {
+      //const channel = await Channel.find({ _id: channelId })
+      //userChannels = userChannels.concat(channel)
+    //}
     const userChannels = await Channel.find({})
     res.json({userChannels, message : 'Channels responsed'})
   } catch (e) {
@@ -78,5 +78,6 @@ router.post(
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})
   }
 })
+
 
 module.exports = router;

@@ -11,12 +11,13 @@ Modal.setAppElement('#root');
 export function Channels(props) {
   const {changeLocalStorageUserData, userData, userId} = useAuthContext();
   const {setMessages, activeChannelId, setActiveChannelId, setDataChannels, setIsBlockedInput } = useMessagesContext();
-  const {getData} = useServer();
+  const { getData } = useServer();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
     setInvited,
     invited,
+    channelMembers,
     setChannelName,
     getListMembersAndNot
   } = props
@@ -25,6 +26,7 @@ export function Channels(props) {
 
   useEffect(() => {
     async function createListChannels() {
+      //const serverChunnels = await getData("getChannels", null, userData.channels)
       const serverChunnels = await getData("getChannels", null, userData.channels)
       changeLocalStorageUserData(userData)
       if (serverChunnels) { 
@@ -60,7 +62,7 @@ export function Channels(props) {
         key={channel._id} 
         id={channel._id}
         className="user-sets__channel" 
-        onClick={(idActive, nameActive) => toActiveChannel(channel._id, `#${channel.name}`)}
+        onClick={(idActive, nameActive) => toActiveChannel(channel._id, `#${channel.name}`, channel.isPrivate)}
       >
         {createName(channel.isPrivate, channel.name)}
       </div>
@@ -74,16 +76,18 @@ export function Channels(props) {
     );
   }
 
-  async function toActiveChannel(idActive, nameActive) {
+  async function toActiveChannel(idActive, nameActive, isPrivate) {
     markActiveLinkChannel(idActive)
 
     await getMessagesChannel(idActive)
 
     redrawListMembersAndNo(idActive)
 
+    determineLetUserAccessToChat(isPrivate)
+
     setChannelName(nameActive)
     setActiveChannelId(idActive)
-    setIsBlockedInput(false)
+
   }
 
   function markActiveLinkChannel(idActiveChannel) {
@@ -105,6 +109,25 @@ export function Channels(props) {
     })
 
     getListMembersAndNot(idActiveChannel, channels)
+  }
+
+  function determineLetUserAccessToChat(isPrivate) {
+  /*!isPrivate ? setIsBlockedInput(false) : 
+    channelMembers.filter(member => member._id === userId) ? 
+    setIsBlockedInput(false) : setIsBlockedInput(true);*/
+
+    if (!isPrivate) {
+      console.log("chat is not private")
+      setIsBlockedInput(false)
+
+    } else if ( channelMembers.filter(member => member._id === userId) ) {
+      console.log("member")
+      setIsBlockedInput(false) 
+
+    } else {
+      console.log("chat privat and user is nit member")
+      setIsBlockedInput(true);
+    }
   }
 
 

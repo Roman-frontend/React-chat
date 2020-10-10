@@ -21,6 +21,7 @@ export default function SetsUser(props) {
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true)
 
+
   useEffect(() => {
     async function getPeoples() {
       const serverUsers = await getData("getUsers", userId)
@@ -108,6 +109,7 @@ export default function SetsUser(props) {
           setChannelName={setChannelName}
           notParticipantsChannel={notParticipantsChannel}
           setNotParticipantsChannel={setNotParticipantsChannel}
+          channelMembers={channelMembers}
           invited={invited}
           setInvited={setInvited}
         />,

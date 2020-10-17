@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from 'react'
 import Tippy from '@tippy.js/react'
 import 'tippy.js/dist/tippy.css'
+import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js'
-import {useServer} from '../../hooks/Server.js'
+import { useServer } from '../../hooks/Server.js'
 import iconMore from '../../images/icon-more.png'
 import './message-actions-popup.sass'
 
 export default function MessageActionsPopup(props) {
-  const { removeData } = useServer();
+  const { token } = useAuthContext();
   const { messages, setMessages, inputRef } = useMessagesContext();
+  const { removeData } = useServer();
   const { activeMessage, setActiveMessage } = props;
   const [block, setBlock] = useState(true)
   let element = document.getElementById(activeMessage.id)
@@ -49,7 +51,7 @@ export default function MessageActionsPopup(props) {
     setBlock(false)
     const object = Object.assign({}, {...activeMessage}, {id: undefined})
     setActiveMessage({...object});
-    const removeMessage = await removeData(activeMessage.message._id);
+    const removeMessage = await removeData(activeMessage.message._id, token);
     const isComplitedRemove = removeMessage.removed
     if (isComplitedRemove) {
       const newArrMessages = messages.filter(message => message._id !== activeMessage.message._id)

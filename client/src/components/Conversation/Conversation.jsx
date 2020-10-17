@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
+import { ConversationHeader } from '../ConversationHeader/ConversationHeader.jsx'
 import Messages from '../Messages/Messages.jsx'
 import InputUpdateMessages from '../InputUpdateMessages/InputUpdateMessages.jsx'
 import EndActionButton from '../EndActionButton/EndActionButton.jsx'
@@ -8,17 +9,14 @@ import imageError from '../../images/error.png'
 import './conversation.sass'
 
 export default function Conversation(props) {
-  const { name, userId } = useAuthContext();
+  const {userId } = useAuthContext();
   const { activeChannelId, dataChannels, isBlockedInput } = useMessagesContext()
-  const [activeMessage, setActiveMessage] = useState({})
-  const className = activeMessage.reply ? "conversation-riply" : "conversation";
+  const [activeMessage, setActiveMessage] = useState({});
   const buttonEndActive = activeMessage.reply || activeMessage.changing ? 
     <EndActionButton  activeMessage={activeMessage} setActiveMessage={setActiveMessage} /> : null;
-
-  console.log(isBlockedInput)
-
   const contentMessages = isBlockedInput ? <img src={imageError} /> :
     <Messages activeMessage={activeMessage} setActiveMessage={setActiveMessage} />;
+
 //НЕ ВИДАЛЯТИ перевіряє чи активний канал не закритий для юзера
 /*  const [ channelIsAvailableForUser, setChannelIsAvailableForUser ] = useState(true)
   useEffect(() => {
@@ -39,12 +37,9 @@ export default function Conversation(props) {
   }
 
   return (
-    <div className={className}>
-      <div className={`${className}__field-name`}>
-        <b className={`${className}__name`}>✩ {name}</b>
-      </div>
+    <div className={ activeMessage.reply ? "conversation-riply" : "conversation" }>
+      <ConversationHeader />
       {fieldAnswerTo()}
-      
       {contentMessages}
       <div className="conversation-input">
         <InputUpdateMessages

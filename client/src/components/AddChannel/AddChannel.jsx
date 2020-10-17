@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useServer} from '../../hooks/Server.js'
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
@@ -6,8 +6,8 @@ import './add-channel.sass'
 
 
 export function AddChannel(props) {
-  const {userId, setUserData} = useAuthContext();
-  const {postData} = useServer();
+  const { userId, setUserData, token } = useAuthContext();
+  const { postData } = useServer();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
@@ -32,8 +32,7 @@ export function AddChannel(props) {
 
   const doneCreate = async () => {
     const members = invited[0] ? invited.concat(userId) : [userId]
-    console.log({ ...form, creator: userId, members })
-    const resServer = await postData("postChannel", userId, { ...form, creator: userId, members })
+    const resServer = await postData("postChannel", token, { ...form, creator: userId, members }, userId)
 
     if (resServer.channel) {
       const newChannel = resServer.channel

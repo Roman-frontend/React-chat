@@ -4,33 +4,29 @@ const Channel = require('../models/Channel.js')
 const Message = require('../models/Message')
 const User = require('../models/User.js')
 const router = Router()
-
-async function checkBelongToPrivatChannel(channelId, userId) {
-  const activeChannel = await Channel.findOne({ _id: channelId })
-  return activeChannel.isPrivate && !activeChannel.members.includes(userId) ? true : false
-}
+const jsonWebToken = require('jsonwebtoken');
 
 //coming from SetUser
-router.get(`/get-users:userId`,
+router.get(`/get-users:userId`, verifyToken,
   async (req, res) => {
   try {
     const users = await User.find({})
-    const names = users.map(user => {
-      return user.name
-    })
+    const names = users.map( user => { return user.name })
+
     res.json({names, message : 'Імена повернені'})
   } catch (e) {
     res.status(500).json({message: "Помилка при виконанні get-запиту ", error: e})
   }
 })
 
-//Coming from Channels, Messages
-router.post('/get-messages:activeChannelId',
+//Coming from Channels
+router.post('/get-messages:activeChannelId', verifyToken,
   async (req, res) => {
   try {
     const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
 
     if (userIsNotMemberPrivatChannel) {
+      console.log("get-messages ==>>", userIsNotMemberPrivatChannel)
       res.status(403).json({message: "Ви не є учасником приватного чату"})
 
     } else {
@@ -44,9 +40,10 @@ router.post('/get-messages:activeChannelId',
 
 //Coming from InputUpdateMessages
 router.post(
-  '/post-message:activeChannelId',
+  '/post-message:activeChannelId', verifyToken,
   async (req, res) => {
   try {
+    console.log("without express.json ", req.body)
     const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
 
     if (userIsNotMemberPrivatChannel) {
@@ -79,16 +76,32 @@ router.put(
 })
 
 router.delete(
-  '/delete-message:id', 
+  '/delete-message:id', verifyToken,
   async (req, res) => {
   try {
     await Message.findByIdAndRemove(req.params.id)
-
     res.status(201).json({removed: true, message : 'Сообщение удалено'})
   } catch (e) {
     console.log("catch - delete-message")
     res.status(500).json({removed: false, message: "Что-то пошло не так "})
   }
 })
+
+async function checkBelongToPrivatChannel(channelId, userId) {
+  const activeChannel = await Channel.findOne({ _id: channelId })
+  return activeChannel.isPrivate && !activeChannel.members.includes(userId) ? true : false
+}
+
+
+function verifyToken( req, res, next ) {
+  const token = req.headers['authorization'];
+  console.log("token ", token)
+
+  if (token == null) return res.sendStatus(401)
+
+  jsonWebToken.verify(token, config.get("jwtSecret"), (err, success) => {
+    err ? res.sendStatus(403) : next()
+  })
+}
 
 module.exports = router;

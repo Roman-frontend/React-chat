@@ -1,20 +1,21 @@
 import React, {useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../../hooks/http.hook.js'
+import { useServer } from '../../hooks/Server.js'
 import {useValidate} from '../../hooks/validate.hook.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
 import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
 
 export const SignUpPage = () => {
+  const { login } = useAuthContext()
+  const {loading, request, error, clearError} = useHttp()
+  const { postData } = useServer()
   const {errors, validate} = useValidate({
     name: validateName,
     email: validateEmail,
     password: validatePassword
   })
-
-  const {login} = useAuthContext()
-  const {loading, request, error, clearError} = useHttp()
   
   const ref = {
     name: useRef(undefined),
@@ -37,7 +38,7 @@ export const SignUpPage = () => {
     validate(formData)
 
     try {
-      const data = await request('api/auth/register', 'POST', formData)
+      const data = await postData('postRegister', null, formData)
       login(data.userData, data.name, data.token, data.userId)
     } catch (e) {}
   }

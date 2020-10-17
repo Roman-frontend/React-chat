@@ -1,55 +1,58 @@
 .conversation
   grid-area: rightblock
   display: grid
-  grid-template-areas: "nick" "messages" "fieldMsg"
+  grid-template-areas: "nick" "messages" "input"
   grid-template-rows: 4.2rem 71vh
-
-  .conversation__field-name
-    border: 0.1rem solid #979797
-    height: 4rem
-    grid-area: nick
-
-    .conversation__name 
-      font: 1.5rem serif
-      top: 1.1rem
-      color: #353535
-      left: 1rem
 
 .conversation-riply 
   grid-area: rightblock
   display: grid
-  grid-template-areas: "nick" "messages" "answer" "fieldMsg"
+  grid-template-areas: "nick" "messages" "answer" "input"
   grid-template-rows: 4.2rem 67vh 10vh
 
-  .conversation-riply__field-name
-    border: 0.1rem solid #979797
-    height: 4rem
-    grid-area: nick
+.conversation__field-name
+  border: 0.1rem solid #979797
+  height: 4rem
+  grid-area: nick
+  display: grid
+  grid-template-columns: 1fr 5rem
+  grid-auto-rows: minmax(20px, auto)
+  align-items: start
+  grid-template-areas: "name member"
 
-    .conversation-riply__name 
-      font: 1.5rem serif
-      top: 1.1rem
-      color: #353535
-      left: 1rem
+  .conversation__name 
+    grid-area: name
+    font: 1.5rem serif
+    align-self: center
+    color: #353535
+    left: 1rem
 
-  .conversation-riply__answer 
-    display: block
-    height: 3rem
-    width: 74.7vw
-    border-radius: 1rem 1rem 0rem 0rem
-    border: 0.1rem solid #BEB7BD
-    left: 3vw
-    background: #80249C
-    color: white
-    grid-area: answer
-    padding: 1rem 0rem 0rem 1rem
+  .conversation__header-members
+    grid-area: member
+    align-self: center
+    cursor: pointer
+
+    .conversation__icon-member
+      height: 2rem
+
+.conversation-riply__answer 
+  display: block
+  height: 3rem
+  width: 74.7vw
+  border-radius: 1rem 1rem 0rem 0rem
+  border: 0.1rem solid #BEB7BD
+  left: 3vw
+  background: #80249C
+  color: white
+  grid-area: answer
+  padding: 1rem 0rem 0rem 1rem
 
 .conversation-input
   display: grid
   height: 7.6vh
   width: 76vw
   left: 3vw
-  grid-area: fieldMsg
+  grid-area: input
 
 .Example-Modal
   height: 40rem

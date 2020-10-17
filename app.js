@@ -1,4 +1,5 @@
 const express = require('express')
+const jwt = require('jsonwebtoken');
 const path = require('path')
 const config = require('config')
 const mongoose = require('mongoose')
@@ -14,6 +15,26 @@ app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/chat', require('./routes/chat.message'))
 app.use('/api/channel', require('./routes/chat.channel'))
 
+/*function verifyToken(req, res, next) {
+  // Get auth header value
+  const bearerHeader = req.headers['authorization'];
+  console.log("===========   ========    ", bearerHeader)
+  // Check if bearer is undefined
+  if(typeof bearerHeader !== 'undefined') {
+    // Split at the space
+    const bearer = bearerHeader.split(' ');
+    // Get token from array
+    const bearerToken = bearer[1];
+    // Set the token
+    req.token = bearerToken;
+    // Next middleware
+    next();
+  } else {
+    // Forbidden
+    res.sendStatus(403);
+  }
+}*/
+
 // /api - буде префікс для будь якого запиту, /auth - для роботи з авторизацією, 2-й параметр шлях до route що оброблятиме авторизацію
 //app.use('/api/auth', require('./routes/auth.routes'))
 
@@ -25,6 +46,19 @@ app.get('*', (req, res) => {
 })
 
 const PORT = config.get('port') || 5000
+
+function verifyAuthenticate(req, res, next) {
+  const authHeader = req.headers['authorization']
+  console.log("authHeader ", authHeader)
+  const token = authHeader && authHeader.split(' ')[1]
+  if (token == null) return res.sendStatus(401)
+
+
+  jwt.verify( token, config.get("jwtSecret"), (err, success) => {
+    console.log(error ? error : success) 
+    next()
+  })
+}
 
 async function start() {
   try {

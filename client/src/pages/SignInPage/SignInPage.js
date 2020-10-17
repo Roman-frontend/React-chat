@@ -4,13 +4,15 @@ import { Formik, Form, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../../hooks/http.hook.js'
-import {useAuthContext} from '../../context/AuthContext.js'
+import { useAuthContext } from '../../context/AuthContext.js'
+import { useServer } from '../../hooks/Server.js'
 import {SignInForm} from '../../components/SignInForm/SignInForm.jsx'
 import './auth-body.sass'
 
 export const SignInPage = () => {
-  const auth = useAuthContext()
-  const {loading, request, error, clearError} = useHttp()
+  const { login } = useAuthContext()
+  const { loading, request, error, clearError } = useHttp()
+  const { postData } = useServer()
   
   const initialValues = { email: '', password: '' }
 
@@ -29,9 +31,9 @@ export const SignInPage = () => {
   const onSubmit = async values => {
     try {
       const formData = { email: values.email, password: values.password }
-      const data = await request('/api/auth/login', 'POST', formData)
-      console.log(data)
-      auth.login(data.userData, data.name, data.token, data.userId)
+      const data = await postData("postLogin", null, formData)
+      login(data.userData, data.name, data.token, data.userId)
+
     } catch (e) {console.error(e)}
   }
 

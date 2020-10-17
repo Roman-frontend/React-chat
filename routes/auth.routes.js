@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User.js')
 const router = Router()
 
+//SignUpPage
 router.post(
   '/register', 
   /**масив midleware(проміжних функцій) для перевірки коректності прийшовших даних*/
@@ -62,6 +63,7 @@ router.post(
   }
 })
 
+//SignInPage
 router.post(
   '/login', 
   [

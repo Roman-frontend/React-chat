@@ -57,5 +57,5 @@ export const useAuth = () => {
   }, [login])
   
 
-  return { login, logout, changeLocalStorageUserData, userData, setUserData, name, token, userId, ready }
+  return { login, logout, changeLocalStorageUserData, userData, setUserData, name, token, userId, setUserId, ready }
 }

@@ -1,12 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {useAuthContext} from '../../context/AuthContext.js';
-import {useMessagesContext} from '../../context/MessagesContext.js';
-import {useServer} from '../../hooks/Server.js';
 import './select-people.sass'
 
 export function SelectPeople(props) {
-  const {name, userId} = useAuthContext();
-  const {getUsers} = useServer();
 
   const {
     notParticipantsChannel,
@@ -112,7 +107,6 @@ export function SelectPeople(props) {
   }
 
   function changeListPeoples() {
-    //const regExp = new RegExp(`^${inputRef.current.value}`)
     const regExp = new RegExp(`${inputRef.current.value}`)
     setNotInvited(() => {
       return notParticipantsChannel.filter(people => people.email.match(regExp) ? people : null)

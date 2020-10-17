@@ -9,7 +9,7 @@ import './channels.sass';
 Modal.setAppElement('#root');
 
 export function Channels(props) {
-  const {changeLocalStorageUserData, userData, userId} = useAuthContext();
+  const {changeLocalStorageUserData, userData, userId, setUserId, token} = useAuthContext();
   const {setMessages, activeChannelId, setActiveChannelId, setDataChannels, setIsBlockedInput } = useMessagesContext();
   const { getData } = useServer();
   const {
@@ -19,18 +19,17 @@ export function Channels(props) {
     invited,
     channelMembers,
     setChannelName,
-    getListMembersAndNot
+    getListMembersAndNot,
+    listChannelsIsOpen
   } = props
 	const [listChannels, setListChannels] = useState([]);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
     async function createListChannels() {
-      //const serverChunnels = await getData("getChannels", null, userData.channels)
-      const serverChunnels = await getData("getChannels", null, userData.channels)
+      const serverChunnels = await getData("getChannels", token, null, userData.channels)
       changeLocalStorageUserData(userData)
       if (serverChunnels) { 
-        console.log(serverChunnels.userChannels)
         setDataChannels(serverChunnels.userChannels)
         const linksChannels = createLinksChannels(serverChunnels.userChannels)
         setListChannels(linksChannels)
@@ -96,8 +95,10 @@ export function Channels(props) {
   }
 
   async function getMessagesChannel(idActiveChannel) {
-    console.log(userId)
-    const receivedServerMessages = await getData("getMessages", idActiveChannel, {userId})
+    let lastUserId
+    setUserId(prevId => { lastUserId = prevId; return prevId })
+
+    const receivedServerMessages = await getData("getMessages", token, idActiveChannel, {userId: lastUserId} )
     if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
   }
 
@@ -117,22 +118,19 @@ export function Channels(props) {
     setIsBlockedInput(false) : setIsBlockedInput(true);*/
 
     if (!isPrivate) {
-      console.log("chat is not private")
       setIsBlockedInput(false)
 
     } else if ( channelMembers.filter(member => member._id === userId) ) {
-      console.log("member")
       setIsBlockedInput(false) 
 
     } else {
-      console.log("chat privat and user is nit member")
       setIsBlockedInput(true);
     }
   }
 
 
 	return (
-		<div className="user-sets__different-channels">
+		<div style={{display: listChannelsIsOpen ? "block" : "none"}}>
       <div className="user-sets__channel">
         <p className="main-font" 
           onClick={() => setModalAddChannelIsOpen(true)}

@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
+import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
@@ -6,6 +7,7 @@ import './add-people-to-channel.sass';
 
 
 export function AddPeopleToChannel(props) {
+  const { token } = useAuthContext();
   const { activeChannelId } = useMessagesContext();
   const { postData } = useServer();
   const {
@@ -33,7 +35,7 @@ export function AddPeopleToChannel(props) {
   }
 
   async function doneInvite() {
-  	const resInviting = await postData("postAddPeoplesToChannel", activeChannelId, invited)
+  	const resInviting = await postData("postAddPeoplesToChannel", token, invited, activeChannelId)
     if (resInviting.dataMember) {
       const newMember = resInviting.dataMember
       setChannelMembers(prev => {

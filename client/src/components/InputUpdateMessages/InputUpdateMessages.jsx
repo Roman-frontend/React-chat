@@ -5,7 +5,7 @@ import {useServer} from '../../hooks/Server.js'
 import './input-message.sass'
 
 export default function InputUpdateMessages(props) {
-  const { name, userId } = useAuthContext()
+  const { name, userId, token } = useAuthContext()
   const { messages, setMessages, inputRef, activeChannelId, setIsBlockedInput } = useMessagesContext()
   const { postData, putData } = useServer()
   const { activeMessage, setActiveMessage } = props
@@ -38,7 +38,7 @@ export default function InputUpdateMessages(props) {
       } else return message
     })
     
-    const resPut = await putData(putMessage[0], activeMessage.change)
+    const resPut = await putData(putMessage[0], activeMessage.change, null, token)
     if (resPut.messages) setMessages(resPut.messages.reverse())
     const object = Object.assign({}, {...activeMessage}, {'change': null})
     setActiveMessage({...object})
@@ -55,7 +55,7 @@ export default function InputUpdateMessages(props) {
       reply: response,
     },) 
    
-    const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
+    const resPost = await postData("postMessage", token, { userId, ...copyMessages[0] }, activeChannelId)
 
     if (resPost.channelMessages) {
       setMessages(resPost.channelMessages.reverse())
@@ -77,7 +77,7 @@ export default function InputUpdateMessages(props) {
       channelId: activeChannelId,
     }, )  
 
-    const resPost = await postData("postMessage", activeChannelId, { userId, ...copyMessages[0] })
+    const resPost = await postData("postMessage", token, { userId, ...copyMessages[0] }, activeChannelId)
     if (resPost) {
 
       if (resPost.channelMessages) {

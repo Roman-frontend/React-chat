@@ -1,25 +1,26 @@
-import {useState, useCallback} from 'react'
+import { useState, useCallback } from 'react'
 
 export const useHttp = () => {
   const[loading, setLoading] = useState(false)
   const[error, setError] = useState(null)
 
-  const request = useCallback( async (url, method="GET", body=null, headers={}) => {
+  const request = useCallback( async ( url, token, method="GET", body=null ) => {
   	setLoading(true)
     try {
 
-      console.log("url ", url)
-      if (body) {
+      const headers = {}
+      headers['authorization'] = token
+      console.log("http request", url, headers, method, body)
+
+      if ( body ) {
         /**передаємо body на сервер як строку а не обєкт */
         body = JSON.stringify(body)
-        console.log('url-date - ', body, "url ==>> ", url)
         /**Щоб на сервері пирйняти json */
         headers['Content-Type'] = 'application/json'
       }
+      console.log("http request", headers)
       const response = await fetch(url, {method, body, headers})
       const data = await response.json()
-
-      console.log(response)
 
       if (!response.ok) {
       	throw new Error(data.message || 'Щось пішло не так ')
@@ -27,6 +28,7 @@ export const useHttp = () => {
 
       setLoading(false)
 
+      console.log("http data ", data)
       return data
 
     } catch (e) {
@@ -39,5 +41,5 @@ export const useHttp = () => {
 
   const clearError = useCallback(() => setError(null), [])
 
-  return { loading, request, error, clearError}
+  return { loading, request, error, clearError }
 }

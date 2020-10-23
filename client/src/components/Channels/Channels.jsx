@@ -5,6 +5,7 @@ import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
 import {AddChannel} from '../AddChannel/AddChannel.jsx';
+import {GET_CHANNELS, GET_MESSAGES} from '../../redux/types.js'
 import './channels.sass';
 Modal.setAppElement('#root');
 
@@ -27,7 +28,7 @@ export function Channels(props) {
 
   useEffect(() => {
     async function createListChannels() {
-      const serverChunnels = await getData("getChannels", token, null, userData.channels)
+      const serverChunnels = await getData(GET_CHANNELS, token, null, userData.channels)
       changeLocalStorageUserData(userData)
       if (serverChunnels) { 
         setDataChannels(serverChunnels.userChannels)
@@ -98,7 +99,7 @@ export function Channels(props) {
     let lastUserId
     setUserId(prevId => { lastUserId = prevId; return prevId })
 
-    const receivedServerMessages = await getData("getMessages", token, idActiveChannel, {userId: lastUserId} )
+    const receivedServerMessages = await getData(GET_MESSAGES, token, idActiveChannel, {userId: lastUserId} )
     if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
   }
 

@@ -54,7 +54,7 @@ router.post(
     const token = jwt.sign(
       {userId: user.id},
       config.get('jwtSecret'),
-      { expiresIn: '1h'}
+      //{ expiresIn: '1h'}
     )
 
     res.status(201).json({userData: finedUser, name: user.name, token, userId: user.id, message : 'Пользователь создан'})
@@ -108,7 +108,7 @@ router.post(
       /**секретний ключ з папки config*/
       config.get('jwtSecret'),
       /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
-      { expiresIn: '1h'}
+      //{ expiresIn: '1h'}
     )
     console.log("userData ===>>> ", userData)
     res.json({userData, name: userData.name, token, userId: userData.id})

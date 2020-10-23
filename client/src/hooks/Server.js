@@ -1,4 +1,14 @@
-import { useHttp } from '../hooks/http.hook.js'
+import { useHttp } from '../hooks/http.hook.js';
+import {
+  GET_USERS, 
+  GET_CHANNELS, 
+  GET_MESSAGES, 
+  POST_REGISTER, 
+  POST_LOGIN, 
+  POST_MESSAGE, 
+  POST_CHANNEL, 
+  POST_ADD_PEOPLES_TO_CHANNEL
+} from '../redux/types.js'
 
 export const useServer = (props) => {
   const { request } = useHttp()
@@ -7,17 +17,17 @@ export const useServer = (props) => {
     try {
       switch ( method ) {
         //SetUser, ConversationHeader
-        case "getUsers":
+        case GET_USERS:
           return await request(`/api/channel/get-users${param}`, token) 
           break;
 
         //Channels
-        case "getChannels":
+        case GET_CHANNELS:
           return await request("/api/channel/get-chunnels", token, "POST", body);
           break;
 
         //Channels
-        case "getMessages":
+        case GET_MESSAGES:
           return await request(`/api/chat/get-messages${param}`, token, "POST", body)
           break;
       }
@@ -28,27 +38,27 @@ export const useServer = (props) => {
     try {
       switch ( method ) {
         //SignUpPage
-        case "postRegister":
+        case POST_REGISTER:
           return await request('api/auth/register', token, 'POST', body)
           break;
 
         //SignInPage
-        case "postLogin":
+        case POST_LOGIN:
           return await request('/api/auth/login', token, 'POST', body)
           break;
 
         //InputUpdateMessages
-        case "postMessage":
+        case POST_MESSAGE:
           return await request(`/api/chat/post-message${param}`, token, "POST", body)
           break;
 
         //AddChannel
-        case "postChannel":
+        case POST_CHANNEL:
           return await request(`/api/channel/post-channel${param}`, token, "POST", body)
           break;
 
         //AddPeopleToChannel
-        case "postAddPeoplesToChannel":
+        case POST_ADD_PEOPLES_TO_CHANNEL:
           return await request(`/api/channel/post-add-members-to-channel${param}`, token, "POST", body)
           break;
       }

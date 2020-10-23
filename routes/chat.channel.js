@@ -90,10 +90,14 @@ function verifyToken( req, res, next ) {
 
   if (token == null) {
     return res.sendStatus(401)
-    
+
   } else {
     jsonWebToken.verify(token, config.get("jwtSecret"), (err, success) => {
-      err ? res.sendStatus(403) : next()
+      if (err) {
+        console.log(`error in verifyToken ${err}`); 
+        res.sendStatus(403)
+
+      } else next()
     })
   }
 }

@@ -7,7 +7,9 @@ import {useHttp} from '../../hooks/http.hook.js'
 import { useAuthContext } from '../../context/AuthContext.js'
 import { useServer } from '../../hooks/Server.js'
 import {SignInForm} from '../../components/SignInForm/SignInForm.jsx'
+import {POST_LOGIN} from '../../redux/types.js'
 import './auth-body.sass'
+
 
 export const SignInPage = () => {
   const { login } = useAuthContext()
@@ -31,7 +33,7 @@ export const SignInPage = () => {
   const onSubmit = async values => {
     try {
       const formData = { email: values.email, password: values.password }
-      const data = await postData("postLogin", null, formData)
+      const data = await postData(POST_LOGIN, null, formData)
       login(data.userData, data.name, data.token, data.userId)
 
     } catch (e) {console.error(e)}

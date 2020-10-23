@@ -2,7 +2,9 @@ import React, {useState, useLayoutEffect, useEffect} from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import {useServer} from '../../hooks/Server.js'
+import {POST_MESSAGE} from '../../redux/types.js'
 import './input-message.sass'
+
 
 export default function InputUpdateMessages(props) {
   const { name, userId, token } = useAuthContext()
@@ -55,7 +57,7 @@ export default function InputUpdateMessages(props) {
       reply: response,
     },) 
    
-    const resPost = await postData("postMessage", token, { userId, ...copyMessages[0] }, activeChannelId)
+    const resPost = await postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId)
 
     if (resPost.channelMessages) {
       setMessages(resPost.channelMessages.reverse())
@@ -77,7 +79,7 @@ export default function InputUpdateMessages(props) {
       channelId: activeChannelId,
     }, )  
 
-    const resPost = await postData("postMessage", token, { userId, ...copyMessages[0] }, activeChannelId)
+    const resPost = await postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId)
     if (resPost) {
 
       if (resPost.channelMessages) {

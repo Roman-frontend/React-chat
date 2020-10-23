@@ -3,6 +3,7 @@ import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js';
 import {useServer} from '../../hooks/Server.js';
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
+import {POST_ADD_PEOPLES_TO_CHANNEL} from '../../redux/types.js'
 import './add-people-to-channel.sass';
 
 
@@ -35,7 +36,7 @@ export function AddPeopleToChannel(props) {
   }
 
   async function doneInvite() {
-  	const resInviting = await postData("postAddPeoplesToChannel", token, invited, activeChannelId)
+  	const resInviting = await postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId)
     if (resInviting.dataMember) {
       const newMember = resInviting.dataMember
       setChannelMembers(prev => {

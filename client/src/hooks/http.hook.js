@@ -7,10 +7,9 @@ export const useHttp = () => {
   const request = useCallback( async ( url, token, method="GET", body=null ) => {
   	setLoading(true)
     try {
-
       const headers = {}
+
       headers['authorization'] = token
-      console.log("http request", url, headers, method, body)
 
       if ( body ) {
         /**передаємо body на сервер як строку а не обєкт */
@@ -18,7 +17,9 @@ export const useHttp = () => {
         /**Щоб на сервері пирйняти json */
         headers['Content-Type'] = 'application/json'
       }
-      console.log("http request", headers)
+
+      console.log("http request", url, headers, method, body)
+
       const response = await fetch(url, {method, body, headers})
       const data = await response.json()
 

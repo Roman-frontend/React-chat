@@ -1,9 +1,12 @@
 import React, {useState, useEffect, useCallback} from 'react'
+import {connect} from 'react-redux'
+import {getUsers} from '../../redux/actions/actions.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useServer} from '../../hooks/Server.js'
 import {Channels} from '../Channels/Channels.jsx'
 import {ChannelMembers} from '../ChannelMembers/ChannelMembers.jsx'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
+import {GET_USERS} from '../../redux/types.js'
 import './user-sets.sass'
 
 export default function SetsUser(props) {
@@ -21,7 +24,7 @@ export default function SetsUser(props) {
 
   useEffect(() => {
     async function getPeoples() {
-      const serverUsers = await getData("getUsers", token, userId)
+      const serverUsers = await getData(GET_USERS, token, userId)
 
       if (serverUsers) {
         //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useServer} from '../../hooks/Server.js'
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
+import {POST_CHANNEL} from '../../redux/types.js'
 import './add-channel.sass'
 
 

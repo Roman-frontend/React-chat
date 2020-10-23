@@ -6,6 +6,7 @@ import {useValidate} from '../../hooks/validate.hook.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
 import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
+import {POST_REGISTER} from '../../redux/types.js'
 
 export const SignUpPage = () => {
   const { login } = useAuthContext()
@@ -38,7 +39,7 @@ export const SignUpPage = () => {
     validate(formData)
 
     try {
-      const data = await postData('postRegister', null, formData)
+      const data = await postData(POST_REGISTER, null, formData)
       login(data.userData, data.name, data.token, data.userId)
     } catch (e) {}
   }

@@ -3,6 +3,7 @@ import Modal from 'react-modal'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import {useServer} from '../../hooks/Server.js'
+import {GET_USERS} from '../../redux/types.js'
 import iconPeople from '../../images/icon-people.png'
 import './ConversationHeader.sass'
 Modal.setAppElement('#root')
@@ -18,7 +19,7 @@ export function ConversationHeader(props) {
 
 	useEffect(() => {
     async function getPeoples() {
-      const serverUsers = await getData("getUsers", token, userId)
+      const serverUsers = await getData(GET_USERS, token, userId)
       if (serverUsers) { setAllUsers(serverUsers.users) }
     }
 

@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getUsers} from '../../redux/actions/actions.js'
 import {useAuthContext} from '../../context/AuthContext.js'
@@ -9,9 +10,15 @@ import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 import {GET_USERS} from '../../redux/types.js'
 import './user-sets.sass'
 
-export default function SetsUser(props) {
+import { useHttp } from '../../hooks/copy.http.hook.js'
+
+export function SetsUser(props) {
+  const dispatch = useDispatch()
+  const { request } = useHttp()
   const { userId, setUserData, token } = useAuthContext();
   const { getData } = useServer();
+
+  const users = useSelector(state => state.req.fetched)
 
   const [notParticipantsChannel, setNotParticipantsChannel] = useState([])
   const [channelMembers, setChannelMembers] = useState([])
@@ -23,20 +30,21 @@ export default function SetsUser(props) {
 
 
   useEffect(() => {
-    async function getPeoples() {
-      const serverUsers = await getData(GET_USERS, token, userId)
+    dispatch( getUsers(userId, "GET", null, token) )
+/*    async function getPeoples() {
+      const serverUsers = await dispatch( getUsers(userId, "GET", null, token) )
 
       if (serverUsers) {
         //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
-        /*const otherUsers = serverUsers.users.filter(people => people._id !== userId)
-        setAllUsersWithoutActive(otherUsers)*/
+        //const otherUsers = serverUsers.users.filter(people => people._id !== userId)
+        //setAllUsersWithoutActive(otherUsers)
 
         //Тимчасовий сетСтейт
         setAllUsersWithoutActive(serverUsers.users)
       }
     }
 
-    getPeoples()
+    getPeoples()*/
   }, [])
 
   function getListMembersAndNot(idActive, channels) {
@@ -123,6 +131,18 @@ export default function SetsUser(props) {
         setChannelMembers={setChannelMembers}
         listMembersIsOpen={listMembersIsOpen}
       />
+      <p onClick={() => console.log(users)}>AAAAA</p>
+      <p onClick={() => dispatch( getUsers(userId, "GET", null, token) )}>BBBBB</p>
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  getUsers
+}
+
+const mapStateToProps = state => ({
+  users: state.req.users
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SetsUser)

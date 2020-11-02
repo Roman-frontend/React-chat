@@ -1,24 +1,18 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
-import {getUsers} from '../../redux/actions/actions.js'
+import {getData} from '../../redux/actions/actions.js'
+import {GET_USERS} from '../../redux/types.js'
 import {useAuthContext} from '../../context/AuthContext.js'
-import {useServer} from '../../hooks/Server.js'
 import {Channels} from '../Channels/Channels.jsx'
 import {ChannelMembers} from '../ChannelMembers/ChannelMembers.jsx'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
-import {GET_USERS} from '../../redux/types.js'
 import './user-sets.sass'
-
-import { useHttp } from '../../hooks/copy.http.hook.js'
 
 export function SetsUser(props) {
   const dispatch = useDispatch()
-  const { request } = useHttp()
+  const users = useSelector(state => state.users)
   const { userId, setUserData, token } = useAuthContext();
-  const { getData } = useServer();
-
-  const users = useSelector(state => state.req.fetched)
 
   const [notParticipantsChannel, setNotParticipantsChannel] = useState([])
   const [channelMembers, setChannelMembers] = useState([])
@@ -28,24 +22,23 @@ export function SetsUser(props) {
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true)
 
-
   useEffect(() => {
-    dispatch( getUsers(userId, "GET", null, token) )
-/*    async function getPeoples() {
-      const serverUsers = await dispatch( getUsers(userId, "GET", null, token) )
-
-      if (serverUsers) {
-        //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
-        //const otherUsers = serverUsers.users.filter(people => people._id !== userId)
-        //setAllUsersWithoutActive(otherUsers)
-
-        //Тимчасовий сетСтейт
-        setAllUsersWithoutActive(serverUsers.users)
-      }
+    async function getPeoples() {
+      await dispatch( getData(GET_USERS, token, userId) )
     }
 
-    getPeoples()*/
+    getPeoples()
   }, [])
+
+  useEffect(() => {
+    console.log(users)
+    if (users) {
+      //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
+      //const otherUsers = serverUsers.users.filter(people => people._id !== userId)
+      //setAllUsersWithoutActive(otherUsers)
+      setAllUsersWithoutActive(users.users)
+    }
+  }, [users])
 
   function getListMembersAndNot(idActive, channels) {
     let isMembers = []
@@ -100,6 +93,8 @@ export function SetsUser(props) {
     return state ? component : null
   }
 
+  console.log(users)
+
 
   return (
     <div className="main-font user-sets">
@@ -131,18 +126,13 @@ export function SetsUser(props) {
         setChannelMembers={setChannelMembers}
         listMembersIsOpen={listMembersIsOpen}
       />
-      <p onClick={() => console.log(users)}>AAAAA</p>
-      <p onClick={() => dispatch( getUsers(userId, "GET", null, token) )}>BBBBB</p>
+      <p onClick={() => dispatch( getData(userId, "GET", null, token) )}>Dispatch</p>
     </div>
   )
 }
 
 const mapDispatchToProps = {
-  getUsers
+  getData 
 }
 
-const mapStateToProps = state => ({
-  users: state.req.users
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(SetsUser)
+export default connect(null, mapDispatchToProps)(SetsUser)

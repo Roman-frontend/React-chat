@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {getData} from '../../redux/actions/actions.js'
+import {GET_CHANNELS, GET_MESSAGES} from '../../redux/types.js'
 import {Link} from 'react-router-dom';
 import Modal from 'react-modal';
 import {useAuthContext} from '../../context/AuthContext.js';
 import {useMessagesContext} from '../../context/MessagesContext.js';
-import {useServer} from '../../hooks/Server.js';
 import {AddChannel} from '../AddChannel/AddChannel.jsx';
-import {GET_CHANNELS, GET_MESSAGES} from '../../redux/types.js'
 import './channels.sass';
 Modal.setAppElement('#root');
 
 export function Channels(props) {
+  const dispatch = useDispatch()
+  const channels = useSelector(state => state.channels)
+  const messages = useSelector(state => state.messages)
   const {changeLocalStorageUserData, userData, userId, setUserId, token} = useAuthContext();
   const {setMessages, activeChannelId, setActiveChannelId, setDataChannels, setIsBlockedInput } = useMessagesContext();
-  const { getData } = useServer();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
@@ -27,18 +31,29 @@ export function Channels(props) {
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
-    async function createListChannels() {
-      const serverChunnels = await getData(GET_CHANNELS, token, null, userData.channels)
-      changeLocalStorageUserData(userData)
-      if (serverChunnels) { 
-        setDataChannels(serverChunnels.userChannels)
-        const linksChannels = createLinksChannels(serverChunnels.userChannels)
-        setListChannels(linksChannels)
-      }
+    console.log(userData)
+    changeLocalStorageUserData(userData)
+    async function getChannels() {
+      await dispatch( getData(GET_CHANNELS, token, null, userData.channels))
     }
 
-    if (userData) createListChannels()
-  }, [userData])
+    getChannels()
+  },[userData])
+
+  useEffect(() => {
+    console.log(channels)
+    if(channels) {
+      setDataChannels(channels.userChannels)
+      const linksChannels = createLinksChannels(channels.userChannels)
+      setListChannels(linksChannels)
+    }
+  }, [channels])
+
+  useEffect(() => {
+    if (messages && messages !== "403") {
+      setMessages(messages.messages.reverse())
+    } else { setMessages([]) }
+  }, [messages])
 
   function createLinksChannels(channelsData) {
     let allChannels = [
@@ -99,8 +114,7 @@ export function Channels(props) {
     let lastUserId
     setUserId(prevId => { lastUserId = prevId; return prevId })
 
-    const receivedServerMessages = await getData(GET_MESSAGES, token, idActiveChannel, {userId: lastUserId} )
-    if (receivedServerMessages) setMessages(receivedServerMessages.messages.reverse())
+    await dispatch( getData(GET_MESSAGES, token, idActiveChannel, {userId: lastUserId} ) )
   }
 
   function redrawListMembersAndNo(idActiveChannel) {
@@ -160,3 +174,9 @@ export function Channels(props) {
     </div>
 	)
 }
+
+const mapDispatchToProps = {
+  getData 
+}
+
+export default connect(null, mapDispatchToProps)(Channels)

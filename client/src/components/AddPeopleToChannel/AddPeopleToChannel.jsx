@@ -1,16 +1,19 @@
 import React, {useState, useEffect, useRef} from 'react';
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {postData} from '../../redux/actions/actions.js'
+import {POST_ADD_PEOPLES_TO_CHANNEL} from '../../redux/types.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js';
-import {useServer} from '../../hooks/Server.js';
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
-import {POST_ADD_PEOPLES_TO_CHANNEL} from '../../redux/types.js'
 import './add-people-to-channel.sass';
 
 
 export function AddPeopleToChannel(props) {
+  const dispatch = useDispatch()
+  const newMember = useSelector(state => state.pushedMemberToChannel)
   const { token } = useAuthContext();
   const { activeChannelId } = useMessagesContext();
-  const { postData } = useServer();
   const {
   	setModalAddPeopleIsOpen, 
   	channelName, 
@@ -22,6 +25,19 @@ export function AddPeopleToChannel(props) {
   } = props
   const [notInvited, setNotInvited] = useState(notParticipantsChannel)
   const heightParrentDiv = 'set-channel__invite_height'
+
+  useEffect(() => {
+    if (newMember) {
+      setChannelMembers(prev => {
+        const newArrMembers = prev.concat(newMember.dataMember)
+        return newArrMembers
+      })
+      setNotParticipantsChannel(beforeNoMembers => {
+        const nowNoMembers = beforeNoMembers.filter(member => member._id !== newMember.dataMember._id)
+        return nowNoMembers
+      })
+    }
+  }, [newMember])
 
   function createMainLabel() {
     return channelName.match(/^#/) ? (
@@ -36,18 +52,7 @@ export function AddPeopleToChannel(props) {
   }
 
   async function doneInvite() {
-  	const resInviting = await postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId)
-    if (resInviting.dataMember) {
-      const newMember = resInviting.dataMember
-      setChannelMembers(prev => {
-        const newArrMembers = prev.concat(newMember)
-        return newArrMembers
-      })
-      setNotParticipantsChannel(beforeNoMembers => {
-        const nowNoMembers = beforeNoMembers.filter(member => member._id !== newMember._id)
-        return nowNoMembers
-      })
-    }
+  	await dispatch( postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId) )
     setModalAddPeopleIsOpen(false)
   }
 
@@ -88,3 +93,9 @@ export function AddPeopleToChannel(props) {
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  postData 
+}
+
+export default connect(null, mapDispatchToProps)(AddPeopleToChannel)

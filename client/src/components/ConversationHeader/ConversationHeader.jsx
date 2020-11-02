@@ -1,30 +1,35 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Modal from 'react-modal'
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {getData} from '../../redux/actions/actions.js'
+import {GET_USERS} from '../../redux/types.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
-import {useServer} from '../../hooks/Server.js'
-import {GET_USERS} from '../../redux/types.js'
 import iconPeople from '../../images/icon-people.png'
 import './ConversationHeader.sass'
 Modal.setAppElement('#root')
 
 export function ConversationHeader(props) {
+  const dispatch = useDispatch()
+  const users = useSelector(state => state.users)
 	const { userId, token } = useAuthContext();
 	const { activeChannelId, dataChannels, isBlockedInput } = useMessagesContext()
-	const { getData } = useServer();
 	const [allUsers, setAllUsers] = useState(null)
 	const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false)
 	const inputRef = useRef()
 
-
 	useEffect(() => {
     async function getPeoples() {
-      const serverUsers = await getData(GET_USERS, token, userId)
-      if (serverUsers) { setAllUsers(serverUsers.users) }
+      await dispatch( getData(GET_USERS, token, userId) )
     }
 
     getPeoples()
   }, [activeChannelId])
+
+  useEffect(() => {
+    if(users) setAllUsers(users.users)
+  }, [users])
 
   const activeChannel = useMemo(() => {
     return activeChannelId !== 1 ?
@@ -102,3 +107,9 @@ export function ConversationHeader(props) {
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  getData 
+}
+
+export default connect(null, mapDispatchToProps)(ConversationHeader)

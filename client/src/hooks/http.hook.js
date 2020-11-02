@@ -29,7 +29,6 @@ export const useHttp = () => {
 
       setLoading(false)
 
-      console.log("http data ", data)
       return data
 
     } catch (e) {

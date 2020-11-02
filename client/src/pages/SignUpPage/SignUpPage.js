@@ -1,17 +1,20 @@
 import React, {useEffect, useRef} from 'react'
 import {Link} from 'react-router-dom'
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {postData} from '../../redux/actions/actions.js'
+import {POST_REGISTER} from '../../redux/types.js'
 import {useHttp} from '../../hooks/http.hook.js'
-import { useServer } from '../../hooks/Server.js'
 import {useValidate} from '../../hooks/validate.hook.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
 import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
-import {POST_REGISTER} from '../../redux/types.js'
 
 export const SignUpPage = () => {
+  const dispatch = useDispatch()
+  const dataRegistered = useSelector(state => state.registered)
   const { login } = useAuthContext()
-  const {loading, request, error, clearError} = useHttp()
-  const { postData } = useServer()
+  const {loading, error, clearError} = useHttp()
   const {errors, validate} = useValidate({
     name: validateName,
     email: validateEmail,
@@ -28,6 +31,12 @@ export const SignUpPage = () => {
     clearError()
   }, [error, clearError])
 
+  useEffect(() => {
+    if(dataRegistered) {
+      login(dataRegistered.userData, dataRegistered.name, dataRegistered.token, dataRegistered.userId)
+    }
+  }, [dataRegistered])
+
 
   const handleSubmit = async () => {
     const formData = {
@@ -39,8 +48,7 @@ export const SignUpPage = () => {
     validate(formData)
 
     try {
-      const data = await postData(POST_REGISTER, null, formData)
-      login(data.userData, data.name, data.token, data.userId)
+      await dispatch(postData(POST_REGISTER, null, formData))
     } catch (e) {}
   }
 
@@ -92,3 +100,9 @@ export const SignUpPage = () => {
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  postData 
+}
+
+export default connect(null, mapDispatchToProps)(SignUpPage)

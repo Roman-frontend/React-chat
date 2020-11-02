@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
-import {useAuthContext} from '../../context/AuthContext.js'
-import {useServer} from '../../hooks/Server.js'
-import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
+import React, { useState, useEffect } from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {postData} from '../../redux/actions/actions.js'
 import {POST_CHANNEL} from '../../redux/types.js'
+import {useAuthContext} from '../../context/AuthContext.js'
+import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
 import './add-channel.sass'
 
 
 export function AddChannel(props) {
+  const dispatch = useDispatch()
+  const newChannel = useSelector(state => state.newChannel)
   const { userId, setUserData, token } = useAuthContext();
-  const { postData } = useServer();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
@@ -31,20 +34,21 @@ export function AddChannel(props) {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
-  const doneCreate = async () => {
-    const members = invited[0] ? invited.concat(userId) : [userId]
-    const resServer = await postData("postChannel", token, { ...form, creator: userId, members }, userId)
-
-    if (resServer.channel) {
-      const newChannel = resServer.channel
-      const linkChannel = createLinkChannel(newChannel)
+  useEffect(() => {
+    if (newChannel) {
+      const linkChannel = createLinkChannel(newChannel.channel)
 
       setUserData(prevUserData => {
-        return { ...prevUserData, channels: prevUserData.channels.concat(newChannel._id) }
+        return { ...prevUserData, channels: prevUserData.channels.concat(newChannel.channel._id) }
       })
       setListChannels(prevList => { return prevList.concat(linkChannel) })
       setModalAddChannelIsOpen(false)
     }
+  }, newChannel)
+
+  const doneCreate = async () => {
+    const members = invited[0] ? invited.concat(userId) : [userId]
+    await dispatch( postData(POST_CHANNEL, token, { ...form, creator: userId, members }, userId) )
   }
 
   function createForm(param) {
@@ -140,3 +144,9 @@ export function AddChannel(props) {
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  postData 
+}
+
+export default connect(null, mapDispatchToProps)(AddChannel)

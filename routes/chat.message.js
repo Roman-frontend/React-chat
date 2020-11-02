@@ -50,12 +50,12 @@ router.post(
       res.status(403).json({message: "Ви не є учасником приватного чату"})
 
     } else {
-      let channelMessages
+      let messages
       const createdMessage = await Message.create(req.body)
       if (req.params.activeChannelId) {
-        channelMessages = await Message.find({'channelId': req.params.activeChannelId})
+        messages = await Message.find({'channelId': req.params.activeChannelId})
       }
-      res.status(201).json({channelMessages, message : 'Повідомлення змінене'})
+      res.status(201).json({messages, message : 'Повідомлення змінене'})
     }
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})

@@ -1,20 +1,32 @@
 import React, {useState, useLayoutEffect, useEffect} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {postData, putData} from '../../redux/actions/actions.js'
+import {POST_MESSAGE} from '../../redux/types.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
-import {useServer} from '../../hooks/Server.js'
-import {POST_MESSAGE} from '../../redux/types.js'
 import './input-message.sass'
 
 
-export default function InputUpdateMessages(props) {
+export function InputUpdateMessages(props) {
+  const dispatch = useDispatch()
+  const serverMessages = useSelector(state => state.messages)
   const { name, userId, token } = useAuthContext()
   const { messages, setMessages, inputRef, activeChannelId, setIsBlockedInput } = useMessagesContext()
-  const { postData, putData } = useServer()
   const { activeMessage, setActiveMessage } = props
 
 
   const copyMessages = messages.slice(0, messages.length);
   let updatedArrayMessages = []
+
+  useEffect(() => {
+    if (serverMessages === "403") { 
+      setIsBlockedInput(true) 
+    } else if (serverMessages) {
+      console.log(serverMessages)
+      setMessages(serverMessages.messages)
+    }
+  }, [serverMessages])
 
   useEffect(() => { inputRef.current.focus() }, [])
 
@@ -57,11 +69,7 @@ export default function InputUpdateMessages(props) {
       reply: response,
     },) 
    
-    const resPost = await postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId)
-
-    if (resPost.channelMessages) {
-      setMessages(resPost.channelMessages.reverse())
-    } else if (resPost === "403") { setIsBlockedInput(true) }
+    await dispatch( postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId) )
 
     updatedArrayMessages = copyMessages
     const object = Object.assign({}, {...activeMessage}, {reply: null})
@@ -79,15 +87,9 @@ export default function InputUpdateMessages(props) {
       channelId: activeChannelId,
     }, )  
 
-    const resPost = await postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId)
-    if (resPost) {
+    await dispatch( postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId) )
 
-      if (resPost.channelMessages) {
-        setMessages(resPost.channelMessages.reverse())
-      } else if (resPost === "403") { setIsBlockedInput(true) }
-
-      updatedArrayMessages = copyMessages
-    }
+    updatedArrayMessages = copyMessages
   }
 
   return (
@@ -100,3 +102,9 @@ export default function InputUpdateMessages(props) {
     />
   )
 }
+
+const mapDispatchToProps = {
+  postData, putData
+}
+
+export default connect(null, mapDispatchToProps)(InputUpdateMessages)

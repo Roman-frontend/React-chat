@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_REGISTER} from '../../redux/types.js'
-import {useHttp} from '../../hooks/http.hook.js'
 import {useValidate} from '../../hooks/validate.hook.js'
 import {useAuthContext} from '../../context/AuthContext.js'
 import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
@@ -14,7 +13,6 @@ export const SignUpPage = () => {
   const dispatch = useDispatch()
   const dataRegistered = useSelector(state => state.registered)
   const { login } = useAuthContext()
-  const {loading, error, clearError} = useHttp()
   const {errors, validate} = useValidate({
     name: validateName,
     email: validateEmail,
@@ -26,10 +24,6 @@ export const SignUpPage = () => {
     email: useRef(undefined),
     password: useRef(undefined)
   }
-
-  useEffect(() => {
-    clearError()
-  }, [error, clearError])
 
   useEffect(() => {
     if(dataRegistered) {
@@ -88,7 +82,6 @@ export const SignUpPage = () => {
         <button 
           className="auth-form__button-active" 
           onClick={handleSubmit} 
-          disabled={loading}
         >
           Реєстрація
         </button>

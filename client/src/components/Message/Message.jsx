@@ -16,11 +16,19 @@ export default function Message(props) {
   }
 
   return (
-    <div className={classMessage} id={messageId} onMouseEnter={reportsClick}>
-      <img className={`${classMessage}__icon`} src={iconPeople} alt="icon-user"/>
-      <p className={`${classMessage}__messager`}>{username}</p>
-      <p className={`${classMessage}__date`}>{createdAt}</p>
-      <p className={`${classMessage}__message`}>{text}</p>
+    <div 
+      className={classMessage} 
+      id={messageId} 
+      onMouseEnter={reportsClick}
+    >
+      <img 
+        className={`${classMessage}__icon`} 
+        src={iconPeople} 
+        alt="icon-user"
+      />
+      <p className={`${classMessage}__messager`} >{username}</p>
+      <p className={`${classMessage}__date`} >{createdAt}</p>
+      <p className={`${classMessage}__message`} >{text}</p>
       {replyMessage}
     </div>
   )

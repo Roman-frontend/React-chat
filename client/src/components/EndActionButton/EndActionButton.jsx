@@ -9,6 +9,7 @@ export default function EndActionButton(props) {
   const topActiveMessageRelativeTopPage = element.getBoundingClientRect().top
 
   function hideButtonExit() {
+    console.log("hideButtonExit")
     const object = Object.assign({}, {...activeMessage}, {reply: undefined}, {changing: undefined});
     setActiveMessage({...object});
     inputRef.current.value = "";

@@ -6,9 +6,11 @@ import {
   POST_LOGIN, 
   POST_MESSAGE, 
   POST_CHANNEL, 
-  POST_ADD_PEOPLES_TO_CHANNEL
+  POST_ADD_PEOPLES_TO_CHANNEL,
+  REMOVE_MESSAGE,
+  AUTH_DATA
 } from '../types.js'
-import { reduxServer } from '../../hooks/second.copy.http.hook.js';
+import { reduxServer } from '../../hooks/http.hook.js';
 
 function dispatcher(type, url, token, method="GET", body=null) {
   return async dispatch => {
@@ -86,6 +88,13 @@ export const putData = ( putMessage, id, param=null, token=null ) => {
 }
 
 //MessageActionsPopup
-export const removeData = ( id, token=null ) => {
-  return dispatcher(`/api/chat/delete-message${id}`, token, 'DELETE')
+export const removeData = ( method, id, token=null, body=null ) => {
+  console.log(id)
+	try {
+		switch ( method ) {
+			case REMOVE_MESSAGE:
+	  		return dispatcher(REMOVE_MESSAGE, `/api/chat/delete-message${id}`, token, 'DELETE', body)
+	  		break;
+	  }
+	} catch (e) { console.log(e.message, e.error) }
 }

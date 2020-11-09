@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
 import {GET_USERS} from '../../redux/types.js'
-import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import iconPeople from '../../images/icon-people.png'
 import './ConversationHeader.sass'
@@ -13,11 +12,13 @@ Modal.setAppElement('#root')
 export function ConversationHeader(props) {
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
-	const { userId, token } = useAuthContext();
-	const { activeChannelId, dataChannels, isBlockedInput } = useMessagesContext()
-	const [allUsers, setAllUsers] = useState(null)
+  const userId = useSelector(state => state.login.userId)
+  const token = useSelector(state => state.login.token)
+
+	const { activeChannelId, dataChannels } = useMessagesContext()
 	const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false)
 	const inputRef = useRef()
+  
 
 	useEffect(() => {
     async function getPeoples() {
@@ -27,26 +28,36 @@ export function ConversationHeader(props) {
     getPeoples()
   }, [activeChannelId])
 
-  useEffect(() => {
-    if(users) setAllUsers(users.users)
-  }, [users])
-
   const activeChannel = useMemo(() => {
     return activeChannelId !== 1 ?
       dataChannels.filter(channel => channel._id === activeChannelId)[0] : null
-
   }, [activeChannelId])
 
+  const headerPopup = useMemo(() => {
+    return <p style={{margin: 0}}>
+      { activeChannel ? activeChannel.members.length : 1} members in 
+      {activeChannel ? `#${activeChannel.name}` : "#general"}
+    </p>
+  }, [activeChannel])
+
   const createName = useCallback(() => {
-    return activeChannel ? 
-      <b className={`conversation__name`}>✩ {activeChannel.name}</b> :
-      <b className={`conversation__name`}>✩ general</b>
+    return (
+      <b 
+        className="conversation__name">
+        ✩ {activeChannel ? activeChannel.name : "general"}
+      </b>
+    )
   }, [activeChannel])
 
   const createMembers = useCallback(() => {
     return (
       <div className="conversation__header-members">
-        <img className="conversation__icon-member" src={iconPeople} alt="icon-user" />
+        <img 
+          className="conversation__icon-member" 
+          src={iconPeople} 
+          alt="icon-user" 
+          onClick={() => setModalIsShowsMembers(true)}
+        />
         <b>{ activeChannel ? activeChannel.members.length : 1 }</b>
       </div>
     )
@@ -68,8 +79,9 @@ export function ConversationHeader(props) {
 		let listMembers = []
 
     if (activeChannel) {
+      const allUsers = users
     	activeChannel.members.forEach(memberId => {
-	    	const filteredUsers = allUsers.filter( member => member._id === memberId )
+        const filteredUsers = allUsers.filter( member => member._id === memberId )
 	    	listMembers = listMembers.concat(filteredUsers)
 		  })
 	  }
@@ -81,8 +93,10 @@ export function ConversationHeader(props) {
   	const regExp = new RegExp(`${inputRef.current.value}`)
   }
 
+  console.log(modalIsShowsMembers)
+
 	return (
-		<div className="conversation__field-name" onClick={() => setModalIsShowsMembers(true)}>
+    <div className="conversation__field-name" >
       {createName()}
       {createMembers()}
       <Modal 
@@ -92,7 +106,13 @@ export function ConversationHeader(props) {
         overlayClassName={"modal-overlay-conversation-header-members"}
       >
       	<div className="set-channel">
-      		<p style={{margin: 0}}>{activeChannel ? activeChannel.name : "#general"}</p>
+          { headerPopup }
+          <button 
+            className="set-channel__button set-channel__button_left_bottom" 
+            onClick={() => setModalIsShowsMembers(false) }
+          >
+            Close
+          </button>
       		<p>Add people</p>
       		<input 
 	          placeholder="search people" 
@@ -108,8 +128,6 @@ export function ConversationHeader(props) {
   )
 }
 
-const mapDispatchToProps = {
-  getData 
-}
+const mapDispatchToProps = { getData }
 
 export default connect(null, mapDispatchToProps)(ConversationHeader)

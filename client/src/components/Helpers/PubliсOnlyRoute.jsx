@@ -1,9 +1,9 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import {useAuthContext} from '../../context/AuthContext.js'
+import {useSelector} from 'react-redux'
 
 export const PubliсOnlyRoute = ({component: Component, ...rest}) => {
-  const {isAuthenticated} = useAuthContext()
+  const isAuthenticated = useSelector(state => state.login)
 
   function assignRouteToApply(routeProps) {
     if (!isAuthenticated) {

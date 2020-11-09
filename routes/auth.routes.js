@@ -84,7 +84,7 @@ router.post(
   	}
 
     const {email, password} = req.body	
-    const userData = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
+    const userData = await User.findOne({email})
     console.log("logined userData ........................", userData)
 
     if(!userData) {

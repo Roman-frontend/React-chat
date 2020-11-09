@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react'
 import Tippy from '@tippy.js/react'
 import 'tippy.js/dist/tippy.css'
-import {useAuthContext} from '../../context/AuthContext.js';
+import {useDispatch, useSelector} from 'react-redux'
+import {connect} from 'react-redux'
+import {removeData} from '../../redux/actions/actions.js'
+import { REMOVE_MESSAGE } from '../../redux/types.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
-import { useServer } from '../../hooks/Server.js'
 import iconMore from '../../images/icon-more.png'
 import './message-actions-popup.sass'
 
-export default function MessageActionsPopup(props) {
-  const { token } = useAuthContext();
-  const { messages, setMessages, inputRef } = useMessagesContext();
-  const { removeData } = useServer();
+export function MessageActionsPopup(props) {
+  const dispatch = useDispatch()
+  const token = useSelector(state => state.login.token)
+  const { inputRef, activeChannelId } = useMessagesContext();
   const { activeMessage, setActiveMessage } = props;
   const [block, setBlock] = useState(true)
   let element = document.getElementById(activeMessage.id)
@@ -51,12 +53,7 @@ export default function MessageActionsPopup(props) {
     setBlock(false)
     const object = Object.assign({}, {...activeMessage}, {id: undefined})
     setActiveMessage({...object});
-    const removeMessage = await removeData(activeMessage.message._id, token);
-    const isComplitedRemove = removeMessage.removed
-    if (isComplitedRemove) {
-      const newArrMessages = messages.filter(message => message._id !== activeMessage.message._id)
-      setMessages(newArrMessages)
-    }
+    await dispatch( removeData(REMOVE_MESSAGE, activeMessage.message._id, token, { activeChannelId }) );
   }
 
   if (block) {
@@ -71,6 +68,7 @@ export default function MessageActionsPopup(props) {
       </Tippy>
     )
   }
+
   return (
     <div className="field-actions chat-actions" style={{top: `${topActiveMessageRelativeTopPage}px`}} >
       <button className="field-actions__answer" onClick={handleAnswer} >Відповісти</button>
@@ -80,3 +78,9 @@ export default function MessageActionsPopup(props) {
     </div>
   )
 }
+
+const mapDispatchToProps = {
+  removeData 
+}
+
+export default connect(null, mapDispatchToProps)(MessageActionsPopup)

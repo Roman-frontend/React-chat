@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import {useAuthContext} from '../../context/AuthContext.js'
+import {useSelector} from 'react-redux'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import { ConversationHeader } from '../ConversationHeader/ConversationHeader.jsx'
-import Messages from '../Messages/Messages.jsx'
+import { Messages } from '../Messages/Messages.jsx'
 import { InputUpdateMessages } from '../InputUpdateMessages/InputUpdateMessages.jsx'
 import EndActionButton from '../EndActionButton/EndActionButton.jsx'
 import imageError from '../../images/error.png'
 import './conversation.sass'
 
 export default function Conversation(props) {
-  const {userId } = useAuthContext();
+  const userId = useSelector(state => state.login.userId)
   const { activeChannelId, dataChannels, isBlockedInput } = useMessagesContext()
   const [activeMessage, setActiveMessage] = useState({});
   const buttonEndActive = activeMessage.reply || activeMessage.changing ? 
-    <EndActionButton  activeMessage={activeMessage} setActiveMessage={setActiveMessage} /> : null;
-  const contentMessages = isBlockedInput ? <img src={imageError} /> :
-    <Messages activeMessage={activeMessage} setActiveMessage={setActiveMessage} />;
+    <EndActionButton  
+      activeMessage={activeMessage} 
+      setActiveMessage={setActiveMessage} 
+    /> : null;
+
+  const contentMessages = isBlockedInput ? 
+    <img src={imageError} /> :
+    <Messages 
+      activeMessage={activeMessage} 
+      setActiveMessage={setActiveMessage} 
+    />;
 
 //НЕ ВИДАЛЯТИ перевіряє чи активний канал не закритий для юзера
 /*  const [ channelIsAvailableForUser, setChannelIsAvailableForUser ] = useState(true)

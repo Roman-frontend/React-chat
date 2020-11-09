@@ -33,7 +33,7 @@ router.post(
       function (error, success) { console.log(error ? error : success) }
     );
 
-    res.status(201).json({channel: newChannel, message : 'Канал створено'})
+    res.status(201).json({userData, channel: newChannel, message : 'Канал створено'})
 
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так -", error: e})

@@ -7,10 +7,7 @@ export const useMessagesContext = () => {
 }
 
 export const MessagesContext = ({component}) => { 
-  const {userId} = useAuthContext()
-  const inputRef = useRef() 
-  const [messages, setMessages] = useState([]);
-  const [messageActions, setMessageActions] = useState({})
+  const inputRef = useRef()
   const [activeChannelId, setActiveChannelId] = useState(1);
   const [dataChannels, setDataChannels] = useState(null);
   const [isBlockedInput, setIsBlockedInput] = useState(false)
@@ -18,10 +15,6 @@ export const MessagesContext = ({component}) => {
   return (
     <Context.Provider value={{
       inputRef,
-      messages,
-      setMessages,
-      messageActions,
-      setMessageActions,
       activeChannelId,
       setActiveChannelId,
       dataChannels,

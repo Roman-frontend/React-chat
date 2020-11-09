@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Formik, Form, ErrorMessage } from 'formik'
+import { Formik, Form } from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
 import {Link} from 'react-router-dom'
@@ -7,7 +7,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_LOGIN} from '../../redux/types.js'
-import {useHttp} from '../../hooks/http.hook.js'
 import { useAuthContext } from '../../context/AuthContext.js'
 import {SignInForm} from '../../components/SignInForm/SignInForm.jsx'
 import './auth-body.sass'
@@ -17,19 +16,8 @@ export const SignInPage = () => {
   const dispatch = useDispatch()
   const dataLogined = useSelector(state => state.login)
   const { login } = useAuthContext()
-  const { loading, request, error, clearError } = useHttp()
   
   const initialValues = { email: '', password: '' }
-
-  useEffect(() => {
-    clearError()
-  }, [error, clearError])
-
-  useEffect(() => {
-    if(dataLogined) {
-      login(dataLogined.userData, dataLogined.name, dataLogined.token, dataLogined.userId)
-    }
-  }, [dataLogined])
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
@@ -63,7 +51,6 @@ export const SignInPage = () => {
           <button 
             className="auth-form__button-active" 
             type="submit" 
-            disabled={loading}
           >
             Ввійти
           </button>

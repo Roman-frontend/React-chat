@@ -1,32 +1,24 @@
-import React, {useState, useLayoutEffect, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData, putData} from '../../redux/actions/actions.js'
 import {POST_MESSAGE} from '../../redux/types.js'
-import {useAuthContext} from '../../context/AuthContext.js'
 import {useMessagesContext} from '../../context/MessagesContext.js'
 import './input-message.sass'
 
 
 export function InputUpdateMessages(props) {
   const dispatch = useDispatch()
-  const serverMessages = useSelector(state => state.messages)
-  const { name, userId, token } = useAuthContext()
-  const { messages, setMessages, inputRef, activeChannelId, setIsBlockedInput } = useMessagesContext()
+  const reduxMessages = useSelector(state => state.messages)
+  const name = useSelector(state => state.login.name)
+  const userId = useSelector(state => state.login.userId)
+  const token = useSelector(state => state.login.token)
+  const { inputRef, activeChannelId } = useMessagesContext()
   const { activeMessage, setActiveMessage } = props
 
 
-  const copyMessages = messages.slice(0, messages.length);
+  const copyMessages = reduxMessages[0] ? reduxMessages.slice(0, reduxMessages.length) : []
   let updatedArrayMessages = []
-
-  useEffect(() => {
-    if (serverMessages === "403") { 
-      setIsBlockedInput(true) 
-    } else if (serverMessages) {
-      console.log(serverMessages)
-      setMessages(serverMessages.messages)
-    }
-  }, [serverMessages])
 
   useEffect(() => { inputRef.current.focus() }, [])
 
@@ -35,8 +27,7 @@ export function InputUpdateMessages(props) {
       if (activeMessage.change) changeMessageText()
       else if (activeMessage.reply) messageInReply(inputRef.current.value)
       else newMessage(inputRef.current.value)
-      
-      setMessages(updatedArrayMessages)   
+      console.log(updatedArrayMessages)  
       inputRef.current.value = null
     }
   }
@@ -44,7 +35,7 @@ export function InputUpdateMessages(props) {
   async function changeMessageText() {
     let putMessage = []
 
-    updatedArrayMessages = messages.map(message => {
+    updatedArrayMessages = reduxMessages.map(message => {
       if (message._id === activeMessage.change) {
         message.text = inputRef.current.value
         putMessage.push(message)
@@ -53,7 +44,6 @@ export function InputUpdateMessages(props) {
     })
     
     const resPut = await putData(putMessage[0], activeMessage.change, null, token)
-    if (resPut.messages) setMessages(resPut.messages.reverse())
     const object = Object.assign({}, {...activeMessage}, {'change': null})
     setActiveMessage({...object})
   }

@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_CHANNEL} from '../../redux/types.js'
-import {useAuthContext} from '../../context/AuthContext.js'
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
 import './add-channel.sass'
 
@@ -11,7 +10,8 @@ import './add-channel.sass'
 export function AddChannel(props) {
   const dispatch = useDispatch()
   const newChannel = useSelector(state => state.newChannel)
-  const { userId, setUserData, token } = useAuthContext();
+  const userId = useSelector(state => state.login.userId)
+  const token = useSelector(state => state.login.token)
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
@@ -37,18 +37,14 @@ export function AddChannel(props) {
   useEffect(() => {
     if (newChannel) {
       const linkChannel = createLinkChannel(newChannel.channel)
-
-      setUserData(prevUserData => {
-        return { ...prevUserData, channels: prevUserData.channels.concat(newChannel.channel._id) }
-      })
       setListChannels(prevList => { return prevList.concat(linkChannel) })
-      setModalAddChannelIsOpen(false)
     }
   }, newChannel)
 
   const doneCreate = async () => {
     const members = invited[0] ? invited.concat(userId) : [userId]
     await dispatch( postData(POST_CHANNEL, token, { ...form, creator: userId, members }, userId) )
+    setModalAddChannelIsOpen(false)
   }
 
   function createForm(param) {

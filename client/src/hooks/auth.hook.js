@@ -1,61 +1,69 @@
 import {useState, useCallback, useEffect} from 'react'
+import {useDispatch} from 'react-redux'
+import {connect} from 'react-redux'
+import { AUTH_DATA } from '../redux/types.js'
 
 const storageName = 'userData'
 
 export const useAuth = () => {
-  const [userData, setUserData] = useState(null)
-  const [name, setName] = useState(null)
-  const [token, setToken] = useState(null)
-  const [ready, setReady] = useState(false)
-  const [userId, setUserId] = useState(null)
+  const dispatch = useDispatch()
 
   /**
   *jwtToken - отримуємо з бекенда,
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
-  const login = useCallback((userData, name, jwtToken, id) => {
-    //console.log("userData ", userData, "name ", name, "jwtToken ", jwtToken, "id ", id)
-    setUserData(userData)
-    setName(name)
-    setToken(jwtToken)
-    setUserId(id)
-
+  const login = useCallback((userData, name, token, userId) => {
+    console.log(userData)
     localStorage.setItem(storageName, JSON.stringify({
-      userData, name, userId: id, token: jwtToken
+      userData, name, userId, token
     }))
   }, [])
 
 
   const logout = useCallback(() => {
-    setUserData(null)
-    setName(null)
-    setToken(null)
-    setUserId(null)
+    console.log("logout")
     localStorage.removeItem(storageName)
+    dispatch({
+      type: AUTH_DATA,
+      payload: null
+    })
   }, [])
 
   const changeLocalStorageUserData = useCallback((newData) => {
+    console.log("changeLocalStorageUserData")
     const data = JSON.parse(localStorage.getItem(storageName))
-    const object = Object.assign({}, {...data}, {userData: newData})
+    const object = Object.assign({}, {...data}, { ...newData})
     localStorage.setItem(storageName, JSON.stringify({
       ...object
     }))
+/*    dispatch({
+      type: AUTH_DATA,
+      payload: { ...object }
+    })*/
   }, [])
 
-  /**
-  *При загрузці додатку по замовчуванні буде перевірятись чи в localStorage є дані і якщо вони є то 
-  *викличеться login() і змінить states хука useAuth 
-  */
   useEffect(() => {
     /** JSON.parse() - приводить результат до обєкта */
     const data = JSON.parse(localStorage.getItem(storageName))
 
     if (data && data.token) {
+      console.log(data)
       login(data.userData, data.name, data.token, data.userId)
+      dispatch({
+        type: AUTH_DATA,
+        payload: {
+          userData: data.userData,
+          name: data.name,
+          token: data.token,
+          userId: data.userId
+        }
+      })
     }
-    setReady(true)
   }, [login])
   
 
-  return { login, logout, changeLocalStorageUserData, userData, setUserData, name, token, userId, setUserId, ready }
+  return { login, logout, changeLocalStorageUserData }
 }
+
+
+export default connect(null, null)(useAuth)

@@ -80,7 +80,8 @@ router.delete(
   async (req, res) => {
   try {
     await Message.findByIdAndRemove(req.params.id)
-    res.status(201).json({removed: true, message : 'Сообщение удалено'})
+    const messages = await Message.find({'channelId': req.body.activeChannelId}) 
+    res.status(201).json({messages, message : 'Сообщение удалено'})
   } catch (e) {
     console.log("catch - delete-message")
     res.status(500).json({removed: false, message: "Что-то пошло не так "})

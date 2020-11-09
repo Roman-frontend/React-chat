@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
 import {GET_USERS} from '../../redux/types.js'
-import {useAuthContext} from '../../context/AuthContext.js'
 import {Channels} from '../Channels/Channels.jsx'
 import {ChannelMembers} from '../ChannelMembers/ChannelMembers.jsx'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
@@ -12,11 +11,11 @@ import './user-sets.sass'
 export function SetsUser(props) {
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
-  const { userId, setUserData, token } = useAuthContext();
+  const authData = useSelector(state => state.login)
 
   const [notParticipantsChannel, setNotParticipantsChannel] = useState([])
   const [channelMembers, setChannelMembers] = useState([])
-  const [allUsersWithoutActive, setAllUsersWithoutActive] = useState([])
+  //const [allUsersWithoutActive, setAllUsersWithoutActive] = useState([])
   const [invited, setInvited] = useState([])
   const [channelName, setChannelName] = useState("general")
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
@@ -24,52 +23,45 @@ export function SetsUser(props) {
 
   useEffect(() => {
     async function getPeoples() {
-      await dispatch( getData(GET_USERS, token, userId) )
+      await dispatch( getData(GET_USERS, authData.token, authData.userId) )
     }
 
     getPeoples()
   }, [])
 
   useEffect(() => {
-    console.log(users)
     if (users) {
       //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
-      //const otherUsers = serverUsers.users.filter(people => people._id !== userId)
+      //const otherUsers = serverUsers.users.filter(people => people._id !== authData.userId)
       //setAllUsersWithoutActive(otherUsers)
-      setAllUsersWithoutActive(users.users)
     }
   }, [users])
 
-  function getListMembersAndNot(idActive, channels) {
+  const getListMembersAndNot = useCallback((idActive, channels) => {
     let isMembers = []
-    let allUsers
-    let userId
-    setAllUsersWithoutActive(users => { 
-      allUsers = users; 
-      return users 
-    })
-    setUserData(data => { userId = data._id; return data })
+    let allUsers = users
 
     //НЕ ВИДАЛЯТИ!!! Фільтрує список учасників чату видаляючи залогіненого користувача
-    //allUsers = allUsers.filter(people => people._id !== userId)
-
+    //allUsers = allUsers.filter(people => people._id !== authData.userId)
     let isNotMembers = allUsers
-    channels.map(channel => {
-      if (channel._id === idActive) {
-        for (const user of allUsers) {
-          for (const member of channel.members) {
-            if ( isMembers.includes(user) ) break
-            else if ( user._id === member ) {
-              isMembers = isMembers.concat(user)
-              isNotMembers = isNotMembers.filter(member => member !== user)
+    if (allUsers) {
+      channels.map(channel => {
+        if (channel._id === idActive) {
+          for (const user of allUsers) {
+            for (const member of channel.members) {
+              if ( isMembers.includes(user) ) break
+              else if ( user._id === member ) {
+                isMembers = isMembers.concat(user)
+                isNotMembers = isNotMembers.filter(member => member !== user)
+              }
             }
           }
         }
-      }
-    })
-    setChannelMembers(isMembers)
-    setNotParticipantsChannel(isNotMembers)
-  }
+      })
+      setChannelMembers(isMembers)
+      setNotParticipantsChannel(isNotMembers)
+    }
+  }, [users])
 
   function drawTitles(name, setState, state) {
 
@@ -92,8 +84,6 @@ export function SetsUser(props) {
   function drawLists(component, state) {
     return state ? component : null
   }
-
-  console.log(users)
 
 
   return (
@@ -126,7 +116,7 @@ export function SetsUser(props) {
         setChannelMembers={setChannelMembers}
         listMembersIsOpen={listMembersIsOpen}
       />
-      <p onClick={() => dispatch( getData(userId, "GET", null, token) )}>Dispatch</p>
+      <p onClick={() => dispatch( getData(authData.userId, "GET", null, authData.token) )}>Dispatch</p>
     </div>
   )
 }

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
-import {GET_CHANNELS, GET_MESSAGES} from '../../redux/types.js'
+import {GET_CHANNELS, GET_MESSAGES, ACTIVE_CHANNEL_ID} from '../../redux/types.js'
 import {Link} from 'react-router-dom';
 import Modal from 'react-modal';
-import {useAuthContext} from '../../context/AuthContext.js';
-import {useMessagesContext} from '../../context/MessagesContext.js';
+import {useAuth} from '../../hooks/auth.hook.js';
 import {AddChannel} from '../AddChannel/AddChannel.jsx';
 import './channels.sass';
 Modal.setAppElement('#root');
@@ -15,14 +14,12 @@ export function Channels(props) {
   const dispatch = useDispatch()
   const channels = useSelector(state => state.channels)
   const authData = useSelector(state => state.login)
-  const {changeLocalStorageUserData} = useAuthContext();
-  const {setActiveChannelId, setDataChannels, setIsBlockedInput } = useMessagesContext();
+  const {changeLocalStorageUserData} = useAuth();
   const {
     notParticipantsChannel,
     setNotParticipantsChannel,
     setInvited,
     invited,
-    channelMembers,
     setChannelName,
     getListMembersAndNot,
     listChannelsIsOpen
@@ -43,7 +40,6 @@ export function Channels(props) {
   useEffect(() => {
     console.log(channels)
     if(channels) {
-      setDataChannels(channels)
       const linksChannels = createLinksChannels(channels)
       setListChannels(linksChannels)
     }
@@ -89,17 +85,17 @@ export function Channels(props) {
   async function toActiveChannel(idActive, nameActive, isPrivate) {
     markActiveLinkChannel(idActive)
 
-    console.log("GET_MESSAGES ", authData.token)
     if ( idActive !== 1 ) { 
       await dispatch(getData(GET_MESSAGES, authData.token, idActive, {userId: authData.userId})) 
     } else return null
 
     redrawListMembersAndNo(idActive)
 
-    determineLetUserAccessToChat(isPrivate)
-
     setChannelName(nameActive)
-    setActiveChannelId(idActive)
+    dispatch({
+      type: ACTIVE_CHANNEL_ID,
+      payload: idActive
+    })
 
   }
 
@@ -109,29 +105,7 @@ export function Channels(props) {
   }
 
   function redrawListMembersAndNo(idActiveChannel) {
-    let channels
-    setDataChannels(serverChannels => {
-      channels = serverChannels;
-      return serverChannels 
-    })
-
     getListMembersAndNot(idActiveChannel, channels)
-  }
-
-  function determineLetUserAccessToChat(isPrivate) {
-  /*!isPrivate ? setIsBlockedInput(false) : 
-    channelMembers.filter(member => member._id === userId) ? 
-    setIsBlockedInput(false) : setIsBlockedInput(true);*/
-
-    if (!isPrivate) {
-      setIsBlockedInput(false)
-
-    } else if ( channelMembers.filter(member => member._id === authData.userData.userId) ) {
-      setIsBlockedInput(false) 
-
-    } else {
-      setIsBlockedInput(true);
-    }
   }
 
 
@@ -157,7 +131,6 @@ export function Channels(props) {
           setInvited={setInvited}
           setModalAddChannelIsOpen={setModalAddChannelIsOpen} 
           setListChannels={setListChannels}
-          setDataChannels={setDataChannels}
           createLinkChannel={createLinkChannel}
         />
       </Modal>

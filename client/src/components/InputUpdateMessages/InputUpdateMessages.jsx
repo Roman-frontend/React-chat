@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData, putData} from '../../redux/actions/actions.js'
 import {POST_MESSAGE} from '../../redux/types.js'
-import {useMessagesContext} from '../../context/MessagesContext.js'
 import './input-message.sass'
 
 
@@ -13,8 +12,8 @@ export function InputUpdateMessages(props) {
   const name = useSelector(state => state.login.name)
   const userId = useSelector(state => state.login.userId)
   const token = useSelector(state => state.login.token)
-  const { inputRef, activeChannelId } = useMessagesContext()
-  const { activeMessage, setActiveMessage } = props
+  const activeChannelId = useSelector(state => state.activeChannelId)
+  const { activeMessage, setActiveMessage, inputRef } = props
 
 
   const copyMessages = reduxMessages[0] ? reduxMessages.slice(0, reduxMessages.length) : []

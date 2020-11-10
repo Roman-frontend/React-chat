@@ -1,13 +1,13 @@
 import React from 'react'
 import {useSelector} from 'react-redux'
 import {useHistory} from 'react-router-dom'
-import {useAuthContext} from '../../context/AuthContext.js'
+import {useAuth} from '../../hooks/auth.hook.js'
 import edit from '../../images/edit.png';
 import './profile.sass'
 
 export default function Profile() {
   const history = useHistory()
-  const { logout  } = useAuthContext()
+  const { logout  } = useAuth()
   const userName = useSelector(state => state.login.userData.name)
 
   const logoutHandler = event => {

@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
 import {GET_USERS} from '../../redux/types.js'
-import {useMessagesContext} from '../../context/MessagesContext.js'
 import iconPeople from '../../images/icon-people.png'
 import './ConversationHeader.sass'
 Modal.setAppElement('#root')
@@ -12,10 +11,11 @@ Modal.setAppElement('#root')
 export function ConversationHeader(props) {
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
+  const channels = useSelector(state => state.channels)
   const userId = useSelector(state => state.login.userId)
   const token = useSelector(state => state.login.token)
+  const activeChannelId = useSelector(state => state.activeChannelId)
 
-	const { activeChannelId, dataChannels } = useMessagesContext()
 	const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false)
 	const inputRef = useRef()
   
@@ -29,8 +29,9 @@ export function ConversationHeader(props) {
   }, [activeChannelId])
 
   const activeChannel = useMemo(() => {
+    let channelForFilter = channels
     return activeChannelId !== 1 ?
-      dataChannels.filter(channel => channel._id === activeChannelId)[0] : null
+      channelForFilter.filter(channel => channel._id === activeChannelId)[0] : null
   }, [activeChannelId])
 
   const headerPopup = useMemo(() => {

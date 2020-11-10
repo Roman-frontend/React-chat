@@ -5,14 +5,14 @@ import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_REGISTER} from '../../redux/types.js'
 import {useValidate} from '../../hooks/validate.hook.js'
-import {useAuthContext} from '../../context/AuthContext.js'
+import {useAuth} from '../../hooks/auth.hook.js'
 import {validateName, validateEmail, validatePassword} from '../../components/Helpers/validateMethods.jsx'
 import {SignUpForm} from '../../components/SignUpForm/SignUpForm.jsx'
 
 export const SignUpPage = () => {
   const dispatch = useDispatch()
   const dataRegistered = useSelector(state => state.registered)
-  const { login } = useAuthContext()
+  const { login } = useAuth()
   const {errors, validate} = useValidate({
     name: validateName,
     email: validateEmail,

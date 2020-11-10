@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_LOGIN} from '../../redux/types.js'
-import { useAuthContext } from '../../context/AuthContext.js'
+import { useAuth } from '../../hooks/auth.hook.js'
 import {SignInForm} from '../../components/SignInForm/SignInForm.jsx'
 import './auth-body.sass'
 
@@ -15,7 +15,7 @@ import './auth-body.sass'
 export const SignInPage = () => {
   const dispatch = useDispatch()
   const dataLogined = useSelector(state => state.login)
-  const { login } = useAuthContext()
+  const { login } = useAuth()
   
   const initialValues = { email: '', password: '' }
 

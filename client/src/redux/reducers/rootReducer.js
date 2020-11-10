@@ -8,12 +8,14 @@ import {
   POST_CHANNEL, 
   POST_ADD_PEOPLES_TO_CHANNEL,
   REMOVE_MESSAGE,
-  AUTH_DATA
+  AUTH_DATA,
+  ACTIVE_CHANNEL_ID
 } from '../types.js'
 
 const initialState = {
 	users: null,
 	channels: null,
+	activeChannelId: 1,
 	messages: [],
 	registered: null,
 	login: null,
@@ -53,6 +55,9 @@ export const rootReducer = (state=initialState, action) => {
 
 		case AUTH_DATA:
 			return { ...state, login: action.payload }
+
+		case ACTIVE_CHANNEL_ID:
+			return { ...state, activeChannelId: action.payload }
 
 		default: return state
 	}

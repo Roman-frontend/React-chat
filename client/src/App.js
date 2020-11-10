@@ -1,6 +1,5 @@
 import React from 'react'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import {AuthContext} from './context/AuthContext.js'
 import {PrivateRoute} from './components/Helpers/PrivateRoute.jsx'
 import {PubliсOnlyRoute} from './components/Helpers/PubliсOnlyRoute.jsx'
 import {SignUpPage} from './pages/SignUpPage/SignUpPage.js'
@@ -12,17 +11,15 @@ import './css/style.sass'
 
 export default function App() {
   return (
-  	<AuthContext>
-  	  <Router>
-        <Switch>
-          <Route exact path='/test' component={Test} />
-          <Route exact path='/filterContacts' component={FilterContacts} />
-          <PubliсOnlyRoute exact path="/signIn" component={SignInPage} />
-          <PubliсOnlyRoute exact path="/signUp" component={SignUpPage} />
-  	      <PrivateRoute exact path="/chat" component={Chat} />
-          <PrivateRoute path='/' component={Chat} />
-        </Switch>
-      </Router>
-    </AuthContext>
+    <Router>
+      <Switch>
+        <Route exact path='/test' component={Test} />
+        <Route exact path='/filterContacts' component={FilterContacts} />
+        <PubliсOnlyRoute exact path="/signIn" component={SignInPage} />
+        <PubliсOnlyRoute exact path="/signUp" component={SignUpPage} />
+        <PrivateRoute exact path="/chat" component={Chat} />
+        <PrivateRoute path='/' component={Chat} />
+      </Switch>
+    </Router>
   );
 }

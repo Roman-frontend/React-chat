@@ -1,10 +1,8 @@
 import React from 'react'
-import {useMessagesContext} from '../../context/MessagesContext.js'
 import './end-action-button.sass'
 
 export default function EndActionButton(props) {
-  const {inputRef} = useMessagesContext()
-  const { activeMessage, setActiveMessage } = props
+  const { activeMessage, setActiveMessage, inputRef } = props
   const element = document.querySelector(".conversation-input__input")
   const topActiveMessageRelativeTopPage = element.getBoundingClientRect().top
 

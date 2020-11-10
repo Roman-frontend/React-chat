@@ -3,7 +3,6 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
 import {POST_ADD_PEOPLES_TO_CHANNEL} from '../../redux/types.js'
-import {useMessagesContext} from '../../context/MessagesContext.js';
 import {SelectPeople} from '../SelectPeople/SelectPeople.jsx'
 import './add-people-to-channel.sass';
 
@@ -12,7 +11,7 @@ export function AddPeopleToChannel(props) {
   const dispatch = useDispatch()
   const token = useSelector(state => state.login.token)
   const newMember = useSelector(state => state.pushedMemberToChannel)
-  const { activeChannelId } = useMessagesContext();
+  const activeChannelId = useSelector(state => state.activeChannelId)
   const {
   	setModalAddPeopleIsOpen, 
   	channelName, 

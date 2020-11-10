@@ -5,15 +5,14 @@ import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {removeData} from '../../redux/actions/actions.js'
 import { REMOVE_MESSAGE } from '../../redux/types.js'
-import {useMessagesContext} from '../../context/MessagesContext.js'
 import iconMore from '../../images/icon-more.png'
 import './message-actions-popup.sass'
 
 export function MessageActionsPopup(props) {
   const dispatch = useDispatch()
   const token = useSelector(state => state.login.token)
-  const { inputRef, activeChannelId } = useMessagesContext();
-  const { activeMessage, setActiveMessage } = props;
+  const activeChannelId = useSelector(state => state.activeChannelId)
+  const { activeMessage, setActiveMessage, inputRef } = props;
   const [block, setBlock] = useState(true)
   let element = document.getElementById(activeMessage.id)
   let topActiveMessageRelativeTopPage = null
@@ -42,6 +41,7 @@ export function MessageActionsPopup(props) {
 
     } else {
       valueChangingActiveMessage = activeMessage.message;
+      console.log(activeMessage.message.text, inputRef)
       inputRef.current.value = activeMessage.message.text;
     }
 

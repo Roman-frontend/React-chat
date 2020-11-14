@@ -12,16 +12,15 @@ export function AddPeopleToChannel(props) {
   const token = useSelector(state => state.login.token)
   const newMember = useSelector(state => state.pushedMemberToChannel)
   const activeChannelId = useSelector(state => state.activeChannelId)
+  const channels = useSelector(state => state.channels)
   const {
-  	setModalAddPeopleIsOpen, 
-  	channelName, 
-  	notParticipantsChannel,
-  	setNotParticipantsChannel,
+    isNotMembers,
+  	setModalAddPeopleIsOpen,  
     invited,
     setInvited,
     setChannelMembers
   } = props
-  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
+  const [notInvited, setNotInvited] = useState([])
   const heightParrentDiv = 'set-channel__invite_height'
 
   useEffect(() => {
@@ -30,32 +29,39 @@ export function AddPeopleToChannel(props) {
         const newArrMembers = prev.concat(newMember)
         return newArrMembers
       })
-      setNotParticipantsChannel(beforeNoMembers => {
-        const nowNoMembers = beforeNoMembers.filter(member => member._id !== newMember._id)
-        return nowNoMembers
-      })
     }
   }, [newMember])
 
+  useEffect(() => {
+    if (isNotMembers[0]) setNotInvited(isNotMembers)
+  }, [isNotMembers])
+
   function createMainLabel() {
-    return channelName.match(/^#/) ? (
+    const activeChannel = channels.filter(channel => channel._id === activeChannelId)
+    console.log(activeChannel)
+    return !activeChannel[0] ? (
+      <p className="set-channel-forms__main-label-text">
+    		Invite people to #general
+      </p>
+    ) : activeChannel[0].name.match(/^#/) ? (
     	<p className="set-channel-forms__main-label-text">
-    		Invite people to {`${channelName}`}
+    		Invite people to {`${activeChannel[0].name}`}
     	</p>
     ) : (
     	<p className="set-channel-forms__main-label-text">
-    		Invite people to &#128274;{channelName}
+    		Invite people to &#128274;{activeChannel[0].name}
     	</p>
     );
   }
 
-  async function doneInvite() {
-  	await dispatch( postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId) )
-    setModalAddPeopleIsOpen(false)
-  }
-
-  function closeInvite() {
-    setNotInvited(notParticipantsChannel)
+  async function doneInvite(action) {
+    if (action === "invite") {
+      await dispatch( 
+        postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId) 
+      )
+    }
+    //console.log(invited, notInvited)
+    setNotInvited(isNotMembers)
     setInvited([])
     setModalAddPeopleIsOpen(false)
   }
@@ -64,9 +70,8 @@ export function AddPeopleToChannel(props) {
 	return (
 		<div className="set-channel">
       <label>{createMainLabel()}</label>
-    	<SelectPeople 
-        notParticipantsChannel={notParticipantsChannel}
-        setNotParticipantsChannel={setNotParticipantsChannel}
+      <SelectPeople 
+        isNotMembers={isNotMembers}
         invited={invited}
         setInvited={setInvited}
         notInvited={notInvited}
@@ -76,7 +81,7 @@ export function AddPeopleToChannel(props) {
 
       <button 
       	className="set-channel__button" 
-      	onClick={closeInvite}
+      	onClick={doneInvite}
       >
       	Close
       </button>
@@ -84,7 +89,7 @@ export function AddPeopleToChannel(props) {
       <button 
       	type="submit"
       	className="set-channel__button" 
-      	onClick={doneInvite}
+      	onClick={() => doneInvite("invite")}
       >
       	Invite
       </button>

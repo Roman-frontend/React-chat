@@ -8,7 +8,7 @@ import imageError from '../../images/error.png'
 import './conversation.sass'
 import { useCallback } from 'react'
 
-export default function Conversation(props) {
+export default function Conversation() {
   const userId = useSelector(state => state.login.userId)
   const channels = useSelector(state => state.channels)
   const activeChannelId = useSelector(state => state.activeChannelId)

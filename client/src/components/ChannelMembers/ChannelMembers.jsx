@@ -1,11 +1,11 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
 import Modal from 'react-modal'
 import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 Modal.setAppElement('#root')
 
 export function ChannelMembers(props) {
-  const { channelMembers, listMembersIsOpen } = props
+  const { listMembersIsOpen, isNotMembers } = props
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
 
 
@@ -22,10 +22,8 @@ export function ChannelMembers(props) {
         overlayClassName={"modal-overlay"}
       >
         <AddPeopleToChannel 
+          isNotMembers={isNotMembers}
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
-          channelName={props.channelName} 
-          notParticipantsChannel={props.notParticipantsChannel}
-          setNotParticipantsChannel={props.setNotParticipantsChannel}
           invited={props.invited}
           setInvited={props.setInvited}
           setChannelMembers={props.setChannelMembers}

@@ -13,26 +13,28 @@ export function AddChannel(props) {
   const userId = useSelector(state => state.login.userId)
   const token = useSelector(state => state.login.token)
   const {
-    notParticipantsChannel,
-    setNotParticipantsChannel,
+    isNotMembers,
     setInvited,
     invited,
-
     setModalAddChannelIsOpen, 
     setListChannels, 
     createLinkChannel 
   } = props
-  const [notInvited, setNotInvited] = useState(notParticipantsChannel)
+  const [notInvited, setNotInvited] = useState([])
   const [isPrivate, setIsPrivate] = useState(false)
   const [form, setForm] = useState({
     name: '', discription: '', isPrivate: false, members: []
   })
-
   const heightParrentDiv = 'set-channel__add_height'
-
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
+
+  useEffect(() => {
+    if (isNotMembers) { 
+      setNotInvited(isNotMembers)
+    }
+}, [isNotMembers])
 
   useEffect(() => {
     if (newChannel) {
@@ -76,7 +78,7 @@ export function AddChannel(props) {
   }
 
   function closeAddChannel() {
-    setNotInvited(notParticipantsChannel)
+    setNotInvited(isNotMembers)
     setInvited([])
     setModalAddChannelIsOpen(false)
   }
@@ -114,8 +116,7 @@ export function AddChannel(props) {
         </div>
 
         <SelectPeople 
-          notParticipantsChannel={notParticipantsChannel}
-          setNotParticipantsChannel={setNotParticipantsChannel}
+          isNotMembers={isNotMembers}
           invited={invited}
           setInvited={setInvited}
           notInvited={notInvited}

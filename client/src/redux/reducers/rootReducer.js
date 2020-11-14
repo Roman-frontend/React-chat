@@ -24,7 +24,7 @@ const initialState = {
 }
 
 export const rootReducer = (state=initialState, action) => {
-	console.log(action.type)
+	//console.log(action.type)
 	switch (action.type) {
 		case GET_USERS:
 			return { ...state, users: action.payload.users }
@@ -48,7 +48,7 @@ export const rootReducer = (state=initialState, action) => {
 			return { ...state, newChannel: action.payload.userChannels, login: { ...state.login, userData: action.payload.userData } }
 
 		case POST_ADD_PEOPLES_TO_CHANNEL:
-			return { ...state, pushedMemberToChannel: action.payload.dataMember }
+			return { ...state, channels: action.payload.userChannels, pushedMemberToChannel: action.payload.dataMember }
 
 		case REMOVE_MESSAGE:
 			return { ...state, messages: action.payload.messages }

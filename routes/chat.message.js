@@ -43,7 +43,7 @@ router.post(
   '/post-message:activeChannelId', verifyToken,
   async (req, res) => {
   try {
-    console.log("without express.json ", req.body)
+    //console.log("without express.json ", req.body)
     const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(req.params.activeChannelId, req.body.userId)
 
     if (userIsNotMemberPrivatChannel) {

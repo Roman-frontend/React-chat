@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
-import {GET_CHANNELS, GET_MESSAGES, ACTIVE_CHANNEL_ID} from '../../redux/types.js'
+import {GET_CHANNELS, ACTIVE_CHANNEL_ID} from '../../redux/types.js'
 import {Link} from 'react-router-dom';
 import Modal from 'react-modal';
 import {useAuth} from '../../hooks/auth.hook.js';
@@ -12,16 +12,15 @@ Modal.setAppElement('#root');
 
 export function Channels(props) {
   const dispatch = useDispatch()
-  const channels = useSelector(state => state.channels)
+  const allChannels = useSelector(state => state.channels)
   const authData = useSelector(state => state.login)
+  const token = useSelector(state => state.login.token)
+  const userChunnels = useSelector(state => state.login.userData.channels)
   const {changeLocalStorageUserData} = useAuth();
   const {
-    notParticipantsChannel,
-    setNotParticipantsChannel,
+    isNotMembers,
     setInvited,
     invited,
-    setChannelName,
-    getListMembersAndNot,
     listChannelsIsOpen
   } = props
 	const [listChannels, setListChannels] = useState([]);
@@ -29,8 +28,8 @@ export function Channels(props) {
 
   useEffect(() => {
     async function getChannels() {
-      console.log(authData)
-      await dispatch( getData(GET_CHANNELS, authData.token, null, authData.userData.channels))
+      //console.log(authData)
+      await dispatch( getData(GET_CHANNELS, token, null, userChunnels))
     }
     changeLocalStorageUserData(authData)
 
@@ -38,12 +37,12 @@ export function Channels(props) {
   },[authData.userData])
 
   useEffect(() => {
-    console.log(channels)
-    if(channels) {
-      const linksChannels = createLinksChannels(channels)
+    //console.log(allChannels)
+    if(allChannels) {
+      const linksChannels = createLinksChannels(allChannels)
       setListChannels(linksChannels)
     }
-  }, [channels])
+  }, [allChannels])
 
   function createLinksChannels(channelsData) {
     let allChannels = [
@@ -62,13 +61,12 @@ export function Channels(props) {
   }
 
   function createLinkChannel(channel) {
-    console.log(channel)
     return (
       <div 
         key={channel._id} 
         id={channel._id}
         className="user-sets__channel" 
-        onClick={() => toActiveChannel(channel._id, `#${channel.name}`, channel.isPrivate)}
+        onClick={() => toActiveChannel(channel._id)}
       >
         {createName(channel.isPrivate, channel.name)}
       </div>
@@ -82,30 +80,17 @@ export function Channels(props) {
     );
   }
 
-  async function toActiveChannel(idActive, nameActive, isPrivate) {
+  async function toActiveChannel(idActive) {
     markActiveLinkChannel(idActive)
-
-    if ( idActive !== 1 ) { 
-      await dispatch(getData(GET_MESSAGES, authData.token, idActive, {userId: authData.userId})) 
-    } else return null
-
-    redrawListMembersAndNo(idActive)
-
-    setChannelName(nameActive)
     dispatch({
       type: ACTIVE_CHANNEL_ID,
       payload: idActive
     })
-
   }
 
   function markActiveLinkChannel(idActiveChannel) {
     document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
     document.getElementById(idActiveChannel).classList.add('user-sets__channel_active')
-  }
-
-  function redrawListMembersAndNo(idActiveChannel) {
-    getListMembersAndNot(idActiveChannel, channels)
   }
 
 
@@ -125,8 +110,7 @@ export function Channels(props) {
         overlayClassName={"modal-overlay"}
       >
         <AddChannel 
-          notParticipantsChannel={notParticipantsChannel}
-          setNotParticipantsChannel={setNotParticipantsChannel}
+          isNotMembers={isNotMembers}
           invited={invited}
           setInvited={setInvited}
           setModalAddChannelIsOpen={setModalAddChannelIsOpen} 

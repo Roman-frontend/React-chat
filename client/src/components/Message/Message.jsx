@@ -10,16 +10,16 @@ export default function Message(props) {
   const classMessage = message.reply ? "container-reply" : "container"
   const replyMessage = message.reply ? <p className={`${classMessage}__reply`}>&#8593; {message.reply}</p> : null
 
-  const reportsClick = () => {
-    const object = Object.assign({}, {...activeMessage}, {id: messageId}, {message})
-    setActiveMessage({...object})
+  const reportChoice = () => {
+    const newActive = Object.assign({}, {...activeMessage}, {id: messageId}, {message})
+    setActiveMessage({...newActive})
   }
 
   return (
     <div 
       className={classMessage} 
       id={messageId} 
-      onMouseEnter={reportsClick}
+      onMouseEnter={reportChoice}
     >
       <img 
         className={`${classMessage}__icon`} 

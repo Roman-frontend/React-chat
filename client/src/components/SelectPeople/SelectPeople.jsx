@@ -1,22 +1,20 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, useRef, useCallback} from 'react';
+import {useSelector} from 'react-redux'
 import './select-people.sass'
 
 export function SelectPeople(props) {
 
   const {
-    notParticipantsChannel,
-    setNotParticipantsChannel,
+    isNotMembers,
     setInvited,
     invited,
     notInvited,
     setNotInvited,
     heightParrentDiv
   } = props
-
   const [focusSelectTag, setFocusSelectTag] = useState(false)
-
+  const [listMatchedEmails, setListMatchedEmails] = useState(null)
   const inputRef = useRef()
-
   const selectClassName = focusSelectTag ? 
     "set-channel-forms__list-peoples-invite_is-focus" : 
     "set-channel-forms__list-peoples-invite_is-not-focus";
@@ -52,70 +50,57 @@ export function SelectPeople(props) {
 
 
   const getSelectElements = useCallback(() => {
-    if (!focusSelectTag) {
-      return [<option key="1"></option>]
+    console.log(listMatchedEmails)
+    return !focusSelectTag ? [<option key="1"></option>] : 
+      listMatchedEmails || listMatchedEmails === undefined ? createSelectElements(listMatchedEmails) : 
+      notInvited ? createSelectElements(notInvited) : null
+  }, [focusSelectTag, notInvited, listMatchedEmails])
 
-    } else if (notInvited) {
-      return createSelectElements(notInvited)
-
-    } else if (notParticipantsChannel) {
-      return createSelectElements(notParticipantsChannel)
-    }
-  }, [focusSelectTag, notInvited])
-
-  function createSelectElements(arrPeoples) {
-    return arrPeoples.map(people => { 
+  function createSelectElements(peoplesForChoice) {
+    return peoplesForChoice.map(people => { 
       return (
         <option 
           key={people._id} 
           label={people.email} 
           value={people.email}
-          onClick={peopleId => addPeopleToInvited(people._id) }
+          onClick={() => addPeopleToInvited(people._id) }
         ></option> 
       )
     })
   }
 
   function addPeopleToInvited(idElectPeople) {
-    console.log("addPeopleToInvited")
-    changeNoInvited(idElectPeople)
-    setInvited(prev => {
-      const allInvited = prev.concat(idElectPeople)
-      return allInvited
-    })
+    changeListNoInvited(idElectPeople)
+    setInvited( prev => prev.concat(idElectPeople) )
   }
 
-  function changeNoInvited(idElectPeople) {
+  function changeListNoInvited(idElectPeople) {
     const allInvited = invited.concat(idElectPeople);
-
-    if (notInvited) {
-      setNotInvited(prevPeoples => {
-        let noInvited = prevPeoples;
-        allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
-        return noInvited
-      })
-    }
-    let noInvited = notParticipantsChannel;
-    allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
-    setNotParticipantsChannel(noInvited)
+    setNotInvited(prevPeoples => {
+      let noInvited = prevPeoples ? prevPeoples : isNotMembers
+      allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+      return noInvited
+    })
   }
 
   function handleInput(event) {
     changeListPeoples()
-    if (event.key === "Enter") addToInvitedInputPeople()
+    if (event.key === "Enter") //addToInvitedInputPeople()
     setFocusSelectTag(true)
   }
 
+  //Зайнятися пізніше - по введеному тексті перевіряє співпадіння з користувачами списку
   function changeListPeoples() {
     const regExp = new RegExp(`${inputRef.current.value}`)
-    setNotInvited(() => {
-      return notParticipantsChannel.filter(people => people.email.match(regExp) ? people : null)
+    setListMatchedEmails(() => { 
+      return notInvited.filter(people => people.email.match(regExp) ? people : undefined) 
     })
   }
 
+  //Зайнятися пізніше - по введеному тексті перевіряє співпадіння з користувачами списку
   function addToInvitedInputPeople() {
     let peoplesHasInputEmail = []
-    notParticipantsChannel.forEach(people => { 
+    notInvited.forEach(people => { 
       if (people.email === inputRef.current.value) peoplesHasInputEmail = people._id
     })
 

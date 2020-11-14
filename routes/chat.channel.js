@@ -12,7 +12,7 @@ router.get(`/get-users:userId`, verifyToken,
     const users = await User.find({})
     res.json({users, message : 'Users responsed'})
   } catch (e) {
-    console.log('failed in get-users')
+    //console.log('failed in get-users')
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})
   }
 })
@@ -45,9 +45,9 @@ router.post(
   '/post-add-members-to-channel:activeChannelId', verifyToken,
   async (req, res) => {
   try {
-    const channelWithPushedMember = await Channel.findOneAndUpdate(
+    await Channel.findOneAndUpdate(
       { _id: req.params.activeChannelId }, 
-      { $push: { members: req.body[0]  } }, 
+      { $push: { members: req.body  } }, 
       function (error, success) { console.log(error ? error : null) }
     );
     const userWithPushedChannel = await User.findOneAndUpdate(
@@ -55,8 +55,13 @@ router.post(
       { $push: { channels: req.params.activeChannelId } }, 
       function (error, success) { console.log(error ? error : null) }
     );
-
-    res.status(201).json({dataMember: userWithPushedChannel, message : 'Учасника додано'})
+    const newListChannels = await Channel.find({})
+    //console.log("post-add-members-to-channel:activeChannelId => ", newListChannels)
+    res.status(201).json({
+      userChannels: newListChannels, 
+      dataMember: userWithPushedChannel, 
+      message : 'Учасника додано'
+    })
 
   } catch (e) {
     res.status(500).json({message: "Что-то пошло не так -", error: e})
@@ -80,7 +85,7 @@ router.post(
     res.json({userChannels, message : 'Channels responsed'})
 
   } catch (e) {
-    console.log('failed in get-messages')
+    //console.log('failed in get-messages')
     res.status(500).json({message: "Помилка при виконанні get-запиті ", error: e})
   }
 })
@@ -94,7 +99,7 @@ function verifyToken( req, res, next ) {
   } else {
     jsonWebToken.verify(token, config.get("jwtSecret"), (err, success) => {
       if (err) {
-        console.log(`error in verifyToken ${err}`); 
+        //console.log(`error in verifyToken ${err}`); 
         res.sendStatus(403)
 
       } else next()

@@ -94,7 +94,7 @@ export function ConversationHeader(props) {
   	const regExp = new RegExp(`${inputRef.current.value}`)
   }
 
-  console.log(modalIsShowsMembers)
+  //console.log(modalIsShowsMembers)
 
 	return (
     <div className="conversation__field-name" >

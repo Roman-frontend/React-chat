@@ -1,77 +1,63 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
 import {GET_USERS} from '../../redux/types.js'
 import {Channels} from '../Channels/Channels.jsx'
 import {ChannelMembers} from '../ChannelMembers/ChannelMembers.jsx'
-import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
 import './user-sets.sass'
 
-export function SetsUser(props) {
+export function SetsUser() {
   const dispatch = useDispatch()
-  const users = useSelector(state => state.users)
+  const allUsers = useSelector(state => state.users)
   const authData = useSelector(state => state.login)
+  const allChannels = useSelector(state => state.channels)
+  const activeChannelId = useSelector(state => state.activeChannelId)
 
-  const [notParticipantsChannel, setNotParticipantsChannel] = useState([])
   const [channelMembers, setChannelMembers] = useState([])
-  //const [allUsersWithoutActive, setAllUsersWithoutActive] = useState([])
   const [invited, setInvited] = useState([])
-  const [channelName, setChannelName] = useState("general")
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true)
+
+  const activeChannel = useMemo(() => {
+    if (activeChannelId && allChannels) {
+      return allChannels.filter(channel => channel._id === activeChannelId)
+    }
+  }, [activeChannelId, allChannels]) 
+
+  const isNotMembers = useMemo(() => {
+    if (allUsers && activeChannel) {
+      if (activeChannel[0]) {
+        return allUsers.filter(user => activeChannel[0].members.includes(user._id) === false)
+      }
+    }
+  }, [allUsers, activeChannel])
+
+  const isMembers = useMemo(() => {
+    if (allUsers && activeChannel) {
+      if ( activeChannel.length !== 0 ) {
+        return allUsers.filter(user => activeChannel[0].members.includes(user._id) === true)
+      }
+    }
+  }, [allUsers])
 
   useEffect(() => {
     async function getPeoples() {
       await dispatch( getData(GET_USERS, authData.token, authData.userId) )
     }
-
     getPeoples()
   }, [])
 
-  useEffect(() => {
-    if (users) {
-      //НЕ ВИДАЛЯТИ!!! Фільтрує список зареєстрованих людей видаляючи залогіненого користувача
-      //const otherUsers = serverUsers.users.filter(people => people._id !== authData.userId)
-      //setAllUsersWithoutActive(otherUsers)
-    }
-  }, [users])
+  useEffect(() => { if (isMembers) setChannelMembers(isMembers) }, [isMembers])
 
-  const getListMembersAndNot = useCallback((idActive, channels) => {
-    let isMembers = []
-    let allUsers = users
-
-    //НЕ ВИДАЛЯТИ!!! Фільтрує список учасників чату видаляючи залогіненого користувача
-    //allUsers = allUsers.filter(people => people._id !== authData.userId)
-    let isNotMembers = allUsers
-    if (allUsers) {
-      channels.map(channel => {
-        if (channel._id === idActive) {
-          for (const user of allUsers) {
-            for (const member of channel.members) {
-              if ( isMembers.includes(user) ) break
-              else if ( user._id === member ) {
-                isMembers = isMembers.concat(user)
-                isNotMembers = isNotMembers.filter(member => member !== user)
-              }
-            }
-          }
-        }
-      })
-      setChannelMembers(isMembers)
-      setNotParticipantsChannel(isNotMembers)
-    }
-  }, [users])
 
   function drawTitles(name, setState, state) {
-
     if ( state ) {
       return ( 
         <p className="user-sets__nav-channels-name" onClick={() => setState(!state)}>
           &#x25BC; {`${name}`}
         </p> 
       )
-
     } else {
       return ( 
         <p className="user-sets__nav-channels-name" onClick={() => setState(!state)}>
@@ -79,10 +65,6 @@ export function SetsUser(props) {
         </p>
       )
     }
-  }
-
-  function drawLists(component, state) {
-    return state ? component : null
   }
 
 
@@ -93,10 +75,7 @@ export function SetsUser(props) {
         <b className="plus user-sets__nav-channels-plus">+</b>
       </div>
       <Channels 
-        getListMembersAndNot={getListMembersAndNot}
-        setChannelName={setChannelName}
-        notParticipantsChannel={notParticipantsChannel}
-        setNotParticipantsChannel={setNotParticipantsChannel}
+        isNotMembers={isNotMembers}
         channelMembers={channelMembers}
         invited={invited}
         setInvited={setInvited}
@@ -107,10 +86,8 @@ export function SetsUser(props) {
         <b className="plus user-sets__nav-messages-plus">+</b>
       </div>
       <ChannelMembers 
+        isNotMembers={isNotMembers}
         channelMembers={channelMembers}
-        channelName={channelName} 
-        notParticipantsChannel={notParticipantsChannel}
-        setNotParticipantsChannel={setNotParticipantsChannel}
         invited={invited}
         setInvited={setInvited}
         setChannelMembers={setChannelMembers}

@@ -6,11 +6,11 @@ export function SelectPeople(props) {
   const {
     setInvited,
     invited,
-    notInvited,
-    setNotInvited,
-    heightParrentDiv
+    heightParrentDiv,
+    isNotMembers
   } = props
   const [focusSelectTag, setFocusSelectTag] = useState(false)
+  const [notInvited, setNotInvited] = useState([])
   const [listMatchedEmails, setListMatchedEmails] = useState(null)
   const inputRef = useRef()
   const selectClassName = focusSelectTag ? 
@@ -23,6 +23,12 @@ export function SelectPeople(props) {
     addEvents(tagInput)
     addEvents(tagSelect)
   }, [])
+
+  useEffect(() => {
+    if (isNotMembers) { 
+      setNotInvited(isNotMembers)
+    }
+  }, [isNotMembers])
 
   function addEvents(tag) {
     const parrentDiv = document.querySelector(".set-channel");
@@ -70,7 +76,9 @@ export function SelectPeople(props) {
   function addPeopleToInvited(idElectPeople) {
     changeListNoInvited(idElectPeople)
     setListMatchedEmails( prevPeoples => {
-      return prevPeoples.filter(people => people._id !== idElectPeople)
+      const isNotInvited = prevPeoples || prevPeoples === undefined ? 
+        prevPeoples : isNotMembers
+      return isNotInvited.filter(people => people._id !== idElectPeople)
     })
     setInvited( prev => prev.concat(idElectPeople) )
   }
@@ -112,7 +120,9 @@ export function SelectPeople(props) {
 	return (
 		<>
 			<div className="set-channel-forms">
-        <label className="set-channel-forms__label">Add a people</label>
+        <label className="set-channel-forms__label">
+          Add a people
+        </label>
         <input 
           placeholder="add peoples to channel" 
           className="set-channel-forms__input-people-invite"
@@ -122,7 +132,9 @@ export function SelectPeople(props) {
         />
       </div>
       <div className="set-channel-forms">
-      	<label className="set-channel-forms__label">List peoples</label>
+      	<label className="set-channel-forms__label">
+          List peoples
+        </label>
       	<select 
       		className={selectClassName} 
       		name="peoples" 

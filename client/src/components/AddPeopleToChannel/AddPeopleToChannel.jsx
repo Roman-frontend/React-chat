@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
@@ -10,21 +10,11 @@ import './add-people-to-channel.sass';
 export function AddPeopleToChannel(props) {
   const dispatch = useDispatch()
   const token = useSelector(state => state.login.token)
-  const newMember = useSelector(state => state.pushedMemberToChannel)
   const activeChannelId = useSelector(state => state.activeChannelId)
   const channels = useSelector(state => state.channels)
-  const {
-    isNotMembers,
-  	setModalAddPeopleIsOpen,  
-    invited,
-    setInvited,
-  } = props
-  const [notInvited, setNotInvited] = useState([])
+  const { isNotMembers, setModalAddPeopleIsOpen } = props
+  const [invited, setInvited] = useState([])
   const heightParrentDiv = 'set-channel__invite_height'
-
-  useEffect(() => {
-    if (isNotMembers[0]) setNotInvited(isNotMembers)
-  }, [isNotMembers])
 
   function createMainLabel() {
     const activeChannel = channels.filter(channel => channel._id === activeChannelId)
@@ -50,7 +40,6 @@ export function AddPeopleToChannel(props) {
       )
     }
     //console.log(invited, notInvited)
-    setNotInvited(isNotMembers)
     setInvited([])
     setModalAddPeopleIsOpen(false)
   }
@@ -60,10 +49,9 @@ export function AddPeopleToChannel(props) {
 		<div className="set-channel">
       <label>{createMainLabel()}</label>
       <SelectPeople 
+        isNotMembers={isNotMembers}
         invited={invited}
         setInvited={setInvited}
-        notInvited={notInvited}
-        setNotInvited={setNotInvited}
         heightParrentDiv={heightParrentDiv}
       />
 

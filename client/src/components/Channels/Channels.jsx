@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
@@ -17,13 +17,7 @@ export function Channels(props) {
   const token = useSelector(state => state.login.token)
   const userChunnels = useSelector(state => state.login.userData.channels)
   const {changeLocalStorageUserData} = useAuth();
-  const {
-    isNotMembers,
-    setInvited,
-    invited,
-    listChannelsIsOpen
-  } = props
-	const [listChannels, setListChannels] = useState([]);
+  const { isNotMembers, listChannelsIsOpen } = props
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
@@ -31,20 +25,12 @@ export function Channels(props) {
       //console.log(authData)
       await dispatch( getData(GET_CHANNELS, token, null, userChunnels))
     }
-    changeLocalStorageUserData(authData)
 
+    changeLocalStorageUserData(authData)
     getChannels()
   },[authData.userData])
 
-  useEffect(() => {
-    //console.log(allChannels)
-    if(allChannels) {
-      const linksChannels = createLinksChannels(allChannels)
-      setListChannels(linksChannels)
-    }
-  }, [allChannels])
-
-  function createLinksChannels(channelsData) {
+  const createLinksChannels = useCallback((channelsData) => {
     let allChannels = [
       <div 
         key='1' 
@@ -56,9 +42,13 @@ export function Channels(props) {
       </div>
     ]
 
-    if (channelsData) channelsData.map(channel => { allChannels.push(createLinkChannel(channel)) } )
+    if (channelsData) {
+      channelsData.map(channel => { 
+        allChannels.push(createLinkChannel(channel)) 
+      })
+    }
     return allChannels
-  }
+  }, [allChannels])
 
   function createLinkChannel(channel) {
     return (
@@ -95,7 +85,9 @@ export function Channels(props) {
 
 
 	return (
-		<div style={{display: listChannelsIsOpen ? "block" : "none"}}>
+		<div style={
+      {display: listChannelsIsOpen ? "block" : "none"}
+    }>
       <div className="user-sets__channel">
         <p className="main-font" 
           onClick={() => setModalAddChannelIsOpen(true)}
@@ -111,14 +103,10 @@ export function Channels(props) {
       >
         <AddChannel 
           isNotMembers={isNotMembers}
-          invited={invited}
-          setInvited={setInvited}
           setModalAddChannelIsOpen={setModalAddChannelIsOpen} 
-          setListChannels={setListChannels}
-          createLinkChannel={createLinkChannel}
         />
       </Modal>
-      {listChannels}
+      {createLinksChannels(allChannels)}
     </div>
 	)
 }

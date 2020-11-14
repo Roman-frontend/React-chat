@@ -32,7 +32,7 @@ export function ConversationHeader(props) {
     let channelForFilter = channels
     return activeChannelId !== 1 ?
       channelForFilter.filter(channel => channel._id === activeChannelId)[0] : null
-  }, [activeChannelId])
+  }, [activeChannelId, channels])
 
   const headerPopup = useMemo(() => {
     return <p style={{margin: 0}}>

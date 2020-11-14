@@ -10,10 +10,22 @@ export function ChannelMembers(props) {
 
 
   return(
-		<div className="user-sets__users" style={{display: listMembersIsOpen ? "block" : "none"}}>
-      <div className="user-sets__people"><Link className="main-font" to={`/chat`}>- Yulia</Link></div>
+    <div 
+      className="user-sets__users" 
+      style={{display: listMembersIsOpen ? "block" : "none"}}
+    >
       <div className="user-sets__people">
-        <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
+        <Link 
+          className="main-font" 
+          to={`/chat`}
+        >
+          - Yulia
+        </Link>
+      </div>
+      <div className="user-sets__people">
+        <p onClick={() => setModalAddPeopleIsOpen(true)}>
+          + Invite people
+        </p>
       </div>
       <Modal 
         isOpen={modalAddPeopleIsOpen}
@@ -24,12 +36,15 @@ export function ChannelMembers(props) {
         <AddPeopleToChannel 
           isNotMembers={isNotMembers}
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
-          invited={props.invited}
-          setInvited={props.setInvited}
         />
       </Modal>
       <div className="user-sets__people">
-        <Link className="main-font" to={`/filterContacts`}>Filter Contants</Link>
+        <Link 
+          className="main-font" 
+          to={`/filterContacts`}
+        >
+          Filter Contants
+        </Link>
       </div>
     </div>
 	)

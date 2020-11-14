@@ -23,15 +23,11 @@ router.post(
   async (req, res) => {
   try {
     const newChannel = await Channel.create(req.body)
-    const updatedUserData = await User.findOneAndUpdate(
-      { _id: req.params.userId }, 
-      { $push: { channels: newChannel._id } },
-      //без {new: true} - якщо присвоїти цей блок константі то в константу буде поміщено старе значення.
-      {new: true},
-      function (error, success) { console.log(error ? error : success) }
-    );
-    console.log("user with new channel ", updatedUserData)
+    const updatedUserData = await User.findById(req.params.userId)
+    updatedUserData.channels.push(newChannel._id);
+    await updatedUserData.save(); 
 
+    //console.log("user with new channel ", updatedUserData)
     res.status(201).json({userData: updatedUserData, message : 'Канал створено'})
 
   } catch (e) {
@@ -45,21 +41,19 @@ router.post(
   '/post-add-members-to-channel:activeChannelId', verifyToken,
   async (req, res) => {
   try {
-    await Channel.findOneAndUpdate(
-      { _id: req.params.activeChannelId }, 
-      { $push: { members: req.body  } }, 
-      function (error, success) { console.log(error ? error : null) }
-    );
-    const userWithPushedChannel = await User.findOneAndUpdate(
-      { _id: req.body[0] }, 
-      { $push: { channels: req.params.activeChannelId } }, 
-      function (error, success) { console.log(error ? error : null) }
-    );
+    const addedUser = await User.findById(req.body[0])
+    addedUser.channels.push(req.params.activeChannelId)
+    await addedUser.save()
+
+    const activeChannel = await Channel.findById(req.params.activeChannelId)
+    activeChannel.members.push(req.body[0]);
+    await activeChannel.save(); 
+
     const newListChannels = await Channel.find({})
-    //console.log("post-add-members-to-channel:activeChannelId => ", newListChannels)
+    //console.log("post-add-members-to-channel:activeChannelId => ", addedUser, activeChannel)
+
     res.status(201).json({
       userChannels: newListChannels, 
-      dataMember: userWithPushedChannel, 
       message : 'Учасника додано'
     })
 

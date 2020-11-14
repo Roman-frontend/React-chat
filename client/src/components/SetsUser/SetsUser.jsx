@@ -13,8 +13,6 @@ export function SetsUser() {
   const authData = useSelector(state => state.login)
   const allChannels = useSelector(state => state.channels)
   const activeChannelId = useSelector(state => state.activeChannelId)
-
-  const [invited, setInvited] = useState([])
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true)
 
@@ -59,26 +57,44 @@ export function SetsUser() {
   return (
     <div className="main-font user-sets">
       <div className="user-sets__nav-channels">
-        { drawTitles("Channels", setListChannelsIsOpen, listChannelsIsOpen) }
-        <b className="plus user-sets__nav-channels-plus">+</b>
+        { 
+          drawTitles(
+            "Channels", 
+            setListChannelsIsOpen, 
+            listChannelsIsOpen
+          ) 
+        }
+        <b className="plus user-sets__nav-channels-plus">
+          +
+        </b>
       </div>
       <Channels 
         isNotMembers={isNotMembers}
-        invited={invited}
-        setInvited={setInvited}
         listChannelsIsOpen={listChannelsIsOpen}
       />
       <div className="user-sets__nav-messages">
-        { drawTitles("Direct messages", setListMembersIsOpen, listMembersIsOpen) }
-        <b className="plus user-sets__nav-messages-plus">+</b>
+        { 
+          drawTitles(
+            "Direct messages", 
+            setListMembersIsOpen, 
+            listMembersIsOpen
+          ) 
+        }
+        <b className="plus user-sets__nav-messages-plus">
+          +
+        </b>
       </div>
       <ChannelMembers 
         isNotMembers={isNotMembers}
-        invited={invited}
-        setInvited={setInvited}
         listMembersIsOpen={listMembersIsOpen}
       />
-      <p onClick={() => dispatch( getData(authData.userId, "GET", null, authData.token) )}>Dispatch</p>
+      <p 
+        onClick={() => dispatch( 
+          getData(authData.userId, "GET", null, authData.token) 
+        )}
+      >
+        Dispatch
+      </p>
     </div>
   )
 }

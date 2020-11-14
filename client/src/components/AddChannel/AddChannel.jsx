@@ -11,16 +11,9 @@ export function AddChannel(props) {
   const dispatch = useDispatch()
   const userId = useSelector(state => state.login.userId)
   const token = useSelector(state => state.login.token)
-  const {
-    isNotMembers,
-    setInvited,
-    invited,
-    setModalAddChannelIsOpen, 
-    setListChannels, 
-    createLinkChannel 
-  } = props
-  const [notInvited, setNotInvited] = useState([])
+  const { isNotMembers, setModalAddChannelIsOpen } = props
   const [isPrivate, setIsPrivate] = useState(false)
+  const [invited, setInvited] = useState([])
   const [form, setForm] = useState({
     name: '', discription: '', isPrivate: false, members: []
   })
@@ -29,12 +22,6 @@ export function AddChannel(props) {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
-  useEffect(() => {
-    if (isNotMembers) { 
-      setNotInvited(isNotMembers)
-    }
-}, [isNotMembers])
-
   const doneCreate = async () => {
     const members = invited[0] ? invited.concat(userId) : [userId]
     await dispatch( postData(POST_CHANNEL, token, { ...form, creator: userId, members }, userId) )
@@ -42,7 +29,6 @@ export function AddChannel(props) {
   }
 
   function createForm(param) {
-    const {...rest} = param
     return (
       <div className="set-channel-forms">
         <label className={param.labelClassName}>{param.labelName}</label>
@@ -70,7 +56,6 @@ export function AddChannel(props) {
   }
 
   function closeAddChannel() {
-    setNotInvited(isNotMembers)
     setInvited([])
     setModalAddChannelIsOpen(false)
   }
@@ -111,8 +96,6 @@ export function AddChannel(props) {
           isNotMembers={isNotMembers}
           invited={invited}
           setInvited={setInvited}
-          notInvited={notInvited}
-          setNotInvited={setNotInvited}
           heightParrentDiv={heightParrentDiv}
         />
 

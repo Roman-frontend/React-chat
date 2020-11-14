@@ -9,7 +9,6 @@ import './add-channel.sass'
 
 export function AddChannel(props) {
   const dispatch = useDispatch()
-  const newChannel = useSelector(state => state.newChannel)
   const userId = useSelector(state => state.login.userId)
   const token = useSelector(state => state.login.token)
   const {
@@ -35,13 +34,6 @@ export function AddChannel(props) {
       setNotInvited(isNotMembers)
     }
 }, [isNotMembers])
-
-  useEffect(() => {
-    if (newChannel) {
-      const linkChannel = createLinkChannel(newChannel.channel)
-      setListChannels(prevList => { return prevList.concat(linkChannel) })
-    }
-  }, newChannel)
 
   const doneCreate = async () => {
     const members = invited[0] ? invited.concat(userId) : [userId]

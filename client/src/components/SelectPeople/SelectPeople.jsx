@@ -1,11 +1,9 @@
-import React, {useState, useEffect, useMemo, useRef, useCallback} from 'react';
-import {useSelector} from 'react-redux'
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import './select-people.sass'
 
 export function SelectPeople(props) {
 
   const {
-    isNotMembers,
     setInvited,
     invited,
     notInvited,
@@ -50,11 +48,11 @@ export function SelectPeople(props) {
 
 
   const getSelectElements = useCallback(() => {
-    console.log(listMatchedEmails)
+    //console.log(listMatchedEmails)
     return !focusSelectTag ? [<option key="1"></option>] : 
       listMatchedEmails || listMatchedEmails === undefined ? createSelectElements(listMatchedEmails) : 
       notInvited ? createSelectElements(notInvited) : null
-  }, [focusSelectTag, notInvited, listMatchedEmails])
+  }, [focusSelectTag, notInvited, listMatchedEmails, invited])
 
   function createSelectElements(peoplesForChoice) {
     return peoplesForChoice.map(people => { 
@@ -71,25 +69,30 @@ export function SelectPeople(props) {
 
   function addPeopleToInvited(idElectPeople) {
     changeListNoInvited(idElectPeople)
+    setListMatchedEmails( prevPeoples => {
+      return prevPeoples.filter(people => people._id !== idElectPeople)
+    })
     setInvited( prev => prev.concat(idElectPeople) )
   }
 
   function changeListNoInvited(idElectPeople) {
     const allInvited = invited.concat(idElectPeople);
     setNotInvited(prevPeoples => {
-      let noInvited = prevPeoples ? prevPeoples : isNotMembers
-      allInvited.forEach(peopleId => { noInvited = noInvited.filter(people => people._id !== peopleId) })
+      let noInvited
+      allInvited.forEach(peopleId => { noInvited = prevPeoples.filter(people => people._id !== peopleId) })
       return noInvited
     })
   }
 
   function handleInput(event) {
     changeListPeoples()
-    if (event.key === "Enter") //addToInvitedInputPeople()
+    if (event.key === "Enter") {
+      addToInvitedInputPeople()
+      setListMatchedEmails(null)
+    }
     setFocusSelectTag(true)
   }
 
-  //Зайнятися пізніше - по введеному тексті перевіряє співпадіння з користувачами списку
   function changeListPeoples() {
     const regExp = new RegExp(`${inputRef.current.value}`)
     setListMatchedEmails(() => { 
@@ -97,16 +100,13 @@ export function SelectPeople(props) {
     })
   }
 
-  //Зайнятися пізніше - по введеному тексті перевіряє співпадіння з користувачами списку
   function addToInvitedInputPeople() {
-    let peoplesHasInputEmail = []
-    notInvited.forEach(people => { 
-      if (people.email === inputRef.current.value) peoplesHasInputEmail = people._id
-    })
-
-    addPeopleToInvited(peoplesHasInputEmail)
+    const electPeople = listMatchedEmails.filter(people => people.email === inputRef.current.value)
+    addPeopleToInvited(electPeople[0]._id)
     inputRef.current.value = ""
   }
+
+  //console.log(invited)
 
 
 	return (

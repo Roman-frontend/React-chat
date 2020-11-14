@@ -23,19 +23,19 @@ router.post(
   async (req, res) => {
   try {
     const newChannel = await Channel.create(req.body)
-    const userData = await User.findOne({ _id: req.params.userId })
-    const idChunnels = userData.channels.concat(newChannel._id)
-    const addChannelToUser = await User.findOneAndUpdate(
+    const updatedUserData = await User.findOneAndUpdate(
       { _id: req.params.userId }, 
-      { channels: idChunnels },
-      //без {new: true} - в addChannelToUser буде поміщено старе значення.
+      { $push: { channels: newChannel._id } },
+      //без {new: true} - якщо присвоїти цей блок константі то в константу буде поміщено старе значення.
       {new: true},
       function (error, success) { console.log(error ? error : success) }
     );
+    console.log("user with new channel ", updatedUserData)
 
-    res.status(201).json({userData, channel: newChannel, message : 'Канал створено'})
+    res.status(201).json({userData: updatedUserData, message : 'Канал створено'})
 
   } catch (e) {
+    console.log("failed after post channel ", e)
   	res.status(500).json({message: "Что-то пошло не так -", error: e})
   }
 })

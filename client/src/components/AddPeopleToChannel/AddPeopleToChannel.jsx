@@ -18,19 +18,9 @@ export function AddPeopleToChannel(props) {
   	setModalAddPeopleIsOpen,  
     invited,
     setInvited,
-    setChannelMembers
   } = props
   const [notInvited, setNotInvited] = useState([])
   const heightParrentDiv = 'set-channel__invite_height'
-
-  useEffect(() => {
-    if (newMember) {
-      setChannelMembers(prev => {
-        const newArrMembers = prev.concat(newMember)
-        return newArrMembers
-      })
-    }
-  }, [newMember])
 
   useEffect(() => {
     if (isNotMembers[0]) setNotInvited(isNotMembers)
@@ -38,7 +28,6 @@ export function AddPeopleToChannel(props) {
 
   function createMainLabel() {
     const activeChannel = channels.filter(channel => channel._id === activeChannelId)
-    console.log(activeChannel)
     return !activeChannel[0] ? (
       <p className="set-channel-forms__main-label-text">
     		Invite people to #general
@@ -71,7 +60,6 @@ export function AddPeopleToChannel(props) {
 		<div className="set-channel">
       <label>{createMainLabel()}</label>
       <SelectPeople 
-        isNotMembers={isNotMembers}
         invited={invited}
         setInvited={setInvited}
         notInvited={notInvited}

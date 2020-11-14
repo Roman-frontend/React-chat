@@ -14,7 +14,6 @@ export function SetsUser() {
   const allChannels = useSelector(state => state.channels)
   const activeChannelId = useSelector(state => state.activeChannelId)
 
-  const [channelMembers, setChannelMembers] = useState([])
   const [invited, setInvited] = useState([])
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true)
@@ -33,23 +32,12 @@ export function SetsUser() {
     }
   }, [allUsers, activeChannel])
 
-  const isMembers = useMemo(() => {
-    if (allUsers && activeChannel) {
-      if ( activeChannel.length !== 0 ) {
-        return allUsers.filter(user => activeChannel[0].members.includes(user._id) === true)
-      }
-    }
-  }, [allUsers])
-
   useEffect(() => {
     async function getPeoples() {
       await dispatch( getData(GET_USERS, authData.token, authData.userId) )
     }
     getPeoples()
   }, [])
-
-  useEffect(() => { if (isMembers) setChannelMembers(isMembers) }, [isMembers])
-
 
   function drawTitles(name, setState, state) {
     if ( state ) {
@@ -76,7 +64,6 @@ export function SetsUser() {
       </div>
       <Channels 
         isNotMembers={isNotMembers}
-        channelMembers={channelMembers}
         invited={invited}
         setInvited={setInvited}
         listChannelsIsOpen={listChannelsIsOpen}
@@ -87,10 +74,8 @@ export function SetsUser() {
       </div>
       <ChannelMembers 
         isNotMembers={isNotMembers}
-        channelMembers={channelMembers}
         invited={invited}
         setInvited={setInvited}
-        setChannelMembers={setChannelMembers}
         listMembersIsOpen={listMembersIsOpen}
       />
       <p onClick={() => dispatch( getData(authData.userId, "GET", null, authData.token) )}>Dispatch</p>

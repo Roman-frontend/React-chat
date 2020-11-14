@@ -19,7 +19,6 @@ const initialState = {
 	messages: [],
 	registered: null,
 	login: null,
-	newChannel: null,
 	pushedMemberToChannel: null
 }
 
@@ -45,7 +44,7 @@ export const rootReducer = (state=initialState, action) => {
 			return { ...state, messages: action.payload.messages }
 
 		case POST_CHANNEL:
-			return { ...state, newChannel: action.payload.userChannels, login: { ...state.login, userData: action.payload.userData } }
+			return { ...state, login: { ...state.login, userData: action.payload.userData } }
 
 		case POST_ADD_PEOPLES_TO_CHANNEL:
 			return { ...state, channels: action.payload.userChannels, pushedMemberToChannel: action.payload.dataMember }

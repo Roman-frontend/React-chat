@@ -26,7 +26,6 @@ export function ChannelMembers(props) {
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
           invited={props.invited}
           setInvited={props.setInvited}
-          setChannelMembers={props.setChannelMembers}
         />
       </Modal>
       <div className="user-sets__people">
@@ -59,12 +58,22 @@ export function ChannelMembers(props) {
 
 
 //НЕ ВИДАЛЯТИ ПОКИЩО створює список учасників активного каналу
-/*  const createListMembers = useCallback(() => {
-    return channelMembers.map( member => {
+/*  
+  import {useSelector} from 'react-redux'
+  const allChannels = useSelector(state => state.channels)
+  const activeChannelId = useSelector(state => state.activeChannelId)
+
+  const activeChannel = useMemo(() => {
+    if (activeChannelId && allChannels) {
+      return allChannels.filter(channel => channel._id === activeChannelId)
+    }
+  }, [activeChannelId, allChannels]) 
+  const createListMembers = useCallback(() => {
+    return activeChannel[0].members.map( member => {
       return (
         <div key={member._id} id={member._id} className="user-sets__people">
           <Link className="main-font" to={`/chat`}>{member.name}</Link>
         </div>
       )
     })
-  }, [channelMembers])*/
+  }, [activeChannel])*/

@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {Route, Redirect} from 'react-router-dom'
 import {useSelector} from 'react-redux'
+import { useAuth } from '../../hooks/auth.hook.js'
 
 export const PubliсOnlyRoute = ({component: Component, ...rest}) => {
-  const isAuthenticated = useSelector(state => state.login)
+  const token = useSelector(state => state.token)
+  const userData = useSelector(state => state.userData)
+  const { login } = useAuth()
+
+  useEffect(() => {
+    if(token) {
+      login(userData, token)
+    }
+  }, [token])
 
   function assignRouteToApply(routeProps) {
-    if (!isAuthenticated) {
+    if (!token) {
       return <Component {...routeProps} />
     } else {
       return <Redirect to="/chat" />

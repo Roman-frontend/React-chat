@@ -24,8 +24,10 @@ router.post(
   try {
     const newChannel = await Channel.create(req.body)
     const updatedUserData = await User.findById(req.params.userId)
+    console.log("AddChannel ==>> ", updatedUserData)
     updatedUserData.channels.push(newChannel._id);
     await updatedUserData.save(); 
+    console.log("Ended AddChannel ==>> ", updatedUserData)
 
     //console.log("user with new channel ", updatedUserData)
     res.status(201).json({userData: updatedUserData, message : 'Канал створено'})

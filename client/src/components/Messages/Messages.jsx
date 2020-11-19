@@ -12,8 +12,8 @@ export function Messages(props) {
   const dispatch = useDispatch()
   const reduxMessages = useSelector(state => state.messages)
   const activeChannelId = useSelector(state => state.activeChannelId)
-  const token = useSelector(state => state.login.token)
-  const userId = useSelector(state => state.login.userId)
+  const token = useSelector(state => state.token)
+  const userId = useSelector(state => state.userData._id)
 
   useEffect(() => {
     async function getMessages() {

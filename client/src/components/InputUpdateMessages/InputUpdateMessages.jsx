@@ -33,9 +33,9 @@ export function InputUpdateMessages(props) {
   const classes = useStyles();
   const dispatch = useDispatch()
   const reduxMessages = useSelector(state => state.messages)
-  const name = useSelector(state => state.login.name)
-  const userId = useSelector(state => state.login.userId)
-  const token = useSelector(state => state.login.token)
+  const name = useSelector(state => state.userData.name)
+  const userId = useSelector(state => state.userData._id)
+  const token = useSelector(state => state.token)
   const activeChannelId = useSelector(state => state.activeChannelId)
 
   const { activeMessage, setActiveMessage, inputRef } = props

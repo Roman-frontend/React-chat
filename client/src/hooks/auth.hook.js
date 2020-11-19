@@ -1,7 +1,7 @@
 import {useCallback, useEffect} from 'react'
 import {useDispatch} from 'react-redux'
 import {connect} from 'react-redux'
-import { AUTH_DATA } from '../redux/types.js'
+import { LOGIN_DATA, LOGOUT_DATA } from '../redux/types.js'
 
 const storageName = 'userData'
 
@@ -12,19 +12,19 @@ export const useAuth = () => {
   *jwtToken - отримуємо з бекенда,
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
-  const login = useCallback((userData, name, token, userId) => {
+  const login = useCallback((userData, token) => {
     console.log(userData)
     localStorage.setItem(storageName, JSON.stringify({
-      userData, name, userId, token
+      userData, token
     }))
   }, [])
 
 
   const logout = useCallback(() => {
-    //console.log("logout")
+    console.log("logout")
     localStorage.removeItem(storageName)
     dispatch({
-      type: AUTH_DATA,
+      type: LOGOUT_DATA,
       payload: null
     })
   }, [])
@@ -37,7 +37,7 @@ export const useAuth = () => {
       ...object
     }))
 /*    dispatch({
-      type: AUTH_DATA,
+      type: LOGIN_DATA,
       payload: { ...object }
     })*/
   }, [])
@@ -48,14 +48,12 @@ export const useAuth = () => {
 
     if (data && data.token) {
       //console.log(data)
-      login(data.userData, data.name, data.token, data.userId)
+      login(data.userData, data.token)
       dispatch({
-        type: AUTH_DATA,
+        type: LOGIN_DATA,
         payload: {
           userData: data.userData,
-          name: data.name,
           token: data.token,
-          userId: data.userId
         }
       })
     }

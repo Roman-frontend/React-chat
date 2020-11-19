@@ -11,7 +11,7 @@ export const reduxServer = async ( url, token, method="GET", body=null ) => {
       headers['Content-Type'] = 'application/json'
     }
 
-    //console.log("http request", url, headers, method, body)
+    console.log("http request", url, headers, method, body)
 
     const response = await fetch(url, {method, body, headers})
     const data = await response.json()
@@ -21,18 +21,13 @@ export const reduxServer = async ( url, token, method="GET", body=null ) => {
     }
 
     //console.log("http data ", data)
-    if (data.userData) {
-      localStorage.setItem('userData', JSON.stringify({
-        userData: data.userData, name: data.name, userId: data.userId, token: data.token
-      }))
-    }
     return data
 
   } catch (e) {
     console.log("http response error ", e)
     if ( url.match(/\/api\/chat\/post-message/gi) ) { 
       return { messages: "403" }
-    } else return { messages: "403" }
+    } else return { e, messages: "403" }
     throw e
   }
 }

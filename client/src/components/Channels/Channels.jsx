@@ -13,29 +13,28 @@ Modal.setAppElement('#root');
 export function Channels(props) {
   const dispatch = useDispatch()
   const allChannels = useSelector(state => state.channels)
-  const authData = useSelector(state => state.login)
-  const token = useSelector(state => state.login.token)
+  const token = useSelector(state => state.token)
   const userData = useSelector(state => state.userData)
+  const activeChannelId = useSelector(state => state.activeChannelId)
   const {changeLocalStorageUserData} = useAuth();
   const { isNotMembers, listChannelsIsOpen } = props
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
     async function getChannels() {
-      console.log(authData)
-      await dispatch( getData(GET_CHANNELS, token, null, authData.userData.channels))
+      await dispatch( getData(GET_CHANNELS, token, null, userData.channels))
     }
 
-    changeLocalStorageUserData(authData)
+    changeLocalStorageUserData(userData)
     getChannels()
-  },[authData.userData])
+  },[userData])
 
   const createLinksChannels = useCallback((channelsData) => {
     let allChannels = [
       <div 
         key='1' 
         id='1'
-        className="user-sets__channel user-sets__channel_active" 
+        className="user-sets__channel" 
         onClick={() => toActiveChannel(1)}
       >
         <Link className="main-font" to={`/chat`} >&#128274;general</Link>
@@ -71,7 +70,6 @@ export function Channels(props) {
   }
 
   async function toActiveChannel(idActive) {
-    markActiveLinkChannel(idActive)
     dispatch({
       type: ACTIVE_CHANNEL_ID,
       payload: idActive
@@ -79,9 +77,24 @@ export function Channels(props) {
   }
 
   function markActiveLinkChannel(idActiveChannel) {
-    document.querySelector('.user-sets__channel_active').classList.remove('user-sets__channel_active')
-    document.getElementById(idActiveChannel).classList.add('user-sets__channel_active')
+    const oldMarkChannel = document.querySelector('.user-sets__channel_active')
+    const channelForActive = document.getElementById(idActiveChannel)
+    console.log(idActiveChannel, oldMarkChannel, channelForActive)
+
+    if (oldMarkChannel && channelForActive) {
+      oldMarkChannel.classList.remove('user-sets__channel_active')
+      channelForActive.classList.add('user-sets__channel_active')
+
+    } else if (channelForActive) {
+      channelForActive.classList.add('user-sets__channel_active')
+    }
   }
+
+  useEffect(() => {
+    if (activeChannelId) {
+      markActiveLinkChannel(activeChannelId)
+    }
+  }, [activeChannelId])
 
 
 	return (

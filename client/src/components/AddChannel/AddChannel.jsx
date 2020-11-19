@@ -10,8 +10,8 @@ import './add-channel.sass'
 
 export function AddChannel(props) {
   const dispatch = useDispatch()
-  const userId = useSelector(state => state.login.userId)
-  const token = useSelector(state => state.login.token)
+  const userId = useSelector(state => state.userData._id)
+  const token = useSelector(state => state.token)
   const { isNotMembers, setModalAddChannelIsOpen } = props
   const [isPrivate, setIsPrivate] = useState(false)
   const [invited, setInvited] = useState([])

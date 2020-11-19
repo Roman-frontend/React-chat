@@ -50,7 +50,7 @@ router.post(
     /**чекаємо реєстрації цієї людини */
     await user.save()
 
-    const finedUser = await User.findOne({email})
+    const userData = await User.findOne({email})
 
     const token = jwt.sign(
       {userId: user.id},
@@ -58,7 +58,7 @@ router.post(
       //{ expiresIn: '1h'}
     )
 
-    res.status(201).json({userData: finedUser, name: user.name, token, userId: user.id, message : 'Пользователь создан'})
+    res.status(201).json({userData, token, message : 'Пользователь создан'})
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})
   }
@@ -86,10 +86,10 @@ router.post(
 
     const {email, password} = req.body	
     const userData = await User.findOne({email})
-    console.log("logined userData ........................", userData)
+    //console.log("logined userData ........................", userData)
 
     if(!userData) {
-      res.status(400).json("Такой пользователь не найден")
+      res.status(400).json({message: "Такой пользователь не найден"})
     }
 
     /**
@@ -111,8 +111,8 @@ router.post(
       /**expiresIn: - вказує через скільки наш jwt token закінчить своє існування */
       //{ expiresIn: '1h'}
     )
-    console.log("userData ===>>> ", userData)
-    res.json({userData, name: userData.name, token, userId: userData.id})
+    //console.log("userData ===>>> ", userData)
+    res.json({userData, token})
 
   } catch (e) {
   	res.status(500).json({message: "Что-то пошло не так "})

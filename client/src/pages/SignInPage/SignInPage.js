@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Formik, Form } from 'formik'
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup'
@@ -14,17 +14,7 @@ import './auth-body.sass'
 
 export const SignInPage = () => {
   const dispatch = useDispatch()
-  const dataLogined = useSelector(state => state.login)
-  const { login } = useAuth()
   const initialValues = { email: '', password: '' }
-
-  useEffect(() => {
-    console.log(dataLogined)
-    if (dataLogined) {
-      console.log(dataLogined)
-      login(dataLogined.userData, dataLogined.name, dataLogined.token, dataLogined.userId)
-    }
-  }, [dataLogined])
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
@@ -38,7 +28,6 @@ export const SignInPage = () => {
     try {
       const formData = { email: values.email, password: values.password }
       await dispatch( postData(POST_LOGIN, null, formData) )
-
     } catch (e) {console.error(e)}
   }
 

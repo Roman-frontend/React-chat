@@ -8,43 +8,46 @@ import {
   POST_CHANNEL, 
   POST_ADD_PEOPLES_TO_CHANNEL,
   REMOVE_MESSAGE,
-  AUTH_DATA,
+	LOGIN_DATA,
+	LOGOUT_DATA,
   ACTIVE_CHANNEL_ID
 } from '../types.js'
 
 const initialState = {
 	users: null,
 	channels: null,
-	activeChannelId: 1,
+	activeChannelId: null,
 	messages: [],
-	registered: null,
-	login: null,
-	//userData: data.userData,
+	token: null,
+	userData: null,
 }
 
 export const rootReducer = (state=initialState, action) => {
-	//console.log(action.type)
+	console.log(action.payload)
 	switch (action.type) {
 		case GET_USERS:
 			return { ...state, users: action.payload.users }
 
 		case GET_CHANNELS:
-			return { ...state, channels: action.payload.userChannels }
+			return { ...state, 
+				channels: action.payload.userChannels, 
+				activeChannelId: action.payload.userChannels[0]._id 
+			}
 
 		case GET_MESSAGES:
 			return { ...state, messages: action.payload.messages }
 
 		case POST_REGISTER:
-			return { ...state, registered: action.payload }
+			return { ...state, token: action.payload.token, userData: action.payload.userData }
 
 		case POST_LOGIN:
-			return { ...state, login: action.payload, userData: action.payload.userData }
+			return { ...state, token: action.payload.token, userData: action.payload.userData }
 
 		case POST_MESSAGE:
 			return { ...state, messages: action.payload.messages }
 
 		case POST_CHANNEL:
-			return { ...state, login: { ...state.login, userData: action.payload.userData } }
+			return { ...state, userData: action.payload.userData }
 
 		case POST_ADD_PEOPLES_TO_CHANNEL:
 			return { ...state, channels: action.payload.userChannels }
@@ -52,8 +55,11 @@ export const rootReducer = (state=initialState, action) => {
 		case REMOVE_MESSAGE:
 			return { ...state, messages: action.payload.messages }
 
-		case AUTH_DATA:
-			return { ...state, login: action.payload }
+		case LOGIN_DATA:
+			return { ...state, token: action.payload.token, userData: action.payload.userData }
+		
+		case LOGOUT_DATA:
+			return { ...state, token: action.payload, userData: action.payload }
 
 		case ACTIVE_CHANNEL_ID:
 			return { ...state, activeChannelId: action.payload }

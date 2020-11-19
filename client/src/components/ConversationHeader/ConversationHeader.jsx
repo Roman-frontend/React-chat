@@ -27,8 +27,8 @@ export function ConversationHeader(props) {
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
   const channels = useSelector(state => state.channels)
-  const userId = useSelector(state => state.login.userId)
-  const token = useSelector(state => state.login.token)
+  const userId = useSelector(state => state.userData._id)
+  const token = useSelector(state => state.token)
   const activeChannelId = useSelector(state => state.activeChannelId)
 
 	const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false)
@@ -45,8 +45,11 @@ export function ConversationHeader(props) {
 
   const activeChannel = useMemo(() => {
     let channelForFilter = channels
-    return activeChannelId !== 1 ?
-      channelForFilter.filter(channel => channel._id === activeChannelId)[0] : null
+    if (channels) {
+      return channelForFilter.filter(channel => channel._id === activeChannelId)[0]
+    }
+    /* return activeChannelId !== 1 ?
+      channelForFilter.filter(channel => channel._id === activeChannelId)[0] : null */
   }, [activeChannelId, channels])
 
   const headerPopup = useMemo(() => {
@@ -92,7 +95,7 @@ export function ConversationHeader(props) {
   function getMembersActiveChannel() {
 		let listMembers = []
 
-    if (activeChannel) {
+    if (activeChannel && users) {
       const allUsers = users
     	activeChannel.members.forEach(memberId => {
         const filteredUsers = allUsers.filter( member => member._id === memberId )

@@ -9,7 +9,7 @@ import './conversation.sass'
 import { useCallback } from 'react'
 
 export default function Conversation() {
-  const userId = useSelector(state => state.login.userId)
+  const userId = useSelector(state => state.userData._id)
   const channels = useSelector(state => state.channels)
   const activeChannelId = useSelector(state => state.activeChannelId)
   const [activeMessage, setActiveMessage] = useState({});

@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 export function MessageActionsPopup(props) {
   const classes = useStyles();
   const dispatch = useDispatch()
-  const token = useSelector(state => state.login.token)
+  const token = useSelector(state => state.token)
   const activeChannelId = useSelector(state => state.activeChannelId)
   const { activeMessage, setActiveMessage, inputRef } = props;
   const [idMessageForPopup, setIdMessageForPopup] = useState(null)

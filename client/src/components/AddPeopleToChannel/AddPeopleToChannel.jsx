@@ -9,7 +9,7 @@ import './add-people-to-channel.sass';
 
 export function AddPeopleToChannel(props) {
   const dispatch = useDispatch()
-  const token = useSelector(state => state.login.token)
+  const token = useSelector(state => state.token)
   const activeChannelId = useSelector(state => state.activeChannelId)
   const channels = useSelector(state => state.channels)
   const { isNotMembers, setModalAddPeopleIsOpen } = props

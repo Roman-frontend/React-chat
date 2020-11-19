@@ -26,7 +26,8 @@ export function SetsUser() {
   const classes = useStyles();
   const dispatch = useDispatch()
   const allUsers = useSelector(state => state.users)
-  const authData = useSelector(state => state.login)
+  const token = useSelector(state => state.token)
+  const userId = useSelector(state => state.userData._id)
   const allChannels = useSelector(state => state.channels)
   const activeChannelId = useSelector(state => state.activeChannelId)
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true)
@@ -52,7 +53,7 @@ export function SetsUser() {
 
   useEffect(() => {
     async function getPeoples() {
-      await dispatch( getData(GET_USERS, authData.token, authData.userId) )
+      await dispatch( getData(GET_USERS, token, userId) )
     }
     getPeoples()
   }, [])
@@ -75,13 +76,13 @@ export function SetsUser() {
     addEvent(msgTitleRef, msgIconRef)
   }, [])
 
-  function drawTitles(name, iconRef, titleRef, classPlus, seterStateShowing, stateShowing) {
+  function drawTitles(name, iconRef, titleRef, divClass=null, classPlus, seterStateShowing, stateShowing) {
     const stateIcon = stateShowing ? 
       <KeyboardArrowDownIcon fontSize="large" /> : <ChevronRightIcon fontSize="large" />;
 
     return ( 
       <div 
-        className={classes.root}
+        className={classes.root, divClass}
         onClick={() => seterStateShowing(!stateShowing)}
       >
         <Grid 
@@ -115,13 +116,14 @@ export function SetsUser() {
 
 
   return (
-    <div className="main-font">
+    <div className="main-font left-block">
       <div>
         { 
           drawTitles(
             "Channels", 
             channelsIconRef,
             channelsTitleRef,
+            "left-bar__channels",
             "left-bar__first-plus",
             setListChannelsIsOpen, 
             listChannelsIsOpen
@@ -138,6 +140,7 @@ export function SetsUser() {
             "Direct messages", 
             msgIconRef,
             msgTitleRef,
+            null,
             "left-bar__second-plus",
             setListMembersIsOpen, 
             listMembersIsOpen
@@ -148,13 +151,6 @@ export function SetsUser() {
         isNotMembers={isNotMembers}
         listMembersIsOpen={listMembersIsOpen}
       />
-      <p 
-        onClick={() => dispatch( 
-          getData(authData.userId, "GET", null, authData.token) 
-        )}
-      >
-        Dispatch
-      </p>
     </div>
   )
 }

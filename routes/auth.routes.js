@@ -27,7 +27,7 @@ router.post(
 
   	/**Якщо validationResult() - спрацював то метод isEmpty() - не буде порожнім  */
   	if (!errors.isEmpty()) {
-  	  /**@return error if validationResult() = has errors */
+  	  /**return error if validationResult() = has errors */
   	  return res.status(400).json({
   	  	errors: errors.array(),
   	  	message: 'Некоректні дані при реєстрації'
@@ -39,6 +39,7 @@ router.post(
     const candidate = await User.findOne({email})  //оскільки ключ і значення email співпадають то упускаю значення
 
     if(candidate) {
+      console.log("auth email register ", req.body.email)
       res.status(400).json({message: "Такой пользователь уже существует"})
     }
 

@@ -18,7 +18,8 @@ const initialState = {
 	activeChannelId: 1,
 	messages: [],
 	registered: null,
-	login: null
+	login: null,
+	//userData: data.userData,
 }
 
 export const rootReducer = (state=initialState, action) => {
@@ -37,7 +38,7 @@ export const rootReducer = (state=initialState, action) => {
 			return { ...state, registered: action.payload }
 
 		case POST_LOGIN:
-			return { ...state, login: action.payload }
+			return { ...state, login: action.payload, userData: action.payload.userData }
 
 		case POST_MESSAGE:
 			return { ...state, messages: action.payload.messages }

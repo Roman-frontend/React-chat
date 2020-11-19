@@ -1,5 +1,6 @@
 import React from 'react'
-import iconPeople from '../../images/icon-people.png'
+import Box from '@material-ui/core/Box';
+import PersonIcon from '@material-ui/icons/Person';
 import './message.sass'
 
 export default function Message(props) {
@@ -21,11 +22,13 @@ export default function Message(props) {
       id={messageId} 
       onMouseEnter={reportChoice}
     >
-      <img 
-        className={`${classMessage}__icon`} 
-        src={iconPeople} 
-        alt="icon-user"
-      />
+      <Box>
+        <PersonIcon 
+          className={`${classMessage}__icon`} 
+          style={{ fontSize: 50 }}
+          alt="icon-user"
+        />
+      </Box>
       <p className={`${classMessage}__messager`} >{username}</p>
       <p className={`${classMessage}__date`} >{createdAt}</p>
       <p className={`${classMessage}__message`} >{text}</p>

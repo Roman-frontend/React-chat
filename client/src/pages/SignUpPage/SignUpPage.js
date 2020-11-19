@@ -58,7 +58,7 @@ export const SignUpPage = () => {
           name="name" 
           fieldError={errors.name} 
           type="name" 
-          inputRef={ref.name}
+          inputSignUpRef={ref.name}
         />
         <SignUpForm 
           label="Email" 
@@ -67,7 +67,7 @@ export const SignUpPage = () => {
           name="email" 
           fieldError={errors.email} 
           type="email" 
-          inputRef={ref.email}
+          inputSignUpRef={ref.email}
         />
         <SignUpForm 
           label="Password" 
@@ -76,18 +76,18 @@ export const SignUpPage = () => {
           name="password" 
           fieldError={errors.password} 
           type="password" 
-          inputRef={ref.password} 
+          inputSignUpRef={ref.password} 
         />
 
         <button 
           className="auth-form__button-active" 
           onClick={handleSubmit} 
         >
-          Реєстрація
+          Зареєструватись
         </button>
 
         <Link to={`/signIn`}>
-          <button className="auth-form__button-pasive">Вхід</button>
+          <button className="auth-form__button-pasive">Маю акаунт перейти до логіну</button>
         </Link>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {postData} from '../../redux/actions/actions.js'
@@ -14,6 +14,9 @@ export function AddPeopleToChannel(props) {
   const channels = useSelector(state => state.channels)
   const { isNotMembers, setModalAddPeopleIsOpen } = props
   const [invited, setInvited] = useState([])
+  const parrentDivRef = useRef()
+  const buttonCloseRef = useRef()
+  const buttonDoneRef = useRef()
   const heightParrentDiv = 'set-channel__invite_height'
 
   function createMainLabel() {
@@ -46,17 +49,24 @@ export function AddPeopleToChannel(props) {
 
 
 	return (
-		<div className="set-channel">
+    <div 
+      className="set-channel"
+      ref={parrentDivRef}
+    >
       <label>{createMainLabel()}</label>
       <SelectPeople 
         isNotMembers={isNotMembers}
         invited={invited}
         setInvited={setInvited}
+        parrentDivRef={parrentDivRef}
+        buttonCloseRef={buttonCloseRef}
+        buttonDoneRef={buttonDoneRef}
         heightParrentDiv={heightParrentDiv}
       />
 
       <button 
-      	className="set-channel__button" 
+        className="set-channel__button" 
+        ref={buttonCloseRef}
       	onClick={doneInvite}
       >
       	Close
@@ -64,7 +74,8 @@ export function AddPeopleToChannel(props) {
 
       <button 
       	type="submit"
-      	className="set-channel__button" 
+        className="set-channel__button" 
+        ref={buttonDoneRef}
       	onClick={() => doneInvite("invite")}
       >
       	Invite

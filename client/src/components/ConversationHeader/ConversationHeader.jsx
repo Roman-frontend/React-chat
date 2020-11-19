@@ -1,14 +1,29 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Modal from 'react-modal'
+import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
 import {getData} from '../../redux/actions/actions.js'
 import {GET_USERS} from '../../redux/types.js'
-import iconPeople from '../../images/icon-people.png'
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import './ConversationHeader.sass'
 Modal.setAppElement('#root')
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  addPeoples: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+  },
+}));
+
 export function ConversationHeader(props) {
+  const classes = useStyles();
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
   const channels = useSelector(state => state.channels)
@@ -17,7 +32,7 @@ export function ConversationHeader(props) {
   const activeChannelId = useSelector(state => state.activeChannelId)
 
 	const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false)
-	const inputRef = useRef()
+	const searchInputRef = useRef()
   
 
 	useEffect(() => {
@@ -52,15 +67,13 @@ export function ConversationHeader(props) {
 
   const createMembers = useCallback(() => {
     return (
-      <div className="conversation__header-members">
-        <img 
-          className="conversation__icon-member" 
-          src={iconPeople} 
-          alt="icon-user" 
+      <Box className="conversation__header-members">
+        <PeopleAltIcon
+          style={{ fontSize: 40 }}
           onClick={() => setModalIsShowsMembers(true)}
         />
         <b>{ activeChannel ? activeChannel.members.length : 1 }</b>
-      </div>
+      </Box>
     )
   }, [activeChannel])
 
@@ -91,7 +104,7 @@ export function ConversationHeader(props) {
   }
 
   function handleInput(event) {
-  	const regExp = new RegExp(`${inputRef.current.value}`)
+  	const regExp = new RegExp(`${searchInputRef.current.value}`)
   }
 
   //console.log(modalIsShowsMembers)
@@ -114,12 +127,29 @@ export function ConversationHeader(props) {
           >
             Close
           </button>
-      		<p>Add people</p>
+          <div className={classes.root}>
+            <Grid container spacing={1}>
+              <Grid item xs={1}>
+                <PersonAddIcon 
+                  className={classes.addPeoples}
+                  style={{ fontSize: 40 }}
+                />
+              </Grid>
+              <Grid>
+                <p 
+                  className={classes.addPeoples}
+                  style={{ margin: 0, fontSize: 40 }} 
+                >
+                  Add people
+                </p>
+              </Grid>
+            </Grid>
+          </div>
       		<input 
 	          placeholder="search people" 
 	          className="set-channel-forms__input-people-invite set-channel-forms__input-people-invite_width"
 	          type="text"
-	          ref={inputRef}
+	          ref={searchInputRef}
 	          onKeyUp={event => handleInput(event)}
 	        />
       		{createListMembers()}

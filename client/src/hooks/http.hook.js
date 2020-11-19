@@ -21,6 +21,11 @@ export const reduxServer = async ( url, token, method="GET", body=null ) => {
     }
 
     //console.log("http data ", data)
+    if (data.userData) {
+      localStorage.setItem('userData', JSON.stringify({
+        userData: data.userData, name: data.name, userId: data.userId, token: data.token
+      }))
+    }
     return data
 
   } catch (e) {

@@ -1,7 +1,12 @@
-.chat-actions 
+.popup 
   cursor: pointer
   position: fixed !important
-  right: 1.3rem
+
+.popup_closed
+  right: 2.5rem
+    
+.popup_opened
+  right: 5rem
 
 .field-actions 
   align-items: center
@@ -9,7 +14,7 @@
   grid-template-areas: "answer" "edit" "redirect" "delete"
   grid-row-gap: 0.3rem
   justify-self: end
-  width: min-content
+  width: max-content
 
 .field-actions button
   border: 1px solid rebeccapurple

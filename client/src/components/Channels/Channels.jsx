@@ -15,15 +15,15 @@ export function Channels(props) {
   const allChannels = useSelector(state => state.channels)
   const authData = useSelector(state => state.login)
   const token = useSelector(state => state.login.token)
-  const userChunnels = useSelector(state => state.login.userData.channels)
+  const userData = useSelector(state => state.userData)
   const {changeLocalStorageUserData} = useAuth();
   const { isNotMembers, listChannelsIsOpen } = props
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
     async function getChannels() {
-      //console.log(authData)
-      await dispatch( getData(GET_CHANNELS, token, null, userChunnels))
+      console.log(authData)
+      await dispatch( getData(GET_CHANNELS, token, null, authData.userData.channels))
     }
 
     changeLocalStorageUserData(authData)
@@ -36,7 +36,7 @@ export function Channels(props) {
         key='1' 
         id='1'
         className="user-sets__channel user-sets__channel_active" 
-        onClick={() => toActiveChannel(1, "general")}
+        onClick={() => toActiveChannel(1)}
       >
         <Link className="main-font" to={`/chat`} >&#128274;general</Link>
       </div>
@@ -88,13 +88,6 @@ export function Channels(props) {
 		<div style={
       {display: listChannelsIsOpen ? "block" : "none"}
     }>
-      <div className="user-sets__channel">
-        <p className="main-font" 
-          onClick={() => setModalAddChannelIsOpen(true)}
-        >
-          Add channel
-        </p>
-      </div>
       <Modal 
         isOpen={modalAddChannelIsOpen}
         onRequestClose={() => setModalAddChannelIsOpen(false)}
@@ -107,6 +100,13 @@ export function Channels(props) {
         />
       </Modal>
       {createLinksChannels(allChannels)}
+      <div className="user-sets__channel user-sets__channel_add">
+        <p className="main-font" 
+          onClick={() => setModalAddChannelIsOpen(true)}
+        >
+          + Add channel
+        </p>
+      </div>
     </div>
 	)
 }

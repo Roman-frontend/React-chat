@@ -1,4 +1,10 @@
 import React, { useState, useMemo } from 'react'
+import Button from '@material-ui/core/Button';
+import ReplyIcon from '@material-ui/icons/Reply';
+import EditIcon from '@material-ui/icons/Edit';
+import ForwardIcon from '@material-ui/icons/Forward';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@material-ui/core/styles';
 import Tippy from '@tippy.js/react'
 import 'tippy.js/dist/tippy.css'
 import {useDispatch, useSelector} from 'react-redux'
@@ -8,7 +14,14 @@ import { REMOVE_MESSAGE } from '../../redux/types.js'
 import iconMore from '../../images/icon-more.png'
 import './message-actions-popup.sass'
 
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(0),
+  },
+}));
+
 export function MessageActionsPopup(props) {
+  const classes = useStyles();
   const dispatch = useDispatch()
   const token = useSelector(state => state.login.token)
   const activeChannelId = useSelector(state => state.activeChannelId)
@@ -29,7 +42,7 @@ export function MessageActionsPopup(props) {
 
   function getPlaceTopElement(idElement) {
     const element = document.getElementById(idElement)
-    return element.getBoundingClientRect().top + 3
+    return element.getBoundingClientRect().top + 4
   }
 
   const handleAnswer = () => {
@@ -37,7 +50,7 @@ export function MessageActionsPopup(props) {
     const valueAnsweringActiveMessage = activeMessage.reply ? undefined : activeMessage.message;
     const object = Object.assign({}, {...activeMessage}, {reply: valueAnsweringActiveMessage})
     setActiveMessage({...object});
-    inputRef.current.value = "";
+    inputRef.current.children[1].children[0].value = "";
   }
 
   const handleChange = () => {
@@ -46,11 +59,11 @@ export function MessageActionsPopup(props) {
 
     if (activeMessage.changing) {
       valueChangingActiveMessage = undefined;
-      inputRef.current.value = '';
+      inputRef.current.children[1].children[0].value = '';
 
     } else {
       valueChangingActiveMessage = activeMessage.message;
-      inputRef.current.value = activeMessage.message.text;
+      inputRef.current.children[1].children[0].value = activeMessage.message.text;
     }
 
     const object = Object.assign({}, {...activeMessage}, {changing: valueChangingActiveMessage})
@@ -70,7 +83,7 @@ export function MessageActionsPopup(props) {
       return (
         <Tippy content='Actions'>
           <img 
-            className="chat-actions"
+            className="popup popup_closed"
             style={{top: `${topIconActionRelativeTopPage}px`}} 
             src={iconMore} 
             onClick={() => setIdMessageForPopup(activeMessage.id)}
@@ -85,11 +98,46 @@ export function MessageActionsPopup(props) {
   function setViewPopup() {
     if (topPopupRelativeTopPage) {
       return (
-        <div className="field-actions chat-actions" style={{top: `${topPopupRelativeTopPage}px`}} >
-          <button className="field-actions__answer" onClick={handleAnswer} >Відповісти</button>
-          <button className="field-actions__edit" onClick={handleChange} >Змінити</button>
-          <button className="field-actions__redirect">Поділитись</button>
-          <button className="field-actions__delete" onClick={handleDelete} >Видалити</button>
+        <div className="field-actions popup popup_opened" style={{top: `${topPopupRelativeTopPage}px`}} >
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            startIcon={<ReplyIcon />}
+            onClick={handleAnswer} 
+          >
+            ANSWER
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            startIcon={<EditIcon />}
+            onClick={handleChange} 
+          >
+            CHANGE
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            startIcon={<ForwardIcon />}
+          >
+            FORWARD
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<DeleteIcon />}
+            onClick={handleDelete} 
+          >
+            DELETE
+          </Button>
         </div>
       )
     }

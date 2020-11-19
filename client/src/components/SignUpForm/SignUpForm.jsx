@@ -1,7 +1,7 @@
 import React from 'react'
 
 export function SignUpForm(props) {
-  const {label, placeholder, type, id, name, fieldError, inputRef} = props
+  const {label, placeholder, type, id, name, fieldError, inputSignUpRef} = props
 
   return (
     <div>
@@ -12,7 +12,7 @@ export function SignUpForm(props) {
         id={id}
         name={name}
         className={fieldError === true ? "auth-form__input-border-bottom-green " : "auth-form__input-border-bottom"}
-        ref={inputRef}
+        ref={inputSignUpRef}
       />
       <p className={fieldError === undefined || fieldError === true ? null : "auth-form__error" }>
         {fieldError}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {useSelector} from 'react-redux'
 import { ConversationHeader } from '../ConversationHeader/ConversationHeader.jsx'
 import { Messages } from '../Messages/Messages.jsx'
@@ -14,6 +14,12 @@ export default function Conversation() {
   const activeChannelId = useSelector(state => state.activeChannelId)
   const [activeMessage, setActiveMessage] = useState({});
   const inputRef = useRef()
+
+  useEffect(() => { 
+    if (activeMessage.reply || activeMessage.changing ) {
+      inputRef.current.children[1].children[0].focus() 
+    }
+  }, [activeMessage.reply, activeMessage.changing])
 
   const checkPrivate = useCallback(() => {
     if ( channels && activeChannelId ) {
@@ -53,9 +59,10 @@ export default function Conversation() {
     }
   }
 
+
   return (
     <div className={ activeMessage.reply ? "conversation-riply" : "conversation" }>
-      <ConversationHeader inputRef={inputRef}/>
+      <ConversationHeader/>
       {fieldAnswerTo()}
       {contentMessages()}
       <div className="conversation-input">

@@ -6,23 +6,22 @@ export function SelectPeople(props) {
   const {
     setInvited,
     invited,
+    parrentDivRef,
+    checkboxRef,
+    buttonCloseRef,
+    buttonDoneRef,
     heightParrentDiv,
     isNotMembers
   } = props
   const [focusSelectTag, setFocusSelectTag] = useState(false)
   const [notInvited, setNotInvited] = useState([])
   const [listMatchedEmails, setListMatchedEmails] = useState(null)
-  const inputRef = useRef()
+  const inputPeopleRef = useRef()
+  const selectRef = useRef()
+
   const selectClassName = focusSelectTag ? 
     "set-channel-forms__list-peoples-invite_is-focus" : 
     "set-channel-forms__list-peoples-invite_is-not-focus";
-
-  useEffect(() => {
-    const tagInput = document.querySelector(".set-channel-forms__input-people-invite");
-    const tagSelect = document.querySelector(`.${selectClassName}`);
-    addEvents(tagInput)
-    addEvents(tagSelect)
-  }, [])
 
   useEffect(() => {
     if (isNotMembers) { 
@@ -30,27 +29,28 @@ export function SelectPeople(props) {
     }
   }, [isNotMembers])
 
-  function addEvents(tag) {
-    const parrentDiv = document.querySelector(".set-channel");
-    const tagInput = document.querySelector(".set-channel-forms__input-people-invite");
-    const checkbox = document.getElementById("add-private-channel");
-    const buttons = document.querySelectorAll(".set-channel__button");
+  useEffect(() => {
+    function addEvents(tag) {
+      tag.addEventListener('focus', () => {
+        parrentDivRef.current.classList.add(heightParrentDiv)
+        if (checkboxRef) checkboxRef.current.classList.add('set-channel-forms_top')
+        buttonCloseRef.current.classList.add('set-channel__button_top')
+        buttonDoneRef.current.classList.add('set-channel__button_top')
+        setFocusSelectTag(true)   
+      });
 
+      tag.addEventListener('blur', () => {
+        parrentDivRef.current.classList.remove(heightParrentDiv)
+        if (checkboxRef) checkboxRef.current.classList.remove('set-channel-forms_top')
+        buttonCloseRef.current.classList.remove('set-channel__button_top')
+        buttonDoneRef.current.classList.remove('set-channel__button_top')
+        if ( document.hasFocus(inputPeopleRef.current) ) setFocusSelectTag(false)
+      });
+    }
 
-    tag.addEventListener('focus', () => {
-      parrentDiv.classList.add(heightParrentDiv)
-      if (checkbox) checkbox.classList.add('set-channel-forms_top')
-      buttons.forEach(button => button.classList.add('set-channel__button_top'))
-      setFocusSelectTag(true)   
-    });
-
-    tag.addEventListener('blur', () => {
-      parrentDiv.classList.remove(heightParrentDiv)
-      if (checkbox) checkbox.classList.remove('set-channel-forms_top')
-      buttons.forEach(button => button.classList.remove('set-channel__button_top'))
-      if ( document.hasFocus(tagInput) ) setFocusSelectTag(false)
-    });
-  }
+    addEvents(inputPeopleRef.current)
+    addEvents(selectRef.current)
+  }, [])
 
 
   const getSelectElements = useCallback(() => {
@@ -102,16 +102,16 @@ export function SelectPeople(props) {
   }
 
   function changeListPeoples() {
-    const regExp = new RegExp(`${inputRef.current.value}`)
+    const regExp = new RegExp(`${inputPeopleRef.current.value}`)
     setListMatchedEmails(() => { 
       return notInvited.filter(people => people.email.match(regExp) ? people : undefined) 
     })
   }
 
   function addToInvitedInputPeople() {
-    const electPeople = listMatchedEmails.filter(people => people.email === inputRef.current.value)
+    const electPeople = listMatchedEmails.filter(people => people.email === inputPeopleRef.current.value)
     addPeopleToInvited(electPeople[0]._id)
-    inputRef.current.value = ""
+    inputPeopleRef.current.value = ""
   }
 
   //console.log(invited)
@@ -127,7 +127,7 @@ export function SelectPeople(props) {
           placeholder="add peoples to channel" 
           className="set-channel-forms__input-people-invite"
           type="text"
-          ref={inputRef}
+          ref={inputPeopleRef}
           onKeyUp={event => handleInput(event)}
         />
       </div>
@@ -140,7 +140,8 @@ export function SelectPeople(props) {
       		name="peoples" 
       		id="peoples" 
       		size="3" 
-      		multiple
+          multiple
+          ref={selectRef}
       		onClick={() => setFocusSelectTag(true)}
       	>
         	{getSelectElements()}

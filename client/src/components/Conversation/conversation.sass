@@ -2,16 +2,17 @@
   grid-area: rightblock
   display: grid
   grid-template-areas: "nick" "messages" "input"
-  grid-template-rows: 4.2rem 71vh
+  grid-template-rows: 4.2rem 68vh
 
 .conversation-riply 
   grid-area: rightblock
   display: grid
   grid-template-areas: "nick" "messages" "answer" "input"
-  grid-template-rows: 4.2rem 67vh 10vh
+  grid-template-rows: 4.2rem 60vh 8vh
 
 .conversation__field-name
   border: 0.1rem solid #979797
+  background: #f7fbff
   height: 4rem
   grid-area: nick
   display: grid
@@ -32,26 +33,23 @@
     align-self: center
     cursor: pointer
 
-    .conversation__icon-member
-      height: 2rem
-
 .conversation-riply__answer 
-  display: block
-  height: 3rem
-  width: 74.7vw
-  border-radius: 1rem 1rem 0rem 0rem
-  border: 0.1rem solid #BEB7BD
-  left: 3vw
-  background: #80249C
-  color: white
-  grid-area: answer
-  padding: 1rem 0rem 0rem 1rem
+  display: block;
+  height: 4vh;
+  width: 66vw;
+  background: #f7fbff
+  border-radius: 0.4rem 0rem 0rem 0rem;
+  border: 0.1rem solid #4e1045;
+  background: #ffc37a;
+  left: 7.4vw;
+  grid-area: answer;
+  padding: 2vh 0vh 0vw 0.5vw;
 
 .conversation-input
   display: grid
-  height: 7.6vh
+  height: 10.6vh
   width: 76vw
-  left: 3vw
+  left: 1vw
   grid-area: input
 
 .Example-Modal

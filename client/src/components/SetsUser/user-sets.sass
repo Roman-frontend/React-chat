@@ -1,51 +1,33 @@
-.plus 
-  font: 2rem serif
-  left: 0
+.left-bar__title-name
+  font-size: 3vh
+  align-items: center
+  text-align: -webkit-left
 
-.user-sets
-  .user-sets__nav-channels
-    display: grid
-    grid-template-areas: "channel first-plus"
-    grid-template-rows: 3rem
-    grid-template-columns: 1fr 3rem
-    justify-content: space-between
-    align-items: center
-    left: 1rem
+.left-bar__title_active
+  color: #30fffc
 
-    .user-sets__nav-channels-name
-      grid-area: channel
+.user-sets__channel
+  border-radius: 0.4rem
+  margin: 0.5rem 2rem
 
-    .user-sets__nav-channels-plus 
-      grid-area: first-plus
+.left-bar__first-plus:hover
+  color: #30fffc
 
-  .user-sets__channel
-    border-radius: 0.4rem
+.left-bar__second-plus:hover
+  color: #30fffc
+
+.user-sets__channel_active
+  background: #010045
+
+.user-sets__channel:hover
+  background: #010045
+
+.user-sets__users
+  .user-sets__people
     margin: 0.5rem 2rem
-
-  .user-sets__channel_active
-    background: #270c33
-
-  .user-sets__channel:hover
-    background: #270c33
-
-  .user-sets__nav-messages
-    display: grid
-    grid-template-areas: "direct-messages second-plus"
-    grid-template-rows: 3rem
-    grid-template-columns: 1fr 3rem
-    justify-content: space-between
-    align-items: center
-    left: 1rem
-
-    .user-sets__nav-messages-name
-      grid-area: direct-messages
-
-    .user-sets__nav-messages-plus
-      grid-area: second-plus
-
-  .user-sets__users
-    .user-sets__people
-      margin: 0.5rem 2rem
+    border-radius: 0.4rem
+  .user-sets__people:hover
+    background: #010045
 
 .modal-content
   height: max-content

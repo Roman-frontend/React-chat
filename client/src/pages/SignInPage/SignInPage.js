@@ -16,8 +16,15 @@ export const SignInPage = () => {
   const dispatch = useDispatch()
   const dataLogined = useSelector(state => state.login)
   const { login } = useAuth()
-  
   const initialValues = { email: '', password: '' }
+
+  useEffect(() => {
+    console.log(dataLogined)
+    if (dataLogined) {
+      console.log(dataLogined)
+      login(dataLogined.userData, dataLogined.name, dataLogined.token, dataLogined.userId)
+    }
+  }, [dataLogined])
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
@@ -56,7 +63,7 @@ export const SignInPage = () => {
           </button>
 
           <Link  to={`/signUp`}>
-            <button className="auth-form__button-pasive">Зареєструватись</button>
+            <button className="auth-form__button-pasive">Перейти до реєстрації</button>
           </Link>
 
         </Form>

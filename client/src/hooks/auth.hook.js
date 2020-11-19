@@ -13,7 +13,7 @@ export const useAuth = () => {
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
   const login = useCallback((userData, name, token, userId) => {
-    //console.log(userData)
+    console.log(userData)
     localStorage.setItem(storageName, JSON.stringify({
       userData, name, userId, token
     }))

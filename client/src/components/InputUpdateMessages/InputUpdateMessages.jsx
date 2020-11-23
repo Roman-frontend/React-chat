@@ -1,25 +1,29 @@
-import React, {useEffect} from 'react'
-import { ThemeProvider, makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import BorderColorIcon from '@material-ui/icons/BorderColor';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import {useDispatch, useSelector} from 'react-redux'
-import {connect} from 'react-redux'
-import {postData, putData} from '../../redux/actions/actions.js'
-import {POST_MESSAGE} from '../../redux/types.js'
-import './input-message.sass'
+import React, { useEffect } from "react";
+import {
+  ThemeProvider,
+  makeStyles,
+  createMuiTheme,
+} from "@material-ui/core/styles";
+import BorderColorIcon from "@material-ui/icons/BorderColor";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import { useDispatch, useSelector } from "react-redux";
+import { connect } from "react-redux";
+import { postData, putData } from "../../redux/actions/actions.js";
+import { POST_MESSAGE } from "../../redux/types.js";
+import "./input-message.sass";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     flexGrow: 1,
     fontSize: "3rem",
     textAlign: "right",
   },
   addPeoples: {
     padding: theme.spacing(1),
-    textAlign: 'bottom',
+    textAlign: "bottom",
   },
 }));
 
@@ -30,35 +34,33 @@ const theme = createMuiTheme({
 });
 
 export function InputUpdateMessages(props) {
+  const { activeMessage, setActiveMessage, inputRef, socket } = props;
   const classes = useStyles();
-  const dispatch = useDispatch()
-  const reduxMessages = useSelector(state => state.messages)
-  const name = useSelector(state => state.userData.name)
-  const userId = useSelector(state => state.userData._id)
-  const token = useSelector(state => state.token)
-  const activeChannelId = useSelector(state => state.activeChannelId)
-
-  const { activeMessage, setActiveMessage, inputRef } = props
-
-  const copyMessages = reduxMessages[0] ? reduxMessages.slice(0, reduxMessages.length) : []
-  let updatedArrayMessages = []
+  const dispatch = useDispatch();
+  const name = useSelector((state) => state.userData.name);
+  const userId = useSelector((state) => state.userData._id);
+  const token = useSelector((state) => state.token);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const reduxMessages = useSelector((state) => state.messages);
 
   function inputUpdateMessages(event) {
-    event.preventDefault()
-    const inputValue = inputRef.current.children[1].children[0].value
+    event.preventDefault();
+    const inputValue = inputRef.current.children[1].children[0].value;
 
-    if ( !(inputValue.trim() === "") ) {
-      if (activeMessage.change) changeMessageText(inputValue)
-      else if (activeMessage.reply) messageInReply(inputValue)
-      else newMessage(inputValue)
-      inputRef.current.children[1].children[0].value = null
+    if (!(inputValue.trim() === "")) {
+      if (activeMessage.change) changeMessageText(inputValue);
+      else if (activeMessage.reply) messageInReply(inputValue);
+      else {
+        newMessage(inputValue);
+      }
+      inputRef.current.children[1].children[0].value = null;
     }
   }
 
   async function changeMessageText(inputValue) {
-    let putMessage = []
+    /* let putMessage = []
 
-    updatedArrayMessages = reduxMessages.map(message => {
+    const updatedArrayMessages = reduxMessages.map(message => {
       if (message._id === activeMessage.change) {
         message.text = inputValue
         putMessage.push(message)
@@ -66,44 +68,45 @@ export function InputUpdateMessages(props) {
       } else return message
     })
     
-    const resPut = await putData(putMessage[0], activeMessage.change, null, token)
-    const object = Object.assign({}, {...activeMessage}, {'change': null})
-    setActiveMessage({...object})
+    const resPut = await putData(putMessage[0], activeMessage.change, null, token) */
+    const object = Object.assign({}, { ...activeMessage }, { change: null });
+    setActiveMessage({ ...object });
   }
 
-  const messageInReply = async response => {
-    copyMessages.unshift({
+  const messageInReply = async (response) => {
+    const replyMsg = {
       id: Date.now(),
       userId,
-      username: name, 
-      text: activeMessage.reply.text, 
-      createdAt: new Date().toLocaleString(), 
-      channelId: activeChannelId,
-      reply: response,
-    },) 
-   
-    await dispatch( postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId) )
-
-    updatedArrayMessages = copyMessages
-    const object = Object.assign({}, {...activeMessage}, {reply: null})
-    setActiveMessage({...object}) 
-  }
-
-  async function newMessage(textMessage) {
-    console.log(textMessage)
-    
-    copyMessages.unshift({
-      id: Date.now(),
-      userId,
-      username: name, 
-      text: textMessage, 
+      username: name,
+      text: activeMessage.reply.text,
       createdAt: new Date().toLocaleString(),
       channelId: activeChannelId,
-    }, )  
+      reply: response,
+    };
 
-    await dispatch( postData(POST_MESSAGE, token, { userId, ...copyMessages[0] }, activeChannelId) )
+    await dispatch(
+      postData(POST_MESSAGE, token, { userId, ...replyMsg }, activeChannelId)
+    );
 
-    updatedArrayMessages = copyMessages
+    const object = Object.assign({}, { ...activeMessage }, { reply: null });
+    setActiveMessage({ ...object });
+  };
+
+  async function newMessage(textMessage) {
+    const newMsg = {
+      id: Date.now(),
+      userId,
+      username: name,
+      text: textMessage,
+      createdAt: new Date().toLocaleString(),
+      channelId: activeChannelId,
+    };
+
+    await dispatch(
+      postData(POST_MESSAGE, token, { userId, ...newMsg }, activeChannelId)
+    );
+
+    return newMsg;
   }
 
   return (
@@ -116,19 +119,19 @@ export function InputUpdateMessages(props) {
           />
         </Grid>
         <Grid item xs={11}>
-          <form 
-            className={classes.root} 
+          <form
+            className={classes.root}
             noValidate
             autoComplete="off"
-            onSubmit={event => inputUpdateMessages(event)}
+            onSubmit={(event) => inputUpdateMessages(event)}
           >
             <ThemeProvider theme={theme}>
               <TextField
-                style={{ width: '67vw'}}
+                style={{ width: "67vw" }}
                 className={"conversation-input__input"}
                 label="Enter text"
                 id="mui-theme-provider-standard-input"
-                ref={inputRef} 
+                ref={inputRef}
                 autoFocus
               />
             </ThemeProvider>
@@ -136,11 +139,12 @@ export function InputUpdateMessages(props) {
         </Grid>
       </Grid>
     </div>
-  )
+  );
 }
 
 const mapDispatchToProps = {
-  postData, putData
-}
+  postData,
+  putData,
+};
 
-export default connect(null, mapDispatchToProps)(InputUpdateMessages)
+export default connect(null, mapDispatchToProps)(InputUpdateMessages);

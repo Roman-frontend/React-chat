@@ -13,7 +13,7 @@ export const useAuth = () => {
   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
   */
   const login = useCallback((userData, token) => {
-    console.log(userData)
+    //console.log(userData)
     localStorage.setItem(storageName, JSON.stringify({
       userData, token
     }))
@@ -21,7 +21,7 @@ export const useAuth = () => {
 
 
   const logout = useCallback(() => {
-    console.log("logout")
+    //console.log("logout")
     localStorage.removeItem(storageName)
     dispatch({
       type: LOGOUT_DATA,

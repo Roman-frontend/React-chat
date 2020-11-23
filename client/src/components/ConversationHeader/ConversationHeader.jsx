@@ -5,8 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch, useSelector} from 'react-redux'
 import {connect} from 'react-redux'
-import {getData} from '../../redux/actions/actions.js'
-import {GET_USERS} from '../../redux/types.js'
+import {getUsers} from '../../redux/actions/actions.js'
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import './ConversationHeader.sass'
@@ -37,7 +36,7 @@ export function ConversationHeader(props) {
 
 	useEffect(() => {
     async function getPeoples() {
-      await dispatch( getData(GET_USERS, token, userId) )
+      await dispatch( getUsers(token, userId) )
     }
 
     getPeoples()
@@ -162,6 +161,6 @@ export function ConversationHeader(props) {
   )
 }
 
-const mapDispatchToProps = { getData }
+const mapDispatchToProps = { getUsers }
 
 export default connect(null, mapDispatchToProps)(ConversationHeader)

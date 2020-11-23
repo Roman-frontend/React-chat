@@ -1,91 +1,148 @@
 import {
-  GET_USERS, 
-  GET_CHANNELS, 
-  GET_MESSAGES, 
-  POST_REGISTER, 
-  POST_LOGIN, 
-  POST_MESSAGE, 
-  POST_CHANNEL, 
+  GET_USERS,
+  GET_CHANNELS,
+  GET_MESSAGES,
+  POST_REGISTER,
+  POST_LOGIN,
+  POST_MESSAGE,
+  POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
-  REMOVE_MESSAGE
-} from '../types.js'
-import { reduxServer } from '../../hooks/http.hook.js';
+  REMOVE_MESSAGE,
+} from "../types.js";
+import { reduxServer } from "../../hooks/http.hook.js";
 
-function dispatcher(type, url, token, method="GET", body=null) {
-  return async dispatch => {
-		try {
-			const response = await reduxServer(url, token, method, body)
-			console.log("response ", response)
-			dispatch({ 
-				type, 
-				payload: response 
-			})
-		} catch (e) { 
-			dispatch({
-				type,
-				payload: "403"
-			})
-			console.log(e) 
-		}
-  }
+function dispatcher(type, url, token, method = "GET", body = null) {
+  return async (dispatch) => {
+    try {
+      const response = await reduxServer(url, token, method, body);
+      //console.log("response ", response);
+      dispatch({
+        type,
+        payload: response,
+      });
+    } catch (e) {
+      dispatch({
+        type,
+        payload: "403",
+      });
+      console.log(e);
+    }
+  };
 }
 
-export const getData = ( method, token=null, param=null, body=null ) => {
+export const getData = (method, token = null, param = null, body = null) => {
   try {
-    switch ( method ) {
+    switch (method) {
       //SetUser, ConversationHeader
       case GET_USERS:
-        return dispatcher(GET_USERS, `/api/channel/get-users${param}`, token)
+        return dispatcher(GET_USERS, `/api/channel/get-users${param}`, token);
 
       //Channels
       case GET_CHANNELS:
-        return dispatcher(GET_CHANNELS, "/api/channel/get-chunnels", token, "POST", body);
+        return dispatcher(
+          GET_CHANNELS,
+          "/api/channel/get-chunnels",
+          token,
+          "POST",
+          body
+        );
 
       //Channels
       case GET_MESSAGES:
-        return dispatcher(GET_MESSAGES, `/api/chat/get-messages${param}`, token, "POST", body)
+        return dispatcher(
+          GET_MESSAGES,
+          `/api/chat/get-messages${param}`,
+          token,
+          "POST",
+          body
+        );
     }
-  } catch (e) { console.log(e.message, e.error) }
+  } catch (e) {
+    console.log(e.message, e.error);
+  }
+};
+
+export function getUsers(token, param) {
+  return dispatcher(GET_USERS, `/api/channel/get-users${param}`, token);
 }
 
-export const postData = (method, token=null, body=null, param=null) => {
+export const postData = (method, token = null, body = null, param = null) => {
   try {
-    switch ( method ) {
+    switch (method) {
       //SignUpPage
       case POST_REGISTER:
-        return dispatcher(POST_REGISTER, 'api/auth/register', token, 'POST', body)
+        return dispatcher(
+          POST_REGISTER,
+          "api/auth/register",
+          token,
+          "POST",
+          body
+        );
 
       //SignInPage
       case POST_LOGIN:
-        return dispatcher(POST_LOGIN, '/api/auth/login', token, 'POST', body)
+        return dispatcher(POST_LOGIN, "/api/auth/login", token, "POST", body);
 
       //InputUpdateMessages
       case POST_MESSAGE:
-        return dispatcher(POST_MESSAGE, `/api/chat/post-message${param}`, token, "POST", body)
+        return dispatcher(
+          POST_MESSAGE,
+          `/api/chat/post-message${param}`,
+          token,
+          "POST",
+          body
+        );
 
       //AddChannel
       case POST_CHANNEL:
-        return dispatcher(POST_CHANNEL, `/api/channel/post-channel${param}`, token, "POST", body)
+        return dispatcher(
+          POST_CHANNEL,
+          `/api/channel/post-channel${param}`,
+          token,
+          "POST",
+          body
+        );
 
       //AddPeopleToChannel
       case POST_ADD_PEOPLES_TO_CHANNEL:
-        return dispatcher(POST_ADD_PEOPLES_TO_CHANNEL, `/api/channel/post-add-members-to-channel${param}`, token, "POST", body)
+        return dispatcher(
+          POST_ADD_PEOPLES_TO_CHANNEL,
+          `/api/channel/post-add-members-to-channel${param}`,
+          token,
+          "POST",
+          body
+        );
     }
-  } catch (e) { console.log(e.message, e.error) }
-}
+  } catch (e) {
+    console.log(e.message, e.error);
+  }
+};
 
 //InputUpdateMessages
-export const putData = ( putMessage, id, param=null, token=null ) => {
-  return dispatcher(`/api/chat/put-message${id}`, 'PUT', { ...putMessage }, token)
-}
+export const putData = (putMessage, id, param = null, token = null) => {
+  return dispatcher(
+    `/api/chat/put-message${id}`,
+    "PUT",
+    { ...putMessage },
+    token
+  );
+};
 
 //MessageActionsPopup
-export const removeData = ( method, id, token=null, body=null ) => {
+export const removeData = (method, id, token = null, body = null) => {
   //console.log(id)
-	try {
-		switch ( method ) {
-			case REMOVE_MESSAGE:
-	  		return dispatcher(REMOVE_MESSAGE, `/api/chat/delete-message${id}`, token, 'DELETE', body)
-	  }
-	} catch (e) { console.log(e.message, e.error) }
-}
+  try {
+    switch (method) {
+      case REMOVE_MESSAGE:
+        return dispatcher(
+          REMOVE_MESSAGE,
+          `/api/chat/delete-message${id}`,
+          token,
+          "DELETE",
+          body
+        );
+    }
+  } catch (e) {
+    console.log(e.message, e.error);
+  }
+};

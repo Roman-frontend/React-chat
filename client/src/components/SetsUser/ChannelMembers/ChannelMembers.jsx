@@ -1,76 +1,45 @@
-import React, {useState} from 'react'
-import {Link} from 'react-router-dom'
-import Modal from 'react-modal'
-import {AddPeopleToChannel} from '../AddPeopleToChannel/AddPeopleToChannel.jsx'
-Modal.setAppElement('#root')
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Modal from "react-modal";
+import { AddPeopleToChannel } from "../AddPeopleToChannel/AddPeopleToChannel.jsx";
+Modal.setAppElement("#root");
 
 export function ChannelMembers(props) {
-  const { listMembersIsOpen, isNotMembers } = props
+  const { listMembersIsOpen, isNotMembers } = props;
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
 
-
-  return(
-    <div 
-      className="user-sets__users" 
-      style={{display: listMembersIsOpen ? "block" : "none"}}
+  return (
+    <div
+      className="user-sets__users"
+      style={{ display: listMembersIsOpen ? "block" : "none" }}
     >
       <div className="user-sets__people">
-        <Link 
-          className="main-font" 
-          to={`/chat`}
-        >
+        <Link className="main-font" to={`/chat`}>
           - Yulia
         </Link>
       </div>
       <div className="user-sets__people">
-        <p onClick={() => setModalAddPeopleIsOpen(true)}>
-          + Invite people
-        </p>
+        <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
       </div>
-      <Modal 
+      <Modal
         isOpen={modalAddPeopleIsOpen}
         onRequestClose={() => setModalAddPeopleIsOpen(false)}
         className={"modal-content"}
         overlayClassName={"modal-overlay"}
       >
-        <AddPeopleToChannel 
+        <AddPeopleToChannel
           isNotMembers={isNotMembers}
-          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen} 
+          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         />
       </Modal>
       <div className="user-sets__people">
-        <Link 
-          className="main-font" 
-          to={`/filterContacts`}
-        >
+        <Link className="main-font" to={`/filterContacts`}>
           Filter Contants
         </Link>
       </div>
     </div>
-	)
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //НЕ ВИДАЛЯТИ ПОКИЩО створює список учасників активного каналу
 /*  

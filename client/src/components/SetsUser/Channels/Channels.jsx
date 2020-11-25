@@ -3,12 +3,12 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
-import { getData } from "../../redux/actions/actions.js";
-import { GET_CHANNELS, ACTIVE_CHANNEL_ID } from "../../redux/types.js";
+import { getData } from "../../../redux/actions/actions.js";
+import { GET_CHANNELS, ACTIVE_CHANNEL_ID } from "../../../redux/types.js";
 import { Link } from "react-router-dom";
 import Modal from "react-modal";
-import { useAuth } from "../../hooks/auth.hook.js";
-import { AddChannel } from "../AddChannel/AddChannel.jsx";
+import { useAuth } from "../../../hooks/auth.hook.js";
+import { AddChannel } from "./AddChannel/AddChannel.jsx";
 import "./channels.sass";
 Modal.setAppElement("#root");
 
@@ -26,7 +26,6 @@ export function Channels(props) {
     async function getChannels() {
       await dispatch(getData(GET_CHANNELS, token, null, userData.channels));
     }
-
     changeLocalStorageUserData(userData);
     getChannels();
   }, [userData]);
@@ -100,6 +99,9 @@ export function Channels(props) {
   }
 
   async function toActiveChannel(idActive) {
+    socket.send(JSON.stringify({ room: activeChannelId, meta: "leave" }));
+    socket.send(JSON.stringify({ room: idActive, meta: "join" }));
+    changeLocalStorageUserData({ lastActiveChannelId: idActive });
     dispatch({
       type: ACTIVE_CHANNEL_ID,
       payload: idActive,
@@ -109,7 +111,6 @@ export function Channels(props) {
   function markActiveLinkChannel(idActiveChannel) {
     const oldMarkChannel = document.querySelector(".user-sets__channel_active");
     const channelForActive = document.getElementById(idActiveChannel);
-    //console.log(idActiveChannel, oldMarkChannel, channelForActive)
 
     if (oldMarkChannel && channelForActive) {
       oldMarkChannel.classList.remove("user-sets__channel_active");

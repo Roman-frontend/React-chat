@@ -23,13 +23,12 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
 
 router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
   try {
-    const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(
+    const userHasAccesToChannel = await checkAccesToChannel(
       req.params.activeChannelId,
       req.body.userId
     );
 
-    if (userIsNotMemberPrivatChannel) {
-      console.log("get-messages ==>>", userIsNotMemberPrivatChannel);
+    if (userHasAccesToChannel) {
       res.status(403).json({ message: "Ви не є учасником приватного чату" });
     } else {
       const messages = await Message.find({
@@ -47,7 +46,7 @@ router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
 router.post("/post-message:activeChannelId", verifyToken, async (req, res) => {
   try {
     //console.log("without express.json ..........")
-    const userIsNotMemberPrivatChannel = await checkBelongToPrivatChannel(
+    const userIsNotMemberPrivatChannel = await checkAccesToChannel(
       req.params.activeChannelId,
       req.body.userId
     );
@@ -94,7 +93,7 @@ router.delete("/delete-message:id", verifyToken, async (req, res) => {
   }
 });
 
-async function checkBelongToPrivatChannel(channelId, userId) {
+async function checkAccesToChannel(channelId, userId) {
   const activeChannel = await Channel.findOne({ _id: channelId });
 
   return activeChannel.isPrivate && !activeChannel.members.includes(userId)

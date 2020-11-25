@@ -32,10 +32,16 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.payload.users };
 
     case GET_CHANNELS:
+      const storageData = JSON.parse(localStorage.getItem("userData"));
+      console.log(storageData);
+      const startedChannel = storageData.lastActiveChannelId
+        ? storageData.lastActiveChannelId
+        : action.payload.userChannels[0]._id;
+
       return {
         ...state,
         channels: action.payload.userChannels,
-        activeChannelId: action.payload.userChannels[0]._id,
+        activeChannelId: startedChannel,
       };
 
     case GET_MESSAGES:
@@ -75,7 +81,7 @@ export const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         token: action.payload.token,
-        userData: action.payload.userData,
+        userData: action.payload,
       };
 
     case LOGOUT_DATA:
@@ -85,7 +91,11 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, activeChannelId: action.payload };
 
     case UPDATE_MESSAGES:
+      //if (state.activeChannelId === action.payload[0].channelId) {
+      console.log("in if ", state.activeChannelId, action.payload);
       return { ...state, messages: action.payload };
+      //}
+      break;
 
     case PROCESSED_NEW_MESSAGE:
       return { ...state, newMessage: action.payload };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   ThemeProvider,
   makeStyles,
@@ -9,8 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
-import { postData, putData } from "../../redux/actions/actions.js";
-import { POST_MESSAGE } from "../../redux/types.js";
+import { postData, putData } from "../../../redux/actions/actions.js";
+import { POST_MESSAGE } from "../../../redux/types.js";
 import "./input-message.sass";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,14 +34,13 @@ const theme = createMuiTheme({
 });
 
 export function InputUpdateMessages(props) {
-  const { activeMessage, setActiveMessage, inputRef, socket } = props;
+  const { activeMessage, setActiveMessage, inputRef } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const name = useSelector((state) => state.userData.name);
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
   const activeChannelId = useSelector((state) => state.activeChannelId);
-  const reduxMessages = useSelector((state) => state.messages);
 
   function inputUpdateMessages(event) {
     event.preventDefault();

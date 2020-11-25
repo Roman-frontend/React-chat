@@ -1,26 +1,37 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
-import { ConversationHeader } from "../ConversationHeader/ConversationHeader.jsx";
-import { Messages } from "../Messages/Messages.jsx";
-import { InputUpdateMessages } from "../InputUpdateMessages/InputUpdateMessages.jsx";
-import EndActionButton from "../EndActionButton/EndActionButton.jsx";
+import { ConversationHeader } from "./ConversationHeader/ConversationHeader.jsx";
+import { Messages } from "./Messages/Messages.jsx";
+import { InputUpdateMessages } from "./InputUpdateMessages/InputUpdateMessages.jsx";
+import EndActionButton from "./EndActionButton/EndActionButton.jsx";
 import imageError from "../../images/error.png";
 import "./conversation.sass";
 import { useCallback } from "react";
 
 export default function Conversation(props) {
-  const { socket } = props;
+  const { socket, sendMessage } = props;
   const userId = useSelector((state) => state.userData._id);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const [activeMessage, setActiveMessage] = useState({});
   const inputRef = useRef();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     //Підписуємось на подію, так відкриваємо з'єднання
     socket.onopen = () => {
       console.log("ONLINE");
     };
+  }, []);
+
+  useEffect(() => {
+    const storageData = JSON.parse(localStorage.getItem("userData"));
+
+    if (!activeChannelId && storageData.lastActiveChannelId) {
+      sendMessage(
+        socket,
+        JSON.stringify({ room: storageData.lastActiveChannelId, meta: "join" })
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -91,7 +102,6 @@ export default function Conversation(props) {
           inputRef={inputRef}
           activeMessage={activeMessage}
           setActiveMessage={setActiveMessage}
-          socket={socket}
         />
         {buttonEndActive}
       </div>

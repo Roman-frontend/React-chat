@@ -4,9 +4,10 @@ const config = require("config");
 const mongoose = require("mongoose");
 const app = express();
 const WebSocket = require("ws");
-//const expressWs = require("express-ws")(app);
-//Створюю сервер
 const server = new WebSocket.Server({ port: 8080 });
+//Надає унікальний код
+const { v4 } = require("uuid");
+const rooms = {};
 
 //дозволить коректно парсити body який приходить з фронтента бо по замовчуванні node js сприймає body як
 //стріми(потік даних) - тобто як дані з фротента що передаються частинами що не дозволить прочитати їх
@@ -14,20 +15,45 @@ app.use(express.json({ extended: true }));
 
 //Підписуюсь на події, ця подія (connection) спрацює коли клієнт підключиться до сервера, другим об'єктом передається функція зворотнього виклику. Аргумент ws - назва параметру веб-сокет зєднання
 server.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    if (message === "exit") {
-      ws.close();
-    } else {
-      //console.log("before sending to clients", server.clients);
-      server.clients.forEach((client) => {
-        const parsedReq = JSON.parse(message);
-        //console.log("WebSocket.OPEN => ", WebSocket.OPEN, parsedReq);
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(parsedReq));
-        }
+  const uuid = v4(); // create here a uuid for this connection
+
+  const leave = (room) => {
+    // not present: do nothing
+    if (!rooms[room]) {
+      if (!rooms[room][uuid]) {
+        return;
+      }
+    }
+
+    // if the one exiting is the last one, destroy the room
+    if (Object.keys(rooms[room]).length === 1) delete rooms[room];
+    // otherwise simply leave the room
+    else delete rooms[room][uuid];
+  };
+
+  ws.on("message", (data) => {
+    const parseData = JSON.parse(data);
+    const { message, meta, room } = parseData;
+
+    if (meta === "join") {
+      if (!rooms[room]) rooms[room] = {}; // create the room
+      if (!rooms[room][uuid]) rooms[room][uuid] = ws; // join the room
+      ws.send(JSON.stringify(uuid));
+    } else if (meta === "leave") {
+      leave(room);
+    } else if (!meta) {
+      // send the message to all in the room
+      Object.entries(rooms[room]).forEach(([, sock]) =>
+        sock.send(JSON.stringify(message))
+      );
+    } else if (meta === "exit") {
+      ws.on("close", () => {
+        // for each room, remove the closed socket
+        Object.keys(rooms).forEach((room) => leave(room));
       });
     }
   });
+
   //дозволить відправити повідомлення клієнту
   ws.send("З'єднання з WebSocket встановлено");
 });

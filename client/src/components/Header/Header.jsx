@@ -1,27 +1,26 @@
-import React, {useState} from 'react';
-import useStyles from './HeaderStyles.jsx'
-import HeaderProfile from './HeaderProfile'
-import HeaderNotifications from './HeaderNotifications'
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
-import Badge from '@material-ui/core/Badge';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-
+import React, { useState } from "react";
+import useStyles from "./HeaderStyles.jsx";
+import HeaderProfile from "./HeaderProfile/HeaderProfile";
+import HeaderNotifications from "./HeaderNotifications";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import InputBase from "@material-ui/core/InputBase";
+import Badge from "@material-ui/core/Badge";
+import MenuIcon from "@material-ui/icons/Menu";
+import SearchIcon from "@material-ui/icons/Search";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MailIcon from "@material-ui/icons/Mail";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import MoreIcon from "@material-ui/icons/MoreVert";
 
 export default function Header() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const menuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const menuId = "primary-search-account-menu";
+  const mobileMenuId = "primary-search-account-menu-mobile";
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -34,7 +33,6 @@ export default function Header() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
 
   return (
     <div className={classes.rootHeader}>
@@ -61,7 +59,7 @@ export default function Header() {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
-              inputProps={{ 'aria-label': 'search' }}
+              inputProps={{ "aria-label": "search" }}
             />
           </div>
           <div className={classes.grow} />
@@ -100,16 +98,16 @@ export default function Header() {
           </div>
         </Toolbar>
       </AppBar>
-      
-      <HeaderNotifications 
+
+      <HeaderNotifications
         mobileMenuId={mobileMenuId}
         mobileMoreAnchorEl={mobileMoreAnchorEl}
         handleMobileMenuClose={handleMobileMenuClose}
         handleProfileMenuOpen={handleProfileMenuOpen}
       />
-      <HeaderProfile 
-        menuId={menuId} 
-        anchorEl={anchorEl} 
+      <HeaderProfile
+        menuId={menuId}
+        anchorEl={anchorEl}
         handleMobileMenuClose={handleMobileMenuClose}
         setAnchorEl={setAnchorEl}
       />

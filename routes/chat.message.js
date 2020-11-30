@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const config = require("config");
 const Channel = require("../models/Channel.js");
-const Message = require("../models/Message");
+const ChannelMessage = require("../models/ChannelMessage");
 const User = require("../models/User.js");
 const router = Router();
 const jsonWebToken = require("jsonwebtoken");
@@ -31,7 +31,7 @@ router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
     if (userHasAccesToChannel) {
       res.status(403).json({ message: "Ви не є учасником приватного чату" });
     } else {
-      const messages = await Message.find({
+      const messages = await ChannelMessage.find({
         channelId: req.params.activeChannelId,
       });
       res.json({ messages, message: "Повідомлення повернені" });
@@ -54,13 +54,14 @@ router.post("/post-message:activeChannelId", verifyToken, async (req, res) => {
     if (userIsNotMemberPrivatChannel) {
       res.status(403).json({ message: "Ви не є учасником приватного чату" });
     } else if (req.params.activeChannelId) {
-      const newMessage = await Message.create(req.body);
-      const messages = await Message.find({
+      const newMessage = await ChannelMessage.create(req.body);
+      /* const messages = await ChannelMessage.find({
         channelId: req.params.activeChannelId,
+      }); */
+      res.status(201).json({
+        /* messages, */ newMessage,
+        message: "Повідомлення надіслано",
       });
-      res
-        .status(201)
-        .json({ messages, newMessage, message: "Повідомлення надіслано" });
     }
   } catch (e) {
     res.status(500).json({ message: "Что-то пошло не так -", error: e });
@@ -69,8 +70,8 @@ router.post("/post-message:activeChannelId", verifyToken, async (req, res) => {
 
 router.put("/put-message:_id", async (req, res) => {
   try {
-    await Message.findByIdAndUpdate(req.params._id, req.body);
-    const messages = await Message.find({ username: "Yulia" });
+    await ChannelMessage.findByIdAndUpdate(req.params._id, req.body);
+    const messages = await ChannelMessage.find({ username: "Yulia" });
     res
       .status(201)
       .json({ messages, newMessage, message: "Повідомлення змінене" });
@@ -82,8 +83,8 @@ router.put("/put-message:_id", async (req, res) => {
 
 router.delete("/delete-message:id", verifyToken, async (req, res) => {
   try {
-    await Message.findByIdAndRemove(req.params.id);
-    const messages = await Message.find({
+    await ChannelMessage.findByIdAndRemove(req.params.id);
+    const messages = await ChannelMessage.find({
       channelId: req.body.activeChannelId,
     });
     res.status(201).json({ messages, message: "Сообщение удалено" });

@@ -2,11 +2,13 @@ import {
   GET_USERS,
   GET_CHANNELS,
   GET_MESSAGES,
+  GET_DIRECT_MESSAGES,
   POST_REGISTER,
   POST_LOGIN,
   POST_MESSAGE,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
+  POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
   REMOVE_MESSAGE,
   LOGIN_DATA,
   LOGOUT_DATA,
@@ -18,6 +20,7 @@ import {
 const initialState = {
   users: null,
   channels: null,
+  listDirectMessages: null,
   activeChannelId: null,
   messages: [],
   token: null,
@@ -33,10 +36,13 @@ export const rootReducer = (state = initialState, action) => {
 
     case GET_CHANNELS:
       const storageData = JSON.parse(localStorage.getItem("userData"));
-      console.log(storageData);
-      const startedChannel = storageData.lastActiveChannelId
+      const startedChannel = state.activeChannelId
+        ? state.activeChannelId
+        : storageData.lastActiveChannelId
         ? storageData.lastActiveChannelId
         : action.payload.userChannels[0]._id;
+
+      //console.log(startedChannel);
 
       return {
         ...state,
@@ -46,6 +52,9 @@ export const rootReducer = (state = initialState, action) => {
 
     case GET_MESSAGES:
       return { ...state, messages: action.payload.messages };
+
+    case GET_DIRECT_MESSAGES:
+      return { ...state, listDirectMessages: action.payload.directMessages };
 
     case POST_REGISTER:
       return {
@@ -64,7 +73,7 @@ export const rootReducer = (state = initialState, action) => {
     case POST_MESSAGE:
       return {
         ...state,
-        messages: action.payload.messages,
+        //messages: action.payload.messages,
         newMessage: action.payload.newMessage,
       };
 
@@ -73,6 +82,13 @@ export const rootReducer = (state = initialState, action) => {
 
     case POST_ADD_PEOPLES_TO_CHANNEL:
       return { ...state, channels: action.payload.userChannels };
+
+    case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
+      return {
+        ...state,
+        listDirectMessages: action.payload.allDirectMessages,
+        //listDirectMessages: state.listDirectMessages.concat(action.payload.message),
+      };
 
     case REMOVE_MESSAGE:
       return { ...state, messages: action.payload.messages };
@@ -88,14 +104,11 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, token: action.payload, userData: action.payload };
 
     case ACTIVE_CHANNEL_ID:
+      console.log(action.payload);
       return { ...state, activeChannelId: action.payload };
 
     case UPDATE_MESSAGES:
-      //if (state.activeChannelId === action.payload[0].channelId) {
-      console.log("in if ", state.activeChannelId, action.payload);
       return { ...state, messages: action.payload };
-      //}
-      break;
 
     case PROCESSED_NEW_MESSAGE:
       return { ...state, newMessage: action.payload };

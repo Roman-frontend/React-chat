@@ -3,7 +3,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../hooks/auth.hook.js";
+import { useAuth } from "../../../hooks/auth.hook.js";
 
 export default function HeaderProfile(props) {
   const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;

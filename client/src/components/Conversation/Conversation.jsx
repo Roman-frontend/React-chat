@@ -25,7 +25,7 @@ export default function Conversation(props) {
 
   useEffect(() => {
     const storageData = JSON.parse(localStorage.getItem("userData"));
-
+    console.log(activeChannelId, storageData.lastActiveChannelId);
     if (!activeChannelId && storageData.lastActiveChannelId) {
       sendMessage(
         socket,

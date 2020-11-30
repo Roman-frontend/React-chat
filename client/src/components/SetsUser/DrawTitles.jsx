@@ -17,7 +17,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function DrawTitles(props) {
-  const { name, divClass, classPlus, stateShowing, seterStateShowing } = props;
+  const {
+    name,
+    divClass,
+    classPlus,
+    stateShowing,
+    seterStateShowing,
+    setModalAdd,
+  } = props;
   const classes = useStyles();
   const channelsIconRef = useRef();
   const channelsTitleRef = useRef();
@@ -48,18 +55,32 @@ export function DrawTitles(props) {
   }, []);
 
   return (
-    <div
-      className={(classes.root, divClass)}
-      onClick={() => seterStateShowing(!stateShowing)}
-    >
+    <div className={(classes.root, divClass)}>
       <Grid container className="left-bar__title-name">
-        <Grid item xs={1} ref={iconRef} style={{ margin: "0px 12px 0px 14px" }}>
+        <Grid
+          item
+          xs={1}
+          ref={iconRef}
+          style={{ margin: "0px 12px 0px 14px" }}
+          onClick={() => seterStateShowing(!stateShowing)}
+        >
           {stateIcon}
         </Grid>
-        <Grid item xs={8} ref={titleRef}>
+        <Grid
+          item
+          xs={8}
+          ref={titleRef}
+          onClick={() => seterStateShowing(!stateShowing)}
+        >
           {name}
         </Grid>
-        <Grid item xs={1} style={{ font: "2rem serif" }} className={classPlus}>
+        <Grid
+          item
+          xs={1}
+          style={{ font: "2rem serif" }}
+          className={classPlus}
+          onClick={() => setModalAdd(true)}
+        >
           +
         </Grid>
       </Grid>

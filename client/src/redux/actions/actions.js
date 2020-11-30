@@ -2,11 +2,13 @@ import {
   GET_USERS,
   GET_CHANNELS,
   GET_MESSAGES,
+  GET_DIRECT_MESSAGES,
   POST_REGISTER,
   POST_LOGIN,
   POST_MESSAGE,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
+  POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
   REMOVE_MESSAGE,
 } from "../types.js";
 import { reduxServer } from "../../hooks/http.hook.js";
@@ -15,7 +17,7 @@ function dispatcher(type, url, token, method = "GET", body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
-      //console.log("response ", response);
+      console.log("response ", response);
       dispatch({
         type,
         payload: response,
@@ -145,4 +147,22 @@ export const removeData = (method, id, token = null, body = null) => {
   } catch (e) {
     console.log(e.message, e.error);
   }
+};
+
+export const getDirectMessages = (token, userId) => {
+  return dispatcher(
+    GET_DIRECT_MESSAGES,
+    `/api/direct-message/get-direct-messages${userId}`,
+    token
+  );
+};
+
+export const postDirectMessages = (token, body) => {
+  return dispatcher(
+    POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
+    `/api/direct-message/post-direct-messages`,
+    token,
+    "POST",
+    body
+  );
 };

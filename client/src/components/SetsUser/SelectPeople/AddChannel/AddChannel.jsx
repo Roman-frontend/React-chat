@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
 import { postData } from "../../../../redux/actions/actions.js";
 import { POST_CHANNEL } from "../../../../redux/types.js";
-import { SelectPeople } from "../../SelectPeople/SelectPeople.jsx";
+import { SelectPeople } from "../SelectPeople.jsx";
 import "./add-channel.sass";
 
 export function AddChannel(props) {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
-  const { isNotMembers, setModalAddChannelIsOpen } = props;
+  const allUsers = useSelector((state) => state.users);
+  const allChannels = useSelector((state) => state.channels);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const { setModalAddChannelIsOpen } = props;
   const [isPrivate, setIsPrivate] = useState(false);
   const [invited, setInvited] = useState([]);
   const [form, setForm] = useState({
@@ -28,6 +31,22 @@ export function AddChannel(props) {
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
+  const activeChannel = useMemo(() => {
+    if (activeChannelId && allChannels) {
+      return allChannels.filter((channel) => channel._id === activeChannelId);
+    }
+  }, [activeChannelId, allChannels]);
+
+  const isNotMembers = useMemo(() => {
+    if (allUsers && activeChannel) {
+      if (activeChannel[0]) {
+        return allUsers.filter(
+          (user) => activeChannel[0].members.includes(user._id) === false
+        );
+      }
+    }
+  }, [allUsers, activeChannel]);
+  const [notInvited, setNotInvited] = useState(isNotMembers);
 
   const doneCreate = async () => {
     const members = invited[0] ? invited.concat(userId) : [userId];
@@ -107,8 +126,9 @@ export function AddChannel(props) {
         </div>
 
         <SelectPeople
-          isNotMembers={isNotMembers}
           invited={invited}
+          notInvited={notInvited}
+          setNotInvited={setNotInvited}
           setInvited={setInvited}
           parrentDivRef={parrentDivRef}
           checkboxRef={checkboxRef}

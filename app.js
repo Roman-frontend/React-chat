@@ -20,9 +20,7 @@ server.on("connection", (ws) => {
   const leave = (room) => {
     // not present: do nothing
     if (!rooms[room]) {
-      if (!rooms[room][uuid]) {
-        return;
-      }
+      return;
     }
 
     // if the one exiting is the last one, destroy the room
@@ -35,14 +33,15 @@ server.on("connection", (ws) => {
     const parseData = JSON.parse(data);
     const { message, meta, room } = parseData;
 
+    console.log("uuid => ", uuid, data);
     if (meta === "join") {
       if (!rooms[room]) rooms[room] = {}; // create the room
       if (!rooms[room][uuid]) rooms[room][uuid] = ws; // join the room
-      ws.send(JSON.stringify(uuid));
     } else if (meta === "leave") {
       leave(room);
     } else if (!meta) {
       // send the message to all in the room
+      //console.log("room ======>>>>>>>  ", rooms[room]);
       Object.entries(rooms[room]).forEach(([, sock]) =>
         sock.send(JSON.stringify(message))
       );
@@ -61,6 +60,8 @@ server.on("connection", (ws) => {
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/chat", require("./routes/chat.message"));
 app.use("/api/channel", require("./routes/chat.channel"));
+app.use("/api/direct-message", require("./routes/direct.message"));
+app.use("/api/direct-message-chat", require("./routes/direct.message.chat"));
 
 app.use(express.static(path.resolve(__dirname, "client", "src", "components")));
 

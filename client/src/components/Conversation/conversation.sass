@@ -10,29 +10,6 @@
   grid-template-areas: "nick" "messages" "answer" "input"
   grid-template-rows: 4.2rem 60vh 8vh
 
-.conversation__field-name
-  border: 0.1rem solid #979797
-  background: #f7fbff
-  height: 4rem
-  grid-area: nick
-  display: grid
-  grid-template-columns: 1fr 5rem
-  grid-auto-rows: minmax(20px, auto)
-  align-items: start
-  grid-template-areas: "name member"
-
-  .conversation__name 
-    grid-area: name
-    font: 1.5rem serif
-    align-self: center
-    color: #353535
-    left: 1rem
-
-  .conversation__header-members
-    grid-area: member
-    align-self: center
-    cursor: pointer
-
 .conversation-riply__answer 
   display: block;
   height: 4vh;

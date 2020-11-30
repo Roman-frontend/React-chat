@@ -22,12 +22,21 @@ export function Messages(props) {
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
   socket.onmessage = (response) => {
-    if (response.data !== "З'єднання з WebSocket встановлено") {
+    if (response.data === "З'єднання з WebSocket встановлено") {
+      console.log(response.data);
+    } else {
       const parsedRes = JSON.parse(response.data);
-      if (reduxMessages[0] && reduxMessages[0]._id !== parsedRes._id) {
+      //console.log(reduxMessages);
+      const dispatchMessages =
+        reduxMessages[0] === undefined
+          ? [parsedRes]
+          : reduxMessages[0]._id !== parsedRes._id
+          ? reduxMessages.reverse().concat(parsedRes)
+          : null;
+      if (parsedRes._id && dispatchMessages) {
         dispatch({
           type: UPDATE_MESSAGES,
-          payload: reduxMessages.concat(parsedRes),
+          payload: dispatchMessages,
         });
       }
     }
@@ -35,15 +44,12 @@ export function Messages(props) {
 
   //Підписуємось на закриття події
   socket.onclose = (response) => {
-    if (response.wasClean) {
-      console.log(
-        `DISCONNECTED CLEAN with code ${response.code} reason ${response.reason}`
-      );
-    } else {
-      console.log(
-        `DISCONNECTED BROKEN with code ${response.code} reason ${response.reason}`
-      );
-    }
+    const disconnectStatus = response.wasClean
+      ? "DISCONNECTED CLEAN"
+      : "DISCONNECTED BROKEN";
+    console.log(
+      `${disconnectStatus} with code ${response.code} reason ${response.reason}`
+    );
   };
 
   useEffect(() => {
@@ -56,7 +62,7 @@ export function Messages(props) {
 
   useEffect(() => {
     if (newMessage) {
-      console.log("socket.send => ");
+      console.log("socket.send => ", activeChannelId, newMessage);
       socket.send(
         JSON.stringify({ room: activeChannelId, message: newMessage })
       );
@@ -71,9 +77,7 @@ export function Messages(props) {
     if (reduxMessages === "403") {
       return "403";
     } else {
-      const messages = reduxMessages;
-      console.log(messages);
-      return messages.reverse();
+      return reduxMessages.reverse();
     }
   }, [reduxMessages]);
 

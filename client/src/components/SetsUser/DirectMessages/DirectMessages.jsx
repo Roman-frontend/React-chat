@@ -19,25 +19,24 @@ export function DirectMessages(props) {
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
-  const userId = useSelector((state) => state.userData._id);
+  const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [invited, setInvited] = useState([]);
 
   useEffect(() => {
-    dispatch(getDirectMessages(token, userId));
+    dispatch(getDirectMessages(token, userData._Id));
   }, []);
 
   const createArrDirectMessages = useCallback(() => {
     if (listDirectMessages && allUsers) {
       let allRowDirectMessages = [];
-      listDirectMessages.invited.map((invitedId) => {
-        const invitedAllData = allUsers.filter(
-          (user) => user._id === invitedId
+      listDirectMessages.forEach((directMessage) => {
+        /* const invitedAllData = allUsers.filter(
+          (user) => user._id === directMessage.invited._id
         );
-        console.log(invitedAllData);
-        allRowDirectMessages.push(invitedAllData[0]);
+        allRowDirectMessages.push(invitedAllData[0]); */
+        allRowDirectMessages.push(directMessage);
       });
-      console.log(allRowDirectMessages);
       return createLists(allRowDirectMessages, "directMessages");
     }
   }, [listDirectMessages, allUsers]);
@@ -47,7 +46,20 @@ export function DirectMessages(props) {
     setModalAddPeopleIsOpen(false);
 
     if (action === "invite" && invited[0]) {
-      const body = { inviter: userId, invitedUsers: invited };
+      let dataInvitedPeoples = [];
+      invited.forEach((people) => {
+        const { _id, name, email } = { ...people };
+        dataInvitedPeoples.push({ _id, name, email });
+      });
+      const body = {
+        inviter: {
+          _id: userData._id,
+          name: userData.name,
+          email: userData.email,
+        },
+        invitedUsers: dataInvitedPeoples,
+      };
+      console.log(body);
       await dispatch(postDirectMessages(token, body));
     }
   }

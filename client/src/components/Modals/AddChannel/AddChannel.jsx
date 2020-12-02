@@ -32,14 +32,19 @@ export function AddChannel(props) {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
   const activeChannel = useMemo(() => {
-    if (activeChannelId && allChannels) {
+    console.log("activeChannelUseMemo");
+    if (activeChannelId && allChannels[0]) {
       return allChannels.filter((channel) => channel._id === activeChannelId);
     }
+    return "hasNotChannelsOrActiveChannel";
   }, [activeChannelId, allChannels]);
 
   const isNotMembers = useMemo(() => {
     if (allUsers && activeChannel) {
-      if (activeChannel[0]) {
+      if (activeChannel === "hasNotChannelsOrActiveChannel") {
+        console.log(allUsers);
+        return allUsers;
+      } else if (activeChannel[0]) {
         return allUsers.filter(
           (user) => activeChannel[0].members.includes(user._id) === false
         );

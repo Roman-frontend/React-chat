@@ -71,8 +71,8 @@ router.post("/get-chunnels", verifyToken, async (req, res) => {
   try {
     //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)
     //let userChannels = []
-    //for (const channelId of req.body ) {
-    //const channel = await Channel.find({ _id: channelId })
+    //for (const chatId of req.body ) {
+    //const channel = await Channel.find({ _id: chatId })
     //userChannels = userChannels.concat(channel)
     //}
     const userChannels = await Channel.find({});

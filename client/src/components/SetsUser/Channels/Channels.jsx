@@ -1,8 +1,7 @@
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
-import { getData } from "../../../redux/actions/actions.js";
-import { GET_CHANNELS } from "../../../redux/types.js";
+import { getChannels } from "../../../redux/actions/actions.js";
 import Modal from "react-modal";
 import { useAuth } from "../../../hooks/auth.hook.js";
 import { AddChannel } from "../../Modals/AddChannel/AddChannel";
@@ -23,11 +22,11 @@ export function Channels(props) {
   const { changeLocalStorageUserData } = useAuth();
 
   useEffect(() => {
-    async function getChannels() {
-      await dispatch(getData(GET_CHANNELS, token, null, userData.channels));
+    async function getFetchChannels() {
+      await dispatch(getChannels(token, userData.channels));
     }
     changeLocalStorageUserData(userData);
-    getChannels();
+    getFetchChannels();
   }, [userData]);
 
   const createLinksChannels = useCallback(() => {
@@ -60,7 +59,7 @@ export function Channels(props) {
 }
 
 const mapDispatchToProps = {
-  getData,
+  getChannels,
 };
 
 export default connect(null, mapDispatchToProps)(Channels);

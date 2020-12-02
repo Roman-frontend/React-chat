@@ -3,12 +3,11 @@ const config = require("config");
 const router = Router();
 const jsonWebToken = require("jsonwebtoken");
 const DirectMessage = require("../models/DirectMessage.js");
+const User = require("../models/User.js");
 
 router.get("/get-direct-messages:userId", verifyToken, async (req, res) => {
   try {
-    const directMessages = await DirectMessage.findOne({
-      inviter: req.params.userId,
-    });
+    const directMessages = await DirectMessage.find({});
     console.log("directMessages = > ", directMessages);
     res.json({ directMessages, message: "direct messages responsed" });
   } catch (e) {
@@ -21,22 +20,26 @@ router.get("/get-direct-messages:userId", verifyToken, async (req, res) => {
 
 router.post("/post-direct-messages", async (req, res) => {
   try {
-    let allDirectMessages;
-    const existedDirectMessage = await DirectMessage.findOne({
-      inviter: req.body.inviter,
+    await req.body.invitedUsers.forEach(async (user) => {
+      const newDirectMessage = await DirectMessage.create({
+        inviter: req.body.inviter,
+        invited: user,
+      });
+
+      const inviterDbData = await User.findById(req.body.inviter._id);
+      inviterDbData.directMessages.push(newDirectMessage._id);
+      await inviterDbData.save();
+
+      const invitedDbData = await User.findById(user._id);
+      invitedDbData.directMessages.push(newDirectMessage._id);
+      await invitedDbData.save();
     });
 
-    if (existedDirectMessage) {
-      existedDirectMessage.invited.push(...req.body.invitedUsers);
-      allDirectMessages = await existedDirectMessage.save();
-    } else {
-      allDirectMessages = await DirectMessage.create({
-        inviter: req.body.inviter,
-        invited: req.body.invitedUsers,
-      });
-    }
+    const allDirectMessage = await DirectMessage.find({});
+    console.log("allDirectMessage", allDirectMessage);
+
     res.status(201).json({
-      allDirectMessages,
+      allDirectMessage,
       message: "Direct Messages created",
     });
   } catch (e) {

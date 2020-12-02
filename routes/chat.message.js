@@ -23,6 +23,7 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
 
 router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
   try {
+    console.log("validatedPostMessage => ", "userHasAccesToChannel");
     const userHasAccesToChannel = await checkAccesToChannel(
       req.params.activeChannelId,
       req.body.userId
@@ -32,7 +33,7 @@ router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
       res.status(403).json({ message: "Ви не є учасником приватного чату" });
     } else {
       const messages = await ChannelMessage.find({
-        channelId: req.params.activeChannelId,
+        chatId: req.params.activeChannelId,
       });
       res.json({ messages, message: "Повідомлення повернені" });
     }
@@ -43,20 +44,20 @@ router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/post-message:activeChannelId", verifyToken, async (req, res) => {
+router.post("/post-message:chatId", verifyToken, async (req, res) => {
   try {
     //console.log("without express.json ..........")
     const userIsNotMemberPrivatChannel = await checkAccesToChannel(
-      req.params.activeChannelId,
+      req.params.chatId,
       req.body.userId
     );
-
+    console.log("post-message ==>> ", userIsNotMemberPrivatChannel);
     if (userIsNotMemberPrivatChannel) {
       res.status(403).json({ message: "Ви не є учасником приватного чату" });
-    } else if (req.params.activeChannelId) {
+    } else if (req.params.chatId) {
       const newMessage = await ChannelMessage.create(req.body);
       /* const messages = await ChannelMessage.find({
-        channelId: req.params.activeChannelId,
+        chatId: req.params.chatId,
       }); */
       res.status(201).json({
         /* messages, */ newMessage,
@@ -84,18 +85,15 @@ router.put("/put-message:_id", async (req, res) => {
 router.delete("/delete-message:id", verifyToken, async (req, res) => {
   try {
     await ChannelMessage.findByIdAndRemove(req.params.id);
-    const messages = await ChannelMessage.find({
-      channelId: req.body.activeChannelId,
-    });
-    res.status(201).json({ messages, message: "Сообщение удалено" });
+    res.status(201).json({ message: "Сообщение удалено" });
   } catch (e) {
     console.log("catch - delete-message");
     res.status(500).json({ removed: false, message: "Что-то пошло не так " });
   }
 });
 
-async function checkAccesToChannel(channelId, userId) {
-  const activeChannel = await Channel.findOne({ _id: channelId });
+async function checkAccesToChannel(chatId, userId) {
+  const activeChannel = await Channel.findOne({ _id: chatId });
 
   return activeChannel.isPrivate && !activeChannel.members.includes(userId)
     ? true

@@ -11,7 +11,7 @@ const ChannelMessage = new Schema({
   /** Можливі свойства: Schema.Types.Mixed - задати будь-який тип в схемі, []: Массив элементов,
    * для типу Numder - min: 1, max: 100 - встроєний валідатор що вказує доступні дані для запису: від 1 до 100
    * required: true - вказує що поле обовʼязково має бути задане перед збереженням  */
-  channelId: { type: String },
+  chatId: { type: String },
 });
 
 /**

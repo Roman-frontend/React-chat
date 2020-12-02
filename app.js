@@ -33,7 +33,8 @@ server.on("connection", (ws) => {
     const parseData = JSON.parse(data);
     const { message, meta, room } = parseData;
 
-    console.log("uuid => ", uuid, data);
+    //console.log("uuid => ", uuid, data);
+    //console.log("room ======>>>>>>>  ", rooms[room]);
     if (meta === "join") {
       if (!rooms[room]) rooms[room] = {}; // create the room
       if (!rooms[room][uuid]) rooms[room][uuid] = ws; // join the room
@@ -41,7 +42,7 @@ server.on("connection", (ws) => {
       leave(room);
     } else if (!meta) {
       // send the message to all in the room
-      //console.log("room ======>>>>>>>  ", rooms[room]);
+      //Object.entries(rooms[room]) - поверне масив об'єктів з масиву rooms[room]
       Object.entries(rooms[room]).forEach(([, sock]) =>
         sock.send(JSON.stringify(message))
       );

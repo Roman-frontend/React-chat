@@ -1,12 +1,13 @@
+//Тут розфасовка між activeChannelId і activeDirectMessageId completed
+
 import React, { useCallback, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
+import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from "../../../redux/types";
 import {
-  GET_MESSAGES,
-  PROCESSED_NEW_MESSAGE,
-  UPDATE_MESSAGES,
-} from "../../../redux/types";
-import { getData } from "../../../redux/actions/actions.js";
+  getMessages,
+  getMessagesForDirectMsg,
+} from "../../../redux/actions/actions.js";
 import Message from "./Message/Message.jsx";
 import MessageActionsPopup from "./MessageActionsPopup/MessageActionsPopup.jsx";
 import "./messages.sass";
@@ -16,6 +17,9 @@ export function Messages(props) {
   const dispatch = useDispatch();
   const reduxMessages = useSelector((state) => state.messages);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const token = useSelector((state) => state.token);
   const userId = useSelector((state) => state.userData._id);
   const newMessage = useSelector((state) => state.newMessage);
@@ -23,7 +27,6 @@ export function Messages(props) {
   //Підписуємось на подію що спрацює при отриманні повідомлення
   socket.onmessage = (response) => {
     if (response.data === "З'єднання з WebSocket встановлено") {
-      console.log(response.data);
     } else {
       const parsedRes = JSON.parse(response.data);
       //console.log(reduxMessages);
@@ -53,25 +56,34 @@ export function Messages(props) {
   };
 
   useEffect(() => {
-    async function getMessages() {
-      await dispatch(getData(GET_MESSAGES, token, activeChannelId, { userId }));
+    async function getFetchMessages() {
+      if (activeChannelId) {
+        dispatch(getMessages(token, activeChannelId, { userId }));
+      } else if (activeDirectMessageId) {
+        dispatch(getMessagesForDirectMsg(token, activeDirectMessageId));
+      }
     }
 
-    if (activeChannelId && activeChannelId !== "1") getMessages();
-  }, [activeChannelId]);
+    if ((activeChannelId || activeDirectMessageId) && activeChannelId !== "1") {
+      getFetchMessages();
+    }
+  }, [activeChannelId, activeDirectMessageId]);
 
   useEffect(() => {
-    if (newMessage) {
-      console.log("socket.send => ", activeChannelId, newMessage);
-      socket.send(
-        JSON.stringify({ room: activeChannelId, message: newMessage })
-      );
+    const activeChatId = activeChannelId
+      ? activeChannelId
+      : activeDirectMessageId
+      ? activeDirectMessageId
+      : null;
+    if (newMessage && activeChatId) {
+      console.log("socket.send => ", activeChatId, newMessage);
+      socket.send(JSON.stringify({ room: activeChatId, message: newMessage }));
       dispatch({
         type: PROCESSED_NEW_MESSAGE,
         payload: null,
       });
     }
-  }, [newMessage]);
+  }, [newMessage, activeChannelId]);
 
   const reverseMsg = useMemo(() => {
     if (reduxMessages === "403") {
@@ -109,7 +121,8 @@ export function Messages(props) {
 }
 
 const mapDispatchToProps = {
-  getData,
+  getMessages,
+  getMessagesForDirectMsg,
 };
 
 export default connect(null, mapDispatchToProps)(Messages);

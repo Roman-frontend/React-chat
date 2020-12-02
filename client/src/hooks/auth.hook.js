@@ -30,9 +30,14 @@ export const useAuth = () => {
     });
   }, []);
 
-  const changeLocalStorageUserData = useCallback((newData) => {
+  const changeLocalStorageUserData = (newData) => {
     const data = JSON.parse(localStorage.userData);
-    const object = Object.assign({}, { ...data }, { ...newData });
+    const { channels, directMessages, _id, name, email, token } = { ...data };
+    const object = Object.assign(
+      {},
+      { channels, directMessages, _id, name, email, token },
+      { ...newData }
+    );
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -43,7 +48,7 @@ export const useAuth = () => {
       type: LOGIN_DATA,
       payload: { ...object }
     })*/
-  }, []);
+  };
 
   useEffect(() => {
     /** JSON.parse() - приводить результат до обєкта */

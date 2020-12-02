@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import PersonIcon from "@material-ui/icons/Person";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import Grid from "@material-ui/core/Grid";
-import { ACTIVE_CHANNEL_ID } from "../../redux/types.js";
+import { ACTIVE_CHAT_ID } from "../../redux/types.js";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
 import { getUsers } from "../../redux/actions/actions.js";
@@ -17,9 +17,13 @@ export function SetsUser(props) {
   const { changeLocalStorageUserData } = useAuth();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
-  const userId = useSelector((state) => state.userData._id);
+  const channels = useSelector((state) => state.channels);
+  const userData = useSelector((state) => state.userData);
   const allUsers = useSelector((state) => state.users);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
 
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
@@ -27,33 +31,27 @@ export function SetsUser(props) {
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const refIdPrevChannel = useRef(activeChannelId);
+  const refUpdatedChannels = useRef(null);
 
   useEffect(() => {
     async function getPeoples() {
-      await dispatch(getUsers(token, userId));
+      await dispatch(getUsers(token, userData._id));
     }
     getPeoples();
   }, []);
 
   useEffect(() => {
-    function markActiveLinkChannel(idActiveChannel) {
-      const oldMarkChannel = document.querySelector(
-        ".user-sets__channel_active"
-      );
-      const channelForActive = document.getElementById(idActiveChannel);
-
-      if (oldMarkChannel && channelForActive) {
-        oldMarkChannel.classList.remove("user-sets__channel_active");
-        channelForActive.classList.add("user-sets__channel_active");
-      } else if (channelForActive) {
-        channelForActive.classList.add("user-sets__channel_active");
-      }
+    if (channels) {
+      refUpdatedChannels.current = channels;
     }
+  }, [channels]);
 
-    if (activeChannelId) {
-      markActiveLinkChannel(activeChannelId);
-    }
-  }, [activeChannelId]);
+  useEffect(() => {
+    setTimeout(() => {
+      const storageData = JSON.parse(localStorage.getItem("userData"));
+      markActiveLinkChannel(storageData.lastActiveChatId);
+    }, 1000);
+  }, []);
 
   const createLists = useCallback(
     (arrElements, listName) => {
@@ -74,8 +72,8 @@ export function SetsUser(props) {
   function createLink(linkData, listName) {
     const name =
       listName === "directMessages"
-        ? createDirectMsgName(linkData.name)
-        : createChannelName(linkData.isPrivate, linkData.name);
+        ? createDirectMsgName(linkData.invited.name)
+        : createChannelName(linkData.isPrivate, linkData);
 
     return (
       <div
@@ -104,11 +102,11 @@ export function SetsUser(props) {
     );
   }
 
-  function createChannelName(isPrivate, name) {
+  function createChannelName(isPrivate, channel) {
     const nameChannel = isPrivate ? (
-      <p className="main-font">&#128274;{name}</p>
+      <p className="main-font">&#128274;{channel.name}</p>
     ) : (
-      <p className="main-font">{`#${name}`}</p>
+      <p className="main-font">{`#${channel.name}`}</p>
     );
 
     return (
@@ -117,7 +115,11 @@ export function SetsUser(props) {
           {nameChannel}
         </Grid>
         <Grid item xs={2}>
-          <DeleteForeverIcon onClick={() => socket.send("exit")} />
+          <DeleteForeverIcon
+            onClick={() =>
+              socket.send(JSON.stringify({ room: channel._id, meta: "leave" }))
+            }
+          />
         </Grid>
       </Grid>
     );
@@ -125,23 +127,69 @@ export function SetsUser(props) {
 
   const toActive = useCallback(
     async (idActive) => {
-      const prevId = refIdPrevChannel.current
-        ? refIdPrevChannel.current
-        : activeChannelId;
+      openSocketRoom(idActive);
+      if (refUpdatedChannels.current) {
+        changeLocalStorageUserData({ lastActiveChatId: idActive });
+        changeActiveChatId(idActive);
+        markActiveLinkChannel(idActive);
+      }
+    },
+    [activeChannelId, activeDirectMessageId]
+  );
 
-      if (prevId !== idActive) {
-        socket.send(JSON.stringify({ room: prevId, meta: "leave" }));
-        refIdPrevChannel.current = idActive;
-        socket.send(JSON.stringify({ room: idActive, meta: "join" }));
-        changeLocalStorageUserData({ lastActiveChannelId: idActive });
+  function openSocketRoom(idActive) {
+    const prevId = refIdPrevChannel.current
+      ? refIdPrevChannel.current
+      : activeChannelId
+      ? activeChannelId
+      : activeDirectMessageId;
+    if (prevId !== idActive) {
+      socket.send(JSON.stringify({ room: prevId, meta: "leave" }));
+      refIdPrevChannel.current = idActive;
+      socket.send(JSON.stringify({ room: idActive, meta: "join" }));
+    }
+  }
+
+  const changeActiveChatId = useCallback(
+    (idActive) => {
+      if (
+        (activeChannelId || activeDirectMessageId) &&
+        refUpdatedChannels.current
+      ) {
+        const objectChatNameAndId = createPayloadForChange(idActive);
+
         dispatch({
-          type: ACTIVE_CHANNEL_ID,
-          payload: idActive,
+          type: ACTIVE_CHAT_ID,
+          payload: objectChatNameAndId,
         });
       }
     },
-    [activeChannelId]
+    [channels, activeDirectMessageId, activeChannelId]
   );
+
+  function createPayloadForChange(idActive) {
+    const channelActiveId = refUpdatedChannels.current.filter(
+      (channel) => channel._id === idActive
+    )[0];
+    return channelActiveId
+      ? {
+          activeChannelId: channelActiveId._id,
+          activeDirectMessageId: null,
+        }
+      : { activeChannelId: null, activeDirectMessageId: idActive };
+  }
+
+  function markActiveLinkChannel(idActiveChat) {
+    const oldMarkChannel = document.querySelector(".user-sets__channel_active");
+    const channelForActive = document.getElementById(idActiveChat);
+
+    if (oldMarkChannel && channelForActive) {
+      oldMarkChannel.classList.remove("user-sets__channel_active");
+      channelForActive.classList.add("user-sets__channel_active");
+    } else if (channelForActive) {
+      channelForActive.classList.add("user-sets__channel_active");
+    }
+  }
 
   return (
     <div className="main-font left-block">

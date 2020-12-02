@@ -1,3 +1,4 @@
+//Тут розфасовка між activeChannelId і activeDirectMessageId зроблено
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { ConversationHeader } from "./ConversationHeader/ConversationHeader.jsx";
@@ -13,6 +14,9 @@ export default function Conversation(props) {
   const userId = useSelector((state) => state.userData._id);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const [activeMessage, setActiveMessage] = useState({});
   const inputRef = useRef();
 
@@ -25,11 +29,14 @@ export default function Conversation(props) {
 
   useEffect(() => {
     const storageData = JSON.parse(localStorage.getItem("userData"));
-    console.log(activeChannelId, storageData.lastActiveChannelId);
-    if (!activeChannelId && storageData.lastActiveChannelId) {
+    if (
+      !activeChannelId &&
+      !activeDirectMessageId &&
+      storageData.lastActiveChatId
+    ) {
       sendMessage(
         socket,
-        JSON.stringify({ room: storageData.lastActiveChannelId, meta: "join" })
+        JSON.stringify({ room: storageData.lastActiveChatId, meta: "join" })
       );
     }
   }, []);
@@ -41,19 +48,19 @@ export default function Conversation(props) {
   }, [activeMessage.reply, activeMessage.changing]);
 
   const checkPrivate = useCallback(() => {
+    let isOpenChat = true;
     if (channels && activeChannelId) {
-      let openChannel = false;
       channels.forEach((channel) => {
-        if (
-          channel._id === activeChannelId &&
-          channel.isPrivate &&
-          !channel.members.includes(userId)
-        ) {
-          return (openChannel = true);
+        if (channel._id === activeChannelId) {
+          if (!channel.isPrivate) {
+            return (isOpenChat = true);
+          } else if (channel.members.includes(userId)) {
+            return (isOpenChat = true);
+          } else return (isOpenChat = false);
         }
       });
-      return openChannel;
     }
+    return isOpenChat;
   }, [channels, activeChannelId, userId]);
 
   const buttonEndActive =
@@ -69,14 +76,14 @@ export default function Conversation(props) {
     const hasNotAccesToChat = checkPrivate();
 
     return hasNotAccesToChat ? (
-      <img src={imageError} />
-    ) : (
       <Messages
         activeMessage={activeMessage}
         setActiveMessage={setActiveMessage}
         inputRef={inputRef}
         socket={socket}
       />
+    ) : (
+      <img src={imageError} />
     );
   };
 

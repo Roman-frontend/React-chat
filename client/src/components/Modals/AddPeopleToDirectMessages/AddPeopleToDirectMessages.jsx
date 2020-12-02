@@ -9,6 +9,7 @@ export function AddPeopleToDirectMessages(props) {
   const users = useSelector((state) => state.users);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
   const {
     doneInvite,
     invited,
@@ -23,18 +24,22 @@ export function AddPeopleToDirectMessages(props) {
   const heightParrentDiv = "set-channel__invite_height";
 
   useEffect(() => {
-    if (users && listDirectMessages) {
+    if (users && userData) {
       let allNotInvited = users.filter((user) => user._id !== userData._id);
-      listDirectMessages.invited.forEach((invitedId) => {
-        allNotInvited = allNotInvited.filter((user) => user._id !== invitedId);
-      });
+      if (users && listDirectMessages) {
+        listDirectMessages.forEach((directMessage) => {
+          allNotInvited = allNotInvited.filter(
+            (user) => user._id !== directMessage.invited._id
+          );
+        });
+      }
       setNotInvited(allNotInvited);
     }
   }, [users, listDirectMessages]);
 
   return (
     <Modal
-      isOpen={modalAddPeopleIsOpen}
+      isOpen={modalAddPeopleIsOpen && !!activeChannelId}
       onRequestClose={() => setModalAddPeopleIsOpen(false)}
       className={"modal-content"}
       overlayClassName={"modal-overlay"}

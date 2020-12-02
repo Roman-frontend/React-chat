@@ -6,7 +6,7 @@ const DirectMessageChat = new Schema({
   userId: { type: String, required: true },
   text: { type: String, required: true },
   createdAt: { type: String, default: Date.now, required: true },
-  directMessageId: { type: String },
+  chatId: { type: String },
 });
 
 module.exports = model("DirectMessageChat", DirectMessageChat);

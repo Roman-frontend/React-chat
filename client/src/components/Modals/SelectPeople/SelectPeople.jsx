@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useSelector } from "react-redux";
 import "./select-people.sass";
 
 export function SelectPeople(props) {
@@ -15,6 +16,7 @@ export function SelectPeople(props) {
   } = props;
   const [focusSelectTag, setFocusSelectTag] = useState(false);
   const [listMatchedEmails, setListMatchedEmails] = useState(notInvited);
+  const users = useSelector((state) => state.users);
   const inputPeopleRef = useRef();
   const selectRef = useRef();
 
@@ -50,10 +52,10 @@ export function SelectPeople(props) {
   const getSelectElements = useCallback(() => {
     return !focusSelectTag
       ? [<option key="1"></option>]
-      : listMatchedEmails || listMatchedEmails === undefined
+      : listMatchedEmails
       ? createSelectElements(listMatchedEmails)
       : null;
-  }, [focusSelectTag, listMatchedEmails, invited]);
+  }, [focusSelectTag, listMatchedEmails]);
 
   function createSelectElements(peoplesForChoice) {
     return peoplesForChoice.map((people) => {
@@ -73,7 +75,10 @@ export function SelectPeople(props) {
     setListMatchedEmails((prevList) => {
       return prevList.filter((people) => people._id !== idElectPeople);
     });
-    setInvited((prev) => prev.concat(idElectPeople));
+    if (users) {
+      const electData = users.filter((user) => user._id === idElectPeople);
+      setInvited((prev) => prev.concat(electData));
+    }
   }
 
   function changeListNoInvited(idElectPeople) {

@@ -1,3 +1,5 @@
+//Тут розфасовка між activeChannelId і activeDirectMessageId зроблена
+
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +18,9 @@ export function ConversationHeader() {
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const [invited, setInvited] = useState([]);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
@@ -25,16 +30,16 @@ export function ConversationHeader() {
       await dispatch(getUsers(token, userId));
     }
 
-    getPeoples();
-  }, [activeChannelId]);
+    if (userId) getPeoples();
+  }, [userId]);
 
   const activeChannel = useMemo(() => {
-    let channelForFilter = channels;
-
     if (channels) {
-      return channelForFilter.filter(
-        (channel) => channel._id === activeChannelId
-      )[0];
+      if (activeChannelId) {
+        return channels.filter((channel) => channel._id === activeChannelId)[0];
+      } else if (activeDirectMessageId) {
+        return null;
+      }
     }
   }, [activeChannelId, channels]);
 
@@ -64,13 +69,19 @@ export function ConversationHeader() {
           <Grid item xs={6}>
             <GroupAddIcon
               style={{ fontSize: 45, cursor: "pointer" }}
-              onClick={() => setModalAddPeopleIsOpen(true)}
+              onClick={openModalAddPeoples}
             />
           </Grid>
         </Grid>
       </div>
     );
   }, [activeChannel]);
+
+  function openModalAddPeoples() {
+    if (activeChannelId) {
+      setModalAddPeopleIsOpen(true);
+    }
+  }
 
   async function doneInvite(action) {
     if (action === "invite") {

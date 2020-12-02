@@ -1,3 +1,5 @@
+//Тут розфасовка між activeChannelId і activeDirectMessageId completed
+
 import React from "react";
 import {
   ThemeProvider,
@@ -9,8 +11,11 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
-import { postData, putData } from "../../../redux/actions/actions.js";
-import { POST_MESSAGE } from "../../../redux/types.js";
+import {
+  postMessage,
+  postMessageToDirectMsg,
+  putMessage,
+} from "../../../redux/actions/actions.js";
 import "./input-message.sass";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +46,9 @@ export function InputUpdateMessages(props) {
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
 
   function inputUpdateMessages(event) {
     event.preventDefault();
@@ -57,55 +65,57 @@ export function InputUpdateMessages(props) {
   }
 
   async function changeMessageText(inputValue) {
-    /* let putMessage = []
+    /* let messageForEdit = []
 
     const updatedArrayMessages = reduxMessages.map(message => {
       if (message._id === activeMessage.change) {
         message.text = inputValue
-        putMessage.push(message)
+        messageForEdit.push(message)
         return message
       } else return message
     })
     
-    const resPut = await putData(putMessage[0], activeMessage.change, null, token) */
+    const resPut = await putMessage(messageForEdit[0], activeMessage.change, null, token) */
     const object = Object.assign({}, { ...activeMessage }, { change: null });
     setActiveMessage({ ...object });
   }
 
-  const messageInReply = async (response) => {
+  const messageInReply = (response) => {
+    const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
     const replyMsg = {
       id: Date.now(),
       userId,
       username: name,
       text: activeMessage.reply.text,
       createdAt: new Date().toLocaleString(),
-      channelId: activeChannelId,
+      chatId,
       reply: response,
     };
-
-    await dispatch(
-      postData(POST_MESSAGE, token, { userId, ...replyMsg }, activeChannelId)
-    );
+    dispatchMessage(replyMsg, chatId);
 
     const object = Object.assign({}, { ...activeMessage }, { reply: null });
     setActiveMessage({ ...object });
   };
 
-  async function newMessage(textMessage) {
+  function newMessage(textMessage) {
+    const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
     const newMsg = {
       id: Date.now(),
       userId,
       username: name,
       text: textMessage,
       createdAt: new Date().toLocaleString(),
-      channelId: activeChannelId,
+      chatId,
     };
+    dispatchMessage(newMsg, chatId);
+  }
 
-    await dispatch(
-      postData(POST_MESSAGE, token, { userId, ...newMsg }, activeChannelId)
-    );
-
-    return newMsg;
+  function dispatchMessage(message, chatId) {
+    if (activeChannelId) {
+      dispatch(postMessage(token, { userId, ...message }, chatId));
+    } else if (activeDirectMessageId) {
+      dispatch(postMessageToDirectMsg(token, { ...message }, chatId));
+    }
   }
 
   return (
@@ -142,8 +152,9 @@ export function InputUpdateMessages(props) {
 }
 
 const mapDispatchToProps = {
-  postData,
-  putData,
+  postMessage,
+  postMessageToDirectMsg,
+  putMessage,
 };
 
 export default connect(null, mapDispatchToProps)(InputUpdateMessages);

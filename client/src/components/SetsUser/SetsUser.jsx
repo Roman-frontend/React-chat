@@ -14,7 +14,7 @@ import "./user-sets.sass";
 
 export function SetsUser(props) {
   const { socket } = props;
-  const { changeLocalStorageUserData } = useAuth();
+  const { changeStorageUserDataActiveChat } = useAuth();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const channels = useSelector((state) => state.channels);
@@ -129,7 +129,7 @@ export function SetsUser(props) {
     async (idActive) => {
       openSocketRoom(idActive);
       if (refUpdatedChannels.current) {
-        changeLocalStorageUserData({ lastActiveChatId: idActive });
+        changeStorageUserDataActiveChat({ lastActiveChatId: idActive });
         changeActiveChatId(idActive);
         markActiveLinkChannel(idActive);
       }

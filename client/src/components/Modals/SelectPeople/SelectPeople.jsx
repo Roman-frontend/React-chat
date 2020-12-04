@@ -136,7 +136,7 @@ export function SelectPeople(props) {
           className={selectClassName}
           name="peoples"
           id="peoples"
-          size="3"
+          size="10"
           multiple
           ref={selectRef}
           onClick={() => setFocusSelectTag(true)}

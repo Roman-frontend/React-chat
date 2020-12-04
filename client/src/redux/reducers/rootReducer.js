@@ -92,14 +92,19 @@ export const rootReducer = (state = initialState, action) => {
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
       return {
         ...state,
-        listDirectMessages: action.payload.allDirectMessage,
+        listDirectMessages: state.listDirectMessages.concat(
+          action.payload.allNewDirectMessage
+        ),
         //listDirectMessages: state.listDirectMessages.concat(action.payload.message),
       };
 
     case REMOVE_MESSAGE:
+      const updatedMessages = state.messages.reverse().filter((message) => {
+        return message._id !== action.payload.removedId;
+      });
       return {
         ...state,
-        messages: action.payload,
+        messages: updatedMessages,
       };
 
     case LOGIN_DATA:

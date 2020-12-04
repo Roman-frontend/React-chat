@@ -13,6 +13,7 @@ export const useAuth = () => {
    *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
    */
   const login = useCallback((userData, token) => {
+    console.log("login ->", userData);
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -30,13 +31,14 @@ export const useAuth = () => {
     });
   }, []);
 
-  const changeLocalStorageUserData = (newData) => {
+  const changeStorageUserDataActiveChat = (newActiveChat) => {
+    //console.log("changeStorageUserDataActiveChat");
     const data = JSON.parse(localStorage.userData);
     const { channels, directMessages, _id, name, email, token } = { ...data };
     const object = Object.assign(
       {},
       { channels, directMessages, _id, name, email, token },
-      { ...newData }
+      { ...newActiveChat }
     );
     localStorage.setItem(
       storageName,
@@ -44,10 +46,42 @@ export const useAuth = () => {
         ...object,
       })
     );
-    /*    dispatch({
-      type: LOGIN_DATA,
-      payload: { ...object }
-    })*/
+  };
+
+  const changeStorageUserDataChannels = (newChannels) => {
+    //console.log("changeStorageUserDataChannels");
+    const data = JSON.parse(localStorage.userData);
+    const { directMessages, lastActiveChatId, _id, name, email, token } = {
+      ...data,
+    };
+    const object = Object.assign(
+      {},
+      { directMessages, lastActiveChatId, _id, name, email, token },
+      { ...newChannels }
+    );
+    localStorage.setItem(
+      storageName,
+      JSON.stringify({
+        ...object,
+      })
+    );
+  };
+
+  const changeStorageUserDataDirectMessages = (newDirectMessages) => {
+    //console.log("changeStorageUserDataDirectMessages");
+    const data = JSON.parse(localStorage.userData);
+    const { channels, lastActiveChatId, _id, name, email, token } = { ...data };
+    const object = Object.assign(
+      {},
+      { channels, lastActiveChatId, _id, name, email, token },
+      { ...newDirectMessages }
+    );
+    localStorage.setItem(
+      storageName,
+      JSON.stringify({
+        ...object,
+      })
+    );
   };
 
   useEffect(() => {
@@ -65,7 +99,13 @@ export const useAuth = () => {
     }
   }, [login]);
 
-  return { login, logout, changeLocalStorageUserData };
+  return {
+    login,
+    logout,
+    changeStorageUserDataActiveChat,
+    changeStorageUserDataDirectMessages,
+    changeStorageUserDataChannels,
+  };
 };
 
 export default connect(null, null)(useAuth);

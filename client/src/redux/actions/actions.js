@@ -101,11 +101,13 @@ export const getMessages = (token, param, body) => {
   );
 };
 
-export const getDirectMessages = (token, userId) => {
+export const getDirectMessages = (token, body) => {
   return dispatcher(
     GET_DIRECT_MESSAGES,
-    `/api/direct-message/get-direct-messages${userId}`,
-    token
+    `/api/direct-message/get-direct-messages`,
+    token,
+    "POST",
+    body
   );
 };
 
@@ -144,5 +146,23 @@ export const postDirectMessages = (token, body) => {
     token,
     "POST",
     body
+  );
+};
+
+export const removeChannelMessage = (token, param) => {
+  return dispatcher(
+    REMOVE_MESSAGE,
+    `/api/chat/delete-message${param}`,
+    token,
+    "DELETE"
+  );
+};
+
+export const removeMessageOfDirectMessage = (token, param) => {
+  return dispatcher(
+    REMOVE_MESSAGE,
+    `/api/direct-message-chat/delete-message${param}`,
+    token,
+    "DELETE"
   );
 };

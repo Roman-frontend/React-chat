@@ -6,6 +6,7 @@ import {
   postDirectMessages,
 } from "../../../redux/actions/actions.js";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../hooks/auth.hook.js";
 import { AddPeopleToDirectMessages } from "../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx";
 import { useCallback } from "react";
 
@@ -16,6 +17,7 @@ export function DirectMessages(props) {
     setModalAddPeopleIsOpen,
     createLists,
   } = props;
+  const { changeStorageUserDataDirectMessages } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
@@ -24,8 +26,20 @@ export function DirectMessages(props) {
   const [invited, setInvited] = useState([]);
 
   useEffect(() => {
-    dispatch(getDirectMessages(token, userData._Id));
+    const storageData = JSON.parse(localStorage.getItem("userData"));
+    dispatch(
+      getDirectMessages(storageData.token, {
+        listDirectMessages: storageData.directMessages,
+      })
+    );
   }, []);
+
+  useEffect(() => {
+    if (listDirectMessages) {
+      const newList = listDirectMessages.map((directMsg) => directMsg._id);
+      changeStorageUserDataDirectMessages({ directMessages: newList });
+    }
+  }, [listDirectMessages]);
 
   const createArrDirectMessages = useCallback(() => {
     if (listDirectMessages && allUsers) {
@@ -59,7 +73,6 @@ export function DirectMessages(props) {
         },
         invitedUsers: dataInvitedPeoples,
       };
-      console.log(body);
       await dispatch(postDirectMessages(token, body));
     }
   }

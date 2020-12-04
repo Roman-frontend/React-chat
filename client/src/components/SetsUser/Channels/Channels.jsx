@@ -19,15 +19,24 @@ export function Channels(props) {
   const allChannels = useSelector((state) => state.channels);
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
-  const { changeLocalStorageUserData } = useAuth();
+  const { changeStorageUserDataChannels } = useAuth();
 
   useEffect(() => {
     async function getFetchChannels() {
       await dispatch(getChannels(token, userData.channels));
     }
-    changeLocalStorageUserData(userData);
     getFetchChannels();
   }, [userData]);
+
+  useEffect(() => {
+    if (allChannels) {
+      const storageData = JSON.parse(localStorage.getItem("userData"));
+      const idChannels = allChannels.map((channel) => channel._id);
+      if (idChannels !== storageData.channels) {
+        changeStorageUserDataChannels({ channels: idChannels });
+      }
+    }
+  }, [allChannels]);
 
   const createLinksChannels = useCallback(() => {
     if (allChannels) {

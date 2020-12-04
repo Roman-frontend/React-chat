@@ -5,10 +5,11 @@ import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
 import "./add-people-to-channel.sass";
 Modal.setAppElement("#root");
 
-export function AddPeopleToDirectMessages(props) {
+export function AddPeopleToChannel(props) {
   const users = useSelector((state) => state.users);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
   const {
     doneInvite,
     invited,
@@ -38,7 +39,7 @@ export function AddPeopleToDirectMessages(props) {
 
   return (
     <Modal
-      isOpen={modalAddPeopleIsOpen}
+      isOpen={modalAddPeopleIsOpen && !!activeChannelId}
       onRequestClose={() => setModalAddPeopleIsOpen(false)}
       className={"modal-content"}
       overlayClassName={"modal-overlay"}

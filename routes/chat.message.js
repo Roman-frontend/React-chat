@@ -85,7 +85,9 @@ router.put("/put-message:_id", async (req, res) => {
 router.delete("/delete-message:id", verifyToken, async (req, res) => {
   try {
     await ChannelMessage.findByIdAndRemove(req.params.id);
-    res.status(201).json({ message: "Сообщение удалено" });
+    res
+      .status(201)
+      .json({ removedId: req.params.id, message: "Сообщение удалено" });
   } catch (e) {
     console.log("catch - delete-message");
     res.status(500).json({ removed: false, message: "Что-то пошло не так " });

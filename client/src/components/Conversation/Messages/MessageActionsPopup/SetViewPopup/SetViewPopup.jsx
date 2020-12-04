@@ -1,14 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-//import { connect } from "react-redux";
-import { REMOVE_MESSAGE } from "../../../../../redux/types";
+import { connect } from "react-redux";
+import {
+  removeChannelMessage,
+  removeMessageOfDirectMessage,
+} from "../../../../../redux/actions/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import ReplyIcon from "@material-ui/icons/Reply";
 import EditIcon from "@material-ui/icons/Edit";
 import ForwardIcon from "@material-ui/icons/Forward";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { reduxServer } from "../../../../../hooks/http.hook";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -16,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SetViewPopup(props) {
+function SetViewPopup(props) {
   const {
     topPopupRelativeTopPage,
     activeMessage,
@@ -27,7 +29,6 @@ export default function SetViewPopup(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
-  const messages = useSelector((state) => state.messages);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
@@ -71,19 +72,12 @@ export default function SetViewPopup(props) {
   const handleDelete = async () => {
     setIdMessageForPopup(null);
     setActiveMessage({});
-    const url = activeChannelId
-      ? `/api/chat/delete-message${activeMessage.message._id}`
-      : `/api/direct-message-chat/delete-message${activeMessage.message._id}`;
 
-    await reduxServer(url, token, "DELETE");
-
-    const messagesWithoutRemoved = messages
-      .reverse()
-      .filter((message) => message._id !== activeMessage.message._id);
-    dispatch({
-      type: REMOVE_MESSAGE,
-      payload: messagesWithoutRemoved,
-    });
+    if (activeChannelId) {
+      dispatch(removeChannelMessage(token, activeMessage.message._id));
+    } else if (activeDirectMessageId) {
+      dispatch(removeMessageOfDirectMessage(token, activeMessage.message._id));
+    }
   };
 
   if (topPopupRelativeTopPage) {
@@ -138,6 +132,9 @@ export default function SetViewPopup(props) {
   return null;
 }
 
-//const mapDispatchToProps = { removeChannelMessage };
+const mapDispatchToProps = {
+  removeChannelMessage,
+  removeMessageOfDirectMessage,
+};
 
-//export default connect(null, mapDispatchToProps)(SetViewPopup);
+export default connect(null, mapDispatchToProps)(SetViewPopup);

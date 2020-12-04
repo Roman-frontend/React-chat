@@ -57,6 +57,7 @@ export function Messages(props) {
 
   useEffect(() => {
     async function getFetchMessages() {
+      console.log("getMessages");
       if (activeChannelId) {
         dispatch(getMessages(token, activeChannelId, { userId }));
       } else if (activeDirectMessageId) {

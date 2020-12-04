@@ -1,5 +1,3 @@
-//Тут розфасовка між activeChannelId і activeDirectMessageId зроблена
-
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Grid from "@material-ui/core/Grid";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +7,7 @@ import { getUsers, postData } from "../../../redux/actions/actions.js";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import { ConversationMembers } from "../../Modals/ConversationHeader/ConversationMembers";
-import { AddPeopleToDirectMessages } from "../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages";
+import { AddPeopleToChannel } from "../../Modals/AddPeopleToChannel/AddPeopleToChannel";
 import "./ConversationHeader.sass";
 
 export function ConversationHeader() {
@@ -21,6 +19,7 @@ export function ConversationHeader() {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
+  const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [invited, setInvited] = useState([]);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
@@ -44,12 +43,19 @@ export function ConversationHeader() {
   }, [activeChannelId, channels]);
 
   const createName = useCallback(() => {
-    return (
-      <b className="conversation__name">
-        ✩ {activeChannel ? activeChannel.name : "general"}
-      </b>
-    );
-  }, [activeChannel]);
+    let chatName = activeChannel ? activeChannel.name : "general";
+    if (activeDirectMessageId && listDirectMessages) {
+      const activeDirectMessage = listDirectMessages.filter((directMessage) => {
+        return directMessage._id === activeDirectMessageId;
+      })[0];
+      chatName =
+        activeDirectMessage.inviter._id === userId
+          ? activeDirectMessage.invited.name
+          : activeDirectMessage.inviter.name;
+    }
+
+    return <b className="conversation__name">✩ {chatName}</b>;
+  }, [activeChannel, activeDirectMessageId]);
 
   const createMembers = useCallback(() => {
     return (
@@ -69,7 +75,7 @@ export function ConversationHeader() {
           <Grid item xs={6}>
             <GroupAddIcon
               style={{ fontSize: 45, cursor: "pointer" }}
-              onClick={openModalAddPeoples}
+              onClick={() => openModalAddPeoples()}
             />
           </Grid>
         </Grid>
@@ -110,7 +116,7 @@ export function ConversationHeader() {
         modalIsShowsMembers={modalIsShowsMembers}
         setModalIsShowsMembers={setModalIsShowsMembers}
       />
-      <AddPeopleToDirectMessages
+      <AddPeopleToChannel
         doneInvite={doneInvite}
         invited={invited}
         setInvited={setInvited}

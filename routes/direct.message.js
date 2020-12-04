@@ -5,10 +5,15 @@ const jsonWebToken = require("jsonwebtoken");
 const DirectMessage = require("../models/DirectMessage.js");
 const User = require("../models/User.js");
 
-router.get("/get-direct-messages:userId", verifyToken, async (req, res) => {
+router.post("/get-direct-messages", verifyToken, async (req, res) => {
   try {
-    const directMessages = await DirectMessage.find({});
-    console.log("directMessages = > ", directMessages);
+    let directMessages = [];
+    for (let directMessageId of req.body.listDirectMessages) {
+      const directMessage = await DirectMessage.findById(directMessageId);
+      if (directMessage) {
+        directMessages.push(directMessage);
+      }
+    }
     res.json({ directMessages, message: "direct messages responsed" });
   } catch (e) {
     console.log("failed in directMessages", e);
@@ -20,7 +25,9 @@ router.get("/get-direct-messages:userId", verifyToken, async (req, res) => {
 
 router.post("/post-direct-messages", async (req, res) => {
   try {
-    await req.body.invitedUsers.forEach(async (user) => {
+    let allNewDirectMessage = [];
+
+    for (let user of req.body.invitedUsers) {
       const newDirectMessage = await DirectMessage.create({
         inviter: req.body.inviter,
         invited: user,
@@ -33,13 +40,12 @@ router.post("/post-direct-messages", async (req, res) => {
       const invitedDbData = await User.findById(user._id);
       invitedDbData.directMessages.push(newDirectMessage._id);
       await invitedDbData.save();
-    });
 
-    const allDirectMessage = await DirectMessage.find({});
-    console.log("allDirectMessage", allDirectMessage);
+      allNewDirectMessage.push(newDirectMessage);
+    }
 
     res.status(201).json({
-      allDirectMessage,
+      allNewDirectMessage,
       message: "Direct Messages created",
     });
   } catch (e) {

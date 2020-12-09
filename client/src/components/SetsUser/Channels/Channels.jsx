@@ -1,36 +1,49 @@
-import React, { useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { getChannels } from "../../../redux/actions/actions.js";
-import Modal from "react-modal";
-import { useAuth } from "../../../hooks/auth.hook.js";
-import { AddChannel } from "../../Modals/AddChannel/AddChannel";
-import "./channels.sass";
-Modal.setAppElement("#root");
+import React, { useEffect, useCallback } from 'react';
+import useChatContext from '../../../Context/ChatContext.js';
+import { GET_CHANNELS } from '../../../redux/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { getChannels } from '../../../redux/actions/actions.js';
+import Modal from 'react-modal';
+import { useAuth } from '../../../hooks/auth.hook.js';
+import { AddChannel } from '../../Modals/AddChannel/AddChannel';
+import './channels.sass';
+Modal.setAppElement('#root');
 
 export function Channels(props) {
+  const { resChannels } = useChatContext();
   const {
     modalAddChannelIsOpen,
     setModalAddChannelIsOpen,
     listChannelsIsOpen,
     createLists,
   } = props;
+  const resourseChannels = resChannels.channels.read();
   const dispatch = useDispatch();
   const allChannels = useSelector((state) => state.channels);
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
   const { changeStorageUserDataChannels } = useAuth();
 
-  useEffect(() => {
+  /* useEffect(() => {
     async function getFetchChannels() {
       await dispatch(getChannels(token, userData.channels));
     }
     getFetchChannels();
-  }, [userData]);
+  }, [userData]); */
+
+  useEffect(() => {
+    if (resourseChannels) {
+      dispatch({
+        type: GET_CHANNELS,
+        payload: resourseChannels,
+      });
+    }
+  }, [resourseChannels]);
 
   useEffect(() => {
     if (allChannels) {
-      const storageData = JSON.parse(localStorage.getItem("userData"));
+      const storageData = JSON.parse(localStorage.getItem('userData'));
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.channels) {
         changeStorageUserDataChannels({ channels: idChannels });
@@ -46,20 +59,20 @@ export function Channels(props) {
 
   return (
     <div
-      className="user-sets__users"
-      style={{ display: listChannelsIsOpen ? "block" : "none" }}
+      className='user-sets__users'
+      style={{ display: listChannelsIsOpen ? 'block' : 'none' }}
     >
       <Modal
         isOpen={modalAddChannelIsOpen}
         onRequestClose={() => setModalAddChannelIsOpen(false)}
-        className={"modal-content"}
-        overlayClassName={"modal-overlay"}
+        className={'modal-content'}
+        overlayClassName={'modal-overlay'}
       >
         <AddChannel setModalAddChannelIsOpen={setModalAddChannelIsOpen} />
       </Modal>
       {createLinksChannels(allChannels)}
-      <div className="user-sets__channel user-sets__channel_add">
-        <p className="main-font" onClick={() => setModalAddChannelIsOpen(true)}>
+      <div className='user-sets__channel user-sets__channel_add'>
+        <p className='main-font' onClick={() => setModalAddChannelIsOpen(true)}>
           + Add channel
         </p>
       </div>

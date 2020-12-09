@@ -19,7 +19,7 @@ function dispatcher(type, url, token, method = "GET", body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
-      console.log("response ", response);
+      //console.log("response ", response);
       dispatch({
         type,
         payload: response,

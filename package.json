@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Roman-frontend/React-chat#readme",
   "dependencies": {
+    "@material-ui/lab": "^4.0.0-alpha.57",
     "bcryptjs": "^2.4.3",
     "concurrently": "^5.2.0",
     "config": "^3.3.1",

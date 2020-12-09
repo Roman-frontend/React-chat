@@ -1,16 +1,14 @@
-//Тут розфасовка між activeChannelId і activeDirectMessageId completed
-
-import React, { useCallback, useMemo, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from "../../../redux/types";
+import React, { useCallback, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from '../../../redux/types';
 import {
   getMessages,
   getMessagesForDirectMsg,
-} from "../../../redux/actions/actions.js";
-import Message from "./Message/Message.jsx";
-import MessageActionsPopup from "./MessageActionsPopup/MessageActionsPopup.jsx";
-import "./messages.sass";
+} from '../../../redux/actions/actions.js';
+import Message from './Message/Message.jsx';
+import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
+import './messages.sass';
 
 export function Messages(props) {
   const { activeMessage, setActiveMessage, inputRef, socket } = props;
@@ -48,8 +46,8 @@ export function Messages(props) {
   //Підписуємось на закриття події
   socket.onclose = (response) => {
     const disconnectStatus = response.wasClean
-      ? "DISCONNECTED CLEAN"
-      : "DISCONNECTED BROKEN";
+      ? 'DISCONNECTED CLEAN'
+      : 'DISCONNECTED BROKEN';
     console.log(
       `${disconnectStatus} with code ${response.code} reason ${response.reason}`
     );
@@ -57,7 +55,6 @@ export function Messages(props) {
 
   useEffect(() => {
     async function getFetchMessages() {
-      console.log("getMessages");
       if (activeChannelId) {
         dispatch(getMessages(token, activeChannelId, { userId }));
       } else if (activeDirectMessageId) {
@@ -65,7 +62,7 @@ export function Messages(props) {
       }
     }
 
-    if ((activeChannelId || activeDirectMessageId) && activeChannelId !== "1") {
+    if ((activeChannelId || activeDirectMessageId) && activeChannelId !== '1') {
       getFetchMessages();
     }
   }, [activeChannelId, activeDirectMessageId]);
@@ -77,7 +74,7 @@ export function Messages(props) {
       ? activeDirectMessageId
       : null;
     if (newMessage && activeChatId) {
-      console.log("socket.send => ", activeChatId, newMessage);
+      console.log('socket.send => ', activeChatId, newMessage);
       socket.send(JSON.stringify({ room: activeChatId, message: newMessage }));
       dispatch({
         type: PROCESSED_NEW_MESSAGE,
@@ -87,15 +84,15 @@ export function Messages(props) {
   }, [newMessage, activeChannelId]);
 
   const reverseMsg = useMemo(() => {
-    if (reduxMessages === "403") {
-      return "403";
+    if (reduxMessages === '403') {
+      return '403';
     } else {
       return reduxMessages.reverse();
     }
   }, [reduxMessages]);
 
   const renderMessages = useCallback(() => {
-    if (reduxMessages !== "403") {
+    if (reduxMessages !== '403') {
       return reverseMsg.map((message) => {
         return (
           <Message
@@ -110,7 +107,7 @@ export function Messages(props) {
   }, [reduxMessages, activeMessage]);
 
   return (
-    <div className="messages">
+    <div className='messages'>
       {renderMessages()}
       <MessageActionsPopup
         activeMessage={activeMessage}

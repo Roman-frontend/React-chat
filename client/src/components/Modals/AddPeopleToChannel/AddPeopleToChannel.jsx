@@ -1,15 +1,21 @@
-import React, { useState, useRef, useEffect } from "react";
-import Modal from "react-modal";
-import { useSelector } from "react-redux";
-import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
-import "./add-people-to-channel.sass";
-Modal.setAppElement("#root");
+import React, { useState, useRef, useEffect } from 'react';
+import useChatContext from '../../../Context/ChatContext.js';
+import Modal from 'react-modal';
+import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { GET_USERS } from '../../../redux/types';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import './add-people-to-channel.sass';
+Modal.setAppElement('#root');
 
 export function AddPeopleToChannel(props) {
+  const { resUsers } = useChatContext();
+  const dispatch = useDispatch();
   const users = useSelector((state) => state.users);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const activeChannelId = useSelector((state) => state.activeChannelId);
+  const userId = useSelector((state) => state.userData._id);
   const {
     doneInvite,
     invited,
@@ -17,16 +23,26 @@ export function AddPeopleToChannel(props) {
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
   } = props;
+  const allUsers = resUsers.users.read();
   const [notInvited, setNotInvited] = useState(null);
   const parrentDivRef = useRef();
   const buttonCloseRef = useRef();
   const buttonDoneRef = useRef();
-  const heightParrentDiv = "set-channel__invite_height";
+  const heightParrentDiv = 'set-channel__invite_height';
+
+  useEffect(() => {
+    if (userId && allUsers) {
+      dispatch({
+        type: GET_USERS,
+        payload: allUsers,
+      });
+    }
+  }, [userId, allUsers]);
 
   useEffect(() => {
     if (users && userData) {
       let allNotInvited = users.filter((user) => user._id !== userData._id);
-      if (users && listDirectMessages) {
+      if (users && listDirectMessages && listDirectMessages[0]) {
         listDirectMessages.forEach((directMessage) => {
           allNotInvited = allNotInvited.filter(
             (user) => user._id !== directMessage.invited._id
@@ -37,17 +53,24 @@ export function AddPeopleToChannel(props) {
     }
   }, [users, listDirectMessages]);
 
+  console.log(allUsers);
+
   return (
     <Modal
       isOpen={modalAddPeopleIsOpen && !!activeChannelId}
       onRequestClose={() => setModalAddPeopleIsOpen(false)}
-      className={"modal-content"}
-      overlayClassName={"modal-overlay"}
+      className={'modal-content'}
+      overlayClassName={'modal-overlay'}
     >
-      <div className="set-channel" ref={parrentDivRef}>
-        <p className="set-channel-forms__main-label-text">
+      <div className='set-channel' ref={parrentDivRef}>
+        <p className='set-channel-forms__main-label-text'>
           Invite people to {userData.name}
         </p>
+        <ul>
+          {allUsers.users.map((name) => (
+            <li key={name._id}>{name.name}</li>
+          ))}
+        </ul>
         <SelectPeople
           invited={invited}
           setInvited={setInvited}
@@ -60,7 +83,7 @@ export function AddPeopleToChannel(props) {
         />
 
         <button
-          className="set-channel__button"
+          className='set-channel__button'
           ref={buttonCloseRef}
           onClick={doneInvite}
         >
@@ -68,10 +91,10 @@ export function AddPeopleToChannel(props) {
         </button>
 
         <button
-          type="submit"
-          className="set-channel__button"
+          type='submit'
+          className='set-channel__button'
           ref={buttonDoneRef}
-          onClick={() => doneInvite("invite")}
+          onClick={() => doneInvite('invite')}
         >
           Invite
         </button>
@@ -79,3 +102,5 @@ export function AddPeopleToChannel(props) {
     </Modal>
   );
 }
+
+export default connect(null, null)(AddPeopleToChannel);

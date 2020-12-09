@@ -1,16 +1,35 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Grid from "@material-ui/core/Grid";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { POST_ADD_PEOPLES_TO_CHANNEL } from "../../../redux/types.js";
-import { getUsers, postData } from "../../../redux/actions/actions.js";
-import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import { ConversationMembers } from "../../Modals/ConversationHeader/ConversationMembers";
-import { AddPeopleToChannel } from "../../Modals/AddPeopleToChannel/AddPeopleToChannel";
-import "./ConversationHeader.sass";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  Suspense,
+} from 'react';
+//import { makeStyles } from '@material-ui/core/styles';
+//import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+//import Skeleton from '@material-ui/lab/Skeleton';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { POST_ADD_PEOPLES_TO_CHANNEL } from '../../../redux/types.js';
+import { getUsers, postData } from '../../../redux/actions/actions.js';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import { ConversationMembers } from '../../Modals/ConversationHeader/ConversationMembers';
+import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
+import './ConversationHeader.sass';
+
+/* const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+    },
+  },
+})); */
 
 export function ConversationHeader() {
+  //const classes = useStyles();
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels);
   const userId = useSelector((state) => state.userData._id);
@@ -24,13 +43,13 @@ export function ConversationHeader() {
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
 
-  useEffect(() => {
+  /* useEffect(() => {
     async function getPeoples() {
       await dispatch(getUsers(token, userId));
     }
 
     if (userId) getPeoples();
-  }, [userId]);
+  }, [userId]); */
 
   const activeChannel = useMemo(() => {
     if (channels) {
@@ -43,8 +62,8 @@ export function ConversationHeader() {
   }, [activeChannelId, channels]);
 
   const createName = useCallback(() => {
-    let chatName = activeChannel ? activeChannel.name : "general";
-    if (activeDirectMessageId && listDirectMessages) {
+    let chatName = activeChannel ? activeChannel.name : 'general';
+    if (activeDirectMessageId && listDirectMessages && listDirectMessages[0]) {
       const activeDirectMessage = listDirectMessages.filter((directMessage) => {
         return directMessage._id === activeDirectMessageId;
       })[0];
@@ -54,7 +73,7 @@ export function ConversationHeader() {
           : activeDirectMessage.inviter.name;
     }
 
-    return <b className="conversation__name">✩ {chatName}</b>;
+    return <b className='conversation__name'>✩ {chatName}</b>;
   }, [activeChannel, activeDirectMessageId]);
 
   const createMembers = useCallback(() => {
@@ -63,18 +82,18 @@ export function ConversationHeader() {
         <Grid
           container
           spacing={1}
-          style={{ height: "4.3rem", alignContent: "center" }}
+          style={{ height: '4.3rem', alignContent: 'center' }}
         >
-          <Grid item xs={5} stule={{ alignSelf: "center" }}>
+          <Grid item xs={5} stule={{ alignSelf: 'center' }}>
             <PeopleAltIcon
-              style={{ fontSize: 40, cursor: "pointer" }}
+              style={{ fontSize: 40, cursor: 'pointer' }}
               onClick={() => setModalIsShowsMembers(true)}
             />
             <b>{activeChannel ? activeChannel.members.length : 1}</b>
           </Grid>
           <Grid item xs={6}>
             <GroupAddIcon
-              style={{ fontSize: 45, cursor: "pointer" }}
+              style={{ fontSize: 45, cursor: 'pointer' }}
               onClick={() => openModalAddPeoples()}
             />
           </Grid>
@@ -90,7 +109,7 @@ export function ConversationHeader() {
   }
 
   async function doneInvite(action) {
-    if (action === "invite") {
+    if (action === 'invite') {
       await dispatch(
         postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId)
       );
@@ -102,8 +121,8 @@ export function ConversationHeader() {
   //console.log(modalIsShowsMembers)
 
   return (
-    <div className="conversation__field-name">
-      <Grid container spacing={1} style={{ alignItems: "center" }}>
+    <div className='conversation__field-name'>
+      <Grid container spacing={1} style={{ alignItems: 'center' }}>
         <Grid item xs={10}>
           {createName()}
         </Grid>

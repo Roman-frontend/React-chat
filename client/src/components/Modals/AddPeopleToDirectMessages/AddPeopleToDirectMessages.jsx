@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import Modal from "react-modal";
-import { useSelector } from "react-redux";
-import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
-import "./add-people-to-channel.sass";
-Modal.setAppElement("#root");
+import React, { useState, useRef, useEffect } from 'react';
+import Modal from 'react-modal';
+import { useSelector } from 'react-redux';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import './add-people-to-channel.sass';
+Modal.setAppElement('#root');
 
 export function AddPeopleToDirectMessages(props) {
   const users = useSelector((state) => state.users);
@@ -20,12 +20,12 @@ export function AddPeopleToDirectMessages(props) {
   const parrentDivRef = useRef();
   const buttonCloseRef = useRef();
   const buttonDoneRef = useRef();
-  const heightParrentDiv = "set-channel__invite_height";
+  const heightParrentDiv = 'set-channel__invite_height';
 
   useEffect(() => {
     if (users && userData) {
       let allNotInvited = users.filter((user) => user._id !== userData._id);
-      if (users && listDirectMessages) {
+      if (users && listDirectMessages && listDirectMessages[0]) {
         listDirectMessages.forEach((directMessage) => {
           allNotInvited = allNotInvited.filter(
             (user) => user._id !== directMessage.invited._id
@@ -40,11 +40,11 @@ export function AddPeopleToDirectMessages(props) {
     <Modal
       isOpen={modalAddPeopleIsOpen}
       onRequestClose={() => setModalAddPeopleIsOpen(false)}
-      className={"modal-content"}
-      overlayClassName={"modal-overlay"}
+      className={'modal-content'}
+      overlayClassName={'modal-overlay'}
     >
-      <div className="set-channel" ref={parrentDivRef}>
-        <p className="set-channel-forms__main-label-text">
+      <div className='set-channel' ref={parrentDivRef}>
+        <p className='set-channel-forms__main-label-text'>
           Invite people to {userData.name}
         </p>
         <SelectPeople
@@ -59,7 +59,7 @@ export function AddPeopleToDirectMessages(props) {
         />
 
         <button
-          className="set-channel__button"
+          className='set-channel__button'
           ref={buttonCloseRef}
           onClick={doneInvite}
         >
@@ -67,10 +67,10 @@ export function AddPeopleToDirectMessages(props) {
         </button>
 
         <button
-          type="submit"
-          className="set-channel__button"
+          type='submit'
+          className='set-channel__button'
           ref={buttonDoneRef}
-          onClick={() => doneInvite("invite")}
+          onClick={() => doneInvite('invite')}
         >
           Invite
         </button>

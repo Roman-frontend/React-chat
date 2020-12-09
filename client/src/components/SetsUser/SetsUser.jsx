@@ -1,24 +1,21 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import PersonIcon from "@material-ui/icons/Person";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import Grid from "@material-ui/core/Grid";
-import { ACTIVE_CHAT_ID } from "../../redux/types.js";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { getUsers } from "../../redux/actions/actions.js";
-import { useAuth } from "../../hooks/auth.hook.js";
-import { DrawTitles } from "./DrawTitles.jsx";
-import { Channels } from "./Channels/Channels.jsx";
-import { DirectMessages } from "./DirectMessages/DirectMessages";
-import "./user-sets.sass";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import PersonIcon from '@material-ui/icons/Person';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import Grid from '@material-ui/core/Grid';
+import { ACTIVE_CHAT_ID } from '../../redux/types.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { useAuth } from '../../hooks/auth.hook.js';
+import { DrawTitles } from './DrawTitles.jsx';
+import { Channels } from './Channels/Channels.jsx';
+import { DirectMessages } from './DirectMessages/DirectMessages';
+import './user-sets.sass';
 
 export function SetsUser(props) {
   const { socket } = props;
   const { changeStorageUserDataActiveChat } = useAuth();
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.token);
   const channels = useSelector((state) => state.channels);
-  const userData = useSelector((state) => state.userData);
   const allUsers = useSelector((state) => state.users);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const activeDirectMessageId = useSelector(
@@ -34,13 +31,6 @@ export function SetsUser(props) {
   const refUpdatedChannels = useRef(null);
 
   useEffect(() => {
-    async function getPeoples() {
-      await dispatch(getUsers(token, userData._id));
-    }
-    getPeoples();
-  }, []);
-
-  useEffect(() => {
     if (channels) {
       refUpdatedChannels.current = channels;
     }
@@ -48,7 +38,7 @@ export function SetsUser(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      const storageData = JSON.parse(localStorage.getItem("userData"));
+      const storageData = JSON.parse(localStorage.getItem('userData'));
       markActiveLinkChannel(storageData.lastActiveChatId);
     }, 1000);
   }, []);
@@ -56,7 +46,7 @@ export function SetsUser(props) {
   const createLists = useCallback(
     (arrElements, listName) => {
       let allDirectMessages = [
-        <div key="1" id="1" className="user-sets__channel">
+        <div key='1' id='1' className='user-sets__channel'>
           <p>general</p>
         </div>,
       ];
@@ -71,7 +61,7 @@ export function SetsUser(props) {
 
   function createLink(linkData, listName) {
     const name =
-      listName === "directMessages"
+      listName === 'directMessages'
         ? createDirectMsgName(linkData.invited.name)
         : createChannelName(linkData.isPrivate, linkData);
 
@@ -79,7 +69,7 @@ export function SetsUser(props) {
       <div
         key={linkData._id}
         id={linkData._id}
-        className="main-font user-sets__channel"
+        className='main-font user-sets__channel'
         onClick={() => toActive(linkData._id)}
       >
         {name}
@@ -89,10 +79,10 @@ export function SetsUser(props) {
 
   function createDirectMsgName(name) {
     return (
-      <Grid container style={{ alignItems: "center" }}>
+      <Grid container style={{ alignItems: 'center' }}>
         <Grid item xs={2}>
           <PersonIcon
-            style={{ background: "cadetblue", borderRadius: "0.4rem" }}
+            style={{ background: 'cadetblue', borderRadius: '0.4rem' }}
           />
         </Grid>
         <Grid item xs={10}>
@@ -104,20 +94,20 @@ export function SetsUser(props) {
 
   function createChannelName(isPrivate, channel) {
     const nameChannel = isPrivate ? (
-      <p className="main-font">&#128274;{channel.name}</p>
+      <p className='main-font'>&#128274;{channel.name}</p>
     ) : (
-      <p className="main-font">{`#${channel.name}`}</p>
+      <p className='main-font'>{`#${channel.name}`}</p>
     );
 
     return (
-      <Grid container className="left-bar__title-name">
+      <Grid container className='left-bar__title-name'>
         <Grid item xs={10} style={{}}>
           {nameChannel}
         </Grid>
         <Grid item xs={2}>
           <DeleteForeverIcon
             onClick={() =>
-              socket.send(JSON.stringify({ room: channel._id, meta: "leave" }))
+              socket.send(JSON.stringify({ room: channel._id, meta: 'leave' }))
             }
           />
         </Grid>
@@ -144,9 +134,9 @@ export function SetsUser(props) {
       ? activeChannelId
       : activeDirectMessageId;
     if (prevId !== idActive) {
-      socket.send(JSON.stringify({ room: prevId, meta: "leave" }));
+      socket.send(JSON.stringify({ room: prevId, meta: 'leave' }));
       refIdPrevChannel.current = idActive;
-      socket.send(JSON.stringify({ room: idActive, meta: "join" }));
+      socket.send(JSON.stringify({ room: idActive, meta: 'join' }));
     }
   }
 
@@ -180,24 +170,24 @@ export function SetsUser(props) {
   }
 
   function markActiveLinkChannel(idActiveChat) {
-    const oldMarkChannel = document.querySelector(".user-sets__channel_active");
+    const oldMarkChannel = document.querySelector('.user-sets__channel_active');
     const channelForActive = document.getElementById(idActiveChat);
 
     if (oldMarkChannel && channelForActive) {
-      oldMarkChannel.classList.remove("user-sets__channel_active");
-      channelForActive.classList.add("user-sets__channel_active");
+      oldMarkChannel.classList.remove('user-sets__channel_active');
+      channelForActive.classList.add('user-sets__channel_active');
     } else if (channelForActive) {
-      channelForActive.classList.add("user-sets__channel_active");
+      channelForActive.classList.add('user-sets__channel_active');
     }
   }
 
   return (
-    <div className="main-font left-block">
+    <div className='main-font left-block'>
       <div>
         <DrawTitles
-          name={"Channels"}
-          divClass={"left-bar__channels"}
-          classPlus={"left-bar__first-plus"}
+          name={'Channels'}
+          divClass={'left-bar__channels'}
+          classPlus={'left-bar__first-plus'}
           stateShowing={listChannelsIsOpen}
           seterStateShowing={setListChannelsIsOpen}
           setModalAdd={setModalAddChannelIsOpen}
@@ -211,9 +201,9 @@ export function SetsUser(props) {
       />
       <div>
         <DrawTitles
-          name={"Direct messages"}
+          name={'Direct messages'}
           divClass={null}
-          classPlus={"left-bar__second-plus"}
+          classPlus={'left-bar__second-plus'}
           stateShowing={listMembersIsOpen}
           seterStateShowing={setListMembersIsOpen}
           setModalAdd={setModalAddPeopleIsOpen}
@@ -229,6 +219,4 @@ export function SetsUser(props) {
   );
 }
 
-const mapDispatchToProps = { getUsers };
-
-export default connect(null, mapDispatchToProps)(SetsUser);
+export default connect(null, null)(SetsUser);

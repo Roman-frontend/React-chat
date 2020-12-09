@@ -16,12 +16,12 @@ import {
   ACTIVE_CHAT_ID,
   UPDATE_MESSAGES,
   PROCESSED_NEW_MESSAGE,
-} from "../types.js";
+} from '../types.js';
 
 const initialState = {
   users: null,
   channels: null,
-  listDirectMessages: null,
+  listDirectMessages: [],
   activeChannelId: null,
   activeDirectMessageId: null,
   messages: [],
@@ -38,18 +38,27 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.payload.users };
 
     case GET_CHANNELS:
-      const storageData = JSON.parse(localStorage.getItem("userData"));
-      const startedChannel = state.activeChannelId
-        ? { activeChannelId: state.activeChannelId }
-        : storageData.lastActiveChatId &&
-          storageData.channels.includes(storageData.lastActiveChatId)
-        ? { activeChannelId: storageData.lastActiveChatId }
-        : storageData.lastActiveChatId &&
-          !storageData.channels.includes(storageData.lastActiveChatId)
-        ? { activeDirectMessageId: storageData.lastActiveChatId }
-        : action.payload.userChannels
+      const storageData = JSON.parse(localStorage.getItem('userData')).userData;
+      console.log(storageData);
+      let startedChannel = action.payload.userChannels
         ? { activeChannelId: action.payload.userChannels[0]._id }
         : null;
+
+      startedChannel =
+        storageData.lastActiveChatId &&
+        storageData.channels.includes(storageData.lastActiveChatId)
+          ? { activeChannelId: storageData.lastActiveChatId }
+          : null;
+
+      startedChannel =
+        storageData.lastActiveChatId &&
+        storageData.channels.includes(storageData.lastActiveChatId)
+          ? { activeChannelId: storageData.lastActiveChatId }
+          : null;
+
+      startedChannel = state.activeChannelId
+        ? { activeChannelId: state.activeChannelId }
+        : startedChannel;
 
       return {
         ...state,
@@ -61,6 +70,7 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, messages: action.payload.messages };
 
     case GET_DIRECT_MESSAGES:
+      //console.log(action.payload);
       return { ...state, listDirectMessages: action.payload.directMessages };
 
     case POST_REGISTER:
@@ -71,10 +81,10 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case POST_LOGIN:
+      //console.log(action.payload);
       return {
         ...state,
-        token: action.payload.token,
-        userData: action.payload.userData,
+        ...action.payload,
       };
 
     case POST_MESSAGE:
@@ -90,6 +100,7 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, channels: action.payload.userChannels };
 
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
+      console.log(state, action.payload);
       return {
         ...state,
         listDirectMessages: state.listDirectMessages.concat(
@@ -108,10 +119,10 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case LOGIN_DATA:
+      //console.log(action.payload);
       return {
         ...state,
-        token: action.payload.token,
-        userData: action.payload,
+        ...action.payload,
       };
 
     case LOGOUT_DATA:

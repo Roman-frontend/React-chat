@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from 'react';
+import useChatContext from '../../../Context/ChatContext.js';
+import { GET_DIRECT_MESSAGES } from '../../../redux/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   getDirectMessages,
   postDirectMessages,
-} from "../../../redux/actions/actions.js";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../../hooks/auth.hook.js";
-import { AddPeopleToDirectMessages } from "../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx";
-import { useCallback } from "react";
+} from '../../../redux/actions/actions.js';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../../hooks/auth.hook.js';
+import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
+import { useCallback } from 'react';
 
 export function DirectMessages(props) {
+  const { resDirectMessages } = useChatContext();
   const {
     listMembersIsOpen,
     modalAddPeopleIsOpen,
@@ -24,25 +27,35 @@ export function DirectMessages(props) {
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [invited, setInvited] = useState([]);
+  const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
 
-  useEffect(() => {
-    const storageData = JSON.parse(localStorage.getItem("userData"));
+  /* useEffect(() => {
+    const storageData = JSON.parse(localStorage.getItem('userData'));
     dispatch(
       getDirectMessages(storageData.token, {
-        listDirectMessages: storageData.directMessages,
+        listDirectMessages: storageData.userData.directMessages,
       })
     );
-  }, []);
+  }, []); */
 
   useEffect(() => {
-    if (listDirectMessages) {
+    if (resourseDirectMessages) {
+      dispatch({
+        type: GET_DIRECT_MESSAGES,
+        payload: resourseDirectMessages,
+      });
+    }
+  }, [resourseDirectMessages]);
+
+  useEffect(() => {
+    if (listDirectMessages && listDirectMessages[0]) {
       const newList = listDirectMessages.map((directMsg) => directMsg._id);
       changeStorageUserDataDirectMessages({ directMessages: newList });
     }
   }, [listDirectMessages]);
 
   const createArrDirectMessages = useCallback(() => {
-    if (listDirectMessages && allUsers) {
+    if (listDirectMessages && listDirectMessages[0] && allUsers) {
       let allRowDirectMessages = [];
       listDirectMessages.forEach((directMessage) => {
         /* const invitedAllData = allUsers.filter(
@@ -51,7 +64,7 @@ export function DirectMessages(props) {
         allRowDirectMessages.push(invitedAllData[0]); */
         allRowDirectMessages.push(directMessage);
       });
-      return createLists(allRowDirectMessages, "directMessages");
+      return createLists(allRowDirectMessages, 'directMessages');
     }
   }, [listDirectMessages, allUsers]);
 
@@ -59,7 +72,7 @@ export function DirectMessages(props) {
     setInvited([]);
     setModalAddPeopleIsOpen(false);
 
-    if (action === "invite" && invited[0]) {
+    if (action === 'invite' && invited[0]) {
       let dataInvitedPeoples = [];
       invited.forEach((people) => {
         const { _id, name, email } = { ...people };
@@ -79,11 +92,11 @@ export function DirectMessages(props) {
 
   return (
     <div
-      className="user-sets__users"
-      style={{ display: listMembersIsOpen ? "block" : "none" }}
+      className='user-sets__users'
+      style={{ display: listMembersIsOpen ? 'block' : 'none' }}
     >
       {createArrDirectMessages()}
-      <div className="user-sets__channel">
+      <div className='user-sets__channel'>
         <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
       </div>
       <AddPeopleToDirectMessages
@@ -93,8 +106,8 @@ export function DirectMessages(props) {
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
       />
-      <div className="user-sets__channel">
-        <Link className="main-font" to={`/filterContacts`}>
+      <div className='user-sets__channel'>
+        <Link className='main-font' to={`/filterContacts`}>
           Filter Contants
         </Link>
       </div>

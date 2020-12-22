@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from '../../../redux/types';
@@ -10,8 +16,17 @@ import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
 import './messages.sass';
 
-export function Messages(props) {
-  const { activeMessage, setActiveMessage, inputRef, socket } = props;
+export const Messages = React.memo((props) => {
+  const {
+    activeMessage,
+    setActiveMessage,
+    inputRef,
+    socket,
+    popupMessage,
+    setPopupMessage,
+    setCloseBtnChangeMsg,
+    setCloseBtnReplyMsg,
+  } = props;
   const dispatch = useDispatch();
   const reduxMessages = useSelector((state) => state.messages);
   const activeChannelId = useSelector((state) => state.activeChannelId);
@@ -24,16 +39,18 @@ export function Messages(props) {
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
   socket.onmessage = (response) => {
+    //console.log(response.data);
     if (response.data === "З'єднання з WebSocket встановлено") {
+      //console.log("З'єднання з WebSocket встановлено");
     } else {
       const parsedRes = JSON.parse(response.data);
-      //console.log(reduxMessages);
       const dispatchMessages =
         reduxMessages[0] === undefined
           ? [parsedRes]
           : reduxMessages[0]._id !== parsedRes._id
           ? reduxMessages.reverse().concat(parsedRes)
           : null;
+      //console.log(parsedRes._id, dispatchMessages);
       if (parsedRes._id && dispatchMessages) {
         dispatch({
           type: UPDATE_MESSAGES,
@@ -73,8 +90,9 @@ export function Messages(props) {
       : activeDirectMessageId
       ? activeDirectMessageId
       : null;
+    //console.log(newMessage, activeChatId);
     if (newMessage && activeChatId) {
-      console.log('socket.send => ', activeChatId, newMessage);
+      //console.log(newMessage && activeChatId);
       socket.send(JSON.stringify({ room: activeChatId, message: newMessage }));
       dispatch({
         type: PROCESSED_NEW_MESSAGE,
@@ -98,8 +116,8 @@ export function Messages(props) {
           <Message
             key={message._id || message.id}
             message={message}
-            activeMessage={activeMessage}
             setActiveMessage={setActiveMessage}
+            setPopupMessage={setPopupMessage}
           />
         );
       });
@@ -111,12 +129,15 @@ export function Messages(props) {
       {renderMessages()}
       <MessageActionsPopup
         activeMessage={activeMessage}
-        setActiveMessage={setActiveMessage}
+        popupMessage={popupMessage}
+        setPopupMessage={setPopupMessage}
+        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
+        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         inputRef={inputRef}
       />
     </div>
   );
-}
+});
 
 const mapDispatchToProps = {
   getMessages,

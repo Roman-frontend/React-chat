@@ -4,7 +4,7 @@ import { GET_DIRECT_MESSAGES } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import {
-  getDirectMessages,
+  /* getDirectMessages, */
   postDirectMessages,
 } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
@@ -27,6 +27,7 @@ export function DirectMessages(props) {
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [invited, setInvited] = useState([]);
+  //console.log('getDirectMEssages');
   const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
 
   /* useEffect(() => {
@@ -116,7 +117,7 @@ export function DirectMessages(props) {
 }
 
 const mapDispatchToProps = {
-  getDirectMessages,
+  /* getDirectMessages, */
   postDirectMessages,
 };
 

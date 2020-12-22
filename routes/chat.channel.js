@@ -21,7 +21,6 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
 router.get(`/get-user`, async (req, res) => {
   try {
     const users = await User.find({});
-    console.log('failed in get-users ', users);
     res.json({ users, message: 'Users responsed' });
   } catch (e) {
     res

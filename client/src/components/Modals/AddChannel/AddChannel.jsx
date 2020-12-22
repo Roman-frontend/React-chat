@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import Checkbox from "@material-ui/core/Checkbox";
-import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { postData } from "../../../redux/actions/actions.js";
-import { POST_CHANNEL } from "../../../redux/types.js";
-import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
-import "./add-channel.sass";
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { postData } from '../../../redux/actions/actions.js';
+import { POST_CHANNEL } from '../../../redux/types.js';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import './add-channel.sass';
 
 export function AddChannel(props) {
   const dispatch = useDispatch();
@@ -18,8 +18,8 @@ export function AddChannel(props) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [invited, setInvited] = useState([]);
   const [form, setForm] = useState({
-    name: "",
-    discription: "",
+    name: '',
+    discription: '',
     isPrivate: false,
     members: [],
   });
@@ -27,7 +27,7 @@ export function AddChannel(props) {
   const checkboxRef = useRef();
   const buttonCloseRef = useRef();
   const buttonDoneRef = useRef();
-  const heightParrentDiv = "set-channel__add_height";
+  const heightParrentDiv = 'set-channel__add_height';
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
@@ -35,12 +35,12 @@ export function AddChannel(props) {
     if (activeChannelId && allChannels[0]) {
       return allChannels.filter((channel) => channel._id === activeChannelId);
     }
-    return "hasNotChannelsOrActiveChannel";
+    return 'hasNotChannelsOrActiveChannel';
   }, [activeChannelId, allChannels]);
 
   const isNotMembers = useMemo(() => {
     if (allUsers && activeChannel) {
-      if (activeChannel === "hasNotChannelsOrActiveChannel") {
+      if (activeChannel === 'hasNotChannelsOrActiveChannel') {
         return allUsers;
       } else if (activeChannel[0]) {
         return allUsers.filter(
@@ -66,12 +66,12 @@ export function AddChannel(props) {
 
   function createForm(param) {
     return (
-      <div className="set-channel-forms">
+      <div className='set-channel-forms'>
         <label className={param.labelClassName}>{param.labelName}</label>
         <input
           placeholder={param.placeholder}
           className={param.className}
-          type="text"
+          type='text'
           id={param.id}
           name={param.name}
           value={param.value}
@@ -97,32 +97,32 @@ export function AddChannel(props) {
   }
 
   return (
-    <div className="set-channel" ref={parrentDivRef}>
+    <div className='set-channel' ref={parrentDivRef}>
       <label>Create a channel</label>
-      <p className="set-channel__discription-create">
+      <p className='set-channel__discription-create'>
         Channels are where your team communicates. They’re best when organized
         around a topic — #marketing, for example.
       </p>
 
       <form>
         {createForm({
-          labelName: "Name",
-          labelClassName: "set-channel-forms__label",
-          placeholder: "input name channel",
-          className: "set-channel-forms__input",
-          id: "name",
-          name: "name",
+          labelName: 'Name',
+          labelClassName: 'set-channel-forms__label',
+          placeholder: 'input name channel',
+          className: 'set-channel-forms__input',
+          id: 'name',
+          name: 'name',
           value: form.name,
         })}
 
-        <div className="set-channel-forms">
-          <label className="set-channel-forms__label">Discription</label>
+        <div className='set-channel-forms'>
+          <label className='set-channel-forms__label'>Discription</label>
           <input
-            placeholder="input description channel"
-            className="set-channel-forms__input"
-            type="text"
-            id="discription"
-            name="discription"
+            placeholder='input description channel'
+            className='set-channel-forms__input'
+            type='text'
+            id='discription'
+            name='discription'
             value={form.discription}
             onChange={changeHandler}
           />
@@ -140,23 +140,23 @@ export function AddChannel(props) {
           heightParrentDiv={heightParrentDiv}
         />
 
-        <div className="set-channel-forms" id="add-private-channel">
-          <label className="set-channel-forms__label">Private channel</label>
+        <div className='set-channel-forms' id='add-private-channel'>
+          <label className='set-channel-forms__label'>Private channel</label>
           <Checkbox
-            className="set-channel-forms__input set-channel-forms__input_width"
-            type="checkbox"
-            id="checkbox"
-            name="checkbox"
+            className='set-channel-forms__input set-channel-forms__input_width'
+            type='checkbox'
+            id='checkbox'
+            name='checkbox'
             checked={isPrivate}
             ref={checkboxRef}
             onChange={changeIsPrivate}
-            inputProps={{ "aria-label": "primary checkbox" }}
+            inputprops={{ 'aria-label': 'primary checkbox' }}
           />
         </div>
       </form>
 
       <button
-        className="set-channel__button"
+        className='set-channel__button'
         onClick={closeAddChannel}
         ref={buttonCloseRef}
       >
@@ -164,7 +164,7 @@ export function AddChannel(props) {
       </button>
 
       <button
-        className="set-channel__button"
+        className='set-channel__button'
         onClick={doneCreate}
         ref={buttonDoneRef}
       >

@@ -1,16 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./filter-contacts.sass";
+import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import './filter-contacts.sass';
 
-export const FilterContacts = () => {
+export const FilterContacts = (props) => {
   const inputContactsRef = useRef(null);
   const [listContacts, setListContacts] = useState(null);
-  const [storageContacts, setStorageContacts] = useState("");
+  const [storageContacts, setStorageContacts] = useState('');
+  const { handleClickHistory } = props;
 
   useEffect(() => {
     inputContactsRef.current.focus();
     /** JSON.parse() - приводить результат до обєкта */
-    const storageContacts = JSON.parse(localStorage.getItem("storageContacts"));
+    const storageContacts = JSON.parse(localStorage.getItem('storageContacts'));
 
     if (storageContacts) {
       setStorageContacts(storageContacts);
@@ -25,13 +26,13 @@ export const FilterContacts = () => {
     if (storageContacts) {
       filterList = compareWithStorageContacts(filterList);
     }
-    console.log("filterList -", filterList);
+    console.log('filterList -', filterList);
     if (filterList) {
       const contactsWithoutEmptyElements = filterList.filter(
-        (contact) => contact !== ""
+        (contact) => contact !== ''
       );
-      const filteredList = contactsWithoutEmptyElements.join(" - ");
-      console.log("readyList -", filteredList);
+      const filteredList = contactsWithoutEmptyElements.join(' - ');
+      console.log('readyList -', filteredList);
       setListContacts(`- ${filteredList}`);
     }
   }
@@ -42,7 +43,7 @@ export const FilterContacts = () => {
     const arrayContacts = inputContacts.match(regExp);
 
     const readyContactsArray = arrayContacts.map((contact) => {
-      return contact.split(" ").join("").split("").splice(-10, 10).join("");
+      return contact.split(' ').join('').split('').splice(-10, 10).join('');
     });
 
     return readyContactsArray;
@@ -76,7 +77,7 @@ export const FilterContacts = () => {
     for (const index in inputContacts) {
       for (const secendIndex in storageArrayContacts) {
         if (inputContacts[index] === storageArrayContacts[secendIndex]) {
-          filteredContacts.splice(index, 1, "");
+          filteredContacts.splice(index, 1, '');
         }
       }
     }
@@ -89,18 +90,18 @@ export const FilterContacts = () => {
         storageContacts
       );
       localStorage.setItem(
-        "storageContacts",
+        'storageContacts',
         JSON.stringify(` - ${combinedArrayStorageAndInputNumbers}`)
       );
       setStorageContacts(` - ${combinedArrayStorageAndInputNumbers}`);
       return;
     }
-    alert("Список нових контактов пустой");
+    alert('Список нових контактов пустой');
   }
 
   function cleanStorage() {
-    localStorage.removeItem("storageContacts");
-    setStorageContacts("");
+    localStorage.removeItem('storageContacts');
+    setStorageContacts('');
   }
 
   /*Робота над класами:
@@ -176,29 +177,37 @@ export const FilterContacts = () => {
     }
   } */
 
-  console.log("storageContacts -", storageContacts);
+  const location = {
+    pathname: `/chat`,
+    state: { fromDashboard: true },
+  };
+
+  console.log(handleClickHistory);
+  console.log('storageContacts -', storageContacts);
 
   return (
-    <div className="filter">
-      <div className="filter-header">
-        <label className="filter-header__label" htmlFor="email">
+    <div className='filter'>
+      <div className='filter-header'>
+        <label className='filter-header__label' htmlFor='email'>
           Filter Contacts
         </label>
         <input
-          placeholder="Введите список контактів"
-          type="text"
-          name="email"
-          className="none-border-bottom"
+          placeholder='Введите список контактів'
+          type='text'
+          name='email'
+          className='none-border-bottom'
           ref={inputContactsRef}
         />
         <button onClick={filterContacts}>Filter contacts</button>
         <button onClick={saveContactsToLocalStorage}>Save in storage</button>
         <button onClick={cleanStorage}>Clean storage</button>
-        <button className="sign-up">
-          <Link to={`/chat`}>SignUp</Link>
+        <button className='sign-up'>
+          <Link to={`/chat`} onClick={(path) => handleClickHistory(location)}>
+            SignUp
+          </Link>
         </button>
       </div>
-      <div className="filter__list-result">{listContacts}</div>
+      <div className='filter__list-result'>{listContacts}</div>
     </div>
   );
 };

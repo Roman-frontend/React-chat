@@ -5,9 +5,12 @@ import React, {
   useMemo,
   Suspense,
 } from 'react';
-//import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 //import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import Badge from '@material-ui/core/Badge';
+import Avatar from '@material-ui/core/Avatar';
+import AvatarGroup from '@material-ui/lab/AvatarGroup';
 //import Skeleton from '@material-ui/lab/Skeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
@@ -17,16 +20,37 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { ConversationMembers } from '../../Modals/ConversationHeader/ConversationMembers';
 import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
+import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
 
-/* const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    '& > * + *': {
-      marginLeft: theme.spacing(2),
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: '$ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
     },
   },
-})); */
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}))(Badge);
 
 export function ConversationHeader() {
   //const classes = useStyles();
@@ -84,14 +108,26 @@ export function ConversationHeader() {
           spacing={1}
           style={{ height: '4.3rem', alignContent: 'center' }}
         >
-          <Grid item xs={5} stule={{ alignSelf: 'center' }}>
-            <PeopleAltIcon
-              style={{ fontSize: 40, cursor: 'pointer' }}
+          <Grid item xs={6} stule={{ alignSelf: 'center' }}>
+            <AvatarGroup
+              max={2}
+              style={{ fontSize: 30, cursor: 'pointer' }}
               onClick={() => setModalIsShowsMembers(true)}
-            />
-            <b>{activeChannel ? activeChannel.members.length : 1}</b>
+            >
+              <StyledBadge
+                overlap='circle'
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                variant='dot'
+              >
+                <Avatar alt='Remy Sharp' src={imageProfile} />
+              </StyledBadge>
+              <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
+            </AvatarGroup>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <GroupAddIcon
               style={{ fontSize: 45, cursor: 'pointer' }}
               onClick={() => openModalAddPeoples()}
@@ -117,8 +153,6 @@ export function ConversationHeader() {
     setInvited([]);
     setModalAddPeopleIsOpen(false);
   }
-
-  //console.log(modalIsShowsMembers)
 
   return (
     <div className='conversation__field-name'>

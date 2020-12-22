@@ -39,7 +39,6 @@ export const rootReducer = (state = initialState, action) => {
 
     case GET_CHANNELS:
       const storageData = JSON.parse(localStorage.getItem('userData')).userData;
-      console.log(storageData);
       let startedChannel = action.payload.userChannels
         ? { activeChannelId: action.payload.userChannels[0]._id }
         : null;
@@ -70,7 +69,6 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, messages: action.payload.messages };
 
     case GET_DIRECT_MESSAGES:
-      //console.log(action.payload);
       return { ...state, listDirectMessages: action.payload.directMessages };
 
     case POST_REGISTER:
@@ -81,7 +79,6 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case POST_LOGIN:
-      //console.log(action.payload);
       return {
         ...state,
         ...action.payload,
@@ -100,7 +97,6 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, channels: action.payload.userChannels };
 
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
-      console.log(state, action.payload);
       return {
         ...state,
         listDirectMessages: state.listDirectMessages.concat(
@@ -119,7 +115,6 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case LOGIN_DATA:
-      //console.log(action.payload);
       return {
         ...state,
         ...action.payload,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../hooks/auth.hook.js';
@@ -7,13 +7,9 @@ export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
   const { login } = useAuth();
+  const storageData = localStorage.getItem('userData');
 
-  useEffect(() => {
-    if (token && userData) {
-      console.log('login');
-      login(userData, token);
-    }
-  }, [token, userData]);
+  if (token && userData && !storageData) login(userData, token);
 
   function assignRouteToApply(routeProps) {
     if (!token) {

@@ -6,10 +6,11 @@ import {
   GET_MESSAGES,
   GET_MESSAGES_FOR_DIRECT_MSG,
 } from '../redux/types';
+import { useSelector } from 'react-redux';
 
-const storageData = JSON.parse(localStorage.getItem('userData'));
-
-export function useResourse(type, token = null, param = null, body = null) {
+export function useResourse(type, param = null, body = null) {
+  const token = useSelector((state) => state.token);
+  const userData = useSelector((state) => state.userData);
   switch (type) {
     case GET_USERS:
       return {
@@ -21,9 +22,9 @@ export function useResourse(type, token = null, param = null, body = null) {
         channels: wrapPromise(
           reduxServer(
             '/api/channel/get-chunnels',
-            storageData.token,
+            token,
             'POST',
-            storageData.userData.channels
+            userData.channels
           )
         ),
       };
@@ -33,9 +34,9 @@ export function useResourse(type, token = null, param = null, body = null) {
         listDirectMessages: wrapPromise(
           reduxServer(
             `/api/direct-message/get-direct-messages`,
-            storageData.token,
+            token,
             'POST',
-            { listDirectMessages: storageData.userData.directMessages }
+            { listDirectMessages: userData.directMessages }
           )
         ),
       };
@@ -59,8 +60,6 @@ function wrapPromise(promise) {
   let status = 'pending';
   let result;
 
-  console.log(promise);
-
   const suspender = promise.then(
     (r) => {
       status = 'success';
@@ -71,7 +70,6 @@ function wrapPromise(promise) {
       result = e;
     }
   );
-  console.log('start');
   return {
     read() {
       if (status === 'pending') {

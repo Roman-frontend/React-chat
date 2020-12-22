@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
 import { LOGIN_DATA, LOGOUT_DATA } from '../redux/types.js';
@@ -13,7 +13,7 @@ export const useAuth = () => {
    *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
    */
   const login = useCallback((userData, token) => {
-    console.log('login ->', userData, token);
+    //console.log('login ->', userData, token);
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -40,10 +40,10 @@ export const useAuth = () => {
       { channels, directMessages, _id, name, email },
       { ...newActiveChat }
     );
-    console.log('changeStorageUserDataActiveChat ->', {
+    /* console.log('changeStorageUserDataActiveChat ->', {
       userData: { ...object },
       token,
-    });
+    }); */
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -56,7 +56,7 @@ export const useAuth = () => {
   const changeStorageUserDataChannels = (newChannels) => {
     //console.log("changeStorageUserDataChannels");
     const data = JSON.parse(localStorage.userData);
-    console.log(data);
+    //console.log(data);
     const { directMessages, lastActiveChatId, _id, name, email } = {
       ...data.userData,
     };
@@ -66,10 +66,10 @@ export const useAuth = () => {
       { directMessages, lastActiveChatId, _id, name, email },
       { ...newChannels }
     );
-    console.log('changeStorageUserDataChannels ->', {
+    /* console.log('changeStorageUserDataChannels ->', {
       userData: { ...object },
       token,
-    });
+    }); */
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -80,7 +80,7 @@ export const useAuth = () => {
   };
 
   const changeStorageUserDataDirectMessages = (newDirectMessages) => {
-    console.log('changeStorageUserDataDirectMessages');
+    //console.log('changeStorageUserDataDirectMessages');
     const data = JSON.parse(localStorage.userData);
     const { channels, lastActiveChatId, _id, name, email } = {
       ...data.userData,
@@ -91,10 +91,10 @@ export const useAuth = () => {
       { channels, lastActiveChatId, _id, name, email },
       { ...newDirectMessages }
     );
-    console.log('changeStorageUserDataDirectMessages ->', {
+    /* console.log('changeStorageUserDataDirectMessages ->', {
       userData: { ...object },
       token,
-    });
+    }); */
     localStorage.setItem(
       storageName,
       JSON.stringify({
@@ -104,10 +104,10 @@ export const useAuth = () => {
     );
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     /** JSON.parse() - приводить результат до обєкта */
     const data = JSON.parse(localStorage.getItem(storageName));
-    console.log(data);
+    //console.log(data);
 
     if (data && data.token && data.userData) {
       dispatch({

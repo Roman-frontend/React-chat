@@ -12,10 +12,10 @@ import {
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
   REMOVE_MESSAGE,
-} from "../types.js";
-import { reduxServer } from "../../hooks/http.hook.js";
+} from '../types.js';
+import { reduxServer } from '../../hooks/http.hook.js';
 
-function dispatcher(type, url, token, method = "GET", body = null) {
+function dispatcher(type, url, token, method = 'GET', body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
@@ -27,7 +27,7 @@ function dispatcher(type, url, token, method = "GET", body = null) {
     } catch (e) {
       dispatch({
         type,
-        payload: "403",
+        payload: '403',
       });
       console.log(e);
     }
@@ -39,21 +39,21 @@ export const postData = (method, token = null, body = null, param = null) => {
     case POST_REGISTER:
       return dispatcher(
         POST_REGISTER,
-        "api/auth/register",
+        'api/auth/register',
         token,
-        "POST",
+        'POST',
         body
       );
 
     case POST_LOGIN:
-      return dispatcher(POST_LOGIN, "/api/auth/login", token, "POST", body);
+      return dispatcher(POST_LOGIN, '/api/auth/login', token, 'POST', body);
 
     case POST_CHANNEL:
       return dispatcher(
         POST_CHANNEL,
         `/api/channel/post-channel${param}`,
         token,
-        "POST",
+        'POST',
         body
       );
 
@@ -62,7 +62,7 @@ export const postData = (method, token = null, body = null, param = null) => {
         POST_ADD_PEOPLES_TO_CHANNEL,
         `/api/channel/post-add-members-to-channel${param}`,
         token,
-        "POST",
+        'POST',
         body
       );
   }
@@ -71,7 +71,7 @@ export const postData = (method, token = null, body = null, param = null) => {
 export const putMessage = (messageForEdit, id, param = null, token = null) => {
   return dispatcher(
     `/api/chat/put-message${id}`,
-    "PUT",
+    'PUT',
     { ...messageForEdit },
     token
   );
@@ -84,9 +84,9 @@ export function getUsers(token, param) {
 export const getChannels = (token, body) => {
   return dispatcher(
     GET_CHANNELS,
-    "/api/channel/get-chunnels",
+    '/api/channel/get-chunnels',
     token,
-    "POST",
+    'POST',
     body
   );
 };
@@ -96,12 +96,12 @@ export const getMessages = (token, param, body) => {
     GET_MESSAGES,
     `/api/chat/get-messages${param}`,
     token,
-    "POST",
+    'POST',
     body
   );
 };
 
-export const getDirectMessages = (token, body) => {
+/* export const getDirectMessages = (token, body) => {
   return dispatcher(
     GET_DIRECT_MESSAGES,
     `/api/direct-message/get-direct-messages`,
@@ -109,7 +109,7 @@ export const getDirectMessages = (token, body) => {
     "POST",
     body
   );
-};
+}; */
 
 export const getMessagesForDirectMsg = (token, param) => {
   return dispatcher(
@@ -124,7 +124,7 @@ export const postMessage = (token, body, param) => {
     POST_MESSAGE,
     `/api/chat/post-message${param}`,
     token,
-    "POST",
+    'POST',
     body
   );
 };
@@ -134,7 +134,7 @@ export const postMessageToDirectMsg = (token, body, param) => {
     POST_MESSAGE_FOR_DIRECT_MSG,
     `/api/direct-message-chat/post-message${param}`,
     token,
-    "POST",
+    'POST',
     body
   );
 };
@@ -144,7 +144,7 @@ export const postDirectMessages = (token, body) => {
     POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
     `/api/direct-message/post-direct-messages`,
     token,
-    "POST",
+    'POST',
     body
   );
 };
@@ -154,7 +154,7 @@ export const removeChannelMessage = (token, param) => {
     REMOVE_MESSAGE,
     `/api/chat/delete-message${param}`,
     token,
-    "DELETE"
+    'DELETE'
   );
 };
 
@@ -163,6 +163,6 @@ export const removeMessageOfDirectMessage = (token, param) => {
     REMOVE_MESSAGE,
     `/api/direct-message-chat/delete-message${param}`,
     token,
-    "DELETE"
+    'DELETE'
   );
 };

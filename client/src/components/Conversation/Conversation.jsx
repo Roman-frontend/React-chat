@@ -1,13 +1,13 @@
 //Тут розфасовка між activeChannelId і activeDirectMessageId зроблено
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { useSelector } from "react-redux";
-import { ConversationHeader } from "./ConversationHeader/ConversationHeader.jsx";
-import { Messages } from "./Messages/Messages.jsx";
-import { InputUpdateMessages } from "./InputUpdateMessages/InputUpdateMessages.jsx";
-import EndActionButton from "./EndActionButton/EndActionButton.jsx";
-import imageError from "../../images/error.png";
-import "./conversation.sass";
-import { useCallback } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
+import { Messages } from './Messages/Messages.jsx';
+import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
+import EndActionButton from './EndActionButton/EndActionButton.jsx';
+import imageError from '../../images/error.png';
+import './conversation.sass';
+import { useCallback } from 'react';
 
 export default function Conversation(props) {
   const { socket, sendMessage } = props;
@@ -17,18 +17,21 @@ export default function Conversation(props) {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
-  const [activeMessage, setActiveMessage] = useState({});
+  const [activeMessage, setActiveMessage] = useState(null);
+  const [popupMessage, setPopupMessage] = useState(null);
+  const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
+  const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
   const inputRef = useRef();
 
   useLayoutEffect(() => {
     //Підписуємось на подію, так відкриваємо з'єднання
     socket.onopen = () => {
-      console.log("ONLINE");
+      console.log('ONLINE');
     };
   }, []);
 
   useEffect(() => {
-    const storageData = JSON.parse(localStorage.getItem("userData"));
+    const storageData = JSON.parse(localStorage.getItem('userData'));
     if (
       !activeChannelId &&
       !activeDirectMessageId &&
@@ -36,16 +39,10 @@ export default function Conversation(props) {
     ) {
       sendMessage(
         socket,
-        JSON.stringify({ room: storageData.lastActiveChatId, meta: "join" })
+        JSON.stringify({ room: storageData.lastActiveChatId, meta: 'join' })
       );
     }
   }, []);
-
-  useEffect(() => {
-    if (activeMessage.reply || activeMessage.changing) {
-      inputRef.current.children[1].children[0].focus();
-    }
-  }, [activeMessage.reply, activeMessage.changing]);
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
@@ -64,10 +61,11 @@ export default function Conversation(props) {
   }, [channels, activeChannelId, userId]);
 
   const buttonEndActive =
-    activeMessage.reply || activeMessage.changing ? (
+    closeBtnChangeMsg || closeBtnReplyMsg ? (
       <EndActionButton
-        activeMessage={activeMessage}
-        setActiveMessage={setActiveMessage}
+        closeBtnReplyMsg={closeBtnReplyMsg}
+        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
+        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
         inputRef={inputRef}
       />
     ) : null;
@@ -79,6 +77,10 @@ export default function Conversation(props) {
       <Messages
         activeMessage={activeMessage}
         setActiveMessage={setActiveMessage}
+        popupMessage={popupMessage}
+        setPopupMessage={setPopupMessage}
+        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
+        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         inputRef={inputRef}
         socket={socket}
       />
@@ -87,28 +89,26 @@ export default function Conversation(props) {
     );
   };
 
-  const fieldAnswerTo = () => {
-    if (activeMessage.reply) {
+  const fieldAnswerTo = useCallback(() => {
+    if (closeBtnReplyMsg) {
       return (
-        <div className="conversation-riply__answer">
-          {activeMessage.reply.text}
-        </div>
+        <div className='conversation-riply__answer'>{closeBtnReplyMsg}</div>
       );
     }
-  };
+  }, [closeBtnReplyMsg]);
 
   return (
-    <div
-      className={activeMessage.reply ? "conversation-riply" : "conversation"}
-    >
+    <div className={closeBtnReplyMsg ? 'conversation-riply' : 'conversation'}>
       <ConversationHeader />
       {fieldAnswerTo()}
       {contentMessages()}
-      <div className="conversation-input">
+      <div className='conversation-input'>
         <InputUpdateMessages
           inputRef={inputRef}
-          activeMessage={activeMessage}
-          setActiveMessage={setActiveMessage}
+          closeBtnChangeMsg={closeBtnChangeMsg}
+          setCloseBtnChangeMsg={setCloseBtnChangeMsg}
+          closeBtnReplyMsg={closeBtnReplyMsg}
+          setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         />
         {buttonEndActive}
       </div>

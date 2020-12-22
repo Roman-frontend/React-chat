@@ -1,11 +1,12 @@
-import React from "react";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { useAuth } from "../../../hooks/auth.hook.js";
+import React from 'react';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
-export default function HeaderProfile(props) {
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { useAuth } from '../../../hooks/auth.hook.js';
+
+const HeaderProfile = (props) => {
   const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;
   const history = useHistory();
   const { logout } = useAuth();
@@ -15,7 +16,7 @@ export default function HeaderProfile(props) {
   const logoutHandler = (event) => {
     event.preventDefault();
     logout();
-    history.push("/");
+    history.push('/');
   };
 
   const handleMenuClose = () => {
@@ -26,10 +27,10 @@ export default function HeaderProfile(props) {
   return (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
@@ -39,4 +40,6 @@ export default function HeaderProfile(props) {
       <MenuItem onClick={logoutHandler}>Log out</MenuItem>
     </Menu>
   );
-}
+};
+
+export default React.memo(HeaderProfile);

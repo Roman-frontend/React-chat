@@ -1,11 +1,13 @@
-import React, { useContext, Suspense } from 'react';
+import React, { useContext, Suspense, lazy } from 'react';
 import { ChatContext } from '../../Context/ChatContext.js';
-import Header from '../../components/Header/Header.jsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { SetsUser } from '../../components/SetsUser/SetsUser.jsx';
-import Conversation from '../../components/Conversation/Conversation.jsx';
 import './chat-page.sass';
+const Header = lazy(() => import('../../components/Header/Header.jsx'));
+const Conversation = lazy(() =>
+  import('../../components/Conversation/Conversation.jsx')
+);
+const SetsUser = lazy(() => import('../../components/SetsUser/SetsUser.jsx'));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,7 +17,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Chat = () => {
+export const Chat = (props) => {
+  const { token, userData } = props;
   const classes = useStyles();
   //як аргументо WebSocket приймає url але замість http WebSocket використовують ws
   const socket = new WebSocket('ws://localhost:8080');

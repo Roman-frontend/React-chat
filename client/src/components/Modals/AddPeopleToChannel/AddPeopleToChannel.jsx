@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import useChatContext from '../../../Context/ChatContext.js';
 import Modal from 'react-modal';
 import { connect } from 'react-redux';
@@ -40,9 +40,11 @@ export function AddPeopleToChannel(props) {
   }, [userId, allUsers]);
 
   useEffect(() => {
-    if (users && userData) {
-      let allNotInvited = users.filter((user) => user._id !== userData._id);
-      if (users && listDirectMessages && listDirectMessages[0]) {
+    if (allUsers.users && userData) {
+      let allNotInvited = allUsers.users.filter(
+        (user) => user._id !== userData._id
+      );
+      if (listDirectMessages && listDirectMessages[0]) {
         listDirectMessages.forEach((directMessage) => {
           allNotInvited = allNotInvited.filter(
             (user) => user._id !== directMessage.invited._id
@@ -51,9 +53,17 @@ export function AddPeopleToChannel(props) {
       }
       setNotInvited(allNotInvited);
     }
-  }, [users, listDirectMessages]);
+  }, [allUsers, listDirectMessages]);
 
-  console.log(allUsers);
+  const listMembers = useMemo(() => {
+    return allUsers.users ? (
+      <ul>
+        {allUsers.users.map((user) => (
+          <li key={user._id}>{user.name}</li>
+        ))}
+      </ul>
+    ) : null;
+  }, [allUsers]);
 
   return (
     <Modal
@@ -66,11 +76,7 @@ export function AddPeopleToChannel(props) {
         <p className='set-channel-forms__main-label-text'>
           Invite people to {userData.name}
         </p>
-        <ul>
-          {allUsers.users.map((name) => (
-            <li key={name._id}>{name.name}</li>
-          ))}
-        </ul>
+        {listMembers}
         <SelectPeople
           invited={invited}
           setInvited={setInvited}

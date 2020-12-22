@@ -1,10 +1,10 @@
-const { Router } = require("express");
-const config = require("config");
-const Channel = require("../models/Channel.js");
-const ChannelMessage = require("../models/ChannelMessage");
-const User = require("../models/User.js");
+const { Router } = require('express');
+const config = require('config');
+const Channel = require('../models/Channel.js');
+const ChannelMessage = require('../models/ChannelMessage');
+const User = require('../models/User.js');
 const router = Router();
-const jsonWebToken = require("jsonwebtoken");
+const jsonWebToken = require('jsonwebtoken');
 
 router.get(`/get-users:userId`, verifyToken, async (req, res) => {
   try {
@@ -13,47 +13,47 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
       return user.name;
     });
 
-    res.json({ names, message: "Імена повернені" });
+    res.json({ names, message: 'Імена повернені' });
   } catch (e) {
     res
       .status(500)
-      .json({ message: "Помилка при виконанні get-запиту ", error: e });
+      .json({ message: 'Помилка при виконанні get-запиту ', error: e });
   }
 });
 
-router.post("/get-messages:activeChannelId", verifyToken, async (req, res) => {
+router.post('/get-messages:activeChannelId', verifyToken, async (req, res) => {
   try {
-    console.log("validatedPostMessage => ", "userHasAccesToChannel");
+    console.log('validatedPostMessage => ', 'userHasAccesToChannel');
     const userHasAccesToChannel = await checkAccesToChannel(
       req.params.activeChannelId,
       req.body.userId
     );
 
     if (userHasAccesToChannel) {
-      res.status(403).json({ message: "Ви не є учасником приватного чату" });
+      res.status(403).json({ message: 'Ви не є учасником приватного чату' });
     } else {
       const messages = await ChannelMessage.find({
         chatId: req.params.activeChannelId,
       });
-      res.json({ messages, message: "Повідомлення повернені" });
+      res.json({ messages, message: 'Повідомлення повернені' });
     }
   } catch (e) {
     res
       .status(500)
-      .json({ message: "Помилка при виконанні get-запиту ", error: e });
+      .json({ message: 'Помилка при виконанні get-запиту ', error: e });
   }
 });
 
-router.post("/post-message:chatId", verifyToken, async (req, res) => {
+router.post('/post-message:chatId', verifyToken, async (req, res) => {
   try {
     //console.log("without express.json ..........")
     const userIsNotMemberPrivatChannel = await checkAccesToChannel(
       req.params.chatId,
       req.body.userId
     );
-    console.log("post-message ==>> ", userIsNotMemberPrivatChannel);
+    //console.log("post-message ==>> ", userIsNotMemberPrivatChannel);
     if (userIsNotMemberPrivatChannel) {
-      res.status(403).json({ message: "Ви не є учасником приватного чату" });
+      res.status(403).json({ message: 'Ви не є учасником приватного чату' });
     } else if (req.params.chatId) {
       const newMessage = await ChannelMessage.create(req.body);
       /* const messages = await ChannelMessage.find({
@@ -61,36 +61,36 @@ router.post("/post-message:chatId", verifyToken, async (req, res) => {
       }); */
       res.status(201).json({
         /* messages, */ newMessage,
-        message: "Повідомлення надіслано",
+        message: 'Повідомлення надіслано',
       });
     }
   } catch (e) {
-    res.status(500).json({ message: "Что-то пошло не так -", error: e });
+    res.status(500).json({ message: 'Что-то пошло не так -', error: e });
   }
 });
 
-router.put("/put-message:_id", async (req, res) => {
+router.put('/put-message:_id', async (req, res) => {
   try {
     await ChannelMessage.findByIdAndUpdate(req.params._id, req.body);
-    const messages = await ChannelMessage.find({ username: "Yulia" });
+    const messages = await ChannelMessage.find({ username: 'Yulia' });
     res
       .status(201)
-      .json({ messages, newMessage, message: "Повідомлення змінене" });
+      .json({ messages, newMessage, message: 'Повідомлення змінене' });
   } catch (e) {
-    console.log("catch - put-message");
-    res.status(500).json({ message: "Что-то пошло не так " });
+    console.log('catch - put-message');
+    res.status(500).json({ message: 'Что-то пошло не так ' });
   }
 });
 
-router.delete("/delete-message:id", verifyToken, async (req, res) => {
+router.delete('/delete-message:id', verifyToken, async (req, res) => {
   try {
     await ChannelMessage.findByIdAndRemove(req.params.id);
     res
       .status(201)
-      .json({ removedId: req.params.id, message: "Сообщение удалено" });
+      .json({ removedId: req.params.id, message: 'Сообщение удалено' });
   } catch (e) {
-    console.log("catch - delete-message");
-    res.status(500).json({ removed: false, message: "Что-то пошло не так " });
+    console.log('catch - delete-message');
+    res.status(500).json({ removed: false, message: 'Что-то пошло не так ' });
   }
 });
 
@@ -103,12 +103,12 @@ async function checkAccesToChannel(chatId, userId) {
 }
 
 function verifyToken(req, res, next) {
-  const token = req.headers["authorization"];
+  const token = req.headers['authorization'];
   //console.log("token ", token)
 
   if (token == null) return res.sendStatus(401);
 
-  jsonWebToken.verify(token, config.get("jwtSecret"), (err, success) => {
+  jsonWebToken.verify(token, config.get('jwtSecret'), (err, success) => {
     err ? res.sendStatus(403) : next();
   });
 }

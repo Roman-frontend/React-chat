@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+//createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
+import { createBrowserHistory } from 'history';
 import { PrivateRoute } from './components/Helpers/PrivateRoute.jsx';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute.jsx';
 import { SignUpPage } from './pages/SignUpPage/SignUpPage.js';
@@ -8,11 +10,20 @@ import { Chat } from './pages/Chat/Chat.js';
 import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
 import './css/style.sass';
 
+const history = createBrowserHistory();
+
 export default function App() {
+  function handleClickHistory(path) {
+    //.push() - додає в історію - руху по силках значення path. (де крім доданого є ті переходи які додаються автоматично після переходів по силках)
+    history.push(path /* "/home" */);
+  }
+
   return (
-    <Router>
+    <Router history={history}>
       <Switch>
-        <Route exact path='/filterContacts' component={FilterContacts} />
+        <Route exact path='/filterContacts'>
+          <FilterContacts handleClickHistory={handleClickHistory} />
+        </Route>
         <PubliсOnlyRoute exact path='/signIn' component={SignInPage} />
         <PubliсOnlyRoute exact path='/signUp' component={SignUpPage} />
         <PrivateRoute exact path='/chat' component={Chat} />

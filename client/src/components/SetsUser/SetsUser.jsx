@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PersonIcon from '@material-ui/icons/Person';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Grid from '@material-ui/core/Grid';
+import { useTranslation } from 'react-i18next';
 import { ACTIVE_CHAT_ID } from '../../redux/types.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
@@ -12,6 +13,7 @@ import { DirectMessages } from './DirectMessages/DirectMessages';
 import './user-sets.sass';
 
 export function SetsUser(props) {
+  const { t } = useTranslation();
   const { socket } = props;
   const { changeStorageUserDataActiveChat } = useAuth();
   const dispatch = useDispatch();
@@ -147,7 +149,6 @@ export function SetsUser(props) {
         refUpdatedChannels.current
       ) {
         const objectChatNameAndId = createPayloadForChange(idActive);
-
         dispatch({
           type: ACTIVE_CHAT_ID,
           payload: objectChatNameAndId,
@@ -185,7 +186,7 @@ export function SetsUser(props) {
     <div className='main-font left-block'>
       <div>
         <DrawTitles
-          name={'Channels'}
+          name={t('description.channelTitle')}
           divClass={'left-bar__channels'}
           classPlus={'left-bar__first-plus'}
           stateShowing={listChannelsIsOpen}
@@ -201,7 +202,7 @@ export function SetsUser(props) {
       />
       <div>
         <DrawTitles
-          name={'Direct messages'}
+          name={t('description.dirrectMessageTitle')}
           divClass={null}
           classPlus={'left-bar__second-plus'}
           stateShowing={listMembersIsOpen}

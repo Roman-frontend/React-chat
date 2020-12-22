@@ -3,12 +3,12 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   rootHeader: {
-    gridArea: "header",
-    background: "#3F0E40",
-    color: "#ffffff",
-    display: "flex",
-    cursor: "pointer",
-    alignItems: "center",
+    gridArea: 'header',
+    background: '#3F0E40',
+    color: '#ffffff',
+    display: 'flex',
+    cursor: 'pointer',
+    alignItems: 'center',
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -43,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    left: "37vw",
+    left: '37vw',
   },
   inputRoot: {
     color: 'inherit',
-    width: '41vw'
+    width: '41vw',
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -63,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
   sectionDesktop: {
     display: 'none',
     //відступ вправо правих іконок від поля пошуку
-    padding: "0px 0px 0px 20vw",
     [theme.breakpoints.up('md')]: {
       display: 'flex',
     },
@@ -76,4 +75,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default useStyles
+export default useStyles;

@@ -11,7 +11,7 @@ export const reduxServer = async (url, token, method = 'GET', body = null) => {
       headers['Content-Type'] = 'application/json';
     }
 
-    console.log('http req ', url, { method, body, headers });
+    //console.log('http req ', url, { method, body, headers });
     const response = await fetch(url, { method, body, headers });
     const data = await response.json();
 

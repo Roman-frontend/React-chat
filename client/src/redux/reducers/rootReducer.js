@@ -66,6 +66,7 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case GET_MESSAGES:
+      console.log(action.payload);
       return { ...state, messages: action.payload.messages };
 
     case GET_DIRECT_MESSAGES:
@@ -106,6 +107,7 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case REMOVE_MESSAGE:
+      console.log('REMOVE_MESSAGE');
       const updatedMessages = state.messages.reverse().filter((message) => {
         return message._id !== action.payload.removedId;
       });
@@ -124,9 +126,11 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, token: action.payload, userData: action.payload };
 
     case ACTIVE_CHAT_ID:
+      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case UPDATE_MESSAGES:
+      console.log(action.payload);
       return { ...state, messages: action.payload };
 
     case PROCESSED_NEW_MESSAGE:

@@ -108,7 +108,7 @@ export function ConversationHeader() {
           spacing={1}
           style={{ height: '4.3rem', alignContent: 'center' }}
         >
-          <Grid item xs={6} stule={{ alignSelf: 'center' }}>
+          <Grid item xs={6} style={{ alignSelf: 'center' }}>
             <AvatarGroup
               max={2}
               style={{ fontSize: 30, cursor: 'pointer' }}

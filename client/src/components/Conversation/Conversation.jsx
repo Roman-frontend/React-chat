@@ -35,11 +35,15 @@ export default function Conversation(props) {
     if (
       !activeChannelId &&
       !activeDirectMessageId &&
-      storageData.lastActiveChatId
+      storageData.userData.lastActiveChatId
     ) {
+      console.log(storageData);
       sendMessage(
         socket,
-        JSON.stringify({ room: storageData.lastActiveChatId, meta: 'join' })
+        JSON.stringify({
+          room: storageData.userData.lastActiveChatId,
+          meta: 'join',
+        })
       );
     }
   }, []);

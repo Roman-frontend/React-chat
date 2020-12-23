@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import useChatContext from '../../../Context/ChatContext.js';
 import { GET_DIRECT_MESSAGES } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,17 +10,15 @@ import {
 } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
+import CreateLists from '../HelpersSetUsers/CreateChatItem';
+import { DrawTitles } from '../DrawTitles.jsx';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
 
 export function DirectMessages(props) {
+  const { t } = useTranslation();
   const { resDirectMessages } = useChatContext();
-  const {
-    listMembersIsOpen,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
-    createLists,
-  } = props;
+  const { socket } = props;
   const { changeStorageUserDataDirectMessages } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
@@ -27,17 +26,9 @@ export function DirectMessages(props) {
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [invited, setInvited] = useState([]);
-  //console.log('getDirectMEssages');
+  const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
+  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
-
-  /* useEffect(() => {
-    const storageData = JSON.parse(localStorage.getItem('userData'));
-    dispatch(
-      getDirectMessages(storageData.token, {
-        listDirectMessages: storageData.userData.directMessages,
-      })
-    );
-  }, []); */
 
   useEffect(() => {
     if (resourseDirectMessages) {
@@ -65,7 +56,13 @@ export function DirectMessages(props) {
         allRowDirectMessages.push(invitedAllData[0]); */
         allRowDirectMessages.push(directMessage);
       });
-      return createLists(allRowDirectMessages, 'directMessages');
+      return (
+        <CreateLists
+          arrElements={allRowDirectMessages}
+          listName={'directMessages'}
+          socket={socket}
+        />
+      );
     }
   }, [listDirectMessages, allUsers]);
 
@@ -92,27 +89,39 @@ export function DirectMessages(props) {
   }
 
   return (
-    <div
-      className='user-sets__users'
-      style={{ display: listMembersIsOpen ? 'block' : 'none' }}
-    >
-      {createArrDirectMessages()}
-      <div className='user-sets__channel'>
-        <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
+    <>
+      <div>
+        <DrawTitles
+          name={t('description.dirrectMessageTitle')}
+          divClass={null}
+          classPlus={'left-bar__second-plus'}
+          stateShowing={listMembersIsOpen}
+          seterStateShowing={setListMembersIsOpen}
+          setModalAdd={setModalAddPeopleIsOpen}
+        />
       </div>
-      <AddPeopleToDirectMessages
-        doneInvite={doneInvite}
-        invited={invited}
-        setInvited={setInvited}
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
-      />
-      <div className='user-sets__channel'>
-        <Link className='main-font' to={`/filterContacts`}>
-          Filter Contants
-        </Link>
+      <div
+        className='user-sets__users'
+        style={{ display: listMembersIsOpen ? 'block' : 'none' }}
+      >
+        {createArrDirectMessages()}
+        <div className='user-sets__channel'>
+          <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
+        </div>
+        <AddPeopleToDirectMessages
+          doneInvite={doneInvite}
+          invited={invited}
+          setInvited={setInvited}
+          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        />
+        <div className='user-sets__channel'>
+          <Link className='main-font' to={`/filterContacts`}>
+            Filter Contants
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -41,9 +41,10 @@ export const Messages = React.memo((props) => {
   socket.onmessage = (response) => {
     //console.log(response.data);
     if (response.data === "З'єднання з WebSocket встановлено") {
-      //console.log("З'єднання з WebSocket встановлено");
+      console.log("З'єднання з WebSocket встановлено", reduxMessages);
     } else {
       const parsedRes = JSON.parse(response.data);
+      //console.log(reduxMessages);
       const dispatchMessages =
         reduxMessages[0] === undefined
           ? [parsedRes]
@@ -52,6 +53,7 @@ export const Messages = React.memo((props) => {
           : null;
       //console.log(parsedRes._id, dispatchMessages);
       if (parsedRes._id && dispatchMessages) {
+        console.log(dispatchMessages);
         dispatch({
           type: UPDATE_MESSAGES,
           payload: dispatchMessages,

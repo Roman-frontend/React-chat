@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
+  useLayoutEffect,
   useState,
   useRef,
 } from 'react';
@@ -37,23 +38,30 @@ export const Messages = React.memo((props) => {
   const userId = useSelector((state) => state.userData._id);
   const newMessage = useSelector((state) => state.newMessage);
 
+  const messagesRef = useRef();
+
+  useLayoutEffect(() => {
+    messagesRef.current = reduxMessages;
+  }, [reduxMessages]);
+
   //Підписуємось на подію що спрацює при отриманні повідомлення
   socket.onmessage = (response) => {
-    //console.log(response.data);
     if (response.data === "З'єднання з WebSocket встановлено") {
-      console.log("З'єднання з WebSocket встановлено", reduxMessages);
+      console.log("З'єднання з WebSocket встановлено");
+      return;
+    }
+
+    const parsedRes = JSON.parse(response.data);
+    if (parsedRes.message === 'newOnlineUser') {
+      console.log(parsedRes);
     } else {
-      const parsedRes = JSON.parse(response.data);
-      //console.log(reduxMessages);
       const dispatchMessages =
-        reduxMessages[0] === undefined
+        messagesRef.current[0] === undefined
           ? [parsedRes]
-          : reduxMessages[0]._id !== parsedRes._id
-          ? reduxMessages.reverse().concat(parsedRes)
+          : messagesRef.current[0]._id !== parsedRes._id
+          ? messagesRef.current.reverse().concat(parsedRes)
           : null;
-      //console.log(parsedRes._id, dispatchMessages);
       if (parsedRes._id && dispatchMessages) {
-        console.log(dispatchMessages);
         dispatch({
           type: UPDATE_MESSAGES,
           payload: dispatchMessages,
@@ -73,17 +81,16 @@ export const Messages = React.memo((props) => {
   };
 
   useEffect(() => {
+    console.log(activeDirectMessageId);
     async function getFetchMessages() {
-      if (activeChannelId) {
+      if (activeChannelId && token && userId) {
         dispatch(getMessages(token, activeChannelId, { userId }));
-      } else if (activeDirectMessageId) {
+      } else if (activeDirectMessageId && token) {
         dispatch(getMessagesForDirectMsg(token, activeDirectMessageId));
       }
     }
 
-    if ((activeChannelId || activeDirectMessageId) && activeChannelId !== '1') {
-      getFetchMessages();
-    }
+    if (activeChannelId !== '1') getFetchMessages();
   }, [activeChannelId, activeDirectMessageId]);
 
   useEffect(() => {

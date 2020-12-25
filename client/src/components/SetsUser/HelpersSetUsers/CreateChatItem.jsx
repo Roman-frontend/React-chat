@@ -15,7 +15,7 @@ export function CreateLists(props) {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
-  const refIdPrevChannel = useRef(activeChannelId);
+  //const refIdPrevChannel = useRef(activeChannelId);
   const refUpdatedChannels = useRef(null);
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export function CreateLists(props) {
 
   const toActive = useCallback(
     async (idActive) => {
-      openSocketRoom(idActive);
+      //openSocketRoom(idActive);
       if (refUpdatedChannels.current) {
         changeStorageUserDataActiveChat({ lastActiveChatId: idActive });
         changeActiveChatId(idActive);
@@ -92,25 +92,10 @@ export function CreateLists(props) {
     [activeChannelId, activeDirectMessageId]
   );
 
-  function openSocketRoom(idActive) {
-    const prevId = refIdPrevChannel.current
-      ? refIdPrevChannel.current
-      : activeChannelId
-      ? activeChannelId
-      : activeDirectMessageId;
-    if (prevId !== idActive) {
-      socket.send(JSON.stringify({ room: prevId, meta: 'leave' }));
-      refIdPrevChannel.current = idActive;
-      socket.send(JSON.stringify({ room: idActive, meta: 'join' }));
-    }
-  }
-
   const changeActiveChatId = useCallback(
     (idActive) => {
-      if (
-        (activeChannelId || activeDirectMessageId) &&
-        refUpdatedChannels.current
-      ) {
+      console.log(channels, refUpdatedChannels.current);
+      if (channels && refUpdatedChannels.current) {
         const objectChatNameAndId = createPayloadForChange(idActive);
         dispatch({
           type: ACTIVE_CHAT_ID,
@@ -159,3 +144,17 @@ export function CreateLists(props) {
 }
 
 export default connect(null, null)(CreateLists);
+
+/* ПРи активації певного каналу створює веб сокет кімнату
+  function openSocketRoom(idActive) {
+    const prevId = refIdPrevChannel.current
+      ? refIdPrevChannel.current
+      : activeChannelId
+      ? activeChannelId
+      : activeDirectMessageId;
+    if (prevId !== idActive) {
+      socket.send(JSON.stringify({ room: prevId, meta: 'leave' }));
+      refIdPrevChannel.current = idActive;
+      socket.send(JSON.stringify({ room: idActive, meta: 'join' }));
+    }
+  } */

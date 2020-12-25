@@ -25,10 +25,7 @@ export const useAuth = () => {
 
   const logout = useCallback(() => {
     localStorage.removeItem(storageName);
-    dispatch({
-      type: LOGOUT_DATA,
-      payload: null,
-    });
+    dispatch({ type: LOGOUT_DATA });
   }, []);
 
   const changeStorageUserDataActiveChat = (newActiveChat) => {

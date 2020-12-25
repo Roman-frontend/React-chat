@@ -18,21 +18,26 @@ server.on('connection', (ws) => {
 
   ws.on('message', (data) => {
     const parseData = JSON.parse(data);
-    const { message, meta, room } = parseData;
+    const { message, meta, room, userId } = parseData;
 
     console.log('uuid => ', uuid, data, 'myRoom => ', rooms[room]);
     if (meta === 'join') {
       if (!rooms[room]) rooms[room] = {}; // create the room
-      if (!rooms[room][uuid]) rooms[room][uuid] = ws; // join the room
+      if (!rooms[room][uuid]) rooms[room][uuid] = { soketData: ws, userId }; // join the room
       console.log('meta -->> ', meta, 'newRoom -> ', rooms[room]);
+      Object.entries(rooms[room]).forEach(([, sock]) =>
+        sock.soketData.send(
+          JSON.stringify({ message: 'newOnlineUser', userId })
+        )
+      );
     } else if (meta === 'leave') {
       leave(room);
     } else if (!meta) {
       // send the message to all in the room
       //Object.entries(rooms[room]) - поверне масив об'єктів з масиву rooms[room]
-      console.log('rooms ->> ', rooms, 'message -->> ', message);
+      console.log('rooms ->> ', rooms[room]);
       Object.entries(rooms[room]).forEach(([, sock]) =>
-        sock.send(JSON.stringify(message))
+        sock.soketData.send(JSON.stringify(message))
       );
     } else if (meta === 'exit') {
       console.log('exitRoom');

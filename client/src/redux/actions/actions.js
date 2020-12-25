@@ -2,8 +2,6 @@ import {
   GET_USERS,
   GET_CHANNELS,
   GET_MESSAGES,
-  GET_MESSAGES_FOR_DIRECT_MSG,
-  GET_DIRECT_MESSAGES,
   POST_REGISTER,
   POST_LOGIN,
   POST_MESSAGE,
@@ -100,16 +98,6 @@ export const getMessages = (token, param, body) => {
     body
   );
 };
-
-/* export const getDirectMessages = (token, body) => {
-  return dispatcher(
-    GET_DIRECT_MESSAGES,
-    `/api/direct-message/get-direct-messages`,
-    token,
-    "POST",
-    body
-  );
-}; */
 
 export const getMessagesForDirectMsg = (token, param) => {
   return dispatcher(

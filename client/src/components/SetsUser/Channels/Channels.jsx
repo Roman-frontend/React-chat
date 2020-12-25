@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatContext from '../../../Context/ChatContext.js';
-import { GET_CHANNELS } from '../../../redux/types';
+import { GET_CHANNELS, ACTIVE_CHAT_ID } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { getChannels } from '../../../redux/actions/actions.js';
@@ -20,18 +20,70 @@ export function Channels(props) {
   const resourseChannels = resChannels.channels.read();
   const dispatch = useDispatch();
   const allChannels = useSelector((state) => state.channels);
+  const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const { changeStorageUserDataChannels } = useAuth();
 
   useEffect(() => {
+    function defineActiveChat() {
+      const storageData = JSON.parse(localStorage.getItem('userData')).userData;
+      if (activeChannelId) {
+        return { activeChannelId };
+      } else if (activeDirectMessageId) {
+        return { activeDirectMessageId };
+      } else if (storageData.lastActiveChatId) {
+        if (storageData.channels) {
+          const channelHasLast = storageData.channels.includes(
+            storageData.lastActiveChatId
+          );
+          if (channelHasLast) {
+            return { activeChannelId: storageData.lastActiveChatId };
+          } else if (storageData.directMessages) {
+            const listDrMsgHasLast = storageData.directMessages.includes(
+              storageData.lastActiveChatId
+            );
+            if (listDrMsgHasLast) {
+              return { activeDirectMessageId: storageData.lastActiveChatId };
+            }
+          }
+        }
+      } else if (allChannels) {
+        return { activeChannelId: allChannels[0]._id };
+      } else if (listDirectMessages && listDirectMessages[0]) {
+        console.log(listDirectMessages);
+        return {
+          activeDirectMessageId: listDirectMessages[0]._id,
+        };
+      } else {
+        return null;
+      }
+    }
+
     if (resourseChannels) {
-      dispatch({
-        type: GET_CHANNELS,
-        payload: resourseChannels,
-      });
+      /* startedChannel =
+        storageData.lastActiveChatId &&
+        storageData.channels.includes(storageData.lastActiveChatId)
+          ? { activeChannelId: storageData.lastActiveChatId }
+          : startedChannel;
+
+      startedChannel =
+        storageData.lastActiveChatId &&
+        storageData.listDirectMessages.includes(storageData.lastActiveChatId)
+          ? { activeChannelId: storageData.lastActiveChatId }
+          : startedChannel; */
+
+      //startedChannel = activeChannelId ? { activeChannelId } : startedChannel;
+      const activeChat = defineActiveChat();
+      console.log(activeChat);
+      dispatch({ type: GET_CHANNELS, payload: resourseChannels });
+      dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
     }
   }, [resourseChannels]);
 

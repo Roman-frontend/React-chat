@@ -38,32 +38,7 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.payload.users };
 
     case GET_CHANNELS:
-      const storageData = JSON.parse(localStorage.getItem('userData')).userData;
-      let startedChannel = action.payload.userChannels
-        ? { activeChannelId: action.payload.userChannels[0]._id }
-        : null;
-
-      startedChannel =
-        storageData.lastActiveChatId &&
-        storageData.channels.includes(storageData.lastActiveChatId)
-          ? { activeChannelId: storageData.lastActiveChatId }
-          : null;
-
-      startedChannel =
-        storageData.lastActiveChatId &&
-        storageData.channels.includes(storageData.lastActiveChatId)
-          ? { activeChannelId: storageData.lastActiveChatId }
-          : null;
-
-      startedChannel = state.activeChannelId
-        ? { activeChannelId: state.activeChannelId }
-        : startedChannel;
-
-      return {
-        ...state,
-        channels: action.payload.userChannels,
-        ...startedChannel,
-      };
+      return { ...state, channels: action.payload.userChannels };
 
     case GET_MESSAGES:
       console.log(action.payload);
@@ -80,10 +55,7 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case POST_LOGIN:
-      return {
-        ...state,
-        ...action.payload,
-      };
+      return { ...state, ...action.payload };
 
     case POST_MESSAGE:
       return { ...state, newMessage: action.payload.newMessage };
@@ -111,19 +83,13 @@ export const rootReducer = (state = initialState, action) => {
       const updatedMessages = state.messages.reverse().filter((message) => {
         return message._id !== action.payload.removedId;
       });
-      return {
-        ...state,
-        messages: updatedMessages,
-      };
+      return { ...state, messages: updatedMessages };
 
     case LOGIN_DATA:
-      return {
-        ...state,
-        ...action.payload,
-      };
+      return { ...state, ...action.payload };
 
     case LOGOUT_DATA:
-      return { ...state, token: action.payload, userData: action.payload };
+      return initialState;
 
     case ACTIVE_CHAT_ID:
       console.log(action.payload);

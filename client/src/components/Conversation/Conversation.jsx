@@ -24,6 +24,10 @@ export default function Conversation(props) {
   const inputRef = useRef();
 
   useLayoutEffect(() => {
+    setActiveMessage(null);
+  }, [activeChannelId, activeDirectMessageId]);
+
+  useLayoutEffect(() => {
     //Підписуємось на подію, так відкриваємо з'єднання
     socket.onopen = () => {
       console.log('ONLINE');
@@ -43,6 +47,7 @@ export default function Conversation(props) {
         JSON.stringify({
           room: storageData.userData.lastActiveChatId,
           meta: 'join',
+          userId: storageData.userData._id,
         })
       );
     }

@@ -14,7 +14,6 @@ app.use('/api/chat', require('./routes/chat.message'));
 app.use('/api/channel', require('./routes/chat.channel'));
 app.use('/api/direct-message', require('./routes/direct.message'));
 app.use('/api/direct-message-chat', require('./routes/direct.message.chat'));
-
 app.use(express.static(path.resolve(__dirname, 'client', 'src', 'components')));
 
 app.get('*', (req, res) => {

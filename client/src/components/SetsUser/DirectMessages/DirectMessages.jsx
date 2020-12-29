@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import useChatContext from '../../../Context/ChatContext.js';
 import { GET_DIRECT_MESSAGES } from '../../../redux/types';
@@ -47,13 +48,14 @@ export function DirectMessages(props) {
   }, [listDirectMessages]);
 
   const createArrDirectMessages = useCallback(() => {
-    if (listDirectMessages && listDirectMessages[0] && allUsers) {
+    if (
+      listDirectMessages &&
+      listDirectMessages[0] &&
+      allUsers &&
+      allUsers[0]
+    ) {
       let allRowDirectMessages = [];
       listDirectMessages.forEach((directMessage) => {
-        /* const invitedAllData = allUsers.filter(
-          (user) => user._id === directMessage.invited._id
-        );
-        allRowDirectMessages.push(invitedAllData[0]); */
         allRowDirectMessages.push(directMessage);
       });
       return (
@@ -66,11 +68,11 @@ export function DirectMessages(props) {
     }
   }, [listDirectMessages, allUsers]);
 
-  async function doneInvite(action) {
+  function doneInvite(action) {
     setInvited([]);
     setModalAddPeopleIsOpen(false);
 
-    if (action === 'invite' && invited[0]) {
+    if (action === 'done' && invited[0]) {
       let dataInvitedPeoples = [];
       invited.forEach((people) => {
         const { _id, name, email } = { ...people };
@@ -84,7 +86,7 @@ export function DirectMessages(props) {
         },
         invitedUsers: dataInvitedPeoples,
       };
-      await dispatch(postDirectMessages(token, body));
+      dispatch(postDirectMessages(token, body));
     }
   }
 
@@ -105,11 +107,18 @@ export function DirectMessages(props) {
         style={{ display: listMembersIsOpen ? 'block' : 'none' }}
       >
         {createArrDirectMessages()}
-        <div className='user-sets__channel'>
-          <p onClick={() => setModalAddPeopleIsOpen(true)}>+ Invite people</p>
-        </div>
+        <Button
+          className='user-sets__channel'
+          variant='outlined'
+          color='primary'
+          size='small'
+          style={{ background: 'white' }}
+          onClick={() => setModalAddPeopleIsOpen(true)}
+        >
+          + Invite people
+        </Button>
         <AddPeopleToDirectMessages
-          doneInvite={doneInvite}
+          done={doneInvite}
           invited={invited}
           setInvited={setInvited}
           modalAddPeopleIsOpen={modalAddPeopleIsOpen}

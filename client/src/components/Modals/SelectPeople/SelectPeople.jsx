@@ -1,71 +1,66 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useSelector } from "react-redux";
-import "./select-people.sass";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import { useSelector } from 'react-redux';
+import './select-people.sass';
 
-export function SelectPeople(props) {
+const styles = (theme) => ({
+  input: {
+    height: '5vh',
+    width: '33vw',
+  },
+  selectMenu: {
+    height: '8vh',
+  },
+  selectRoot: {
+    display: 'table',
+    width: '31vw',
+  },
+});
+
+export const SelectPeople = withStyles(styles)((props) => {
   const {
     invited,
     setInvited,
     notInvited,
     setNotInvited,
-    parrentDivRef,
-    checkboxRef,
     buttonCloseRef,
     buttonDoneRef,
-    heightParrentDiv,
+    done,
+    classes,
   } = props;
-  const [focusSelectTag, setFocusSelectTag] = useState(false);
   const [listMatchedEmails, setListMatchedEmails] = useState(notInvited);
   const users = useSelector((state) => state.users);
   const inputPeopleRef = useRef();
-  const selectRef = useRef();
+  const [open, setOpen] = useState(false);
+  const [listPeoplesForInvite, setListPeoplesForInvite] = useState();
 
-  const selectClassName = focusSelectTag
-    ? "set-channel-forms__list-peoples-invite_is-focus"
-    : "set-channel-forms__list-peoples-invite_is-not-focus";
-
-  useEffect(() => {
-    function addEvents(tag) {
-      tag.addEventListener("focus", () => {
-        parrentDivRef.current.classList.add(heightParrentDiv);
-        if (checkboxRef)
-          checkboxRef.current.classList.add("set-channel-forms_top");
-        buttonCloseRef.current.classList.add("set-channel__button_top");
-        buttonDoneRef.current.classList.add("set-channel__button_top");
-        setFocusSelectTag(true);
-      });
-
-      tag.addEventListener("blur", () => {
-        parrentDivRef.current.classList.remove(heightParrentDiv);
-        if (checkboxRef)
-          checkboxRef.current.classList.remove("set-channel-forms_top");
-        buttonCloseRef.current.classList.remove("set-channel__button_top");
-        buttonDoneRef.current.classList.remove("set-channel__button_top");
-        if (document.hasFocus(inputPeopleRef.current)) setFocusSelectTag(false);
-      });
+  const getSelectElements = () => {
+    setOpen(true);
+    console.log('getSelectElements', listMatchedEmails);
+    if (listMatchedEmails) {
+      setListPeoplesForInvite(createSelectElements(listMatchedEmails));
     }
-
-    addEvents(inputPeopleRef.current);
-    addEvents(selectRef.current);
-  }, []);
-
-  const getSelectElements = useCallback(() => {
-    return !focusSelectTag
-      ? [<option key="1"></option>]
-      : listMatchedEmails
-      ? createSelectElements(listMatchedEmails)
-      : null;
-  }, [focusSelectTag, listMatchedEmails]);
+  };
 
   function createSelectElements(peoplesForChoice) {
     return peoplesForChoice.map((people) => {
       return (
-        <option
+        <MenuItem
           key={people._id}
           label={people.email}
           value={people.email}
           onClick={() => addPeopleToInvited(people._id)}
-        ></option>
+        >
+          {people.email}
+        </MenuItem>
       );
     });
   }
@@ -75,7 +70,7 @@ export function SelectPeople(props) {
     setListMatchedEmails((prevList) => {
       return prevList.filter((people) => people._id !== idElectPeople);
     });
-    if (users) {
+    if (users && users[0]) {
       const electData = users.filter((user) => user._id === idElectPeople);
       setInvited((prev) => prev.concat(electData));
     }
@@ -94,11 +89,11 @@ export function SelectPeople(props) {
 
   function handleInput(event) {
     changeListPeoples();
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       addToInvitedInputPeople();
       setListMatchedEmails(null);
     }
-    setFocusSelectTag(true);
+    setOpen(true);
   }
 
   function changeListPeoples() {
@@ -115,35 +110,55 @@ export function SelectPeople(props) {
       (people) => people.email === inputPeopleRef.current.value
     );
     addPeopleToInvited(electPeople[0]._id);
-    inputPeopleRef.current.value = "";
+    inputPeopleRef.current.value = '';
   }
 
   return (
-    <>
-      <div className="set-channel-forms">
-        <label className="set-channel-forms__label">Add a people</label>
-        <input
-          placeholder="add peoples to channel"
-          className="set-channel-forms__input-people-invite"
-          type="text"
-          ref={inputPeopleRef}
-          onKeyUp={(event) => handleInput(event)}
-        />
-      </div>
-      <div className="set-channel-forms">
-        <label className="set-channel-forms__label">List peoples</label>
-        <select
-          className={selectClassName}
-          name="peoples"
-          id="peoples"
-          size="10"
-          multiple
-          ref={selectRef}
-          onClick={() => setFocusSelectTag(true)}
-        >
-          {getSelectElements()}
-        </select>
-      </div>
-    </>
+    <div>
+      <DialogContent>
+        <FormControl style={{ width: '33vw' }}>
+          <TextField
+            label='Add a people'
+            InputProps={{
+              className: classes.input,
+            }}
+            id='mui-theme-provider-standard-input'
+            ref={inputPeopleRef}
+            onKeyUp={(event) => handleInput(event)}
+          />
+
+          <InputLabel
+            id='demo-controlled-open-select-label'
+            style={{ top: '8vh' }}
+          >
+            List peoples
+          </InputLabel>
+          <Select
+            labelId='demo-mutiple-name-label'
+            id='demo-mutiple-name'
+            open={open}
+            onClose={() => setOpen(false)}
+            onOpen={getSelectElements}
+            value=''
+            classes={{ root: classes.selectRoot }}
+            className={classes.selectMenu}
+          >
+            {listPeoplesForInvite}
+          </Select>
+          <DialogActions>
+            <Button color='primary' ref={buttonCloseRef} onClick={done}>
+              Close
+            </Button>
+            <Button
+              color='primary'
+              ref={buttonDoneRef}
+              onClick={() => done('done')}
+            >
+              Done
+            </Button>
+          </DialogActions>
+        </FormControl>
+      </DialogContent>
+    </div>
   );
-}
+});

@@ -7,7 +7,13 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
 
 const HeaderProfile = (props) => {
-  const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;
+  const {
+    menuId,
+    anchorEl,
+    setAnchorEl,
+    handleMobileMenuClose,
+    socket,
+  } = props;
   const history = useHistory();
   const { logout } = useAuth();
   const userData = useSelector((state) => state.userData);
@@ -15,7 +21,7 @@ const HeaderProfile = (props) => {
 
   const logoutHandler = (event) => {
     event.preventDefault();
-    logout();
+    logout(socket);
     history.push('/');
   };
 

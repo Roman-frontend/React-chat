@@ -5,13 +5,11 @@ import { GET_CHANNELS, ACTIVE_CHAT_ID } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { getChannels } from '../../../redux/actions/actions.js';
-import Modal from 'react-modal';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
 import CreateLists from '../HelpersSetUsers/CreateChatItem';
-import './channels.sass';
-Modal.setAppElement('#root');
+import Button from '@material-ui/core/Button';
 
 export function Channels(props) {
   const { t } = useTranslation();
@@ -54,9 +52,9 @@ export function Channels(props) {
             }
           }
         }
-      } else if (allChannels) {
+      } else if (allChannels && allChannels[0]) {
         return { activeChannelId: allChannels[0]._id };
-      } else if (listDirectMessages && listDirectMessages[0]) {
+      } else if (listDirectMessages[0]) {
         console.log(listDirectMessages);
         return {
           activeDirectMessageId: listDirectMessages[0]._id,
@@ -67,28 +65,15 @@ export function Channels(props) {
     }
 
     if (resourseChannels) {
-      /* startedChannel =
-        storageData.lastActiveChatId &&
-        storageData.channels.includes(storageData.lastActiveChatId)
-          ? { activeChannelId: storageData.lastActiveChatId }
-          : startedChannel;
-
-      startedChannel =
-        storageData.lastActiveChatId &&
-        storageData.listDirectMessages.includes(storageData.lastActiveChatId)
-          ? { activeChannelId: storageData.lastActiveChatId }
-          : startedChannel; */
-
-      //startedChannel = activeChannelId ? { activeChannelId } : startedChannel;
       const activeChat = defineActiveChat();
-      console.log(activeChat);
+
       dispatch({ type: GET_CHANNELS, payload: resourseChannels });
       dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
     }
   }, [resourseChannels]);
 
   useEffect(() => {
-    if (allChannels) {
+    if (allChannels && allChannels[0]) {
       const storageData = JSON.parse(localStorage.getItem('userData'));
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.userData.channels) {
@@ -97,11 +82,14 @@ export function Channels(props) {
     }
   }, [allChannels]);
 
-  const createLinksChannels = useCallback(() => {
-    if (allChannels) {
-      return <CreateLists arrElements={allChannels} socket={socket} />;
-    }
-  }, [allChannels]);
+  const createLinksChannels = useCallback(
+    (allChannels) => {
+      if (allChannels && allChannels[0]) {
+        return <CreateLists arrElements={allChannels} socket={socket} />;
+      }
+    },
+    [allChannels]
+  );
 
   return (
     <>
@@ -120,22 +108,20 @@ export function Channels(props) {
         style={{ display: listChannelsIsOpen ? 'block' : 'none' }}
       >
         {createLinksChannels(allChannels)}
-        <div className='user-sets__channel user-sets__channel_add'>
-          <p
-            className='main-font'
-            onClick={() => setModalAddChannelIsOpen(true)}
-          >
-            + Add channel
-          </p>
-        </div>
-        <Modal
-          isOpen={modalAddChannelIsOpen}
-          onRequestClose={() => setModalAddChannelIsOpen(false)}
-          className={'modal-content'}
-          overlayClassName={'modal-overlay'}
+        <Button
+          className='user-sets__channel'
+          variant='outlined'
+          color='primary'
+          size='small'
+          style={{ background: 'white' }}
+          onClick={() => setModalAddChannelIsOpen(true)}
         >
-          <AddChannel setModalAddChannelIsOpen={setModalAddChannelIsOpen} />
-        </Modal>
+          + Add channel
+        </Button>
+        <AddChannel
+          modalAddChannelIsOpen={modalAddChannelIsOpen}
+          setModalAddChannelIsOpen={setModalAddChannelIsOpen}
+        />
       </div>
     </>
   );

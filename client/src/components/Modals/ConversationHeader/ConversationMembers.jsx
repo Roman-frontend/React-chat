@@ -1,12 +1,12 @@
-import React, { useCallback, useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Modal from "react-modal";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import Link from "@material-ui/core/Link";
-Modal.setAppElement("#root");
+import React, { useCallback, useRef, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Modal from 'react-modal';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+Modal.setAppElement('#root');
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
-    float: "right",
+    float: 'right',
   },
   addPeoples: {
     padding: theme.spacing(1),
@@ -33,7 +33,7 @@ export function ConversationMembers(props) {
     return (
       <p style={{ margin: 0 }}>
         {activeChannel ? activeChannel.members.length : 1} members in
-        {activeChannel ? `#${activeChannel.name}` : "#general"}
+        {activeChannel ? `#${activeChannel.name}` : '#general'}
       </p>
     );
   }, [activeChannel]);
@@ -47,8 +47,8 @@ export function ConversationMembers(props) {
 
     return listMembers.map((member) => {
       return (
-        <div key={member._id} id={member._id} className="user-sets__people">
-          <b className="main-font user-sets__people_color">{member.email}</b>
+        <div key={member._id} id={member._id} className='user-sets__people'>
+          <b className='main-font user-sets__people_color'>{member.email}</b>
         </div>
       );
     });
@@ -57,7 +57,7 @@ export function ConversationMembers(props) {
   function getMembersActiveChannel() {
     let listMembers = [];
 
-    if (activeChannel && users) {
+    if (activeChannel && users && users[0]) {
       const allUsers = users;
       activeChannel.members.forEach((memberId) => {
         const filteredUsers = allUsers.filter(
@@ -74,19 +74,19 @@ export function ConversationMembers(props) {
     <Modal
       isOpen={modalIsShowsMembers}
       onRequestClose={() => setModalIsShowsMembers(false)}
-      className={"modal-content"}
-      overlayClassName={"modal-overlay-conversation-header-members"}
+      className={'modal-content'}
+      overlayClassName={'modal-overlay-conversation-header-members'}
     >
-      <div className="set-channel">
+      <div className='set-channel'>
         <div className={classes.root}>
-          <Grid container spacing={1} style={{ alignItems: "center" }}>
+          <Grid container spacing={1} style={{ alignItems: 'center' }}>
             <Grid item xs={10}>
               {headerPopup}
             </Grid>
             <Grid item xs={2}>
               <Button
-                variant="contained"
-                color="secondary"
+                variant='contained'
+                color='secondary'
                 className={classes.button}
                 onClick={() => setModalIsShowsMembers(false)}
               >
@@ -98,8 +98,8 @@ export function ConversationMembers(props) {
         <Box>
           <Link
             className={classes.addPeoples}
-            component="button"
-            variant="body2"
+            component='button'
+            variant='body2'
             onClick={() => {
               console.info("I'm a button.");
             }}
@@ -108,9 +108,9 @@ export function ConversationMembers(props) {
           </Link>
         </Box>
         <input
-          placeholder="search people"
-          style={{ width: "27.1rem" }}
-          type="text"
+          placeholder='search people'
+          style={{ width: '27.1rem' }}
+          type='text'
           ref={searchInputRef}
           onKeyUp={(event) => handleInput(event)}
         />

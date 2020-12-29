@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { useAuth } from './hooks/auth.hook';
 //createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
 import { createBrowserHistory } from 'history';
 import { PrivateRoute } from './components/Helpers/PrivateRoute.jsx';
@@ -13,6 +14,8 @@ import './css/style.sass';
 const history = createBrowserHistory();
 
 export default function App() {
+  const { logout } = useAuth();
+  //logout();
   function handleClickHistory(path) {
     //.push() - додає в історію - руху по силках значення path. (де крім доданого є ті переходи які додаються автоматично після переходів по силках)
     history.push(path /* "/home" */);

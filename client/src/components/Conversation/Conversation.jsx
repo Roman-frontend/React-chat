@@ -21,6 +21,7 @@ export default function Conversation(props) {
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
+  const [isJoin, setIsJoin] = useState(false);
   const inputRef = useRef();
 
   useLayoutEffect(() => {
@@ -36,26 +37,38 @@ export default function Conversation(props) {
 
   useEffect(() => {
     const storageData = JSON.parse(localStorage.getItem('userData'));
-    if (
-      !activeChannelId &&
-      !activeDirectMessageId &&
-      storageData.userData.lastActiveChatId
-    ) {
-      console.log(storageData);
+    if (!storageData) setIsJoin(false);
+    if (storageData.userData.channels[0] && !isJoin) {
+      setIsJoin(true);
+      const allUserChats = storageData.userData.channels.concat(
+        storageData.userData.directMessages
+      );
       sendMessage(
         socket,
         JSON.stringify({
-          room: storageData.userData.lastActiveChatId,
+          userRooms: allUserChats,
           meta: 'join',
           userId: storageData.userData._id,
         })
       );
     }
-  }, []);
+  }, [channels]);
+  /*   useEffect(() => {
+    if ((activeChannelId || activeDirectMessageId) && channels[0] && userId) {
+      const activeChatId = activeChannelId
+        ? activeChannelId
+        : activeDirectMessageId;
+      console.log(activeChannelId, activeDirectMessageId, channels);
+      sendMessage(
+        socket,
+        JSON.stringify({ room: activeChatId, meta: 'join', userId })
+      );
+    }
+  }, [channels]); */
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
-    if (channels && activeChannelId) {
+    if (channels && channels[0] && activeChannelId) {
       channels.forEach((channel) => {
         if (channel._id === activeChannelId) {
           if (!channel.isPrivate) {

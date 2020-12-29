@@ -23,13 +23,21 @@ export const useAuth = () => {
     );
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((socket) => {
+    const storageData = JSON.parse(localStorage.getItem('userData'));
+    if (storageData.userData.channels[0]) {
+      const allUserChats = storageData.userData.channels.concat(
+        storageData.userData.directMessages
+      );
+      socket.send(JSON.stringify({ userRooms: allUserChats, meta: 'leave' }));
+    }
     localStorage.removeItem(storageName);
     dispatch({ type: LOGOUT_DATA });
   }, []);
 
   const changeStorageUserDataActiveChat = (newActiveChat) => {
-    const data = JSON.parse(localStorage.userData);
+    const data = JSON.parse(localStorage.getItem('userData'));
+    console.log(data);
     const { channels, directMessages, _id, name, email } = { ...data.userData };
     const token = data.token;
     const object = Object.assign(
@@ -104,7 +112,7 @@ export const useAuth = () => {
   useLayoutEffect(() => {
     /** JSON.parse() - приводить результат до обєкта */
     const data = JSON.parse(localStorage.getItem(storageName));
-    //console.log(data);
+    console.log(data);
 
     if (data && data.token && data.userData) {
       dispatch({

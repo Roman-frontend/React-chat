@@ -1,34 +1,42 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import useChatContext from '../../../Context/ChatContext.js';
 import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { GET_USERS } from '../../../redux/types';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import './add-people-to-channel.sass';
 Modal.setAppElement('#root');
 
-export function AddPeopleToChannel(props) {
+const styles = (theme) => ({
+  titleRoot: {
+    padding: '24px 16px 0px 16px',
+  },
+});
+
+export const AddPeopleToChannel = withStyles(styles)((props) => {
   const { resUsers } = useChatContext();
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const userId = useSelector((state) => state.userData._id);
   const {
+    chatNameRef,
     doneInvite,
     invited,
     setInvited,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
+    classes,
   } = props;
   const allUsers = resUsers.users.read();
   const [notInvited, setNotInvited] = useState(null);
-  const parrentDivRef = useRef();
   const buttonCloseRef = useRef();
   const buttonDoneRef = useRef();
-  const heightParrentDiv = 'set-channel__invite_height';
 
   useEffect(() => {
     if (userId && allUsers) {
@@ -65,48 +73,28 @@ export function AddPeopleToChannel(props) {
     ) : null;
   }, [allUsers]);
 
+  console.log(chatNameRef.current);
+
   return (
-    <Modal
-      isOpen={modalAddPeopleIsOpen && !!activeChannelId}
-      onRequestClose={() => setModalAddPeopleIsOpen(false)}
-      className={'modal-content'}
-      overlayClassName={'modal-overlay'}
+    <Dialog
+      open={modalAddPeopleIsOpen && !!activeChannelId}
+      onClose={() => setModalAddPeopleIsOpen(false)}
+      aria-labelledby='form-dialog-title'
     >
-      <div className='set-channel' ref={parrentDivRef}>
-        <p className='set-channel-forms__main-label-text'>
-          Invite people to {userData.name}
-        </p>
-        {listMembers}
-        <SelectPeople
-          invited={invited}
-          setInvited={setInvited}
-          notInvited={notInvited}
-          setNotInvited={setNotInvited}
-          parrentDivRef={parrentDivRef}
-          buttonCloseRef={buttonCloseRef}
-          buttonDoneRef={buttonDoneRef}
-          heightParrentDiv={heightParrentDiv}
-        />
-
-        <button
-          className='set-channel__button'
-          ref={buttonCloseRef}
-          onClick={doneInvite}
-        >
-          Close
-        </button>
-
-        <button
-          type='submit'
-          className='set-channel__button'
-          ref={buttonDoneRef}
-          onClick={() => doneInvite('invite')}
-        >
-          Invite
-        </button>
-      </div>
-    </Modal>
+      <DialogTitle id='form-dialog-title' classes={{ root: classes.titleRoot }}>
+        Invite people to #{chatNameRef.current}
+      </DialogTitle>
+      <SelectPeople
+        invited={invited}
+        setInvited={setInvited}
+        notInvited={notInvited}
+        setNotInvited={setNotInvited}
+        buttonCloseRef={buttonCloseRef}
+        buttonDoneRef={buttonDoneRef}
+        done={doneInvite}
+      />
+    </Dialog>
   );
-}
+});
 
 export default connect(null, null)(AddPeopleToChannel);

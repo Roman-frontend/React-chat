@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   Suspense,
 } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -14,8 +15,7 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 //import Skeleton from '@material-ui/lab/Skeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import { POST_ADD_PEOPLES_TO_CHANNEL } from '../../../redux/types.js';
-import { getUsers, postData } from '../../../redux/actions/actions.js';
+import { addPeopleToChannel } from '../../../redux/actions/actions.js';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { ConversationMembers } from '../../Modals/ConversationHeader/ConversationMembers';
@@ -66,6 +66,7 @@ export function ConversationHeader() {
   const [invited, setInvited] = useState([]);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
+  const chatNameRef = useRef('#general');
 
   /* useEffect(() => {
     async function getPeoples() {
@@ -77,7 +78,7 @@ export function ConversationHeader() {
 
   const activeChannel = useMemo(() => {
     if (channels) {
-      if (activeChannelId) {
+      if (activeChannelId && channels[0]) {
         return channels.filter((channel) => channel._id === activeChannelId)[0];
       } else if (activeDirectMessageId) {
         return null;
@@ -86,18 +87,20 @@ export function ConversationHeader() {
   }, [activeChannelId, channels]);
 
   const createName = useCallback(() => {
-    let chatName = activeChannel ? activeChannel.name : 'general';
+    let name = activeChannel ? activeChannel.name : 'general';
     if (activeDirectMessageId && listDirectMessages && listDirectMessages[0]) {
       const activeDirectMessage = listDirectMessages.filter((directMessage) => {
         return directMessage._id === activeDirectMessageId;
       })[0];
-      chatName =
+      name =
         activeDirectMessage.inviter._id === userId
           ? activeDirectMessage.invited.name
           : activeDirectMessage.inviter.name;
     }
 
-    return <b className='conversation__name'>✩ {chatName}</b>;
+    chatNameRef.current = name;
+
+    return <b className='conversation__name'>✩ {name}</b>;
   }, [activeChannel, activeDirectMessageId]);
 
   const createMembers = useCallback(() => {
@@ -144,15 +147,16 @@ export function ConversationHeader() {
     }
   }
 
-  async function doneInvite(action) {
+  function doneInvite(action) {
     if (action === 'invite') {
-      await dispatch(
-        postData(POST_ADD_PEOPLES_TO_CHANNEL, token, invited, activeChannelId)
-      );
+      console.log(token, invited[0]._id, activeChannelId);
+      dispatch(addPeopleToChannel(token, invited[0]._id, activeChannelId));
     }
     setInvited([]);
     setModalAddPeopleIsOpen(false);
   }
+
+  console.log(chatNameRef.current);
 
   return (
     <div className='conversation__field-name'>
@@ -170,6 +174,7 @@ export function ConversationHeader() {
         setModalIsShowsMembers={setModalIsShowsMembers}
       />
       <AddPeopleToChannel
+        chatNameRef={chatNameRef}
         doneInvite={doneInvite}
         invited={invited}
         setInvited={setInvited}
@@ -180,6 +185,6 @@ export function ConversationHeader() {
   );
 }
 
-const mapDispatchToProps = { getUsers, postData };
+const mapDispatchToProps = { addPeopleToChannel };
 
 export default connect(null, mapDispatchToProps)(ConversationHeader);

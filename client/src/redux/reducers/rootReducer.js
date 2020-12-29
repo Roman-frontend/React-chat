@@ -20,6 +20,7 @@ import {
 
 const initialState = {
   users: null,
+  usersOnline: [],
   channels: null,
   listDirectMessages: [],
   activeChannelId: null,
@@ -41,7 +42,6 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, channels: action.payload.userChannels };
 
     case GET_MESSAGES:
-      console.log(action.payload);
       return { ...state, messages: action.payload.messages };
 
     case GET_DIRECT_MESSAGES:
@@ -55,6 +55,7 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case POST_LOGIN:
+      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case POST_MESSAGE:
@@ -92,11 +93,9 @@ export const rootReducer = (state = initialState, action) => {
       return initialState;
 
     case ACTIVE_CHAT_ID:
-      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case UPDATE_MESSAGES:
-      console.log(action.payload);
       return { ...state, messages: action.payload };
 
     case PROCESSED_NEW_MESSAGE:

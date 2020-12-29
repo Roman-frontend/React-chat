@@ -54,6 +54,8 @@ export const Messages = React.memo((props) => {
     const parsedRes = JSON.parse(response.data);
     if (parsedRes.message === 'newOnlineUser') {
       console.log(parsedRes);
+    } else if (parsedRes.message === 'resChatMembers') {
+      console.log(parsedRes);
     } else {
       const dispatchMessages =
         messagesRef.current[0] === undefined

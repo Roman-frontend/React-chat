@@ -49,25 +49,30 @@ router.post('/post-channel:userId', verifyToken, async (req, res) => {
   }
 });
 
+console.log('chat.channel файл');
+
 //Coming from AddPeopleToChannel
 router.post(
   '/post-add-members-to-channel:activeChannelId',
   verifyToken,
   async (req, res) => {
     try {
-      const addedUser = await User.findById(req.body[0]);
+      const addedUser = await User.findById(req.body);
       addedUser.channels.push(req.params.activeChannelId);
       await addedUser.save();
 
       const activeChannel = await Channel.findById(req.params.activeChannelId);
-      activeChannel.members.push(req.body[0]);
+      activeChannel.members.push(req.body);
       await activeChannel.save();
 
-      const newListChannels = await Channel.find({});
-      //console.log("post-add-members-to-channel:activeChannelId => ", addedUser, activeChannel)
+      const updatedChannel = await Channel.findById(req.params.activeChannelId);
+      console.log(
+        'post-add-members-to-channel:activeChannelId => ',
+        updatedChannel
+      );
 
       res.status(201).json({
-        userChannels: newListChannels,
+        userChannels: updatedChannel,
         message: 'Учасника додано',
       });
     } catch (e) {
@@ -80,14 +85,13 @@ router.post(
 //Coming from Channels,
 router.post('/get-chunnels', verifyToken, async (req, res) => {
   try {
-    //НЕ ВИДАЛЯТИ (ВІДПРАВЛЯЄ НА ФРОНТЕНД КАНАЛИ АКТИВНОГО КОРИСТУВАЧА)
-    //let userChannels = []
-    //for (const chatId of req.body ) {
-    //const channel = await Channel.find({ _id: chatId })
-    //userChannels = userChannels.concat(channel)
-    //}
-    const userChannels = await Channel.find({});
-    //console.log("getChannels ==>> ", userChannels)
+    let userChannels = [];
+    for (const chatId of req.body) {
+      const channel = await Channel.find({ _id: chatId });
+      userChannels = userChannels.concat(channel);
+    }
+    //const userChannels = await Channel.find({});
+    console.log('getChannels ==>> ', userChannels);
     res.json({ userChannels, message: 'Channels responsed' });
   } catch (e) {
     //console.log('failed in get-messages')
@@ -101,11 +105,12 @@ function verifyToken(req, res, next) {
   const token = req.headers['authorization'];
 
   if (token == null) {
+    console.log(`помилка при перевірці token`);
     return res.sendStatus(401);
   } else {
     jsonWebToken.verify(token, config.get('jwtSecret'), (err, success) => {
       if (err) {
-        //console.log(`error in verifyToken ${err}`);
+        console.log(`error in verifyToken ${err}`);
         res.sendStatus(403);
       } else next();
     });

@@ -18,24 +18,38 @@ server.on('connection', (ws) => {
 
   ws.on('message', (data) => {
     const parseData = JSON.parse(data);
-    const { message, meta, room, userId } = parseData;
+    const { meta } = parseData;
 
-    console.log('uuid => ', uuid, data, 'myRoom => ', rooms[room]);
+    console.log('parseData -->>', parseData);
     if (meta === 'join') {
-      if (!rooms[room]) rooms[room] = {}; // create the room
-      if (!rooms[room][uuid]) rooms[room][uuid] = { soketData: ws, userId }; // join the room
-      console.log('meta -->> ', meta, 'newRoom -> ', rooms[room]);
-      Object.entries(rooms[room]).forEach(([, sock]) =>
-        sock.soketData.send(
-          JSON.stringify({ message: 'newOnlineUser', userId })
-        )
-      );
+      const { userRooms, userId } = parseData;
+      userRooms.forEach((room) => {
+        if (!rooms[room]) rooms[room] = {}; // create the room
+        if (!rooms[room][uuid]) rooms[room][uuid] = { soketData: ws, userId }; // join the room
+        //console.log('meta -->> ', meta, 'newRoom -> ', rooms[room]);
+      });
+    } else if (meta === 'visit') {
+      const { room } = parseData;
+      let onlineMembers = [];
+      if (!(Object.keys(rooms).length === 0)) {
+        console.log('rooms -->> ', rooms, room);
+        Object.entries(rooms[room]).forEach(([, sock]) =>
+          onlineMembers.push(sock.userId)
+        );
+      }
+      //console.log('onlineMembers ==>> ', onlineMembers);
+      ws.send(JSON.stringify({ message: 'resChatMembers', onlineMembers }));
     } else if (meta === 'leave') {
-      leave(room);
+      console.log(rooms);
+      parseData.userRooms.forEach((room) => {
+        console.log('room //> ', room);
+        leave(room);
+      });
     } else if (!meta) {
+      const { message, room } = parseData;
       // send the message to all in the room
       //Object.entries(rooms[room]) - поверне масив об'єктів з масиву rooms[room]
-      console.log('rooms ->> ', rooms[room]);
+      console.log('room ->> ', room);
       Object.entries(rooms[room]).forEach(([, sock]) =>
         sock.soketData.send(JSON.stringify(message))
       );

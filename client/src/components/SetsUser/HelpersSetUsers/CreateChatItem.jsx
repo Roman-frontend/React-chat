@@ -87,6 +87,7 @@ export function CreateLists(props) {
         changeStorageUserDataActiveChat({ lastActiveChatId: idActive });
         changeActiveChatId(idActive);
         markActiveLinkChannel(idActive);
+        getOnlineMembers(idActive);
       }
     },
     [activeChannelId, activeDirectMessageId]
@@ -94,7 +95,6 @@ export function CreateLists(props) {
 
   const changeActiveChatId = useCallback(
     (idActive) => {
-      console.log(channels, refUpdatedChannels.current);
       if (channels && refUpdatedChannels.current) {
         const objectChatNameAndId = createPayloadForChange(idActive);
         dispatch({
@@ -128,6 +128,10 @@ export function CreateLists(props) {
     } else if (channelForActive) {
       channelForActive.classList.add('user-sets__channel_active');
     }
+  }
+
+  function getOnlineMembers(idActive) {
+    socket.send(JSON.stringify({ room: idActive, meta: 'visit' }));
   }
 
   let allDirectMessages = [

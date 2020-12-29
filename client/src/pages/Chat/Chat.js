@@ -66,7 +66,7 @@ export const Chat = (props) => {
             </div>
           }
         >
-          <Header />
+          <Header socket={socket} />
           <SetsUser socket={socket} />
           <Conversation socket={socket} sendMessage={sendMessage} />
         </Suspense>

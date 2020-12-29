@@ -54,15 +54,6 @@ export const postData = (method, token = null, body = null, param = null) => {
         'POST',
         body
       );
-
-    case POST_ADD_PEOPLES_TO_CHANNEL:
-      return dispatcher(
-        POST_ADD_PEOPLES_TO_CHANNEL,
-        `/api/channel/post-add-members-to-channel${param}`,
-        token,
-        'POST',
-        body
-      );
   }
 };
 
@@ -152,5 +143,15 @@ export const removeMessageOfDirectMessage = (token, param) => {
     `/api/direct-message-chat/delete-message${param}`,
     token,
     'DELETE'
+  );
+};
+
+export const addPeopleToChannel = (token, body, param) => {
+  return dispatcher(
+    POST_ADD_PEOPLES_TO_CHANNEL,
+    `/api/channel/post-add-members-to-channel${param}`,
+    token,
+    'POST',
+    body
   );
 };

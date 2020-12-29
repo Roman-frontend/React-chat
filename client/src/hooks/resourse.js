@@ -18,6 +18,7 @@ export function useResourse(type, param = null, body = null) {
       };
 
     case GET_CHANNELS:
+      console.log(userData);
       return {
         channels: wrapPromise(
           reduxServer(

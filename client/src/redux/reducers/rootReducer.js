@@ -1,5 +1,6 @@
 import {
   GET_USERS,
+  GET_USERS_ONLINE,
   GET_CHANNELS,
   GET_MESSAGES,
   GET_DIRECT_MESSAGES,
@@ -38,6 +39,9 @@ export const rootReducer = (state = initialState, action) => {
     case GET_USERS:
       return { ...state, users: action.payload.users };
 
+    case GET_USERS_ONLINE:
+      return { ...state, usersOnline: action.payload };
+
     case GET_CHANNELS:
       return { ...state, channels: action.payload.userChannels };
 
@@ -68,9 +72,16 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, userData: action.payload.userData };
 
     case POST_ADD_PEOPLES_TO_CHANNEL:
-      return { ...state, channels: action.payload.userChannels };
+      const updatedChannels = state.channels.map((channel) => {
+        return channel._id !== action.payload.userChannels._id
+          ? channel
+          : action.payload.userChannels;
+      });
+      console.log(updatedChannels);
+      return { ...state, channels: updatedChannels };
 
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
+      console.log(state.listDirectMessages, action.payload.allNewDirectMessage);
       return {
         ...state,
         listDirectMessages: state.listDirectMessages.concat(

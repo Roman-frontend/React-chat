@@ -7,56 +7,76 @@ const rooms = {};
 //Підписуюсь на події, ця подія (connection) спрацює коли клієнт підключиться до сервера, другим об'єктом передається функція зворотнього виклику. Аргумент ws - назва параметру веб-сокет зєднання
 server.on('connection', (ws) => {
   const uuid = v4(); // create here a uuid for this connection
+  const ip = ws._socket.remoteAddress;
 
-  const leave = (room) => {
+  const leave = (room, userId) => {
     if (!rooms[room]) {
       return;
     }
     if (Object.keys(rooms[room]).length === 1) delete rooms[room];
-    else delete rooms[room][uuid];
+    else delete rooms[room][userId];
   };
 
   ws.on('message', (data) => {
     const parseData = JSON.parse(data);
     const { meta } = parseData;
 
-    console.log('parseData -->>', parseData);
     if (meta === 'join') {
       const { userRooms, userId } = parseData;
+      //console.log('startRooma ===-', rooms);
       userRooms.forEach((room) => {
         if (!rooms[room]) rooms[room] = {}; // create the room
-        if (!rooms[room][uuid]) rooms[room][uuid] = { soketData: ws, userId }; // join the room
-        //console.log('meta -->> ', meta, 'newRoom -> ', rooms[room]);
+        if (!rooms[room][userId]) {
+          rooms[room][userId] = { soketData: ws, userId }; // join the room
+        }
+        if (rooms[room]) {
+          let onlineMembers = [];
+          let a;
+          //беру id юзера
+          Object.entries(rooms).forEach(
+            ([member, data]) => (a = Object.keys(data)[0])
+          );
+          Object.entries(rooms).forEach(([member, data]) =>
+            onlineMembers.push(data)
+          );
+          //console.log(onlineMembers);
+          onlineMembers.forEach((roomArr) => {
+            //console.log(roomArr, a);
+            Object.entries(roomArr).forEach(([roomObj, roomSock]) => {
+              console.log(roomSock.userId);
+              roomSock.soketData.send(
+                JSON.stringify({
+                  message: 'resChatMembers',
+                  onlineMembers: roomSock.userId,
+                })
+              );
+            });
+          });
+        }
       });
     } else if (meta === 'visit') {
       const { room } = parseData;
+
       let onlineMembers = [];
       if (!(Object.keys(rooms).length === 0)) {
-        console.log('rooms -->> ', rooms, room);
-        Object.entries(rooms[room]).forEach(([, sock]) =>
-          onlineMembers.push(sock.userId)
+        //console.log('rooms -->> ', rooms);
+        Object.entries(rooms[room]).forEach(([member]) =>
+          onlineMembers.push(member)
         );
       }
-      //console.log('onlineMembers ==>> ', onlineMembers);
       ws.send(JSON.stringify({ message: 'resChatMembers', onlineMembers }));
     } else if (meta === 'leave') {
-      console.log(rooms);
       parseData.userRooms.forEach((room) => {
-        console.log('room //> ', room);
-        leave(room);
+        leave(room, parseData.userId);
       });
     } else if (!meta) {
       const { message, room } = parseData;
-      // send the message to all in the room
       //Object.entries(rooms[room]) - поверне масив об'єктів з масиву rooms[room]
-      console.log('room ->> ', room);
       Object.entries(rooms[room]).forEach(([, sock]) =>
         sock.soketData.send(JSON.stringify(message))
       );
     } else if (meta === 'exit') {
-      console.log('exitRoom');
       ws.on('close', () => {
-        // for each room, remove the closed socket
         Object.keys(rooms).forEach((room) => leave(room));
       });
     }

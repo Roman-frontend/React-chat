@@ -63,7 +63,6 @@ export function ConversationHeader() {
     (state) => state.activeDirectMessageId
   );
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
-  const [invited, setInvited] = useState([]);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
@@ -147,16 +146,15 @@ export function ConversationHeader() {
     }
   }
 
-  function doneInvite(action) {
-    if (action === 'invite') {
-      console.log(token, invited[0]._id, activeChannelId);
-      dispatch(addPeopleToChannel(token, invited[0]._id, activeChannelId));
+  function doneInvite(action, invited = []) {
+    if (action === 'done' && invited[0]) {
+      const arrInvited = invited.map((people) => people._id);
+      dispatch(
+        addPeopleToChannel(token, { invitedUsers: arrInvited }, activeChannelId)
+      );
     }
-    setInvited([]);
     setModalAddPeopleIsOpen(false);
   }
-
-  console.log(chatNameRef.current);
 
   return (
     <div className='conversation__field-name'>
@@ -176,8 +174,6 @@ export function ConversationHeader() {
       <AddPeopleToChannel
         chatNameRef={chatNameRef}
         doneInvite={doneInvite}
-        invited={invited}
-        setInvited={setInvited}
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
       />

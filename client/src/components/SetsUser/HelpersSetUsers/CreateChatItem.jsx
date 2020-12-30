@@ -82,7 +82,6 @@ export function CreateLists(props) {
 
   const toActive = useCallback(
     async (idActive) => {
-      //openSocketRoom(idActive);
       if (refUpdatedChannels.current) {
         changeStorageUserDataActiveChat({ lastActiveChatId: idActive });
         changeActiveChatId(idActive);
@@ -148,17 +147,3 @@ export function CreateLists(props) {
 }
 
 export default connect(null, null)(CreateLists);
-
-/* ПРи активації певного каналу створює веб сокет кімнату
-  function openSocketRoom(idActive) {
-    const prevId = refIdPrevChannel.current
-      ? refIdPrevChannel.current
-      : activeChannelId
-      ? activeChannelId
-      : activeDirectMessageId;
-    if (prevId !== idActive) {
-      socket.send(JSON.stringify({ room: prevId, meta: 'leave' }));
-      refIdPrevChannel.current = idActive;
-      socket.send(JSON.stringify({ room: idActive, meta: 'join' }));
-    }
-  } */

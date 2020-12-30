@@ -13,7 +13,7 @@ import './select-people.sass';
 
 const styles = (theme) => ({
   input: {
-    height: '5vh',
+    height: '6vh',
     width: '33vw',
   },
   selectMenu: {
@@ -26,21 +26,15 @@ const styles = (theme) => ({
 });
 
 export const SelectPeople = withStyles(styles)((props) => {
-  const {
-    invited,
-    setInvited,
-    notInvited,
-    setNotInvited,
-    buttonCloseRef,
-    buttonDoneRef,
-    done,
-    classes,
-  } = props;
-  const [listMatchedEmails, setListMatchedEmails] = useState(notInvited);
+  const { notInvitedRef, done, classes } = props;
+  const [listMatchedEmails, setListMatchedEmails] = useState(
+    notInvitedRef.current
+  );
   const users = useSelector((state) => state.users);
   const inputPeopleRef = useRef();
   const [open, setOpen] = useState(false);
   const [listPeoplesForInvite, setListPeoplesForInvite] = useState();
+  const [invited, setInvited] = useState([]);
 
   const getSelectElements = () => {
     setOpen(true);
@@ -66,7 +60,6 @@ export const SelectPeople = withStyles(styles)((props) => {
   }
 
   function addPeopleToInvited(idElectPeople) {
-    changeListNoInvited(idElectPeople);
     setListMatchedEmails((prevList) => {
       return prevList.filter((people) => people._id !== idElectPeople);
     });
@@ -74,17 +67,6 @@ export const SelectPeople = withStyles(styles)((props) => {
       const electData = users.filter((user) => user._id === idElectPeople);
       setInvited((prev) => prev.concat(electData));
     }
-  }
-
-  function changeListNoInvited(idElectPeople) {
-    const allInvited = invited.concat(idElectPeople);
-    setNotInvited((prevPeoples) => {
-      let noInvited;
-      allInvited.forEach((peopleId) => {
-        noInvited = prevPeoples.filter((people) => people._id !== peopleId);
-      });
-      return noInvited;
-    });
   }
 
   function handleInput(event) {
@@ -146,14 +128,10 @@ export const SelectPeople = withStyles(styles)((props) => {
             {listPeoplesForInvite}
           </Select>
           <DialogActions>
-            <Button color='primary' ref={buttonCloseRef} onClick={done}>
+            <Button color='primary' onClick={done}>
               Close
             </Button>
-            <Button
-              color='primary'
-              ref={buttonDoneRef}
-              onClick={() => done('done')}
-            >
+            <Button color='primary' onClick={() => done('done', invited)}>
               Done
             </Button>
           </DialogActions>

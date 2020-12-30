@@ -57,19 +57,18 @@ router.post(
   verifyToken,
   async (req, res) => {
     try {
-      const addedUser = await User.findById(req.body);
-      addedUser.channels.push(req.params.activeChannelId);
-      await addedUser.save();
+      for await (const userId of req.body.invitedUsers) {
+        const addedUser = await User.findById(userId);
+        addedUser.channels.push(req.params.activeChannelId);
+        await addedUser.save();
 
-      const activeChannel = await Channel.findById(req.params.activeChannelId);
-      activeChannel.members.push(req.body);
-      await activeChannel.save();
-
+        const activeChannel = await Channel.findById(
+          req.params.activeChannelId
+        );
+        activeChannel.members.push(userId);
+        await activeChannel.save();
+      }
       const updatedChannel = await Channel.findById(req.params.activeChannelId);
-      console.log(
-        'post-add-members-to-channel:activeChannelId => ',
-        updatedChannel
-      );
 
       res.status(201).json({
         userChannels: updatedChannel,
@@ -90,11 +89,9 @@ router.post('/get-chunnels', verifyToken, async (req, res) => {
       const channel = await Channel.find({ _id: chatId });
       userChannels = userChannels.concat(channel);
     }
-    //const userChannels = await Channel.find({});
-    console.log('getChannels ==>> ', userChannels);
     res.json({ userChannels, message: 'Channels responsed' });
   } catch (e) {
-    //console.log('failed in get-messages')
+    console.log('failed in get-channels');
     res
       .status(500)
       .json({ message: 'Помилка при виконанні get-запиті ', error: e });

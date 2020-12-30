@@ -26,7 +26,6 @@ export function DirectMessages(props) {
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
-  const [invited, setInvited] = useState([]);
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
@@ -68,8 +67,7 @@ export function DirectMessages(props) {
     }
   }, [listDirectMessages, allUsers]);
 
-  function doneInvite(action) {
-    setInvited([]);
+  function doneInvite(action, invited = []) {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited[0]) {
@@ -119,8 +117,6 @@ export function DirectMessages(props) {
         </Button>
         <AddPeopleToDirectMessages
           done={doneInvite}
-          invited={invited}
-          setInvited={setInvited}
           modalAddPeopleIsOpen={modalAddPeopleIsOpen}
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         />
@@ -134,30 +130,6 @@ export function DirectMessages(props) {
   );
 }
 
-const mapDispatchToProps = {
-  /* getDirectMessages, */
-  postDirectMessages,
-};
+const mapDispatchToProps = { postDirectMessages };
 
 export default connect(null, mapDispatchToProps)(DirectMessages);
-
-//НЕ ВИДАЛЯТИ ПОКИЩО створює список учасників активного каналу
-/*  
-  import {useSelector} from 'react-redux'
-  const allChannels = useSelector(state => state.channels)
-  const activeChannelId = useSelector(state => state.activeChannelId)
-
-  const activeChannel = useMemo(() => {
-    if (activeChannelId && allChannels) {
-      return allChannels.filter(channel => channel._id === activeChannelId)
-    }
-  }, [activeChannelId, allChannels]) 
-  const createListMembers = useCallback(() => {
-    return activeChannel[0].members.map( member => {
-      return (
-        <div key={member._id} id={member._id} className="user-sets__people">
-          <Link className="main-font" to={`/chat`}>{member.name}</Link>
-        </div>
-      )
-    })
-  }, [activeChannel])*/

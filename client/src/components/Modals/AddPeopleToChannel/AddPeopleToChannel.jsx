@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { GET_USERS } from '../../../redux/types';
 import { withStyles } from '@material-ui/core/styles';
 import useChatContext from '../../../Context/ChatContext.js';
 import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
-import { GET_USERS } from '../../../redux/types';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -21,22 +21,18 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   const { resUsers } = useChatContext();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
-  const listDirectMessages = useSelector((state) => state.listDirectMessages);
+  const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const userId = useSelector((state) => state.userData._id);
   const {
     chatNameRef,
-    doneInvite,
-    invited,
-    setInvited,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
+    doneInvite,
     classes,
   } = props;
   const allUsers = resUsers.users.read();
-  const [notInvited, setNotInvited] = useState(null);
-  const buttonCloseRef = useRef();
-  const buttonDoneRef = useRef();
+  const notInvitedRef = useRef();
 
   useEffect(() => {
     if (userId && allUsers) {
@@ -52,48 +48,37 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
       let allNotInvited = allUsers.users.filter(
         (user) => user._id !== userData._id
       );
-      if (listDirectMessages && listDirectMessages[0]) {
-        listDirectMessages.forEach((directMessage) => {
-          allNotInvited = allNotInvited.filter(
-            (user) => user._id !== directMessage.invited._id
-          );
+      if (activeChannelId && channels && channels[0]) {
+        channels.forEach((channel) => {
+          if (channel._id === activeChannelId) {
+            channel.members.forEach((memberId) => {
+              allNotInvited = allNotInvited.filter((user) => {
+                return user._id !== memberId;
+              });
+            });
+          }
         });
       }
-      setNotInvited(allNotInvited);
+      notInvitedRef.current = allNotInvited;
     }
-  }, [allUsers, listDirectMessages]);
-
-  const listMembers = useMemo(() => {
-    return allUsers.users ? (
-      <ul>
-        {allUsers.users.map((user) => (
-          <li key={user._id}>{user.name}</li>
-        ))}
-      </ul>
-    ) : null;
-  }, [allUsers]);
-
-  console.log(chatNameRef.current);
+  }, [allUsers, channels, userData, activeChannelId]);
 
   return (
-    <Dialog
-      open={modalAddPeopleIsOpen && !!activeChannelId}
-      onClose={() => setModalAddPeopleIsOpen(false)}
-      aria-labelledby='form-dialog-title'
-    >
-      <DialogTitle id='form-dialog-title' classes={{ root: classes.titleRoot }}>
-        Invite people to #{chatNameRef.current}
-      </DialogTitle>
-      <SelectPeople
-        invited={invited}
-        setInvited={setInvited}
-        notInvited={notInvited}
-        setNotInvited={setNotInvited}
-        buttonCloseRef={buttonCloseRef}
-        buttonDoneRef={buttonDoneRef}
-        done={doneInvite}
-      />
-    </Dialog>
+    <>
+      <Dialog
+        open={modalAddPeopleIsOpen && !!activeChannelId}
+        onClose={() => setModalAddPeopleIsOpen(false)}
+        aria-labelledby='form-dialog-title'
+      >
+        <DialogTitle
+          id='form-dialog-title'
+          classes={{ root: classes.titleRoot }}
+        >
+          Invite people to #{chatNameRef.current}
+        </DialogTitle>
+        <SelectPeople notInvitedRef={notInvitedRef} done={doneInvite} />
+      </Dialog>
+    </>
   );
 });
 

@@ -8,7 +8,11 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from '../../../redux/types';
+import {
+  PROCESSED_NEW_MESSAGE,
+  UPDATE_MESSAGES,
+  GET_USERS_ONLINE,
+} from '../../../redux/types';
 import {
   getMessages,
   getMessagesForDirectMsg,
@@ -47,14 +51,18 @@ export const Messages = React.memo((props) => {
   //Підписуємось на подію що спрацює при отриманні повідомлення
   socket.onmessage = (response) => {
     if (response.data === "З'єднання з WebSocket встановлено") {
-      console.log("З'єднання з WebSocket встановлено");
+      //console.log("З'єднання з WebSocket встановлено");
       return;
     }
 
     const parsedRes = JSON.parse(response.data);
     if (parsedRes.message === 'newOnlineUser') {
-      console.log(parsedRes);
+      //console.log(parsedRes);
     } else if (parsedRes.message === 'resChatMembers') {
+      dispatch({
+        type: GET_USERS_ONLINE,
+        payload: parsedRes.onlineMembers,
+      });
       console.log(parsedRes);
     } else {
       const dispatchMessages =
@@ -83,7 +91,7 @@ export const Messages = React.memo((props) => {
   };
 
   useEffect(() => {
-    console.log(activeDirectMessageId);
+    //console.log(activeDirectMessageId);
     async function getFetchMessages() {
       if (activeChannelId && token && userId) {
         dispatch(getMessages(token, activeChannelId, { userId }));

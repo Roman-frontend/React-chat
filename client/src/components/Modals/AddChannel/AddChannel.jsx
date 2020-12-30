@@ -25,55 +25,38 @@ export const AddChannel = withStyles(styles)((props) => {
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
   const allUsers = useSelector((state) => state.users);
-  const allChannels = useSelector((state) => state.channels);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
   const { setModalAddChannelIsOpen, modalAddChannelIsOpen, classes } = props;
   const [isPrivate, setIsPrivate] = useState(false);
-  const [invited, setInvited] = useState([]);
+  const notInvitedRef = useRef();
   const [form, setForm] = useState({
     name: '',
     discription: '',
     isPrivate: false,
     members: [],
   });
-  const buttonCloseRef = useRef();
-  const buttonDoneRef = useRef();
+
+  useEffect(() => {
+    if (allUsers && allUsers[0]) {
+      const peoplesInvite = allUsers.filter((people) => people._id !== userId);
+      notInvitedRef.current = peoplesInvite;
+    }
+  }, [allUsers]);
 
   const changeHandler = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
-  const activeChannel = useMemo(() => {
-    if (activeChannelId && allChannels && allChannels[0]) {
-      return allChannels.filter((channel) => channel._id === activeChannelId);
-    }
-    return 'hasNotChannelsOrActiveChannel';
-  }, [activeChannelId, allChannels]);
 
-  const isNotMembers = useMemo(() => {
-    if (allUsers && allUsers[0] && activeChannel) {
-      if (activeChannel === 'hasNotChannelsOrActiveChannel') {
-        return allUsers;
-      } else if (activeChannel[0]) {
-        return allUsers.filter(
-          (user) => activeChannel[0].members.includes(user._id) === false
-        );
-      }
-    }
-  }, [allUsers, activeChannel]);
-  const [notInvited, setNotInvited] = useState(isNotMembers);
-
-  useEffect(() => {
-    setNotInvited(isNotMembers);
-  }, isNotMembers);
-
-  const doneCreate = async (action) => {
+  const doneCreate = (action, invited = []) => {
     if (action === 'done' && form.name) {
-      const members = invited[0] ? invited.concat(userId) : [userId];
+      const arrInvitedId = invited[0]
+        ? invited.map((people) => people._id).concat(userId)
+        : [userId];
+
       dispatch(
         postData(
           POST_CHANNEL,
           token,
-          { ...form, creator: userId, members },
+          { ...form, creator: userId, members: arrInvitedId },
           userId
         )
       );
@@ -119,6 +102,7 @@ export const AddChannel = withStyles(styles)((props) => {
           <TextField
             label='Name'
             InputProps={{ className: classes.input }}
+            name='name'
             value={form.name.value}
             onChange={changeHandler}
           />
@@ -127,19 +111,12 @@ export const AddChannel = withStyles(styles)((props) => {
             InputProps={{ className: classes.input }}
             label='Discription'
             id='mui-theme-provider-standard-input'
+            name='discription'
             value={form.discription.value}
             onChange={changeHandler}
           />
         </DialogContent>
-        <SelectPeople
-          invited={invited}
-          notInvited={notInvited}
-          setNotInvited={setNotInvited}
-          setInvited={setInvited}
-          buttonCloseRef={buttonCloseRef}
-          buttonDoneRef={buttonDoneRef}
-          done={doneCreate}
-        />
+        <SelectPeople notInvitedRef={notInvitedRef} done={doneCreate} />
       </Dialog>
     </div>
   );

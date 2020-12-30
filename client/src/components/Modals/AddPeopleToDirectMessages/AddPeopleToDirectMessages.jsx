@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
@@ -18,15 +18,11 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const {
     done,
-    invited,
-    setInvited,
+    classes,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
-    classes,
   } = props;
-  const [notInvited, setNotInvited] = useState(null);
-  const buttonCloseRef = useRef();
-  const buttonDoneRef = useRef();
+  const notInvitedRef = useRef();
 
   useEffect(() => {
     if (users && users[0] && userData) {
@@ -38,9 +34,9 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
           );
         });
       }
-      setNotInvited(allNotInvited);
+      notInvitedRef.current = allNotInvited;
     }
-  }, [users, listDirectMessages]);
+  }, [users, listDirectMessages, userData]);
 
   return (
     <>
@@ -55,15 +51,7 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
         >
           Invite people to {userData.name}
         </DialogTitle>
-        <SelectPeople
-          invited={invited}
-          setInvited={setInvited}
-          notInvited={notInvited}
-          setNotInvited={setNotInvited}
-          buttonCloseRef={buttonCloseRef}
-          buttonDoneRef={buttonDoneRef}
-          done={done}
-        />
+        <SelectPeople notInvitedRef={notInvitedRef} done={done} />
       </Dialog>
     </>
   );

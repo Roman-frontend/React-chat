@@ -30,6 +30,10 @@ export function Channels(props) {
   const { changeStorageUserDataChannels } = useAuth();
 
   useEffect(() => {
+    function getOnlineMembers(idActive) {
+      socket.send(JSON.stringify({ room: idActive, meta: 'visit' }));
+    }
+
     function defineActiveChat() {
       const storageData = JSON.parse(localStorage.getItem('userData')).userData;
       if (activeChannelId) {
@@ -54,8 +58,7 @@ export function Channels(props) {
         }
       } else if (allChannels && allChannels[0]) {
         return { activeChannelId: allChannels[0]._id };
-      } else if (listDirectMessages[0]) {
-        console.log(listDirectMessages);
+      } else if (listDirectMessages && listDirectMessages[0]) {
         return {
           activeDirectMessageId: listDirectMessages[0]._id,
         };
@@ -66,9 +69,15 @@ export function Channels(props) {
 
     if (resourseChannels) {
       const activeChat = defineActiveChat();
+      const idActive = !activeChat
+        ? null
+        : activeChat.activeChannelId
+        ? activeChat.activeChannelId
+        : activeChat.activeDirectMessageId;
 
       dispatch({ type: GET_CHANNELS, payload: resourseChannels });
       dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
+      if (idActive) getOnlineMembers(idActive);
     }
   }, [resourseChannels]);
 

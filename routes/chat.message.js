@@ -47,6 +47,13 @@ router.post('/get-messages:activeChannelId', verifyToken, async (req, res) => {
 router.post('/post-message:chatId', verifyToken, async (req, res) => {
   try {
     //console.log("without express.json ..........")
+    /* const ip =
+      req.headers['x-forwarded-for'] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket.remoteAddress; */
+
+    //console.log('ip ////', ip);
     const userIsNotMemberPrivatChannel = await checkAccesToChannel(
       req.params.chatId,
       req.body.userId

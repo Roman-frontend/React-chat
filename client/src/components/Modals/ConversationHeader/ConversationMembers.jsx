@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Modal from 'react-modal';
 import { withStyles } from '@material-ui/core/styles';
@@ -82,6 +82,10 @@ export const ConversationMembers = withStyles(styles)((props) => {
     classes,
   } = props;
   const users = useSelector((state) => state.users);
+  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const activeDirectMessageId = useSelector(
+    (state) => state.activeDirectMessageId
+  );
   const usersOnline = useSelector((state) => state.usersOnline);
   const searchInputRef = useRef();
 
@@ -94,8 +98,30 @@ export const ConversationMembers = withStyles(styles)((props) => {
     );
   }, [activeChannel]);
 
+  useEffect(() => {
+    if (users) createListMembers();
+  }, [usersOnline]);
+
   function handleInput(event) {
     const regExp = new RegExp(`${searchInputRef.current.value}`);
+  }
+
+  function checkOnline(memberId) {
+    const activeChatId = activeChannelId
+      ? activeChannelId
+      : activeDirectMessageId;
+    let result = false;
+    usersOnline.forEach((chat) => {
+      console.log(chat.chatId === activeChatId);
+      console.log(chat.chatId, activeChatId);
+      if (
+        chat.chatId === activeChatId &&
+        chat.onlineMembers.includes(memberId)
+      ) {
+        result = true;
+      }
+    });
+    return result;
   }
 
   const createListMembers = useCallback(() => {
@@ -112,7 +138,7 @@ export const ConversationMembers = withStyles(styles)((props) => {
                     vertical: 'bottom',
                     horizontal: 'right',
                   }}
-                  variant={usersOnline.includes(member._id) ? 'dot' : 'none'}
+                  variant={checkOnline(member._id) ? 'dot' : 'none'}
                 >
                   <Box>
                     <PersonIcon

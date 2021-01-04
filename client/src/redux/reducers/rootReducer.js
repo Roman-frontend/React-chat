@@ -40,7 +40,11 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.payload.users };
 
     case GET_USERS_ONLINE:
-      return { ...state, usersOnline: action.payload };
+      //console.log(action.payload, state.usersOnline);
+      return {
+        ...state,
+        usersOnline: action.payload,
+      };
 
     case GET_CHANNELS:
       return { ...state, channels: action.payload.userChannels };
@@ -87,11 +91,9 @@ export const rootReducer = (state = initialState, action) => {
         listDirectMessages: state.listDirectMessages.concat(
           action.payload.allNewDirectMessage
         ),
-        //listDirectMessages: state.listDirectMessages.concat(action.payload.message),
       };
 
     case REMOVE_MESSAGE:
-      console.log('REMOVE_MESSAGE');
       const updatedMessages = state.messages.reverse().filter((message) => {
         return message._id !== action.payload.removedId;
       });

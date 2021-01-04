@@ -1,5 +1,6 @@
 //Тут розфасовка між activeChannelId і activeDirectMessageId зроблено
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { STORAGE_NAME } from '../../redux/types';
 import { useSelector } from 'react-redux';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
 import { Messages } from './Messages/Messages.jsx';
@@ -10,7 +11,7 @@ import './conversation.sass';
 import { useCallback } from 'react';
 
 export default function Conversation(props) {
-  const { socket, sendMessage } = props;
+  const { socket } = props;
   const userId = useSelector((state) => state.userData._id);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
@@ -28,43 +29,41 @@ export default function Conversation(props) {
     setActiveMessage(null);
   }, [activeChannelId, activeDirectMessageId]);
 
-  useLayoutEffect(() => {
-    //Підписуємось на подію, так відкриваємо з'єднання
-    socket.onopen = () => {
-      console.log('ONLINE');
-    };
-  }, []);
-
   useEffect(() => {
-    const storageData = JSON.parse(localStorage.getItem('userData'));
+    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+    const storageData = sessionStorageData
+      ? sessionStorageData
+      : localStorageData
+      ? localStorageData
+      : null;
+
     if (!storageData) setIsJoin(false);
     if (storageData.userData.channels[0] && !isJoin) {
+      console.log(storageData, isJoin);
       setIsJoin(true);
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-      sendMessage(
-        socket,
-        JSON.stringify({
-          userRooms: allUserChats,
-          meta: 'join',
-          userId: storageData.userData._id,
+      socket.clientPromise
+        .then((wsClient) => {
+          console.log(wsClient, {
+            userRooms: allUserChats,
+            meta: 'join',
+            userId: storageData.userData._id,
+          });
+          wsClient.send(
+            JSON.stringify({
+              userRooms: allUserChats,
+              meta: 'join',
+              userId: storageData.userData._id,
+            })
+          );
+          console.log('sended');
         })
-      );
+        .catch((error) => console.log(error));
     }
   }, [channels]);
-  /*   useEffect(() => {
-    if ((activeChannelId || activeDirectMessageId) && channels[0] && userId) {
-      const activeChatId = activeChannelId
-        ? activeChannelId
-        : activeDirectMessageId;
-      console.log(activeChannelId, activeDirectMessageId, channels);
-      sendMessage(
-        socket,
-        JSON.stringify({ room: activeChatId, meta: 'join', userId })
-      );
-    }
-  }, [channels]); */
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
@@ -110,6 +109,30 @@ export default function Conversation(props) {
       <img src={imageError} />
     );
   };
+
+  window.addEventListener('beforeunload', function (e) {
+    //const confirmationMessage = 'o/';
+    const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    if (storageData && storageData.userData.channels[0]) {
+      const allUserChats = storageData.userData.channels.concat(
+        storageData.userData.directMessages
+      );
+      socket.clientPromise
+        .then((wsClient) => {
+          wsClient.send(
+            JSON.stringify({
+              userRooms: allUserChats,
+              userId: storageData.userData._id,
+              meta: 'leave',
+            })
+          );
+          console.log('leaved');
+        })
+        .catch((error) => console.log(error));
+    }
+    /* (e || window.event).returnValue = confirmationMessage;
+    return confirmationMessage; */
+  });
 
   const fieldAnswerTo = useCallback(() => {
     if (closeBtnReplyMsg) {

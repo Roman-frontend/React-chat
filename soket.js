@@ -3,16 +3,29 @@ const server = new WebSocket.Server({ port: 8080 });
 //Надає унікальний код
 const { v4 } = require('uuid');
 const rooms = {};
+let chats = [];
 
 //Підписуюсь на події, ця подія (connection) спрацює коли клієнт підключиться до сервера, другим об'єктом передається функція зворотнього виклику. Аргумент ws - назва параметру веб-сокет зєднання
 server.on('connection', (ws) => {
   const uuid = v4(); // create here a uuid for this connection
   const ip = ws._socket.remoteAddress;
 
+  const join = (userRooms, userId) => {
+    userRooms.forEach((room) => {
+      if (!rooms[room]) rooms[room] = []; // create room if room is not created
+      const roomsHasUserData = rooms[room].filter(
+        //Check is has room the joined user
+        (user) => user[userId] === userId
+      );
+      if (!!!roomsHasUserData[0]) {
+        //if room have not user - adding user to room
+        rooms[room] = rooms[room].concat({ [userId]: { soketData: ws } });
+      }
+    });
+  };
+
   const leave = (room, userId) => {
-    if (!rooms[room]) {
-      return;
-    }
+    if (!rooms[room]) return;
     if (Object.keys(rooms[room]).length === 1) delete rooms[room];
     else delete rooms[room][userId];
   };
@@ -23,55 +36,82 @@ server.on('connection', (ws) => {
 
     if (meta === 'join') {
       const { userRooms, userId } = parseData;
-      //console.log('startRooma ===-', rooms);
+      join(userRooms, userId); // User has joined
+
+      let onlineUserData = [];
       userRooms.forEach((room) => {
-        if (!rooms[room]) rooms[room] = {}; // create the room
-        if (!rooms[room][userId]) {
-          rooms[room][userId] = { soketData: ws, userId }; // join the room
-        }
         if (rooms[room]) {
-          let onlineMembers = [];
-          let a;
-          //беру id юзера
-          Object.entries(rooms).forEach(
-            ([member, data]) => (a = Object.keys(data)[0])
-          );
-          Object.entries(rooms).forEach(([member, data]) =>
-            onlineMembers.push(data)
-          );
-          //console.log(onlineMembers);
-          onlineMembers.forEach((roomArr) => {
-            //console.log(roomArr, a);
-            Object.entries(roomArr).forEach(([roomObj, roomSock]) => {
-              console.log(roomSock.userId);
-              roomSock.soketData.send(
-                JSON.stringify({
-                  message: 'resChatMembers',
-                  onlineMembers: roomSock.userId,
-                })
-              );
-            });
+          Object.entries(rooms).forEach(([chatId, data]) => {
+            if (chatId === room) {
+              let members = [];
+              data.forEach((memberData) => {
+                Object.entries(memberData).forEach(([memberId, memberData]) => {
+                  members = members.concat({
+                    [memberId]: memberData.soketData,
+                  });
+                });
+              });
+              onlineUserData.push({ chatId, members });
+            }
           });
         }
       });
-    } else if (meta === 'visit') {
-      const { room } = parseData;
+      //Ready updates userData of online
 
-      let onlineMembers = [];
-      if (!(Object.keys(rooms).length === 0)) {
-        //console.log('rooms -->> ', rooms);
-        Object.entries(rooms[room]).forEach(([member]) =>
-          onlineMembers.push(member)
-        );
+      if (!chats[0]) {
+        chats = onlineUserData;
+      } else {
+        onlineUserData.forEach((newChat) => {
+          const chatsHasNewChatId = chats.filter((oldChat) => {
+            oldChat.chatId === newChat.chatId;
+          });
+          if (!!chatsHasNewChatId) {
+            chats.forEach((oldChat, index) => {
+              newChat.members.forEach((memberObj) => {
+                if (
+                  !Object.keys(oldChat.members).includes(
+                    Object.keys(memberObj)[0]
+                  )
+                ) {
+                  const concatedChat = oldChat.members.concat(memberObj);
+                  chats[index].members = concatedChat;
+                }
+              });
+            });
+          } else {
+            chats.push(newChat);
+          }
+        });
       }
-      ws.send(JSON.stringify({ message: 'resChatMembers', onlineMembers }));
+
+      chats.forEach((chat) => {
+        if (userRooms.includes(chat.chatId)) {
+          let onlineMembers = [];
+          chat.members.forEach((id) => {
+            const idMember = Object.keys(id)[0];
+            const arrInclude = onlineMembers.includes(idMember);
+            if (!arrInclude) {
+              onlineMembers = onlineMembers.concat(idMember);
+            }
+          });
+          const chatId = chat.chatId;
+          chat.members.forEach((soket) => {
+            Object.values(soket)[0].send(
+              JSON.stringify({
+                message: 'resOnlineMembers',
+                data: { chatId, onlineMembers },
+              })
+            );
+          });
+        }
+      });
     } else if (meta === 'leave') {
+      console.log('leave \n\n\n leave');
       parseData.userRooms.forEach((room) => {
         leave(room, parseData.userId);
       });
     } else if (!meta) {
       const { message, room } = parseData;
-      //Object.entries(rooms[room]) - поверне масив об'єктів з масиву rooms[room]
       Object.entries(rooms[room]).forEach(([, sock]) =>
         sock.soketData.send(JSON.stringify(message))
       );

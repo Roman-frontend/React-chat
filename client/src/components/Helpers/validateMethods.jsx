@@ -16,8 +16,6 @@ const longPassword = 'Слишком длинний пароль';
 export const validateName = (name) => {
   const regExp = /^([A-Za-z0-9]){3,15}$/gi;
 
-  console.log(name);
-
   if (name) {
     if (name.match(regExp)) return true;
     if (name.length < NAME_MIN_LENGTH) return shortName;

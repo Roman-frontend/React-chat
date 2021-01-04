@@ -43,9 +43,6 @@ export const postData = (method, token = null, body = null, param = null) => {
         body
       );
 
-    case POST_LOGIN:
-      return dispatcher(POST_LOGIN, '/api/auth/login', token, 'POST', body);
-
     case POST_CHANNEL:
       return dispatcher(
         POST_CHANNEL,

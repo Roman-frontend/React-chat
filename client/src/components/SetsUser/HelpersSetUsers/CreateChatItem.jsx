@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { STORAGE_NAME } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { useAuth } from '../../../hooks/auth.hook.js';
@@ -26,7 +27,15 @@ export function CreateLists(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      const storageData = JSON.parse(localStorage.getItem('userData'));
+      const sessionStorageData = JSON.parse(
+        sessionStorage.getItem(STORAGE_NAME)
+      );
+      const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+      const storageData = sessionStorageData
+        ? sessionStorageData
+        : localStorageData
+        ? localStorageData
+        : null;
       markActiveLinkChannel(storageData.userData.lastActiveChatId);
     }, 1000);
   }, []);
@@ -86,7 +95,7 @@ export function CreateLists(props) {
         changeStorageUserDataActiveChat({ lastActiveChatId: idActive });
         changeActiveChatId(idActive);
         markActiveLinkChannel(idActive);
-        getOnlineMembers(idActive);
+        //getOnlineMembers(idActive);
       }
     },
     [activeChannelId, activeDirectMessageId]
@@ -129,9 +138,16 @@ export function CreateLists(props) {
     }
   }
 
-  function getOnlineMembers(idActive) {
-    socket.send(JSON.stringify({ room: idActive, meta: 'visit' }));
-  }
+  /* function getOnlineMembers(idActive) {
+    wsSingleton.clientPromise
+      .then((wsClient) => {
+        wsClient.send(
+          JSON.stringify({ room: idActive, meta: 'visit' })
+        );
+        console.log('sended');
+      })
+      .catch((error) => console.log(error));
+  } */
 
   let allDirectMessages = [
     <div key='1' id='1' className='user-sets__channel'>

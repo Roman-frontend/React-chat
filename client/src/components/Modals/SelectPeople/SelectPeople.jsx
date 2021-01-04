@@ -38,7 +38,6 @@ export const SelectPeople = withStyles(styles)((props) => {
 
   const getSelectElements = () => {
     setOpen(true);
-    console.log('getSelectElements', listMatchedEmails);
     if (listMatchedEmails) {
       setListPeoplesForInvite(createSelectElements(listMatchedEmails));
     }

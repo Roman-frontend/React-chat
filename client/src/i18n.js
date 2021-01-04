@@ -36,7 +36,8 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'en',
-    debug: true,
+    //debug: true - покаже всі console.log() - що приходять з i18next - а false - рпиховає
+    debug: false,
     detection: {
       order: ['queryString', 'cookie'],
       cache: ['cookie'],
@@ -47,6 +48,7 @@ i18n
     react: {
       useSuspense: false,
     },
+    defaultNS: 'translation',
   });
 
 export default i18n;

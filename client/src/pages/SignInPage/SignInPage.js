@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -6,10 +6,6 @@ import { Formik, Form } from 'formik';
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { connect } from 'react-redux';
-import { postData } from '../../redux/actions/actions.js';
-import { POST_LOGIN } from '../../redux/types.js';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
 import './auth-body.sass';
@@ -25,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SignInPage = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  const { login } = useAuth();
   const initialValues = { email: '', password: '' };
 
   const validationSchema = Yup.object({
@@ -39,7 +35,7 @@ export const SignInPage = () => {
   const onSubmit = async (values) => {
     try {
       const formData = { email: values.email, password: values.password };
-      await dispatch(postData(POST_LOGIN, null, formData));
+      login(formData);
     } catch (e) {
       console.error(e);
     }
@@ -91,9 +87,3 @@ export const SignInPage = () => {
     </div>
   );
 };
-
-const mapDispatchToProps = {
-  postData,
-};
-
-export default connect(null, mapDispatchToProps)(SignInPage);

@@ -1,129 +1,123 @@
-import { useCallback, useEffect, useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { connect } from 'react-redux';
-import { LOGIN_DATA, LOGOUT_DATA } from '../redux/types.js';
-
-const storageName = 'userData';
+import {
+  LOGIN_DATA,
+  LOGOUT_DATA,
+  STORAGE_NAME,
+  POST_LOGIN,
+} from '../redux/types.js';
+import { reduxServer } from '../hooks/http.hook.js';
 
 export const useAuth = () => {
   const dispatch = useDispatch();
 
-  /**
-   *jwtToken - отримуємо з бекенда,
-   *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність
-   */
-  const login = useCallback((userData, token) => {
-    //console.log('login ->', userData, token);
-    localStorage.setItem(
-      storageName,
-      JSON.stringify({
-        userData,
-        token,
-      })
+  /**jwtToken - отримуємо з бекенда *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність*/
+  const login = useCallback(async (loginData) => {
+    const resLogin = await reduxServer(
+      '/api/auth/login',
+      null,
+      'POST',
+      loginData
     );
+    const toStorage = JSON.stringify({
+      userData: resLogin.userData,
+      token: resLogin.token,
+    });
+    /* localStorage.setItem(STORAGE_NAME, toStorage); */
+    sessionStorage.setItem(STORAGE_NAME, toStorage);
+    dispatch({ type: POST_LOGIN, payload: resLogin });
   }, []);
 
-  const logout = useCallback((socket) => {
-    const storageData = JSON.parse(localStorage.getItem('userData'));
-    if (storageData.userData.channels[0]) {
+  const logout = useCallback((socket = null) => {
+    /*const storageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+    if (storageData && storageData.userData.channels[0]) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-      /* socket.send(
+       socket.send(
         JSON.stringify({
           userRooms: allUserChats,
           userId: storageData.userData._id,
           meta: 'leave',
         })
-      ); */
-    }
-    localStorage.removeItem(storageName);
+      ); 
+    } */
+    localStorage.clear();
+    sessionStorage.clear();
     dispatch({ type: LOGOUT_DATA });
   }, []);
 
   const changeStorageUserDataActiveChat = (newActiveChat) => {
-    const data = JSON.parse(localStorage.getItem('userData'));
-    //console.log(data);
-    const { channels, directMessages, _id, name, email } = { ...data.userData };
-    const token = data.token;
-    const object = Object.assign(
-      {},
-      { channels, directMessages, _id, name, email },
-      { ...newActiveChat }
-    );
-    /* console.log('changeStorageUserDataActiveChat ->', {
-      userData: { ...object },
-      token,
-    }); */
-    localStorage.setItem(
-      storageName,
-      JSON.stringify({
-        userData: { ...object },
-        token,
-      })
-    );
+    const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    if (data) {
+      const { channels, directMessages, _id, name, email } = {
+        ...data.userData,
+      };
+      const token = data.token;
+      const object = Object.assign(
+        {},
+        { channels, directMessages, _id, name, email },
+        { ...newActiveChat }
+      );
+      const toStorage = JSON.stringify({ userData: { ...object }, token });
+      localStorage.setItem(STORAGE_NAME, toStorage);
+      sessionStorage.setItem(STORAGE_NAME, toStorage);
+    }
   };
 
   const changeStorageUserDataChannels = (newChannels) => {
-    //console.log("changeStorageUserDataChannels");
-    const data = JSON.parse(localStorage.userData);
-    //console.log(data);
-    const { directMessages, lastActiveChatId, _id, name, email } = {
-      ...data.userData,
-    };
-    const token = data.token;
-    const object = Object.assign(
-      {},
-      { directMessages, lastActiveChatId, _id, name, email },
-      { ...newChannels }
-    );
-    /* console.log('changeStorageUserDataChannels ->', {
-      userData: { ...object },
-      token,
-    }); */
-    localStorage.setItem(
-      storageName,
-      JSON.stringify({
-        userData: { ...object },
-        token,
-      })
-    );
+    const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    if (data) {
+      const { directMessages, lastActiveChatId, _id, name, email } = {
+        ...data.userData,
+      };
+      const token = data.token;
+      const object = Object.assign(
+        {},
+        { directMessages, lastActiveChatId, _id, name, email },
+        { ...newChannels }
+      );
+      const toStorage = JSON.stringify({ userData: { ...object }, token });
+      localStorage.setItem(STORAGE_NAME, toStorage);
+      sessionStorage.setItem(STORAGE_NAME, toStorage);
+    }
   };
 
   const changeStorageUserDataDirectMessages = (newDirectMessages) => {
-    //console.log('changeStorageUserDataDirectMessages');
-    const data = JSON.parse(localStorage.userData);
-    const { channels, lastActiveChatId, _id, name, email } = {
-      ...data.userData,
-    };
-    const token = data.token;
-    const object = Object.assign(
-      {},
-      { channels, lastActiveChatId, _id, name, email },
-      { ...newDirectMessages }
-    );
-    /* console.log('changeStorageUserDataDirectMessages ->', {
-      userData: { ...object },
-      token,
-    }); */
-    localStorage.setItem(
-      storageName,
-      JSON.stringify({
-        userData: { ...object },
-        token,
-      })
-    );
+    const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    if (data) {
+      const { channels, lastActiveChatId, _id, name, email } = {
+        ...data.userData,
+      };
+      const token = data.token;
+      const object = Object.assign(
+        {},
+        { channels, lastActiveChatId, _id, name, email },
+        { ...newDirectMessages }
+      );
+      const toStorage = JSON.stringify({ userData: { ...object }, token });
+      localStorage.setItem(STORAGE_NAME, toStorage);
+      sessionStorage.setItem(STORAGE_NAME, toStorage);
+    }
   };
 
   useLayoutEffect(() => {
-    /** JSON.parse() - приводить результат до обєкта */
-    const data = JSON.parse(localStorage.getItem(storageName));
-    //console.log(data);
-
-    if (data && data.token && data.userData) {
+    //const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    const storageData =
+      sessionStorageData &&
+      sessionStorageData.token &&
+      sessionStorageData.userData
+        ? sessionStorageData
+        : /* : localStorageData &&
+          localStorageData.token &&
+          localStorageData.userData
+        ? localStorageData */
+          null;
+    if (storageData) {
       dispatch({
         type: LOGIN_DATA,
-        payload: data,
+        payload: storageData,
       });
     }
   }, [login]);
@@ -136,5 +130,3 @@ export const useAuth = () => {
     changeStorageUserDataChannels,
   };
 };
-
-export default connect(null, null)(useAuth);

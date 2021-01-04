@@ -1,7 +1,11 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useChatContext from '../../../Context/ChatContext.js';
-import { GET_CHANNELS, ACTIVE_CHAT_ID } from '../../../redux/types';
+import {
+  GET_CHANNELS,
+  ACTIVE_CHAT_ID,
+  STORAGE_NAME,
+} from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { getChannels } from '../../../redux/actions/actions.js';
@@ -30,12 +34,27 @@ export function Channels(props) {
   const { changeStorageUserDataChannels } = useAuth();
 
   useEffect(() => {
-    function getOnlineMembers(idActive) {
-      socket.send(JSON.stringify({ room: idActive, meta: 'visit' }));
-    }
+    /* function getOnlineMembers(idActive) {
+      socket.clientPromise
+        .then((wsClient) => {
+          wsClient.send(
+            JSON.stringify({ room: idActive, meta: 'visit' })
+          );
+          console.log('sended');
+        })
+        .catch((error) => console.log(error));
+    } */
 
     function defineActiveChat() {
-      const storageData = JSON.parse(localStorage.getItem('userData')).userData;
+      const sessionStorageData = JSON.parse(
+        sessionStorage.getItem(STORAGE_NAME)
+      );
+      const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+      const storageData = sessionStorageData
+        ? sessionStorageData.userData
+        : localStorageData
+        ? localStorageData.userData
+        : null;
       if (activeChannelId) {
         return { activeChannelId };
       } else if (activeDirectMessageId) {
@@ -77,13 +96,21 @@ export function Channels(props) {
 
       dispatch({ type: GET_CHANNELS, payload: resourseChannels });
       dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
-      if (idActive) getOnlineMembers(idActive);
+      //if (idActive) getOnlineMembers(idActive);
     }
   }, [resourseChannels]);
 
   useEffect(() => {
     if (allChannels && allChannels[0]) {
-      const storageData = JSON.parse(localStorage.getItem('userData'));
+      const sessionStorageData = JSON.parse(
+        sessionStorage.getItem(STORAGE_NAME)
+      );
+      const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
+      const storageData = sessionStorageData
+        ? sessionStorageData
+        : localStorageData
+        ? localStorageData
+        : null;
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.userData.channels) {
         changeStorageUserDataChannels({ channels: idChannels });

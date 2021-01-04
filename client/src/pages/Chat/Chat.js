@@ -1,4 +1,6 @@
 import React, { useContext, Suspense, lazy } from 'react';
+import { STORAGE_NAME } from '../../redux/types';
+import { wsSingleton } from '../../WebSocket/soket';
 import { ChatContext } from '../../Context/ChatContext.js';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -9,6 +11,8 @@ const Conversation = lazy(() =>
 );
 const SetsUser = lazy(() => import('../../components/SetsUser/SetsUser.jsx'));
 
+console.log(STORAGE_NAME);
+
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'fixed',
@@ -17,44 +21,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Chat = (props) => {
-  const { token, userData } = props;
+//check for Navigation Timing API support
+if (window.performance) {
+  console.info('window.performance works fine on this browser');
+}
+console.info(performance.navigation.type);
+if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+  const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+  if (storageData && storageData.userData.channels[0]) {
+    const allUserChats = storageData.userData.channels.concat(
+      storageData.userData.directMessages
+    );
+    wsSingleton.clientPromise
+      .then((wsClient) => {
+        wsClient.send(
+          JSON.stringify({
+            userRooms: allUserChats,
+            userId: storageData.userData._id,
+            meta: 'leave',
+          })
+        );
+        console.log('leaved');
+      })
+      .catch((error) => console.log(error));
+  }
+  console.info('This page is reloaded');
+} else {
+  console.info('This page is not reloaded');
+}
+
+export const Chat = () => {
   const classes = useStyles();
-  //як аргументо WebSocket приймає url але замість http WebSocket використовують ws
-  const socket = new WebSocket('ws://localhost:8080');
-
-  //Cteating timeout when socket is connecting
-  const waitForOpenConnection = (socket) => {
-    return new Promise((resolve, reject) => {
-      const maxNumberOfAttempts = 10;
-      const intervalTime = 200; //ms
-
-      let currentAttempt = 0;
-      const interval = setInterval(() => {
-        if (currentAttempt > maxNumberOfAttempts - 1) {
-          clearInterval(interval);
-          reject(new Error('Maximum number of attempts exceeded'));
-        } else if (socket.readyState === socket.OPEN) {
-          clearInterval(interval);
-          resolve();
-        }
-        currentAttempt++;
-      }, intervalTime);
-    });
-  };
-
-  const sendMessage = async (socket, msg) => {
-    if (socket.readyState !== socket.OPEN) {
-      try {
-        await waitForOpenConnection(socket);
-        socket.send(msg);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      socket.send(msg);
-    }
-  };
 
   return (
     <div className='chat-page'>
@@ -66,9 +63,9 @@ export const Chat = (props) => {
             </div>
           }
         >
-          <Header socket={socket} />
-          <SetsUser socket={socket} />
-          <Conversation socket={socket} sendMessage={sendMessage} />
+          <Header socket={wsSingleton} />
+          <SetsUser socket={wsSingleton} />
+          <Conversation socket={wsSingleton} />
         </Suspense>
       </ChatContext>
     </div>

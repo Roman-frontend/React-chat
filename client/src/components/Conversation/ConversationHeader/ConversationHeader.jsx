@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
   useRef,
@@ -55,6 +56,8 @@ const StyledBadge = withStyles((theme) => ({
 export function ConversationHeader() {
   //const classes = useStyles();
   const dispatch = useDispatch();
+  const usersOnline = useSelector((state) => state.usersOnline);
+  const users = useSelector((state) => state.users);
   const channels = useSelector((state) => state.channels);
   const userId = useSelector((state) => state.userData._id);
   const token = useSelector((state) => state.token);
@@ -67,13 +70,9 @@ export function ConversationHeader() {
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
 
-  /* useEffect(() => {
-    async function getPeoples() {
-      await dispatch(getUsers(token, userId));
-    }
-
-    if (userId) getPeoples();
-  }, [userId]); */
+  useLayoutEffect(() => {
+    console.log(usersOnline);
+  }, [usersOnline, activeChannelId]);
 
   const activeChannel = useMemo(() => {
     if (channels) {
@@ -103,31 +102,16 @@ export function ConversationHeader() {
   }, [activeChannel, activeDirectMessageId]);
 
   const createMembers = useCallback(() => {
+    console.log('createMembers');
     return (
       <div style={{ flexGrow: 1 }}>
         <Grid
           container
           spacing={1}
-          style={{ height: '4.3rem', alignContent: 'center' }}
+          style={{ height: '4.3rem', width: '19vw', alignContent: 'center' }}
         >
           <Grid item xs={6} style={{ alignSelf: 'center' }}>
-            <AvatarGroup
-              max={2}
-              style={{ fontSize: 30, cursor: 'pointer' }}
-              onClick={() => setModalIsShowsMembers(true)}
-            >
-              <StyledBadge
-                overlap='circle'
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                variant='dot'
-              >
-                <Avatar alt='Remy Sharp' src={imageProfile} />
-              </StyledBadge>
-              <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
-            </AvatarGroup>
+            {createAvatars()}
           </Grid>
           <Grid item xs={5}>
             <GroupAddIcon
@@ -138,7 +122,59 @@ export function ConversationHeader() {
         </Grid>
       </div>
     );
-  }, [activeChannel]);
+  }, [activeChannel, usersOnline]);
+
+  function createAvatars() {
+    let avatars = [];
+    if (activeChannel && users) {
+      activeChannel.members.forEach((memberId) => {
+        users.forEach((user) => {
+          if (user._id === memberId) {
+            avatars = avatars.concat(
+              <StyledBadge
+                key={user._id}
+                overlap='circle'
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                variant={checkOnline(user._id) ? 'dot' : 'standard'}
+              >
+                <Avatar alt={user.name} src='/static/images/avatar/2.jpg' />
+              </StyledBadge>
+            );
+          }
+        });
+      });
+      return createAvatar(avatars);
+    }
+  }
+
+  function createAvatar(avatars) {
+    console.log(avatars);
+    return (
+      <AvatarGroup
+        max={3}
+        style={{ fontSize: 30, cursor: 'pointer' }}
+        onClick={() => setModalIsShowsMembers(true)}
+      >
+        {avatars}
+      </AvatarGroup>
+    );
+  }
+
+  function checkOnline(memberId) {
+    let result = false;
+    usersOnline.forEach((chat) => {
+      if (
+        chat.chatId === activeChannelId &&
+        chat.onlineMembers.includes(memberId)
+      ) {
+        result = true;
+      }
+    });
+    return result;
+  }
 
   function openModalAddPeoples() {
     if (activeChannelId) {
@@ -156,10 +192,12 @@ export function ConversationHeader() {
     setModalAddPeopleIsOpen(false);
   }
 
+  console.log(usersOnline);
+
   return (
     <div className='conversation__field-name'>
       <Grid container spacing={1} style={{ alignItems: 'center' }}>
-        <Grid item xs={10}>
+        <Grid item xs={9}>
           {createName()}
         </Grid>
         <Grid item xs={2}>
@@ -170,6 +208,7 @@ export function ConversationHeader() {
         activeChannel={activeChannel}
         modalIsShowsMembers={modalIsShowsMembers}
         setModalIsShowsMembers={setModalIsShowsMembers}
+        checkOnline={checkOnline}
       />
       <AddPeopleToChannel
         chatNameRef={chatNameRef}

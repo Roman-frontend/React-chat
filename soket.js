@@ -2,8 +2,7 @@ const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: 8080 });
 //Надає унікальний код
 const { v4 } = require('uuid');
-const rooms = {};
-let chats = [];
+let rooms = [];
 
 //Підписуюсь на події, ця подія (connection) спрацює коли клієнт підключиться до сервера, другим об'єктом передається функція зворотнього виклику. Аргумент ws - назва параметру веб-сокет зєднання
 server.on('connection', (ws) => {
@@ -11,23 +10,70 @@ server.on('connection', (ws) => {
   const ip = ws._socket.remoteAddress;
 
   const join = (userRooms, userId) => {
-    userRooms.forEach((room) => {
-      if (!rooms[room]) rooms[room] = []; // create room if room is not created
-      const roomsHasUserData = rooms[room].filter(
-        //Check is has room the joined user
-        (user) => user[userId] === userId
-      );
-      if (!!!roomsHasUserData[0]) {
-        //if room have not user - adding user to room
-        rooms[room] = rooms[room].concat({ [userId]: { soketData: ws } });
+    userRooms.forEach((resRoomId) => {
+      let roomsHasResRoom = false;
+      rooms.forEach((chat, index) => {
+        if (chat && chat.chatId === resRoomId) {
+          const chatHasNewMember = Object.keys(chat.members).includes(userId);
+          if (!chatHasNewMember) {
+            rooms[index].members = rooms[index].members.concat({
+              [userId]: ws,
+            });
+          }
+          roomsHasResRoom = true;
+        }
+      });
+      if (!rooms[0] || !roomsHasResRoom) {
+        const newChat = { chatId: resRoomId, members: [{ [userId]: ws }] };
+        rooms = rooms.concat(newChat);
       }
     });
   };
 
-  const leave = (room, userId) => {
-    if (!rooms[room]) return;
-    if (Object.keys(rooms[room]).length === 1) delete rooms[room];
-    else delete rooms[room][userId];
+  function resOnline(userRooms) {
+    rooms.forEach((room) => {
+      if (userRooms.includes(room.chatId)) {
+        let onlineMembers = [];
+        room.members.forEach((member) => {
+          const idMember = Object.keys(member)[0];
+          const arrInclude = onlineMembers.includes(idMember);
+          if (!arrInclude) {
+            onlineMembers = onlineMembers.concat(idMember);
+          }
+        });
+        const chatId = room.chatId;
+        room.members.forEach((member) => {
+          Object.values(member)[0].send(
+            JSON.stringify({
+              message: 'resOnlineMembers',
+              data: { chatId, onlineMembers },
+            })
+          );
+        });
+      }
+    });
+  }
+
+  const leave = (resRoom, userId) => {
+    if (!rooms[0]) return;
+    rooms.forEach((room, index) => {
+      if (room.chatId === resRoom) {
+        //console.log(room.chatId, resRoom);
+        const membersId = Object.keys(room.members);
+        if (membersId.length === 1 && membersId[0] === userId) {
+          rooms.splice(index, 1);
+        } else {
+          rooms[index].members = room.members.filter((member) => {
+            return Object.keys(member)[0] !== userId;
+          });
+        }
+      }
+    });
+    rooms.forEach((room, index) => {
+      if (room.members[0] === undefined) {
+        rooms.splice(index, 1);
+      }
+    });
   };
 
   ws.on('message', (data) => {
@@ -37,84 +83,20 @@ server.on('connection', (ws) => {
     if (meta === 'join') {
       const { userRooms, userId } = parseData;
       join(userRooms, userId); // User has joined
-
-      let onlineUserData = [];
-      userRooms.forEach((room) => {
-        if (rooms[room]) {
-          Object.entries(rooms).forEach(([chatId, data]) => {
-            if (chatId === room) {
-              let members = [];
-              data.forEach((memberData) => {
-                Object.entries(memberData).forEach(([memberId, memberData]) => {
-                  members = members.concat({
-                    [memberId]: memberData.soketData,
-                  });
-                });
-              });
-              onlineUserData.push({ chatId, members });
-            }
-          });
-        }
-      });
-      //Ready updates userData of online
-
-      if (!chats[0]) {
-        chats = onlineUserData;
-      } else {
-        onlineUserData.forEach((newChat) => {
-          const chatsHasNewChatId = chats.filter((oldChat) => {
-            oldChat.chatId === newChat.chatId;
-          });
-          if (!!chatsHasNewChatId) {
-            chats.forEach((oldChat, index) => {
-              newChat.members.forEach((memberObj) => {
-                if (
-                  !Object.keys(oldChat.members).includes(
-                    Object.keys(memberObj)[0]
-                  )
-                ) {
-                  const concatedChat = oldChat.members.concat(memberObj);
-                  chats[index].members = concatedChat;
-                }
-              });
-            });
-          } else {
-            chats.push(newChat);
-          }
-        });
-      }
-
-      chats.forEach((chat) => {
-        if (userRooms.includes(chat.chatId)) {
-          let onlineMembers = [];
-          chat.members.forEach((id) => {
-            const idMember = Object.keys(id)[0];
-            const arrInclude = onlineMembers.includes(idMember);
-            if (!arrInclude) {
-              onlineMembers = onlineMembers.concat(idMember);
-            }
-          });
-          const chatId = chat.chatId;
-          chat.members.forEach((soket) => {
-            Object.values(soket)[0].send(
-              JSON.stringify({
-                message: 'resOnlineMembers',
-                data: { chatId, onlineMembers },
-              })
-            );
-          });
-        }
-      });
+      resOnline(userRooms);
     } else if (meta === 'leave') {
       console.log('leave \n\n\n leave');
-      parseData.userRooms.forEach((room) => {
-        leave(room, parseData.userId);
+      parseData.userRooms.forEach((resRoom) => {
+        leave(resRoom, parseData.userId);
       });
     } else if (!meta) {
-      const { message, room } = parseData;
-      Object.entries(rooms[room]).forEach(([, sock]) =>
-        sock.soketData.send(JSON.stringify(message))
-      );
+      rooms.forEach((room) => {
+        if (room.chatId === parseData.room) {
+          room.members.forEach((member) => {
+            Object.values(member)[0].send(JSON.stringify(parseData.message));
+          });
+        }
+      });
     } else if (meta === 'exit') {
       ws.on('close', () => {
         Object.keys(rooms).forEach((room) => leave(room));

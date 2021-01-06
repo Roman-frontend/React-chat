@@ -29,19 +29,24 @@ export const useAuth = () => {
   }, []);
 
   const logout = useCallback((socket = null) => {
-    /*const storageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
-    if (storageData && storageData.userData.channels[0]) {
+    const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    if (storageData && storageData.userData.channels[0] && socket) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-       socket.send(
-        JSON.stringify({
-          userRooms: allUserChats,
-          userId: storageData.userData._id,
-          meta: 'leave',
+      console.log(allUserChats);
+      socket.clientPromise
+        .then((wsClient) => {
+          wsClient.send(
+            JSON.stringify({
+              userRooms: allUserChats,
+              userId: storageData.userData._id,
+              meta: 'leave',
+            })
+          );
         })
-      ); 
-    } */
+        .catch((error) => console.log(error));
+    }
     localStorage.clear();
     sessionStorage.clear();
     dispatch({ type: LOGOUT_DATA });

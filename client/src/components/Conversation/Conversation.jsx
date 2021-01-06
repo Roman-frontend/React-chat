@@ -39,7 +39,12 @@ export default function Conversation(props) {
       : null;
 
     if (!storageData) setIsJoin(false);
-    if (storageData.userData.channels[0] && !isJoin) {
+    if (
+      storageData &&
+      storageData.userData &&
+      storageData.userData.channels[0] &&
+      !isJoin
+    ) {
       console.log(storageData, isJoin);
       setIsJoin(true);
       const allUserChats = storageData.userData.channels.concat(

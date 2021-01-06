@@ -29,17 +29,17 @@ router.get(`/get-user`, async (req, res) => {
   }
 });
 
-//Coming from AddChannel
 router.post('/post-channel:userId', verifyToken, async (req, res) => {
   try {
     const newChannel = await Channel.create(req.body);
-    const updatedUserData = await User.findById(req.params.userId);
-    console.log('AddChannel ==>> ', updatedUserData);
-    updatedUserData.channels.push(newChannel._id);
-    await updatedUserData.save();
-    console.log('Ended AddChannel ==>> ', updatedUserData);
+    for (let memberId of req.body.members) {
+      const user = await User.findById(memberId);
+      user.channels.push(newChannel._id);
+      await user.save();
+    }
 
-    //console.log("user with new channel ", updatedUserData)
+    const updatedUserData = await User.findById(req.params.userId);
+
     res
       .status(201)
       .json({ userData: updatedUserData, message: 'Канал створено' });
@@ -51,7 +51,6 @@ router.post('/post-channel:userId', verifyToken, async (req, res) => {
 
 console.log('chat.channel файл');
 
-//Coming from AddPeopleToChannel
 router.post(
   '/post-add-members-to-channel:activeChannelId',
   verifyToken,

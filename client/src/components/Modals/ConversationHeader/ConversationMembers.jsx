@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useMemo, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+  useEffect,
+} from 'react';
 import { useSelector } from 'react-redux';
 import Modal from 'react-modal';
 import { withStyles } from '@material-ui/core/styles';
@@ -80,14 +86,12 @@ export const ConversationMembers = withStyles(styles)((props) => {
     modalIsShowsMembers,
     setModalIsShowsMembers,
     classes,
+    checkOnline,
   } = props;
   const users = useSelector((state) => state.users);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
   const usersOnline = useSelector((state) => state.usersOnline);
   const searchInputRef = useRef();
+  const [members, setMembers] = useState();
 
   const title = useMemo(() => {
     return (
@@ -99,34 +103,16 @@ export const ConversationMembers = withStyles(styles)((props) => {
   }, [activeChannel]);
 
   useEffect(() => {
-    if (users) createListMembers();
-  }, [usersOnline]);
+    if (users && activeChannel) createListMembers();
+  }, [usersOnline, activeChannel]);
 
   function handleInput(event) {
     const regExp = new RegExp(`${searchInputRef.current.value}`);
   }
 
-  function checkOnline(memberId) {
-    const activeChatId = activeChannelId
-      ? activeChannelId
-      : activeDirectMessageId;
-    let result = false;
-    usersOnline.forEach((chat) => {
-      console.log(chat.chatId === activeChatId);
-      console.log(chat.chatId, activeChatId);
-      if (
-        chat.chatId === activeChatId &&
-        chat.onlineMembers.includes(memberId)
-      ) {
-        result = true;
-      }
-    });
-    return result;
-  }
-
   const createListMembers = useCallback(() => {
     const listMembers = getMembersActiveChannel();
-    return (
+    const readyList = (
       <List dense className={classes.root}>
         {listMembers.map((member) => {
           return (
@@ -154,6 +140,8 @@ export const ConversationMembers = withStyles(styles)((props) => {
         })}
       </List>
     );
+
+    setMembers(readyList);
   }, [activeChannel, usersOnline]);
 
   function getMembersActiveChannel() {
@@ -218,7 +206,7 @@ export const ConversationMembers = withStyles(styles)((props) => {
             ref={searchInputRef}
             onKeyUp={(event) => handleInput(event)}
           />
-          {createListMembers()}
+          {members}
         </DialogContent>
       </Dialog>
     </div>

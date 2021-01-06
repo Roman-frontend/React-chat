@@ -28,7 +28,7 @@ if (window.performance) {
 console.info(performance.navigation.type);
 if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
   const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-  if (storageData && storageData.userData.channels[0]) {
+  if (storageData && storageData.userData && storageData.userData.channels[0]) {
     const allUserChats = storageData.userData.channels.concat(
       storageData.userData.directMessages
     );

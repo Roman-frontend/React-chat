@@ -59,7 +59,7 @@ export function Channels(props) {
         return { activeChannelId };
       } else if (activeDirectMessageId) {
         return { activeDirectMessageId };
-      } else if (storageData.lastActiveChatId) {
+      } else if (storageData && storageData.lastActiveChatId) {
         if (storageData.channels) {
           const channelHasLast = storageData.channels.includes(
             storageData.lastActiveChatId

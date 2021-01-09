@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { STORAGE_NAME } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import { ACTIVE_CHAT_ID } from '../../../redux/types.js';
 
 export function CreateLists(props) {
-  const { arrElements, listName, socket } = props;
+  const { arrElements, listName } = props;
   const { changeStorageUserDataActiveChat } = useAuth();
   const dispatch = useDispatch();
   const activeChannelId = useSelector((state) => state.activeChannelId);
@@ -16,7 +16,6 @@ export function CreateLists(props) {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
-  //const refIdPrevChannel = useRef(activeChannelId);
   const refUpdatedChannels = useRef(null);
 
   useEffect(() => {
@@ -137,17 +136,6 @@ export function CreateLists(props) {
       channelForActive.classList.add('user-sets__channel_active');
     }
   }
-
-  /* function getOnlineMembers(idActive) {
-    wsSingleton.clientPromise
-      .then((wsClient) => {
-        wsClient.send(
-          JSON.stringify({ room: idActive, meta: 'visit' })
-        );
-        console.log('sended');
-      })
-      .catch((error) => console.log(error));
-  } */
 
   let allDirectMessages = [
     <div key='1' id='1' className='user-sets__channel'>

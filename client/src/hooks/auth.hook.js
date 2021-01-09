@@ -6,6 +6,7 @@ import {
   STORAGE_NAME,
   POST_LOGIN,
 } from '../redux/types.js';
+import { wsSend } from '../WebSocket/soket';
 import { reduxServer } from '../hooks/http.hook.js';
 
 export const useAuth = () => {
@@ -28,24 +29,22 @@ export const useAuth = () => {
     dispatch({ type: POST_LOGIN, payload: resLogin });
   }, []);
 
-  const logout = useCallback((socket = null) => {
+  const logout = useCallback(() => {
     const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    if (storageData && storageData.userData.channels[0] && socket) {
+    if (
+      storageData &&
+      storageData.userData &&
+      storageData.userData.channels[0]
+    ) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
       console.log(allUserChats);
-      socket.clientPromise
-        .then((wsClient) => {
-          wsClient.send(
-            JSON.stringify({
-              userRooms: allUserChats,
-              userId: storageData.userData._id,
-              meta: 'leave',
-            })
-          );
-        })
-        .catch((error) => console.log(error));
+      wsSend({
+        userRooms: allUserChats,
+        userId: storageData.userData._id,
+        meta: 'leave',
+      });
     }
     localStorage.clear();
     sessionStorage.clear();

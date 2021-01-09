@@ -19,7 +19,6 @@ import { useCallback } from 'react';
 export function DirectMessages(props) {
   const { t } = useTranslation();
   const { resDirectMessages } = useChatContext();
-  const { socket } = props;
   const { changeStorageUserDataDirectMessages } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
@@ -61,7 +60,6 @@ export function DirectMessages(props) {
         <CreateLists
           arrElements={allRowDirectMessages}
           listName={'directMessages'}
-          socket={socket}
         />
       );
     }

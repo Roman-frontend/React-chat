@@ -1,19 +1,12 @@
 import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
 
 const HeaderProfile = (props) => {
-  const {
-    menuId,
-    anchorEl,
-    setAnchorEl,
-    handleMobileMenuClose,
-    socket,
-  } = props;
+  const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;
   const history = useHistory();
   const { logout } = useAuth();
   const userData = useSelector((state) => state.userData);
@@ -21,7 +14,7 @@ const HeaderProfile = (props) => {
 
   const logoutHandler = (event) => {
     event.preventDefault();
-    logout(socket);
+    logout();
     history.push('/');
   };
 

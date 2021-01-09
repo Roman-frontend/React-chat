@@ -20,4 +20,13 @@ class Ws extends Object {
   }
 }
 
+export function wsSend(data) {
+  wsSingleton.clientPromise
+    .then((wsClient) => {
+      wsClient.send(JSON.stringify(data));
+      console.log('sended');
+    })
+    .catch((error) => console.log(error));
+}
+
 export const wsSingleton = new Ws();

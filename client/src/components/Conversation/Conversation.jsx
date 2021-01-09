@@ -1,5 +1,5 @@
-//Тут розфасовка між activeChannelId і activeDirectMessageId зроблено
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { wsSend } from '../../WebSocket/soket';
 import { STORAGE_NAME } from '../../redux/types';
 import { useSelector } from 'react-redux';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
@@ -11,7 +11,6 @@ import './conversation.sass';
 import { useCallback } from 'react';
 
 export default function Conversation(props) {
-  const { socket } = props;
   const userId = useSelector((state) => state.userData._id);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
@@ -50,23 +49,11 @@ export default function Conversation(props) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-      socket.clientPromise
-        .then((wsClient) => {
-          console.log(wsClient, {
-            userRooms: allUserChats,
-            meta: 'join',
-            userId: storageData.userData._id,
-          });
-          wsClient.send(
-            JSON.stringify({
-              userRooms: allUserChats,
-              meta: 'join',
-              userId: storageData.userData._id,
-            })
-          );
-          console.log('sended');
-        })
-        .catch((error) => console.log(error));
+      wsSend({
+        userRooms: allUserChats,
+        meta: 'join',
+        userId: storageData.userData._id,
+      });
     }
   }, [channels]);
 
@@ -108,7 +95,6 @@ export default function Conversation(props) {
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}
         setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         inputRef={inputRef}
-        socket={socket}
       />
     ) : (
       <img src={imageError} />
@@ -122,18 +108,11 @@ export default function Conversation(props) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-      socket.clientPromise
-        .then((wsClient) => {
-          wsClient.send(
-            JSON.stringify({
-              userRooms: allUserChats,
-              userId: storageData.userData._id,
-              meta: 'leave',
-            })
-          );
-          console.log('leaved');
-        })
-        .catch((error) => console.log(error));
+      wsSend({
+        userRooms: allUserChats,
+        userId: storageData.userData._id,
+        meta: 'leave',
+      });
     }
     /* (e || window.event).returnValue = confirmationMessage;
     return confirmationMessage; */

@@ -1,6 +1,6 @@
-import React, { useContext, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { STORAGE_NAME } from '../../redux/types';
-import { wsSingleton } from '../../WebSocket/soket';
+import { wsSend } from '../../WebSocket/soket';
 import { ChatContext } from '../../Context/ChatContext.js';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -14,11 +14,7 @@ const SetsUser = lazy(() => import('../../components/SetsUser/SetsUser.jsx'));
 console.log(STORAGE_NAME);
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    position: 'fixed',
-    left: '50%',
-    top: '50%',
-  },
+  root: { position: 'fixed', left: '50%', top: '50%' },
 }));
 
 //check for Navigation Timing API support
@@ -32,18 +28,11 @@ if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
     const allUserChats = storageData.userData.channels.concat(
       storageData.userData.directMessages
     );
-    wsSingleton.clientPromise
-      .then((wsClient) => {
-        wsClient.send(
-          JSON.stringify({
-            userRooms: allUserChats,
-            userId: storageData.userData._id,
-            meta: 'leave',
-          })
-        );
-        console.log('leaved');
-      })
-      .catch((error) => console.log(error));
+    wsSend({
+      userRooms: allUserChats,
+      userId: storageData.userData._id,
+      meta: 'leave',
+    });
   }
   console.info('This page is reloaded');
 } else {
@@ -63,9 +52,9 @@ export const Chat = () => {
             </div>
           }
         >
-          <Header socket={wsSingleton} />
-          <SetsUser socket={wsSingleton} />
-          <Conversation socket={wsSingleton} />
+          <Header />
+          <SetsUser />
+          <Conversation />
         </Suspense>
       </ChatContext>
     </div>

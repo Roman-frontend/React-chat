@@ -23,7 +23,6 @@ import useChatContext from '../../Context/ChatContext';
 import imageProfile from '../../images/Profile.jpg';
 
 export default function Header(props) {
-  const { socket } = props;
   const classes = useStyles();
   const { changeLanguage } = useChatContext();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -123,7 +122,6 @@ export default function Header(props) {
         handleProfileMenuOpen={handleProfileMenuOpen}
       />
       <HeaderProfile
-        socket={socket}
         menuId={menuId}
         anchorEl={anchorEl}
         handleMobileMenuClose={handleMobileMenuClose}

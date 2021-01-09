@@ -40,11 +40,7 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.payload.users };
 
     case GET_USERS_ONLINE:
-      //console.log(action.payload, state.usersOnline);
-      return {
-        ...state,
-        usersOnline: action.payload,
-      };
+      return { ...state, usersOnline: action.payload };
 
     case GET_CHANNELS:
       return { ...state, channels: action.payload.userChannels };

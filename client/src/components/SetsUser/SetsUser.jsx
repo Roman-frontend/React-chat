@@ -4,12 +4,10 @@ import { DirectMessages } from './DirectMessages/DirectMessages';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
-  const { socket } = props;
-
   return (
     <div className='main-font left-block'>
-      <Channels socket={socket} />
-      <DirectMessages socket={socket} />
+      <Channels />
+      <DirectMessages />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import React, {
   useMemo,
   useEffect,
   useLayoutEffect,
-  useState,
   useRef,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +16,7 @@ import {
   getMessages,
   getMessagesForDirectMsg,
 } from '../../../redux/actions/actions.js';
+import { wsSingleton, wsSend } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
 import './messages.sass';
@@ -26,7 +26,6 @@ export const Messages = React.memo((props) => {
     activeMessage,
     setActiveMessage,
     inputRef,
-    socket,
     popupMessage,
     setPopupMessage,
     setCloseBtnChangeMsg,
@@ -50,42 +49,13 @@ export const Messages = React.memo((props) => {
   }, [reduxMessages]);
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
-  socket.clientPromise
+  wsSingleton.clientPromise
     .then((wsClient) => {
       wsClient.onmessage = (response) => {
-        if (response.data === "З'єднання з WebSocket встановлено") {
-          console.log("З'єднання з WebSocket встановлено");
-          return;
-        }
-
         const parsedRes = JSON.parse(response.data);
-        if (parsedRes.message === 'resOnlineMembers') {
-          let updatedOnline = chatsOnline;
-          if (!updatedOnline[0]) {
-            updatedOnline = updatedOnline.concat(parsedRes.data);
-          } else {
-            let indexResChatInOnline = null;
-            chatsOnline.forEach((chat, index) => {
-              if (chat.chatId === parsedRes.data.chatId) {
-                indexResChatInOnline = index;
-              }
-            });
-            if (indexResChatInOnline === null) {
-              updatedOnline = updatedOnline.concat(parsedRes.data);
-            } else if (
-              indexResChatInOnline !== null &&
-              JSON.stringify(updatedOnline[indexResChatInOnline]) !==
-                JSON.stringify(parsedRes.data)
-            ) {
-              console.log(updatedOnline[indexResChatInOnline], parsedRes.data);
-              updatedOnline.splice(indexResChatInOnline, 1, parsedRes.data);
-            }
-          }
-          dispatch({
-            type: GET_USERS_ONLINE,
-            payload: updatedOnline,
-          });
-        } else {
+        if (parsedRes === "З'єднання з WebSocket встановлено") {
+          return;
+        } else if (parsedRes.text) {
           const dispatchMessages =
             messagesRef.current[0] === undefined
               ? [parsedRes]
@@ -104,7 +74,7 @@ export const Messages = React.memo((props) => {
     .catch((error) => console.log(error));
 
   //Підписуємось на закриття події
-  socket.onclose = (response) => {
+  wsSingleton.onclose = (response) => {
     const disconnectStatus = response.wasClean
       ? 'DISCONNECTED CLEAN'
       : 'DISCONNECTED BROKEN';
@@ -132,13 +102,7 @@ export const Messages = React.memo((props) => {
       ? activeDirectMessageId
       : null;
     if (newMessage && activeChatId) {
-      socket.clientPromise
-        .then((wsClient) => {
-          wsClient.send(
-            JSON.stringify({ room: activeChatId, message: newMessage })
-          );
-        })
-        .catch((error) => console.log(error));
+      wsSend({ room: activeChatId, message: newMessage });
       dispatch({
         type: PROCESSED_NEW_MESSAGE,
         payload: null,
@@ -184,9 +148,6 @@ export const Messages = React.memo((props) => {
   );
 });
 
-const mapDispatchToProps = {
-  getMessages,
-  getMessagesForDirectMsg,
-};
+const mapDispatchToProps = { getMessages, getMessagesForDirectMsg };
 
 export default connect(null, mapDispatchToProps)(Messages);

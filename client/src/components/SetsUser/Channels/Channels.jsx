@@ -18,13 +18,10 @@ import Button from '@material-ui/core/Button';
 export function Channels(props) {
   const { t } = useTranslation();
   const { resChannels } = useChatContext();
-  const { socket } = props;
   const resourseChannels = resChannels.channels.read();
   const dispatch = useDispatch();
   const allChannels = useSelector((state) => state.channels);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
-  const token = useSelector((state) => state.token);
-  const userData = useSelector((state) => state.userData);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
@@ -34,17 +31,6 @@ export function Channels(props) {
   const { changeStorageUserDataChannels } = useAuth();
 
   useEffect(() => {
-    /* function getOnlineMembers(idActive) {
-      socket.clientPromise
-        .then((wsClient) => {
-          wsClient.send(
-            JSON.stringify({ room: idActive, meta: 'visit' })
-          );
-          console.log('sended');
-        })
-        .catch((error) => console.log(error));
-    } */
-
     function defineActiveChat() {
       const sessionStorageData = JSON.parse(
         sessionStorage.getItem(STORAGE_NAME)
@@ -88,15 +74,8 @@ export function Channels(props) {
 
     if (resourseChannels) {
       const activeChat = defineActiveChat();
-      const idActive = !activeChat
-        ? null
-        : activeChat.activeChannelId
-        ? activeChat.activeChannelId
-        : activeChat.activeDirectMessageId;
-
       dispatch({ type: GET_CHANNELS, payload: resourseChannels });
       dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
-      //if (idActive) getOnlineMembers(idActive);
     }
   }, [resourseChannels]);
 
@@ -121,7 +100,7 @@ export function Channels(props) {
   const createLinksChannels = useCallback(
     (allChannels) => {
       if (allChannels && allChannels[0]) {
-        return <CreateLists arrElements={allChannels} socket={socket} />;
+        return <CreateLists arrElements={allChannels} />;
       }
     },
     [allChannels]

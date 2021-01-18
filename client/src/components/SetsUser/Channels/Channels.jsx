@@ -35,11 +35,8 @@ export function Channels(props) {
       const sessionStorageData = JSON.parse(
         sessionStorage.getItem(STORAGE_NAME)
       );
-      const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
       const storageData = sessionStorageData
         ? sessionStorageData.userData
-        : localStorageData
-        ? localStorageData.userData
         : null;
       if (activeChannelId) {
         return { activeChannelId };
@@ -84,12 +81,7 @@ export function Channels(props) {
       const sessionStorageData = JSON.parse(
         sessionStorage.getItem(STORAGE_NAME)
       );
-      const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
-      const storageData = sessionStorageData
-        ? sessionStorageData
-        : localStorageData
-        ? localStorageData
-        : null;
+      const storageData = sessionStorageData ? sessionStorageData : null;
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.userData.channels) {
         changeStorageUserDataChannels({ channels: idChannels });
@@ -112,7 +104,6 @@ export function Channels(props) {
         <DrawTitles
           name={t('description.channelTitle')}
           divClass={'left-bar__channels'}
-          classPlus={'left-bar__first-plus'}
           stateShowing={listChannelsIsOpen}
           seterStateShowing={setListChannelsIsOpen}
           setModalAdd={setModalAddChannelIsOpen}
@@ -124,7 +115,6 @@ export function Channels(props) {
       >
         {createLinksChannels(allChannels)}
         <Button
-          className='user-sets__channel'
           variant='outlined'
           color='primary'
           size='small'

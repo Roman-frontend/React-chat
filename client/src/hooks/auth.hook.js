@@ -1,11 +1,6 @@
-import { useCallback, useLayoutEffect } from 'react';
+import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  LOGIN_DATA,
-  LOGOUT_DATA,
-  STORAGE_NAME,
-  POST_LOGIN,
-} from '../redux/types.js';
+import { LOGOUT_DATA, STORAGE_NAME, POST_LOGIN } from '../redux/types.js';
 import { wsSend } from '../WebSocket/soket';
 import { reduxServer } from '../hooks/http.hook.js';
 
@@ -24,7 +19,6 @@ export const useAuth = () => {
       userData: resLogin.userData,
       token: resLogin.token,
     });
-    /* localStorage.setItem(STORAGE_NAME, toStorage); */
     sessionStorage.setItem(STORAGE_NAME, toStorage);
     dispatch({ type: POST_LOGIN, payload: resLogin });
   }, []);
@@ -39,14 +33,12 @@ export const useAuth = () => {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
-      console.log(allUserChats);
       wsSend({
         userRooms: allUserChats,
         userId: storageData.userData._id,
         meta: 'leave',
       });
     }
-    localStorage.clear();
     sessionStorage.clear();
     dispatch({ type: LOGOUT_DATA });
   }, []);
@@ -64,7 +56,6 @@ export const useAuth = () => {
         { ...newActiveChat }
       );
       const toStorage = JSON.stringify({ userData: { ...object }, token });
-      localStorage.setItem(STORAGE_NAME, toStorage);
       sessionStorage.setItem(STORAGE_NAME, toStorage);
     }
   };
@@ -82,7 +73,6 @@ export const useAuth = () => {
         { ...newChannels }
       );
       const toStorage = JSON.stringify({ userData: { ...object }, token });
-      localStorage.setItem(STORAGE_NAME, toStorage);
       sessionStorage.setItem(STORAGE_NAME, toStorage);
     }
   };
@@ -100,31 +90,9 @@ export const useAuth = () => {
         { ...newDirectMessages }
       );
       const toStorage = JSON.stringify({ userData: { ...object }, token });
-      localStorage.setItem(STORAGE_NAME, toStorage);
       sessionStorage.setItem(STORAGE_NAME, toStorage);
     }
   };
-
-  useLayoutEffect(() => {
-    //const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
-    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    const storageData =
-      sessionStorageData &&
-      sessionStorageData.token &&
-      sessionStorageData.userData
-        ? sessionStorageData
-        : /* : localStorageData &&
-          localStorageData.token &&
-          localStorageData.userData
-        ? localStorageData */
-          null;
-    if (storageData) {
-      dispatch({
-        type: LOGIN_DATA,
-        payload: storageData,
-      });
-    }
-  }, [login]);
 
   return {
     login,

@@ -1,11 +1,11 @@
-const { Router } = require("express");
-const config = require("config");
+const { Router } = require('express');
+const config = require('config');
 const router = Router();
-const jsonWebToken = require("jsonwebtoken");
-const DirectMessage = require("../models/DirectMessage.js");
-const User = require("../models/User.js");
+const jsonWebToken = require('jsonwebtoken');
+const DirectMessage = require('../models/DirectMessage.js');
+const User = require('../models/User.js');
 
-router.post("/get-direct-messages", verifyToken, async (req, res) => {
+router.post('/get-direct-messages', verifyToken, async (req, res) => {
   try {
     let directMessages = [];
     for (let directMessageId of req.body.listDirectMessages) {
@@ -14,16 +14,16 @@ router.post("/get-direct-messages", verifyToken, async (req, res) => {
         directMessages.push(directMessage);
       }
     }
-    res.json({ directMessages, message: "direct messages responsed" });
+    res.json({ directMessages, message: 'direct messages responsed' });
   } catch (e) {
-    console.log("failed in directMessages", e);
+    console.log('failed in directMessages', e);
     res
       .status(500)
-      .json({ message: "Помилка при виконанні get-запиті ", error: e });
+      .json({ message: 'Помилка при виконанні get-запиті ', error: e });
   }
 });
 
-router.post("/post-direct-messages", async (req, res) => {
+router.post('/post-direct-messages', async (req, res) => {
   try {
     let allNewDirectMessage = [];
 
@@ -46,21 +46,37 @@ router.post("/post-direct-messages", async (req, res) => {
 
     res.status(201).json({
       allNewDirectMessage,
-      message: "Direct Messages created",
+      message: 'Direct Messages created',
     });
   } catch (e) {
-    console.log("catch - post-direct-messages ===>>> ", e);
-    res.status(500).json({ message: "Помилка в post-direct-messages" });
+    console.log('catch - post-direct-messages ===>>> ', e);
+    res.status(500).json({ message: 'Помилка в post-direct-messages' });
+  }
+});
+
+router.delete('/delete-direct-messages:id', verifyToken, async (req, res) => {
+  try {
+    await DirectMessage.findByIdAndRemove(req.params.id);
+    console.log(req.params.id);
+    const a = await DirectMessage.find({});
+    console.log(a);
+    res.status(201).json({
+      removedId: req.params.id,
+      message: 'Пряме повідомлення видалено',
+    });
+  } catch (e) {
+    console.log('catch - delete-direct-messages ===>>> ', e);
+    res.status(500).json({ message: 'Помилка в delete-direct-messages' });
   }
 });
 
 function verifyToken(req, res, next) {
-  const token = req.headers["authorization"];
+  const token = req.headers['authorization'];
 
   if (token == null) {
     return res.sendStatus(401);
   } else {
-    jsonWebToken.verify(token, config.get("jwtSecret"), (err, success) => {
+    jsonWebToken.verify(token, config.get('jwtSecret'), (err, success) => {
       if (err) {
         console.log(`error in verifyToken ${err}`);
         res.sendStatus(403);

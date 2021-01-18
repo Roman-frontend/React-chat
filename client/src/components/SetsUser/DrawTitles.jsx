@@ -29,7 +29,6 @@ export const DrawTitles = memo(
     const {
       name,
       divClass,
-      classPlus,
       stateShowing,
       seterStateShowing,
       setModalAdd,
@@ -89,7 +88,6 @@ export const DrawTitles = memo(
             item
             xs={1}
             style={{ font: '2rem serif' }}
-            className={classPlus}
             onClick={() => setModalAdd(true)}
           >
             <Button

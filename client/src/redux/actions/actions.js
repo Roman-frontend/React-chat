@@ -10,6 +10,8 @@ import {
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
   REMOVE_MESSAGE,
+  REMOVE_DIRECT_MESSAGES,
+  REMOVE_CHANNEL,
 } from '../types.js';
 import { reduxServer } from '../../hooks/http.hook.js';
 
@@ -122,6 +124,24 @@ export const postDirectMessages = (token, body) => {
     token,
     'POST',
     body
+  );
+};
+
+export const removeChannel = (token, id) => {
+  return dispatcher(
+    REMOVE_CHANNEL,
+    `/api/channel/delete-channel${id}`,
+    token,
+    'DELETE'
+  );
+};
+
+export const removeDirectMessages = (token, id) => {
+  return dispatcher(
+    REMOVE_DIRECT_MESSAGES,
+    `/api/direct-message/delete-direct-messages${id}`,
+    token,
+    'DELETE'
   );
 };
 

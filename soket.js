@@ -31,14 +31,14 @@ server.on('connection', (ws) => {
   };
 
   function resOnline(userRooms) {
-    const usersOnline = getRoomOnline(userRooms);
-    informMembersNewOnline(userRooms, usersOnline);
+    const arrIdOnline = getRoomOnline(userRooms);
+    informMembersNewOnline(userRooms, arrIdOnline);
   }
 
   function getRoomOnline(userRooms) {
     let usersOnline = [];
     rooms.forEach((room) => {
-      if (userRooms.includes(room.chatId)) {
+      if (userRooms.includes(room.chatId) && room.members[0]) {
         room.members.forEach((member) => {
           const idMember = Object.keys(member)[0];
           const arrInclude = usersOnline.includes(idMember);
@@ -50,12 +50,17 @@ server.on('connection', (ws) => {
   }
 
   function informMembersNewOnline(userRooms, members) {
+    let responsed = [];
     rooms.forEach((room) => {
       if (userRooms.includes(room.chatId)) {
         room.members.forEach((member) => {
-          Object.values(member)[0].send(
-            JSON.stringify({ message: 'online', members })
-          );
+          const memberId = Object.keys(member)[0];
+          if (!responsed.includes(memberId)) {
+            Object.values(member)[0].send(
+              JSON.stringify({ message: 'online', members })
+            );
+            responsed = responsed.concat(memberId);
+          }
         });
       }
     });
@@ -85,18 +90,17 @@ server.on('connection', (ws) => {
   ws.on('message', (data) => {
     const parseData = JSON.parse(data);
     const { meta } = parseData;
-    console.log('message ...');
 
     if (meta === 'join') {
       const { userRooms, userId } = parseData;
       join(userRooms, userId); // User has joined
       resOnline(userRooms);
     } else if (meta === 'leave') {
-      console.log('leave \n\n\n leave');
+      console.log('leave \n\n leave path -->>', parseData.path);
       parseData.userRooms.forEach((resRoom) => {
         leave(resRoom, parseData.userId);
       });
-      console.log(rooms);
+      resOnline(parseData.userRooms);
     } else if (!meta) {
       rooms.forEach((room) => {
         if (room.chatId === parseData.room) {

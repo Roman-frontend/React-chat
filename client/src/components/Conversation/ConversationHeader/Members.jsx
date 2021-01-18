@@ -35,6 +35,7 @@ export function Members(props) {
           avatars = avatars.concat(
             <StyledBadge
               key={user._id}
+              style={{ border: 0 }}
               overlap='circle'
               anchorOrigin={{
                 vertical: 'bottom',

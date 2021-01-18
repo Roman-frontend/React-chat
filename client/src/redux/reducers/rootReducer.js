@@ -12,6 +12,8 @@ import {
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
   REMOVE_MESSAGE,
+  REMOVE_DIRECT_MESSAGES,
+  REMOVE_CHANNEL,
   LOGIN_DATA,
   LOGOUT_DATA,
   ACTIVE_CHAT_ID,
@@ -34,7 +36,7 @@ const initialState = {
 };
 
 export const rootReducer = (state = initialState, action) => {
-  //console.log(action.payload);
+  //console.log(action.type, action.payload);
   switch (action.type) {
     case GET_USERS:
       return { ...state, users: action.payload.users };
@@ -81,13 +83,18 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, channels: updatedChannels };
 
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
-      console.log(state.listDirectMessages, action.payload.allNewDirectMessage);
-      return {
-        ...state,
-        listDirectMessages: state.listDirectMessages.concat(
-          action.payload.allNewDirectMessage
-        ),
-      };
+      const updatedList = state.listDirectMessages.concat(
+        action.payload.allNewDirectMessage
+      );
+      console.log(updatedList);
+      return { ...state, listDirectMessages: updatedList };
+
+    case REMOVE_DIRECT_MESSAGES:
+      console.log(action.payload.removedId);
+      const updated = state.listDirectMessages.filter(
+        (directMsg) => directMsg._id !== action.payload.removedId
+      );
+      return { ...state, listDirectMessages: updated };
 
     case REMOVE_MESSAGE:
       const updatedMessages = state.messages.reverse().filter((message) => {
@@ -96,6 +103,7 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, messages: updatedMessages };
 
     case LOGIN_DATA:
+      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case LOGOUT_DATA:

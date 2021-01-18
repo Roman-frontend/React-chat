@@ -97,6 +97,18 @@ router.post('/get-chunnels', verifyToken, async (req, res) => {
   }
 });
 
+router.delete('/delete-channel:id', verifyToken, async (req, res) => {
+  try {
+    await Channel.findByIdAndRemove(req.params.id);
+    res
+      .status(201)
+      .json({ removedId: req.params.id, message: 'Канал видалено' });
+  } catch (e) {
+    console.log('catch - delete-channel ===>>> ', e);
+    res.status(500).json({ message: 'Помилка в delete-channel' });
+  }
+});
+
 function verifyToken(req, res, next) {
   const token = req.headers['authorization'];
 

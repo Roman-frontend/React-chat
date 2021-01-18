@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { useAuth } from './hooks/auth.hook';
 //createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
@@ -9,6 +9,8 @@ import { SignUpPage } from './pages/SignUpPage/SignUpPage.js';
 import { SignInPage } from './pages/SignInPage/SignInPage.js';
 import { Chat } from './pages/Chat/Chat.js';
 import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
+import { useDispatch } from 'react-redux';
+import { LOGIN_DATA, STORAGE_NAME } from './redux/types.js';
 import './css/style.sass';
 
 const history = createBrowserHistory();
@@ -16,6 +18,21 @@ const history = createBrowserHistory();
 export default function App() {
   const { logout } = useAuth();
   //logout();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    const storageData =
+      sessionStorageData &&
+      sessionStorageData.token &&
+      sessionStorageData.userData
+        ? sessionStorageData
+        : null;
+    if (storageData) {
+      dispatch({ type: LOGIN_DATA, payload: storageData });
+    }
+  }, []);
+
   function handleClickHistory(path) {
     //.push() - додає в історію - руху по силках значення path. (де крім доданого є ті переходи які додаються автоматично після переходів по силках)
     history.push(path /* "/home" */);

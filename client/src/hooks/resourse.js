@@ -13,6 +13,7 @@ export function useResourse(type, param = null, body = null) {
   const userData = useSelector((state) => state.userData);
   switch (type) {
     case GET_USERS:
+      console.log('getUsers');
       return {
         users: wrapPromise(reduxServer(`/api/channel/get-user`)),
       };

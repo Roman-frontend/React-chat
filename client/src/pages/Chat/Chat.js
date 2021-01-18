@@ -11,8 +11,6 @@ const Conversation = lazy(() =>
 );
 const SetsUser = lazy(() => import('../../components/SetsUser/SetsUser.jsx'));
 
-console.log(STORAGE_NAME);
-
 const useStyles = makeStyles((theme) => ({
   root: { position: 'fixed', left: '50%', top: '50%' },
 }));
@@ -21,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 if (window.performance) {
   console.info('window.performance works fine on this browser');
 }
-console.info(performance.navigation.type);
+//console.info(performance.navigation.type);
 if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
   const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
   if (storageData && storageData.userData && storageData.userData.channels[0]) {
@@ -32,6 +30,7 @@ if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
       userRooms: allUserChats,
       userId: storageData.userData._id,
       meta: 'leave',
+      path: 'Chat',
     });
   }
   console.info('This page is reloaded');

@@ -30,12 +30,7 @@ export default function Conversation(props) {
 
   useEffect(() => {
     const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    const localStorageData = JSON.parse(localStorage.getItem(STORAGE_NAME));
-    const storageData = sessionStorageData
-      ? sessionStorageData
-      : localStorageData
-      ? localStorageData
-      : null;
+    const storageData = sessionStorageData ? sessionStorageData : null;
 
     if (!storageData) setIsJoin(false);
     if (
@@ -44,7 +39,6 @@ export default function Conversation(props) {
       storageData.userData.channels[0] &&
       !isJoin
     ) {
-      console.log(storageData, isJoin);
       setIsJoin(true);
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
@@ -101,21 +95,49 @@ export default function Conversation(props) {
     );
   };
 
-  window.addEventListener('beforeunload', function (e) {
-    //const confirmationMessage = 'o/';
+  function registerUnload(msg, onunloadFunc) {
+    let alreadPrompted = false,
+      timeoutID = 0,
+      reset = function () {
+        alreadPrompted = false;
+        timeoutID = 0;
+      };
+
+    if (msg || onunloadFunc) {
+      // register
+      window.onbeforeunload = function () {
+        if (msg && !alreadPrompted) {
+          alreadPrompted = true;
+          timeoutID = setTimeout(reset, 100);
+          return msg;
+        }
+      };
+
+      window.onunload = function () {
+        clearTimeout(timeoutID);
+        if (onunloadFunc) onunloadFunc();
+      };
+    } else {
+      // unregister
+      window.onbeforeunload = null;
+      window.onunload = null;
+    }
+  }
+
+  registerUnload('Leaving page', function () {
     const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
     if (storageData && storageData.userData.channels[0]) {
       const allUserChats = storageData.userData.channels.concat(
         storageData.userData.directMessages
       );
+      console.log('leave ()()()()()');
       wsSend({
         userRooms: allUserChats,
         userId: storageData.userData._id,
         meta: 'leave',
+        path: 'Conversation',
       });
     }
-    /* (e || window.event).returnValue = confirmationMessage;
-    return confirmationMessage; */
   });
 
   const fieldAnswerTo = useCallback(() => {

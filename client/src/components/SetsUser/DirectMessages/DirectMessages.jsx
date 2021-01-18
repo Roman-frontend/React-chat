@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import useChatContext from '../../../Context/ChatContext.js';
 import { GET_DIRECT_MESSAGES } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import {
-  /* getDirectMessages, */
-  postDirectMessages,
-} from '../../../redux/actions/actions.js';
+import { postDirectMessages } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import CreateLists from '../HelpersSetUsers/CreateChatItem';
@@ -82,6 +79,7 @@ export function DirectMessages(props) {
         },
         invitedUsers: dataInvitedPeoples,
       };
+      console.log('postDirectMessages');
       dispatch(postDirectMessages(token, body));
     }
   }
@@ -92,7 +90,6 @@ export function DirectMessages(props) {
         <DrawTitles
           name={t('description.dirrectMessageTitle')}
           divClass={null}
-          classPlus={'left-bar__second-plus'}
           stateShowing={listMembersIsOpen}
           seterStateShowing={setListMembersIsOpen}
           setModalAdd={setModalAddPeopleIsOpen}
@@ -104,7 +101,6 @@ export function DirectMessages(props) {
       >
         {createArrDirectMessages()}
         <Button
-          className='user-sets__channel'
           variant='outlined'
           color='primary'
           size='small'

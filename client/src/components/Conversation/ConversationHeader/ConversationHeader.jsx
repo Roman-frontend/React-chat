@@ -12,7 +12,7 @@ import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToC
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
 
-export function ConversationHeader() {
+export const ConversationHeader = React.memo(() => {
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels);
   const token = useSelector((state) => state.token);
@@ -92,7 +92,7 @@ export function ConversationHeader() {
       />
     </div>
   );
-}
+});
 
 const mapDispatchToProps = { addPeopleToChannel };
 

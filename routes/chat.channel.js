@@ -99,10 +99,37 @@ router.post('/get-chunnels', verifyToken, async (req, res) => {
 
 router.delete('/delete-channel:id', verifyToken, async (req, res) => {
   try {
-    await Channel.findByIdAndRemove(req.params.id);
-    res
-      .status(201)
-      .json({ removedId: req.params.id, message: 'Канал видалено' });
+    function infoError(err) {
+      if (err) console.log(err);
+      console.log('updated');
+    }
+    if (req.body.filteredChannelMembers[0]) {
+      await Channel.findOneAndUpdate(
+        { _id: req.params.id },
+        { members: req.body.filteredChannelMembers },
+        { useFindAndModify: false, new: true },
+        (err) => infoError(err)
+      );
+    } else {
+      await Channel.findByIdAndRemove(
+        req.params.id,
+        { useFindAndModify: false },
+        (err) => infoError(err)
+      );
+    }
+
+    await User.findByIdAndUpdate(
+      { _id: req.body.userId },
+      { channels: req.body.filteredUserChannels },
+      { useFindAndModify: false, new: true },
+      (err) => infoError(err)
+    );
+
+    const resBody = {
+      removedChannelId: req.params.id,
+      message: 'Канал видалено',
+    };
+    res.status(201).json({ ...resBody });
   } catch (e) {
     console.log('catch - delete-channel ===>>> ', e);
     res.status(500).json({ message: 'Помилка в delete-channel' });

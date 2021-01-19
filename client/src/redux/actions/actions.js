@@ -3,7 +3,6 @@ import {
   GET_CHANNELS,
   GET_MESSAGES,
   POST_REGISTER,
-  POST_LOGIN,
   POST_MESSAGE,
   POST_MESSAGE_FOR_DIRECT_MSG,
   POST_CHANNEL,
@@ -20,15 +19,9 @@ function dispatcher(type, url, token, method = 'GET', body = null) {
     try {
       const response = await reduxServer(url, token, method, body);
       //console.log("response ", response);
-      dispatch({
-        type,
-        payload: response,
-      });
+      dispatch({ type, payload: response });
     } catch (e) {
-      dispatch({
-        type,
-        payload: '403',
-      });
+      dispatch({ type, payload: '403' });
       console.log(e);
     }
   };
@@ -127,12 +120,13 @@ export const postDirectMessages = (token, body) => {
   );
 };
 
-export const removeChannel = (token, id) => {
+export const removeChannel = (token, id, body) => {
   return dispatcher(
     REMOVE_CHANNEL,
     `/api/channel/delete-channel${id}`,
     token,
-    'DELETE'
+    'DELETE',
+    body
   );
 };
 

@@ -40,6 +40,7 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.11",
     "node-sass": "^4.14.1",
     "react-modal": "^3.11.2"
   }

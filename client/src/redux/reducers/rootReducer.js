@@ -86,11 +86,22 @@ export const rootReducer = (state = initialState, action) => {
       const updatedList = state.listDirectMessages.concat(
         action.payload.allNewDirectMessage
       );
-      console.log(updatedList);
       return { ...state, listDirectMessages: updatedList };
 
+    case REMOVE_CHANNEL:
+      const filteredChannels = state.channels.filter(
+        (channel) => channel._id !== action.payload.removedChannelId
+      );
+      const filteredUserChannels = state.userData.channels.filter(
+        (id) => id !== action.payload.removedChannelId
+      );
+      return {
+        ...state,
+        userData: { ...state.userData, channels: filteredUserChannels },
+        channels: filteredChannels,
+      };
+
     case REMOVE_DIRECT_MESSAGES:
-      console.log(action.payload.removedId);
       const updated = state.listDirectMessages.filter(
         (directMsg) => directMsg._id !== action.payload.removedId
       );

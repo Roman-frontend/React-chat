@@ -57,9 +57,6 @@ router.post('/post-direct-messages', async (req, res) => {
 router.delete('/delete-direct-messages:id', verifyToken, async (req, res) => {
   try {
     await DirectMessage.findByIdAndRemove(req.params.id);
-    console.log(req.params.id);
-    const a = await DirectMessage.find({});
-    console.log(a);
     res.status(201).json({
       removedId: req.params.id,
       message: 'Пряме повідомлення видалено',

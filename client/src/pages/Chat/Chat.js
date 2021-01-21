@@ -1,9 +1,9 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { STORAGE_NAME } from '../../redux/types';
 import { wsSend } from '../../WebSocket/soket';
-import { ChatContext } from '../../Context/ChatContext.js';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { fetchData } from '../../hooks/suspense';
 import './chat-page.sass';
 const Header = lazy(() => import('../../components/Header/Header.jsx'));
 const Conversation = lazy(() =>
@@ -39,23 +39,25 @@ if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
 }
 
 export const Chat = () => {
+  const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+  const resSuspense = useMemo(() => {
+    return fetchData(sessionStorageData.token, sessionStorageData.userData);
+  }, []);
   const classes = useStyles();
 
   return (
     <div className='chat-page'>
-      <ChatContext>
-        <Suspense
-          fallback={
-            <div className={classes.root}>
-              <CircularProgress color='secondary' />
-            </div>
-          }
-        >
-          <Header />
-          <SetsUser />
-          <Conversation />
-        </Suspense>
-      </ChatContext>
+      <Suspense
+        fallback={
+          <div className={classes.root}>
+            <CircularProgress color='secondary' />
+          </div>
+        }
+      >
+        <Header />
+        <SetsUser resSuspense={resSuspense} />
+        <Conversation resSuspense={resSuspense} />
+      </Suspense>
     </div>
   );
 };

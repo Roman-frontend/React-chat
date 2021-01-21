@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
+import { colors } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import useChatContext from '../../../Context/ChatContext.js';
 import { GET_DIRECT_MESSAGES } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
@@ -14,8 +14,8 @@ import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessage
 import { useCallback } from 'react';
 
 export function DirectMessages(props) {
+  const { resSuspense } = props;
   const { t } = useTranslation();
-  const { resDirectMessages } = useChatContext();
   const { changeStorageUserDataDirectMessages } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
@@ -24,7 +24,7 @@ export function DirectMessages(props) {
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
-  const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
+  const resourseDirectMessages = resSuspense.listDirectMessages.read();
 
   useEffect(() => {
     if (resourseDirectMessages) {
@@ -101,10 +101,10 @@ export function DirectMessages(props) {
       >
         {createArrDirectMessages()}
         <Button
-          variant='outlined'
+          variant='contained'
           color='primary'
           size='small'
-          style={{ background: 'white' }}
+          style={{ background: colors.indigo[500], width: '100%' }}
           onClick={() => setModalAddPeopleIsOpen(true)}
         >
           + Invite people

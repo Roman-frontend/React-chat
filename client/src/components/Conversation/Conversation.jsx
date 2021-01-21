@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { wsSend } from '../../WebSocket/soket';
 import { STORAGE_NAME } from '../../redux/types';
 import { useSelector } from 'react-redux';
@@ -11,27 +11,19 @@ import './conversation.sass';
 import { useCallback } from 'react';
 
 export default function Conversation(props) {
+  const { resSuspense } = props;
   const userId = useSelector((state) => state.userData._id);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
-  const [activeMessage, setActiveMessage] = useState(null);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
   const [isJoin, setIsJoin] = useState(false);
   const inputRef = useRef();
 
-  useLayoutEffect(() => {
-    setActiveMessage(null);
-  }, [activeChannelId, activeDirectMessageId]);
-
   useEffect(() => {
     const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
     const storageData = sessionStorageData ? sessionStorageData : null;
-
     if (!storageData) setIsJoin(false);
     if (
       storageData &&
@@ -82,8 +74,6 @@ export default function Conversation(props) {
 
     return hasNotAccesToChat ? (
       <Messages
-        activeMessage={activeMessage}
-        setActiveMessage={setActiveMessage}
         popupMessage={popupMessage}
         setPopupMessage={setPopupMessage}
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}
@@ -150,7 +140,7 @@ export default function Conversation(props) {
 
   return (
     <div className={closeBtnReplyMsg ? 'conversation-riply' : 'conversation'}>
-      <ConversationHeader />
+      <ConversationHeader resSuspense={resSuspense} />
       {fieldAnswerTo()}
       {contentMessages()}
       <div className='conversation-input'>

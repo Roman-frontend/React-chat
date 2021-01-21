@@ -38,11 +38,9 @@ router.post('/post-channel:userId', verifyToken, async (req, res) => {
       await user.save();
     }
 
-    const updatedUserData = await User.findById(req.params.userId);
+    //const updatedUserData = await User.findById(req.params.userId);
 
-    res
-      .status(201)
-      .json({ userData: updatedUserData, message: 'Канал створено' });
+    res.status(201).json({ newChannel, message: 'Канал створено' });
   } catch (e) {
     console.log('failed after post channel ', e);
     res.status(500).json({ message: 'Что-то пошло не так -', error: e });

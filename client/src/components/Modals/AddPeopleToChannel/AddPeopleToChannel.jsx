@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { GET_USERS } from '../../../redux/types';
 import { withStyles } from '@material-ui/core/styles';
-import useChatContext from '../../../Context/ChatContext.js';
 import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,20 +17,20 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToChannel = withStyles(styles)((props) => {
-  const { resUsers } = useChatContext();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const userId = useSelector((state) => state.userData._id);
   const {
+    resSuspense,
     chatNameRef,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
     doneInvite,
     classes,
   } = props;
-  const allUsers = resUsers.users.read();
+  const allUsers = resSuspense.users.read();
   const notInvitedRef = useRef();
 
   useEffect(() => {

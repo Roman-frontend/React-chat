@@ -12,7 +12,8 @@ import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToC
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
 
-export const ConversationHeader = React.memo(() => {
+export const ConversationHeader = React.memo((props) => {
+  const { resSuspense } = props;
   const dispatch = useDispatch();
   const channels = useSelector((state) => state.channels);
   const token = useSelector((state) => state.token);
@@ -85,6 +86,7 @@ export const ConversationHeader = React.memo(() => {
         setModalIsShowsMembers={setModalIsShowsMembers}
       />
       <AddPeopleToChannel
+        resSuspense={resSuspense}
         chatNameRef={chatNameRef}
         doneInvite={doneInvite}
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}

@@ -1,13 +1,12 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { STORAGE_NAME } from '../../redux/types';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
-  const token = useSelector((state) => state.token);
-  const userData = useSelector((state) => state.userData);
+  const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
 
   function assignRouteToApply(routeProps) {
-    if (token) {
+    if (sessionStorageData && sessionStorageData.token) {
       return <Component {...routeProps} />;
     } else {
       return <Redirect to='/signIn' />;

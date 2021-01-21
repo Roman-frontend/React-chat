@@ -4,8 +4,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import { postData } from '../../../redux/actions/actions.js';
-import { POST_CHANNEL } from '../../../redux/types.js';
+import { postChannel } from '../../../redux/actions/actions.js';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -52,9 +51,9 @@ export const AddChannel = withStyles(styles)((props) => {
         ? invited.map((people) => people._id).concat(userId)
         : [userId];
 
+      console.log('postChannel');
       dispatch(
-        postData(
-          POST_CHANNEL,
+        postChannel(
           token,
           { ...form, creator: userId, members: arrInvitedId },
           userId
@@ -122,6 +121,6 @@ export const AddChannel = withStyles(styles)((props) => {
   );
 });
 
-const mapDispatchToProps = { postData };
+const mapDispatchToProps = { postChannel };
 
 export default connect(null, mapDispatchToProps)(AddChannel);

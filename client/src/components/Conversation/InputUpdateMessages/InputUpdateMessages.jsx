@@ -1,5 +1,3 @@
-//Тут розфасовка між activeChannelId і activeDirectMessageId completed
-
 import React from 'react';
 import {
   ThemeProvider,
@@ -55,6 +53,15 @@ export const InputUpdateMessages = React.memo((props) => {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
+
+  /*   useEffect(() => {
+    document.addEventListener('click', hidePopup);
+  }, []);
+
+  function hidePopup() {
+    setPopupMessage(null);
+    document.removeEventListener('click', hidePopup);
+  } */
 
   function inputUpdateMessages(event) {
     event.preventDefault();
@@ -144,7 +151,6 @@ export const InputUpdateMessages = React.memo((props) => {
                 label='Enter text'
                 id='mui-theme-provider-standard-input'
                 ref={inputRef}
-                autoFocus
               />
             </ThemeProvider>
           </form>

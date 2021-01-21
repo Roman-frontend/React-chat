@@ -18,7 +18,7 @@ function dispatcher(type, url, token, method = 'GET', body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
-      //console.log("response ", response);
+      //console.log('response ', response);
       dispatch({ type, payload: response });
     } catch (e) {
       dispatch({ type, payload: '403' });
@@ -33,15 +33,6 @@ export const postData = (method, token = null, body = null, param = null) => {
       return dispatcher(
         POST_REGISTER,
         'api/auth/register',
-        token,
-        'POST',
-        body
-      );
-
-    case POST_CHANNEL:
-      return dispatcher(
-        POST_CHANNEL,
-        `/api/channel/post-channel${param}`,
         token,
         'POST',
         body
@@ -120,6 +111,16 @@ export const postDirectMessages = (token, body) => {
   );
 };
 
+export const postChannel = (token, body, param) => {
+  return dispatcher(
+    POST_CHANNEL,
+    `/api/channel/post-channel${param}`,
+    token,
+    'POST',
+    body
+  );
+};
+
 export const removeChannel = (token, id, body) => {
   return dispatcher(
     REMOVE_CHANNEL,
@@ -130,12 +131,13 @@ export const removeChannel = (token, id, body) => {
   );
 };
 
-export const removeDirectMessages = (token, id) => {
+export const removeDirectMessages = (token, id, body) => {
   return dispatcher(
     REMOVE_DIRECT_MESSAGES,
     `/api/direct-message/delete-direct-messages${id}`,
     token,
-    'DELETE'
+    'DELETE',
+    body
   );
 };
 

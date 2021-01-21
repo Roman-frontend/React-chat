@@ -7,11 +7,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import {
-  PROCESSED_NEW_MESSAGE,
-  UPDATE_MESSAGES,
-  GET_USERS_ONLINE,
-} from '../../../redux/types';
+import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from '../../../redux/types';
 import {
   getMessages,
   getMessagesForDirectMsg,
@@ -23,8 +19,6 @@ import './messages.sass';
 
 export const Messages = React.memo((props) => {
   const {
-    activeMessage,
-    setActiveMessage,
     inputRef,
     popupMessage,
     setPopupMessage,
@@ -33,7 +27,6 @@ export const Messages = React.memo((props) => {
   } = props;
   const dispatch = useDispatch();
   const reduxMessages = useSelector((state) => state.messages);
-  const chatsOnline = useSelector((state) => state.usersOnline);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
@@ -125,19 +118,17 @@ export const Messages = React.memo((props) => {
           <Message
             key={message._id || message.id}
             message={message}
-            setActiveMessage={setActiveMessage}
             setPopupMessage={setPopupMessage}
           />
         );
       });
     }
-  }, [reduxMessages, activeMessage]);
+  }, [reduxMessages]);
 
   return (
     <div className='messages'>
       {renderMessages()}
       <MessageActionsPopup
-        activeMessage={activeMessage}
         popupMessage={popupMessage}
         setPopupMessage={setPopupMessage}
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}

@@ -1,11 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { BtnMore } from '../../../Helpers/BtnMore.jsx';
+import React, { useMemo } from 'react';
 import SetViewPopup from './SetViewPopup/SetViewPopup.jsx';
 import './message-actions-popup.sass';
 
 export default function MessageActionsPopup(props) {
   const {
-    activeMessage,
     popupMessage,
     setPopupMessage,
     setCloseBtnChangeMsg,
@@ -25,31 +23,18 @@ export default function MessageActionsPopup(props) {
     }
   }, [popupMessage]);
 
-  const changeIdForPopup = () => {
-    setPopupMessage((prev) => {
-      return prev === activeMessage ? null : activeMessage;
-    });
-  };
-
-  function isShowPopupActions() {
-    if (topPopupRelativeTopPage) {
-      return (
-        <SetViewPopup
-          topPopupRelativeTopPage={topPopupRelativeTopPage}
-          inputRef={inputRef}
-          popupMessage={popupMessage}
-          setPopupMessage={setPopupMessage}
-          setCloseBtnChangeMsg={setCloseBtnChangeMsg}
-          setCloseBtnReplyMsg={setCloseBtnReplyMsg}
-        />
-      );
-    }
+  if (topPopupRelativeTopPage) {
+    return (
+      <SetViewPopup
+        topPopupRelativeTopPage={topPopupRelativeTopPage}
+        inputRef={inputRef}
+        popupMessage={popupMessage}
+        setPopupMessage={setPopupMessage}
+        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
+        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
+      />
+    );
   }
 
-  return (
-    <>
-      {BtnMore(activeMessage, 'popup popup_message', changeIdForPopup)}
-      {isShowPopupActions()}
-    </>
-  );
+  return null;
 }

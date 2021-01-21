@@ -5,7 +5,8 @@ import { useAuth } from '../../hooks/auth.hook.js';
 
 export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
   const token = useSelector((state) => state.token);
-  const { login } = useAuth();
+  //const { login } = useAuth();
+  console.log('PublicOnlyRoute');
 
   function assignRouteToApply(routeProps) {
     if (!token) {

@@ -35,6 +35,7 @@ export const CreateLists = withStyles(styles)((props) => {
   const { arrElements, listName, classes } = props;
   const { changeStorageUserDataActiveChat } = useAuth();
   const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userData);
   const userId = useSelector((state) => state.userData._id);
   const userChannels = useSelector((state) => state.userData.channels);
   const token = useSelector((state) => state.token);
@@ -71,7 +72,7 @@ export const CreateLists = withStyles(styles)((props) => {
         : createChannelName(linkData.isPrivate, linkData);
     const styleIsNotActiveLink = {
       borderRadius: '0.4rem',
-      background: '#115293',
+      background: colors.blue[900],
       padding: '0.5rem',
       margin: '0rem 1.5rem',
     };
@@ -153,7 +154,14 @@ export const CreateLists = withStyles(styles)((props) => {
 
   function showMore(id, typeChat) {
     if (typeChat === 'directMessages' && token) {
-      dispatch(removeDirectMessages(token, id, { userId }));
+      const filteredUserDirectMessages = userData.directMessages.filter(
+        (directMessageId) => {
+          return directMessageId !== id;
+        }
+      );
+      const body = { userId, filteredUserDirectMessages };
+      console.log({ userId, filteredUserDirectMessages });
+      dispatch(removeDirectMessages(token, id, { ...body }));
     } else if (token && userId && channels && userChannels) {
       const channel = channels.filter((channel) => channel._id === id)[0];
       const filteredChannelMembers = channel.members.filter(

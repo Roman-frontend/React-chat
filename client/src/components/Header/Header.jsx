@@ -17,14 +17,13 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Avatar from '@material-ui/core/Avatar';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import Button from '@material-ui/core/Button';
-import useChatContext from '../../Context/ChatContext';
 import imageProfile from '../../images/Profile.jpg';
 
 export default function Header(props) {
+  const { changeLanguage } = props;
   const classes = useStyles();
-  const { changeLanguage } = useChatContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const menuId = 'primary-search-account-menu';

@@ -61,7 +61,6 @@ export const rootReducer = (state = initialState, action) => {
       };
 
     case POST_LOGIN:
-      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case POST_MESSAGE:
@@ -71,7 +70,18 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, newMessage: action.payload.newMessage };
 
     case POST_CHANNEL:
-      return { ...state, userData: action.payload.userData };
+      const updatedChannelsWithPost = state.channels.concat(
+        action.payload.newChannel
+      );
+      const updatedUserChannels = state.userData.channels.concat(
+        action.payload.newChannel._id
+      );
+
+      return {
+        ...state,
+        channels: updatedChannelsWithPost,
+        userData: { ...state.userData, channels: updatedUserChannels },
+      };
 
     case POST_ADD_PEOPLES_TO_CHANNEL:
       const updatedChannels = state.channels.map((channel) => {
@@ -79,14 +89,25 @@ export const rootReducer = (state = initialState, action) => {
           ? channel
           : action.payload.userChannels;
       });
-      console.log(updatedChannels);
       return { ...state, channels: updatedChannels };
 
     case POST_ADD_PEOPLE_TO_DIRECT_MESSAGES:
       const updatedList = state.listDirectMessages.concat(
         action.payload.allNewDirectMessage
       );
-      return { ...state, listDirectMessages: updatedList };
+      const newDirectMessagesId = action.payload.allNewDirectMessage.map(
+        (directMessage) => {
+          return directMessage._id;
+        }
+      );
+      return {
+        ...state,
+        listDirectMessages: updatedList,
+        userData: {
+          ...state.userData,
+          directMessages: newDirectMessagesId,
+        },
+      };
 
     case REMOVE_CHANNEL:
       const filteredChannels = state.channels.filter(
@@ -105,7 +126,19 @@ export const rootReducer = (state = initialState, action) => {
       const updated = state.listDirectMessages.filter(
         (directMsg) => directMsg._id !== action.payload.removedId
       );
-      return { ...state, listDirectMessages: updated };
+      const filteredUserDirectMessages = state.userData.directMessages.filter(
+        (directMessageId) => {
+          return directMessageId !== action.payload.removedId;
+        }
+      );
+      return {
+        ...state,
+        listDirectMessages: updated,
+        userData: {
+          ...state.userData,
+          directMessages: filteredUserDirectMessages,
+        },
+      };
 
     case REMOVE_MESSAGE:
       const updatedMessages = state.messages.reverse().filter((message) => {
@@ -114,7 +147,6 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, messages: updatedMessages };
 
     case LOGIN_DATA:
-      console.log(action.payload);
       return { ...state, ...action.payload };
 
     case LOGOUT_DATA:

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import {
@@ -31,9 +31,15 @@ function SetViewPopup(props) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const activeChannelId = useSelector((state) => state.activeChannelId);
-  /* const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  ); */
+
+  useEffect(() => {
+    document.addEventListener('click', hidePopup);
+  }, []);
+
+  function hidePopup() {
+    setPopupMessage(null);
+    document.removeEventListener('click', hidePopup);
+  }
 
   const handleAnswer = () => {
     setCloseBtnReplyMsg(popupMessage.text);

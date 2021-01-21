@@ -2,6 +2,7 @@ const User = require('../../models/User');
 const Channel = require('../../models/Channel');
 const DirectMessage = require('../../models/DirectMessage');
 const DirectMessageChat = require('../../models/DirectMessageChat');
+const ChannelMessage = require('../../models/ChannelMessage');
 const { infoError } = require('../helpers');
 
 const resolvers = {
@@ -153,8 +154,10 @@ const resolvers = {
       console.log('removed directMessage...');
     },
     removeChannel: async (_, { channelId, userId, token }) => {
+      console.log('removing channel -> ');
       const channel = await Channel.findById(channelId);
       const filteredMembers = channel.members.filter((id) => id != userId);
+      console.log(filteredMembers);
       if (filteredMembers[0]) {
         await Channel.findOneAndUpdate(
           { _id: channelId },

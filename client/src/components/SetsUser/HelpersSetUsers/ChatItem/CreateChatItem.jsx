@@ -8,23 +8,20 @@ import {
   styleActiveLink,
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
-import { AUTH } from '../../../../GraphQLApp/queryes';
+import { REMOVE_CHANNEL } from '../../../SetsUser/SetsUserGraphQL/queryes';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import {
-  CHANNELS,
-  REMOVE_CHANNEL,
-} from '../../../SetsUser/SetsUserGraphQL/queryes';
-import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import {
-  reactiveActiveChannelId,
-  reactiveActiveDirrectMessageId,
+  activeChatId,
+  reactiveVarId,
+  reactiveVarToken,
 } from '../../../../GraphQLApp/reactiveVariables';
 
-export const CreateLists = withStyles(styles)((props) => {
-  const { reqRowElements, listName, classes } = props;
-  const { data: auth } = useQuery(AUTH);
-  const { data: queryChannels } = useQuery(CHANNELS);
+export const CreateChannels = withStyles(styles)((props) => {
+  const { channels, classes } = props;
+  const userId = useReactiveVar(reactiveVarId);
+  const token = useReactiveVar(reactiveVarToken);
   const [focusedId, setFocusedId] = useState(false);
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
   const [removeChannel] = useMutation(REMOVE_CHANNEL, {
     update: (cache) => {
@@ -47,9 +44,8 @@ export const CreateLists = withStyles(styles)((props) => {
     },
   });
 
-  function createLink(linkData, listName) {
-    const id = linkData.id;
-    const name = createChannelName(linkData.isPrivate, linkData);
+  function create(id, isPrivate, name) {
+    const readyName = createChannelName(isPrivate, name);
 
     return (
       <div
@@ -61,8 +57,12 @@ export const CreateLists = withStyles(styles)((props) => {
         style={activeChannelId === id ? styleActiveLink : styleIsNotActiveLink}
       >
         <Grid container style={{ alignItems: 'center' }}>
-          <Grid item xs={10} onClick={() => toActive(id)}>
-            {name}
+          <Grid
+            item
+            xs={10}
+            onClick={() => activeChatId({ activeChannelId: id })}
+          >
+            {readyName}
           </Grid>
           <Grid
             item
@@ -75,7 +75,9 @@ export const CreateLists = withStyles(styles)((props) => {
               size='small'
               style={{ background: 'white' }}
               classes={{ root: classes.buttonRoot }}
-              onClick={() => showMore(id, listName)}
+              onClick={() =>
+                removeChannel({ variables: { channelId: id, userId, token } })
+              }
             >
               X
             </Button>
@@ -85,42 +87,9 @@ export const CreateLists = withStyles(styles)((props) => {
     );
   }
 
-  function showMore(id) {
-    if (
-      auth &&
-      auth.id &&
-      auth.token &&
-      auth.channels &&
-      queryChannels &&
-      queryChannels.channels &&
-      queryChannels.channels[0]
-    ) {
-      removeChannel({
-        variables: { channelId: id, userId: auth.id, token: auth.token },
-      });
-    }
-    toActive(queryChannels.channels[0].id);
-  }
-
-  async function toActive(resId) {
-    if (queryChannels && queryChannels.channels) {
-      const activeId = queryChannels.channels.find((id) => id === resId);
-      if (activeId) {
-        reactiveActiveChannelId(activeId);
-        reactiveActiveDirrectMessageId(null);
-      } else {
-        reactiveActiveChannelId(null);
-        reactiveActiveDirrectMessageId(resId);
-      }
-    }
-  }
-
-  let allDirectMessages = [];
-  reqRowElements.forEach((channel) => {
-    if (channel && channel.id) {
-      allDirectMessages.push(createLink(channel, listName));
+  return channels.map((channel) => {
+    if (channel) {
+      return create(channel.id, channel.isPrivate, channel.name);
     }
   });
-
-  return allDirectMessages;
 });

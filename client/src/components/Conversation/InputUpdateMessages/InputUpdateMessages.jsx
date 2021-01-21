@@ -17,10 +17,7 @@ import {
 import { wsSend } from '../../../WebSocket/soket';
 import { messageDate } from '../../Helpers/DateCreators';
 import './input-message.sass';
-import {
-  reactiveActiveChannelId,
-  reactiveActiveDirrectMessageId,
-} from '../../../GraphQLApp/reactiveVariables';
+import { activeChatId } from '../../../GraphQLApp/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,8 +50,9 @@ export const InputUpdateMessages = React.memo((props) => {
   } = props;
   const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
-  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
+  const activeDirectMessageId = useReactiveVar(activeChatId)
+    .activeDirectMessageId;
 
   const chatType = useMemo(() => {
     return activeDirectMessageId

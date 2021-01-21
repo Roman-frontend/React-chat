@@ -17,10 +17,7 @@ import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
-import {
-  reactiveActiveDirrectMessageId,
-  reactiveDirectMessages,
-} from '../../../GraphQLApp/reactiveVariables';
+import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVariables';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { DirectMessage } from './DirectMessage';
@@ -66,7 +63,7 @@ export function DirectMessages(props) {
     },
     onCompleted(data) {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
-      const newDrMsgIds = data.createDirectMessage.map((drMsg) => drMsg.id);
+      const newDrMsgIds = data.createDirectMessage.map(({ id }) => id);
       const toStorage = JSON.stringify({
         ...storage,
         directMessages: [...storage.directMessages, ...newDrMsgIds],

@@ -5,15 +5,15 @@ const { checkAccesToChannel, infoError } = require('../helpers');
 const resolvers = {
   Query: {
     messages: async (_, { chatId, chatType, userId }) => {
-      const isNotMember = await checkAccesToChannel(chatId, userId);
-      if (isNotMember) {
-        return;
-      }
       console.log('geting messages...', chatId, chatType);
       if (chatType === 'DirectMessage') {
         const chatMessages = await DirectMessageChat.find({ chatId });
         return { id: chatMessages[0].chatId, chatMessages };
       } else if (chatType === 'Channel') {
+        const isNotMember = await checkAccesToChannel(chatId, userId);
+        if (isNotMember) {
+          return;
+        }
         const chatMessages = await ChannelMessage.find({ chatId });
         return { id: chatMessages[0].chatId, chatMessages };
       }

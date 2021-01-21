@@ -6,31 +6,31 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { StyledBadge } from '../../Conversation/ConversationHeader/ConversationHeaderStyles';
-import { useQuery } from '@apollo/client';
-import { APP } from '../../SetsUser/SetsUserGraphQL/queryes';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
+import { reactiveOnlineMembers } from '../../../GraphQLApp/reactiveVariables';
 
 export function CreateListMembers(props) {
   const { activeChannel, classes } = props;
   const [members, setMembers] = useState();
   const { data: allUsers } = useQuery(GET_USERS);
-  const { data: app } = useQuery(APP);
+  const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   useEffect(() => {
     if (allUsers && Array.isArray(allUsers.users) && activeChannel) {
       createListMembers();
     }
-  }, [app, activeChannel, allUsers]);
+  }, [usersOnline, activeChannel, allUsers]);
 
   const createListMembers = () => {
     const listMembers = getMembersActiveChannel();
     const readyList = (
       <List dense className={classes.root}>
-        {listMembers.map((member) => {
+        {listMembers.map(({ id, email }) => {
           return (
-            <ListItem key={member.id} button>
-              <ListItemAvatar>{createAvatar(member.id)}</ListItemAvatar>
-              <ListItemText id={member.id} primary={member.email} />
+            <ListItem key={id} button>
+              <ListItemAvatar>{createAvatar(id)}</ListItemAvatar>
+              <ListItemText id={id} primary={email} />
             </ListItem>
           );
         })}
@@ -40,17 +40,12 @@ export function CreateListMembers(props) {
   };
 
   function getMembersActiveChannel() {
-    let listMembers = [];
     if (activeChannel && allUsers && Array.isArray(allUsers.users)) {
-      activeChannel.members.forEach((memberId) => {
-        const filteredUsers = allUsers.users.filter(
-          (member) => member.id === memberId
-        );
-        listMembers = listMembers.concat(filteredUsers);
+      return allUsers.users.filter((user) => {
+        return activeChannel.members.includes(user.id);
       });
     }
-
-    return listMembers;
+    return [];
   }
 
   function createAvatar(memberId) {
@@ -61,7 +56,7 @@ export function CreateListMembers(props) {
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        variant={app.usersOnline.includes(memberId) ? 'dot' : 'standard'}
+        variant={usersOnline.includes(memberId) ? 'dot' : 'standard'}
       >
         <Box>
           <PersonIcon

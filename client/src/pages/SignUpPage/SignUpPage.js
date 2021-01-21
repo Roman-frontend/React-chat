@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SignUpPage = (props) => {
+  console.log('signUpPage');
   const { auth } = useAuth();
   const classes = useStyles();
   const { errors, validate } = useValidate({

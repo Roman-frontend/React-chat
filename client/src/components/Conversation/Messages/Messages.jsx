@@ -7,8 +7,7 @@ import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
 import './messages.sass';
 import {
   reactiveVarId,
-  reactiveActiveChannelId,
-  reactiveActiveDirrectMessageId,
+  activeChatId,
 } from '../../../GraphQLApp/reactiveVariables';
 
 export const Messages = React.memo((props) => {
@@ -21,8 +20,9 @@ export const Messages = React.memo((props) => {
     setCloseBtnReplyMsg,
   } = props;
   const userId = useReactiveVar(reactiveVarId);
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
-  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
+  const activeDirectMessageId = useReactiveVar(activeChatId)
+    .activeDirectMessageId;
   const chatType = useMemo(() => {
     return activeDirectMessageId
       ? 'DirectMessage'
@@ -32,19 +32,18 @@ export const Messages = React.memo((props) => {
   }, [activeChannelId, activeDirectMessageId]);
 
   const chatId = useMemo(() => {
-    return activeDirectMessageId
-      ? activeDirectMessageId
-      : activeChannelId
-      ? activeChannelId
-      : null;
+    return activeDirectMessageId || activeChannelId || null;
   }, [activeChannelId, activeDirectMessageId]);
 
+  console.log({ chatId, chatType, userId });
   const { data: messages, client } = useQuery(GET_MESSAGES, {
     variables: { chatId, chatType, userId },
     onCompleted(data) {
       console.log('mesages', data);
     },
   });
+
+  console.log('activeChatId', activeChannelId || activeDirectMessageId);
 
   useEffect(() => {
     renderMessages();

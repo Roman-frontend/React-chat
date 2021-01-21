@@ -17,11 +17,11 @@ export function createDirectMsgName(name) {
   );
 }
 
-export function createChannelName(isPrivate, channel) {
+export function createChannelName(isPrivate, name) {
   const nameChannel = isPrivate ? (
-    <p className='main-font'>&#128274;{channel.name}</p>
+    <p className='main-font'>&#128274;{name}</p>
   ) : (
-    <p className='main-font'>{`#${channel.name}`}</p>
+    <p className='main-font'>{`#${name}`}</p>
   );
 
   return (

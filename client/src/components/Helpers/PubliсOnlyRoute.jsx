@@ -18,6 +18,7 @@ export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
       return <Redirect to='/chat' />;
     }
   }
+  console.log('PublicOnlyRoute');
   if (loading) return <div>"Loading"</div>;
   return <Route {...rest} render={assignRouteToApply} />;
 };

@@ -7,7 +7,7 @@ import { StyledBadge } from './ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
 import {
-  reactiveActiveChannelId,
+  activeChatId,
   reactiveOnlineMembers,
 } from '../../../GraphQLApp/reactiveVariables';
 
@@ -19,7 +19,7 @@ export function Members(props) {
   } = props;
   const { data: users } = useQuery(GET_USERS);
   const [iconMembers, setIconMembers] = useState([]);
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   useEffect(() => {

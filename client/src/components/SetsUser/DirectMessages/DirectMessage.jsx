@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 import { createDirectMsgName } from './ChatName.jsx';
@@ -8,17 +9,18 @@ import {
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
 import {
-  reactiveActiveChannelId,
-  reactiveActiveDirrectMessageId,
+  activeChatId,
+  reactiveVarId,
 } from '../../../GraphQLApp/reactiveVariables';
 import { AUTH, REMOVE_CHAT } from '../../../GraphQLApp/queryes';
-import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 
 export const DirectMessage = withStyles(styles)((props) => {
   const { reqRowElements, classes } = props;
   const { data: auth } = useQuery(AUTH);
   const [focusedId, setFocusedId] = useState(false);
-  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+  const authId = useReactiveVar(reactiveVarId);
+  const activeDirectMessageId = useReactiveVar(activeChatId)
+    .activeDirectMessageId;
 
   const [removeDirectMessage] = useMutation(REMOVE_CHAT, {
     update: (cache) => {
@@ -41,9 +43,8 @@ export const DirectMessage = withStyles(styles)((props) => {
     },
   });
 
-  function createLink(linkData) {
-    const id = linkData.id;
-    const name = createDirectMsgName(linkData.invited.name);
+  function createLink(id, name) {
+    const readyName = createDirectMsgName(name);
 
     return (
       <div
@@ -51,7 +52,7 @@ export const DirectMessage = withStyles(styles)((props) => {
         id={id}
         onMouseEnter={() => setFocusedId(id)}
         onMouseLeave={() => setFocusedId(false)}
-        onClick={() => toActive(id)}
+        onClick={() => activeChatId({ activeDirectMessageId: id })}
         className='main-font chatHover'
         style={
           activeDirectMessageId === id ? styleActiveLink : styleIsNotActiveLink
@@ -64,7 +65,7 @@ export const DirectMessage = withStyles(styles)((props) => {
           }}
         >
           <Grid item xs={10}>
-            {name}
+            {readyName}
           </Grid>
           <Grid
             item
@@ -93,10 +94,11 @@ export const DirectMessage = withStyles(styles)((props) => {
     }
   }
 
-  function toActive(idActive) {
-    reactiveActiveChannelId(null);
-    reactiveActiveDirrectMessageId(idActive);
-  }
-
-  return reqRowElements.map((element) => createLink(element));
+  return reqRowElements.map((directMsg) => {
+    const name =
+      directMsg.inviter.id !== authId
+        ? directMsg.inviter.name
+        : directMsg.invited.name;
+    return createLink(directMsg.id, name);
+  });
 });

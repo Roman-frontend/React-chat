@@ -43,15 +43,15 @@ export const SelectPeople = withStyles(styles)((props) => {
   };
 
   function createSelectElements(peoplesForChoice) {
-    return peoplesForChoice.map((people) => {
+    return peoplesForChoice.map(({ id, email }) => {
       return (
         <MenuItem
-          key={people.id}
-          label={people.email}
-          value={people.email}
-          onClick={() => addPeopleToInvited(people.id)}
+          key={id}
+          label={email}
+          value={email}
+          onClick={() => addPeopleToInvited(id)}
         >
-          {people.email}
+          {email}
         </MenuItem>
       );
     });

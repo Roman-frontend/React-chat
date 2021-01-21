@@ -8,7 +8,7 @@ import imageError from '../../images/error.png';
 import './conversation.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../GraphQLApp/queryes';
-import { reactiveActiveChannelId } from '../../GraphQLApp/reactiveVariables';
+import { activeChatId } from '../../GraphQLApp/reactiveVariables';
 
 export default function Conversation(props) {
   const { resSuspense } = props;
@@ -18,7 +18,7 @@ export default function Conversation(props) {
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
   const inputRef = useRef();
   const changeMessageRef = useRef();
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;

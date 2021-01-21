@@ -7,8 +7,7 @@ import ForwardIcon from '@material-ui/icons/Forward';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { AUTH } from '../../../../../GraphQLApp/queryes';
 import { REMOVE_MESSAGE } from '../../../ConversationGraphQL/queryes';
-import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import { reactiveActiveChannelId } from '../../../../../GraphQLApp/reactiveVariables';
+import { useQuery, useMutation } from '@apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -46,8 +45,6 @@ export const SetViewPopup = (props) => {
       console.log(`Помилка при видаленні повідомлення ${error}`);
     },
   });
-
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
 
   useEffect(() => {
     document.addEventListener('click', hidePopup);

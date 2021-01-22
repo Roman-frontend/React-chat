@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React from 'react';
 import Box from '@material-ui/core/Box';
 import Avatar from '@material-ui/core/Avatar';
 import PersonIcon from '@material-ui/icons/Person';
@@ -6,7 +6,7 @@ import imageProfile from '../../../../images/Profile.jpg';
 import './message.sass';
 
 export default function Message(props) {
-  const { message, setActiveMessage, setPopupMessage } = props;
+  const { message, setPopupMessage } = props;
   const { username, text, createdAt, _id } = message;
 
   const classMessage = message.reply ? 'container-reply' : 'container';
@@ -14,16 +14,11 @@ export default function Message(props) {
     <p className={`${classMessage}__reply`}>&#8593; {message.reply}</p>
   ) : null;
 
-  const changeIdForPopup = () => {
-    setPopupMessage((prev) => (prev === message ? null : message));
-  };
-
   return (
     <div
       className={classMessage}
       id={_id}
-      onMouseEnter={() => setActiveMessage(message)}
-      onClick={changeIdForPopup}
+      onClick={() => setPopupMessage(message)}
     >
       <Box>
         <Avatar
@@ -39,12 +34,4 @@ export default function Message(props) {
       {replyMessage}
     </div>
   );
-}
-
-{
-  /* <PersonIcon
-  className={`${classMessage}__icon`}
-  style={{ fontSize: 50 }}
-  alt='icon-user'
-/> */
 }

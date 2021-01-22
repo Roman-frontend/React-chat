@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
+import { colors } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import useChatContext from '../../../Context/ChatContext.js';
 import { GET_DIRECT_MESSAGES } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { postDirectMessages } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
-import CreateLists from '../HelpersSetUsers/CreateChatItem';
+import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
 
 export function DirectMessages(props) {
+  const { resSuspense } = props;
   const { t } = useTranslation();
-  const { resDirectMessages } = useChatContext();
-  const { changeStorageUserDataDirectMessages } = useAuth();
+  const { changeStorage } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
@@ -24,7 +24,7 @@ export function DirectMessages(props) {
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
-  const resourseDirectMessages = resDirectMessages.listDirectMessages.read();
+  const resourseDirectMessages = resSuspense.listDirectMessages.read();
 
   useEffect(() => {
     if (resourseDirectMessages) {
@@ -38,7 +38,7 @@ export function DirectMessages(props) {
   useEffect(() => {
     if (listDirectMessages && listDirectMessages[0]) {
       const newList = listDirectMessages.map((directMsg) => directMsg._id);
-      changeStorageUserDataDirectMessages({ directMessages: newList });
+      changeStorage({ directMessages: newList });
     }
   }, [listDirectMessages]);
 
@@ -101,10 +101,10 @@ export function DirectMessages(props) {
       >
         {createArrDirectMessages()}
         <Button
-          variant='outlined'
+          variant='contained'
           color='primary'
           size='small'
-          style={{ background: 'white' }}
+          style={{ background: colors.indigo[500], width: '100%' }}
           onClick={() => setModalAddPeopleIsOpen(true)}
         >
           + Invite people

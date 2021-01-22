@@ -33,6 +33,8 @@ router.post('/post-direct-messages', async (req, res) => {
         invited: user,
       });
 
+      console.log('newDirectMessage._id -->>', newDirectMessage._id);
+
       const inviterDbData = await User.findById(req.body.inviter._id);
       inviterDbData.directMessages.push(newDirectMessage._id);
       await inviterDbData.save();
@@ -56,7 +58,18 @@ router.post('/post-direct-messages', async (req, res) => {
 
 router.delete('/delete-direct-messages:id', verifyToken, async (req, res) => {
   try {
+    function infoError(err) {
+      if (err) console.log(err);
+      console.log('updated');
+    }
+    console.log('req', req.body.filteredUserDirectMessages);
     await DirectMessage.findByIdAndRemove(req.params.id);
+    await User.findOneAndUpdate(
+      { _id: req.body.userId },
+      { directMessages: req.body.filteredUserDirectMessages },
+      { useFindAndModify: false, new: true },
+      (err) => infoError(err)
+    );
     res.status(201).json({
       removedId: req.params.id,
       message: 'Пряме повідомлення видалено',

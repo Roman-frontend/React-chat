@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
-import { postData } from '../../redux/actions/actions.js';
+import { postRegister } from '../../redux/actions/actions.js';
 import { POST_REGISTER } from '../../redux/types.js';
 import { useValidate } from '../../hooks/validate.hook.js';
 import {
@@ -49,7 +49,7 @@ export const SignUpPage = () => {
     validate(formData);
 
     try {
-      await dispatch(postData(POST_REGISTER, null, formData));
+      await dispatch(postRegister(POST_REGISTER, null, formData));
     } catch (e) {}
   };
 
@@ -107,8 +107,6 @@ export const SignUpPage = () => {
   );
 };
 
-const mapDispatchToProps = {
-  postData,
-};
+const mapDispatchToProps = { postRegister };
 
 export default connect(null, mapDispatchToProps)(SignUpPage);

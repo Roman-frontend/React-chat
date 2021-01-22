@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useChatContext from '../../../Context/ChatContext.js';
 import {
   GET_CHANNELS,
   ACTIVE_CHAT_ID,
@@ -12,13 +11,14 @@ import { getChannels } from '../../../redux/actions/actions.js';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
-import CreateLists from '../HelpersSetUsers/CreateChatItem';
+import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import Button from '@material-ui/core/Button';
+import { colors } from '@material-ui/core';
 
 export function Channels(props) {
+  const { resSuspense } = props;
   const { t } = useTranslation();
-  const { resChannels } = useChatContext();
-  const resourseChannels = resChannels.channels.read();
+  const resourseChannels = resSuspense.channels.read();
   const dispatch = useDispatch();
   const allChannels = useSelector((state) => state.channels);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
@@ -28,7 +28,7 @@ export function Channels(props) {
   );
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
-  const { changeStorageUserDataChannels } = useAuth();
+  const { changeStorage } = useAuth();
 
   useEffect(() => {
     function defineActiveChat() {
@@ -69,10 +69,15 @@ export function Channels(props) {
       }
     }
 
-    if (resourseChannels) {
+    if (allChannels) {
       const activeChat = defineActiveChat();
-      dispatch({ type: GET_CHANNELS, payload: resourseChannels });
       dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
+    }
+  }, [allChannels]);
+
+  useEffect(() => {
+    if (resourseChannels) {
+      dispatch({ type: GET_CHANNELS, payload: resourseChannels });
     }
   }, [resourseChannels]);
 
@@ -84,7 +89,7 @@ export function Channels(props) {
       const storageData = sessionStorageData ? sessionStorageData : null;
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.userData.channels) {
-        changeStorageUserDataChannels({ channels: idChannels });
+        changeStorage({ channels: idChannels });
       }
     }
   }, [allChannels]);
@@ -115,10 +120,10 @@ export function Channels(props) {
       >
         {createLinksChannels(allChannels)}
         <Button
-          variant='outlined'
+          variant='contained'
           color='primary'
           size='small'
-          style={{ background: 'white' }}
+          style={{ background: colors.indigo[500], width: '100%' }}
           onClick={() => setModalAddChannelIsOpen(true)}
         >
           + Add channel

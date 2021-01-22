@@ -14,11 +14,11 @@ import {
 } from '../types.js';
 import { reduxServer } from '../../hooks/http.hook.js';
 
-function dispatcher(type, url, token, method = 'GET', body = null) {
+export function dispatcher(type, url, token, method = 'GET', body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
-      //console.log("response ", response);
+      //console.log('response ', response);
       dispatch({ type, payload: response });
     } catch (e) {
       dispatch({ type, payload: '403' });
@@ -27,26 +27,8 @@ function dispatcher(type, url, token, method = 'GET', body = null) {
   };
 }
 
-export const postData = (method, token = null, body = null, param = null) => {
-  switch (method) {
-    case POST_REGISTER:
-      return dispatcher(
-        POST_REGISTER,
-        'api/auth/register',
-        token,
-        'POST',
-        body
-      );
-
-    case POST_CHANNEL:
-      return dispatcher(
-        POST_CHANNEL,
-        `/api/channel/post-channel${param}`,
-        token,
-        'POST',
-        body
-      );
-  }
+export const postRegister = (token, body) => {
+  return dispatcher(POST_REGISTER, 'api/auth/register', token, 'POST', body);
 };
 
 export const putMessage = (messageForEdit, id, param = null, token = null) => {
@@ -120,6 +102,16 @@ export const postDirectMessages = (token, body) => {
   );
 };
 
+export const postChannel = (token, body, param) => {
+  return dispatcher(
+    POST_CHANNEL,
+    `/api/channel/post-channel${param}`,
+    token,
+    'POST',
+    body
+  );
+};
+
 export const removeChannel = (token, id, body) => {
   return dispatcher(
     REMOVE_CHANNEL,
@@ -130,12 +122,13 @@ export const removeChannel = (token, id, body) => {
   );
 };
 
-export const removeDirectMessages = (token, id) => {
+export const removeDirectMessages = (token, id, body) => {
   return dispatcher(
     REMOVE_DIRECT_MESSAGES,
     `/api/direct-message/delete-direct-messages${id}`,
     token,
-    'DELETE'
+    'DELETE',
+    body
   );
 };
 

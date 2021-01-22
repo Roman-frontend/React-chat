@@ -16,6 +16,7 @@ export const reduxServer = async (url, token, method = 'GET', body = null) => {
     const data = await response.json();
 
     if (!response.ok) {
+      console.log('Щось пішло не так(');
       throw new Error(data.message || 'Щось пішло не так ');
     }
 

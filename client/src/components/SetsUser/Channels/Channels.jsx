@@ -11,7 +11,7 @@ import { getChannels } from '../../../redux/actions/actions.js';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
-import CreateLists from '../HelpersSetUsers/CreateChatItem';
+import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 
@@ -28,7 +28,7 @@ export function Channels(props) {
   );
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
-  const { changeStorageUserDataChannels } = useAuth();
+  const { changeStorage } = useAuth();
 
   useEffect(() => {
     function defineActiveChat() {
@@ -89,7 +89,7 @@ export function Channels(props) {
       const storageData = sessionStorageData ? sessionStorageData : null;
       const idChannels = allChannels.map((channel) => channel._id);
       if (idChannels !== storageData.userData.channels) {
-        changeStorageUserDataChannels({ channels: idChannels });
+        changeStorage({ channels: idChannels });
       }
     }
   }, [allChannels]);

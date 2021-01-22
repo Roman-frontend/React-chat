@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { postDirectMessages } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
-import CreateLists from '../HelpersSetUsers/CreateChatItem';
+import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
@@ -16,7 +16,7 @@ import { useCallback } from 'react';
 export function DirectMessages(props) {
   const { resSuspense } = props;
   const { t } = useTranslation();
-  const { changeStorageUserDataDirectMessages } = useAuth();
+  const { changeStorage } = useAuth();
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
@@ -38,7 +38,7 @@ export function DirectMessages(props) {
   useEffect(() => {
     if (listDirectMessages && listDirectMessages[0]) {
       const newList = listDirectMessages.map((directMsg) => directMsg._id);
-      changeStorageUserDataDirectMessages({ directMessages: newList });
+      changeStorage({ directMessages: newList });
     }
   }, [listDirectMessages]);
 

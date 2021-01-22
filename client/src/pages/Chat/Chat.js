@@ -39,11 +39,11 @@ if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
 }
 
 export const Chat = () => {
+  const classes = useStyles();
   const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
   const resSuspense = useMemo(() => {
     return fetchData(sessionStorageData.token, sessionStorageData.userData);
   }, []);
-  const classes = useStyles();
 
   return (
     <div className='chat-page'>

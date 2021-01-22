@@ -43,62 +43,21 @@ export const useAuth = () => {
     dispatch({ type: LOGOUT_DATA });
   }, []);
 
-  const changeStorageUserDataActiveChat = (newActiveChat) => {
+  const changeStorage = (forStorage) => {
     const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
     if (data) {
-      const { channels, directMessages, _id, name, email } = {
-        ...data.userData,
+      const readyStorage = {
+        userData: { ...data.userData, ...forStorage },
+        token: data.token,
       };
-      const token = data.token;
-      const object = Object.assign(
-        {},
-        { channels, directMessages, _id, name, email },
-        { ...newActiveChat }
-      );
-      const toStorage = JSON.stringify({ userData: { ...object }, token });
-      sessionStorage.setItem(STORAGE_NAME, toStorage);
-    }
-  };
-
-  const changeStorageUserDataChannels = (newChannels) => {
-    const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    if (data) {
-      const { directMessages, lastActiveChatId, _id, name, email } = {
-        ...data.userData,
-      };
-      const token = data.token;
-      const object = Object.assign(
-        {},
-        { directMessages, lastActiveChatId, _id, name, email },
-        { ...newChannels }
-      );
-      const toStorage = JSON.stringify({ userData: { ...object }, token });
-      sessionStorage.setItem(STORAGE_NAME, toStorage);
-    }
-  };
-
-  const changeStorageUserDataDirectMessages = (newDirectMessages) => {
-    const data = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    if (data) {
-      const { channels, lastActiveChatId, _id, name, email } = {
-        ...data.userData,
-      };
-      const token = data.token;
-      const object = Object.assign(
-        {},
-        { channels, lastActiveChatId, _id, name, email },
-        { ...newDirectMessages }
-      );
-      const toStorage = JSON.stringify({ userData: { ...object }, token });
-      sessionStorage.setItem(STORAGE_NAME, toStorage);
+      const stringifyData = JSON.stringify(readyStorage);
+      sessionStorage.setItem(STORAGE_NAME, stringifyData);
     }
   };
 
   return {
     login,
     logout,
-    changeStorageUserDataActiveChat,
-    changeStorageUserDataDirectMessages,
-    changeStorageUserDataChannels,
+    changeStorage,
   };
 };

@@ -14,7 +14,7 @@ import {
 } from '../types.js';
 import { reduxServer } from '../../hooks/http.hook.js';
 
-function dispatcher(type, url, token, method = 'GET', body = null) {
+export function dispatcher(type, url, token, method = 'GET', body = null) {
   return async (dispatch) => {
     try {
       const response = await reduxServer(url, token, method, body);
@@ -27,17 +27,8 @@ function dispatcher(type, url, token, method = 'GET', body = null) {
   };
 }
 
-export const postData = (method, token = null, body = null, param = null) => {
-  switch (method) {
-    case POST_REGISTER:
-      return dispatcher(
-        POST_REGISTER,
-        'api/auth/register',
-        token,
-        'POST',
-        body
-      );
-  }
+export const postRegister = (token, body) => {
+  return dispatcher(POST_REGISTER, 'api/auth/register', token, 'POST', body);
 };
 
 export const putMessage = (messageForEdit, id, param = null, token = null) => {

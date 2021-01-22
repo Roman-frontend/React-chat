@@ -1,11 +1,4 @@
 import { reduxServer } from './http.hook';
-import {
-  GET_USERS,
-  GET_CHANNELS,
-  GET_DIRECT_MESSAGES,
-  GET_MESSAGES,
-  GET_MESSAGES_FOR_DIRECT_MSG,
-} from '../redux/types';
 
 export const fetchData = (token, userData) => {
   const resUsers = getUsers();
@@ -47,31 +40,28 @@ function wrapPromise(promise) {
 }
 
 async function getUsers() {
-  const a = await reduxServer(`/api/channel/get-user`);
-  console.log(a);
-  return a;
+  const fetchUsers = await reduxServer(`/api/channel/get-user`);
+  return fetchUsers;
 }
 
 async function getChannels(token, channels) {
-  const a = await reduxServer(
+  const fetchChannels = await reduxServer(
     '/api/channel/get-chunnels',
     token,
     'POST',
     channels
   );
-  console.log(a);
-  return a;
+
+  return fetchChannels;
 }
 
 async function getDirectMessages(token, listDirectMessages) {
-  const a = await reduxServer(
+  const fetchDirectMsg = await reduxServer(
     `/api/direct-message/get-direct-messages`,
     token,
     'POST',
-    {
-      listDirectMessages,
-    }
+    { listDirectMessages }
   );
-  console.log(a);
-  return a;
+
+  return fetchDirectMsg;
 }

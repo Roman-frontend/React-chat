@@ -1,7 +1,8 @@
 const { Router } = require('express');
 const config = require('config');
 const Channel = require('../models/Channel.js');
-const ChannelMessage = require('../models/ChannelMessage');
+const DirectMessageChat = require('../models/DirectMessageChat.js');
+const ChannelMessage = require('../models/ChannelMessage.js');
 const User = require('../models/User.js');
 const router = Router();
 const jsonWebToken = require('jsonwebtoken');
@@ -46,43 +47,51 @@ router.post('/get-messages:activeChannelId', verifyToken, async (req, res) => {
 
 router.post('/post-message:chatId', verifyToken, async (req, res) => {
   try {
-    //console.log("without express.json ..........")
-    /* const ip =
-      req.headers['x-forwarded-for'] ||
-      req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      req.connection.socket.remoteAddress; */
-
-    //console.log('ip ////', ip);
     const userIsNotMemberPrivatChannel = await checkAccesToChannel(
       req.params.chatId,
       req.body.userId
     );
-    //console.log("post-message ==>> ", userIsNotMemberPrivatChannel);
     if (userIsNotMemberPrivatChannel) {
       res.status(403).json({ message: 'Ви не є учасником приватного чату' });
     } else if (req.params.chatId) {
       const newMessage = await ChannelMessage.create(req.body);
-      /* const messages = await ChannelMessage.find({
-        chatId: req.params.chatId,
-      }); */
-      res.status(201).json({
-        /* messages, */ newMessage,
-        message: 'Повідомлення надіслано',
-      });
+
+      res.status(201).json({ newMessage, message: 'Повідомлення надіслано' });
     }
   } catch (e) {
     res.status(500).json({ message: 'Что-то пошло не так -', error: e });
   }
 });
 
-router.put('/put-message:_id', async (req, res) => {
+router.put('/put-message:id', async (req, res) => {
   try {
-    await ChannelMessage.findByIdAndUpdate(req.params._id, req.body);
-    const messages = await ChannelMessage.find({ username: 'Yulia' });
-    res
-      .status(201)
-      .json({ messages, newMessage, message: 'Повідомлення змінене' });
+    function infoError(err) {
+      if (err) console.log(err);
+      console.log('updated');
+    }
+
+    let updatedMessage;
+    if (req.body.chatType === 'Channel') {
+      updatedMessage = await ChannelMessage.findOneAndUpdate(
+        { _id: req.params.id },
+        { text: req.body.text },
+        { useFindAndModify: false, new: true },
+        (err) => infoError(err)
+      );
+    } else if ((req.body.chatType = 'DirectMessage')) {
+      updatedMessage = await DirectMessageChat.findOneAndUpdate(
+        { _id: req.params.id },
+        { text: req.body.text },
+        { useFindAndModify: false, new: true },
+        (err) => infoError(err)
+      );
+    }
+
+    console.log('updatedMessage', updatedMessage);
+    if (!updatedMessage) {
+      res.status(403).json({ message: 'Повідомлення не змінене' });
+    }
+    res.status(201).json({ updatedMessage, message: 'Повідомлення змінене' });
   } catch (e) {
     console.log('catch - put-message');
     res.status(500).json({ message: 'Что-то пошло не так ' });

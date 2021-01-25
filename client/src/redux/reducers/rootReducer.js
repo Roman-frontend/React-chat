@@ -5,12 +5,13 @@ import {
   GET_MESSAGES,
   GET_DIRECT_MESSAGES,
   POST_REGISTER,
-  POST_LOGIN,
+  AUTH,
   POST_MESSAGE,
   POST_MESSAGE_FOR_DIRECT_MSG,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
+  PUT_MESSAGE,
   REMOVE_MESSAGE,
   REMOVE_DIRECT_MESSAGES,
   REMOVE_CHANNEL,
@@ -29,7 +30,6 @@ const initialState = {
   activeChannelId: null,
   activeDirectMessageId: null,
   messages: [],
-  messagesOfDirectMessages: [],
   token: null,
   userData: null,
   newMessage: null,
@@ -60,7 +60,7 @@ export const rootReducer = (state = initialState, action) => {
         userData: action.payload.userData,
       };
 
-    case POST_LOGIN:
+    case AUTH:
       return { ...state, ...action.payload };
 
     case POST_MESSAGE:
@@ -108,6 +108,15 @@ export const rootReducer = (state = initialState, action) => {
           directMessages: newDirectMessagesId,
         },
       };
+
+    case PUT_MESSAGE:
+      const updatedMsg = state.messages.map((message) => {
+        if (message._id === action.payload.updatedMessage._id) {
+          return action.payload.updatedMessage;
+        }
+        return message;
+      });
+      return { ...state, messages: updatedMsg.reverse() };
 
     case REMOVE_CHANNEL:
       const filteredChannels = state.channels.filter(

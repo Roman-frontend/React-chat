@@ -1,26 +1,46 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { LOGOUT_DATA, STORAGE_NAME, POST_LOGIN } from '../redux/types.js';
-import { wsSend } from '../WebSocket/soket';
+import { LOGOUT_DATA, STORAGE_NAME, AUTH } from '../redux/types.js';
+import { wsSend, wsSingleton } from '../WebSocket/soket';
 import { reduxServer } from '../hooks/http.hook.js';
 
 export const useAuth = () => {
   const dispatch = useDispatch();
 
-  /**jwtToken - отримуємо з бекенда *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність*/
-  const login = useCallback(async (loginData) => {
-    const resLogin = await reduxServer(
-      '/api/auth/login',
+  const login = async (data) => {
+    const fetchLogin = await reduxServer('/api/auth/login', null, 'POST', data);
+    auth(fetchLogin);
+  };
+
+  const register = async (data) => {
+    const fetchRegister = await reduxServer(
+      '/api/auth/register',
       null,
       'POST',
-      loginData
+      data
     );
+    auth(fetchRegister);
+  };
+
+  /**jwtToken - отримуємо з бекенда *обертаємо в useCallback() - щоб використовувати login в useEffect() як залежність*/
+  const auth = useCallback((data) => {
     const toStorage = JSON.stringify({
-      userData: resLogin.userData,
-      token: resLogin.token,
+      userData: data.userData,
+      token: data.token,
     });
     sessionStorage.setItem(STORAGE_NAME, toStorage);
-    dispatch({ type: POST_LOGIN, payload: resLogin });
+    wsSingleton.clientPromise
+      .then((wsClient) => console.log('ONLINE'))
+      .catch((error) => console.log(error));
+    dispatch({ type: AUTH, payload: data });
+    const allUserChats = data.userData.channels.concat(
+      data.userData.directMessages
+    );
+    wsSend({
+      userRooms: allUserChats,
+      meta: 'join',
+      userId: data.userData._id,
+    });
   }, []);
 
   const logout = useCallback(() => {
@@ -55,9 +75,5 @@ export const useAuth = () => {
     }
   };
 
-  return {
-    login,
-    logout,
-    changeStorage,
-  };
+  return { login, register, logout, changeStorage };
 };

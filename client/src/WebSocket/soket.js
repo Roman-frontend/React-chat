@@ -2,7 +2,6 @@ class Ws extends Object {
   get newClientPromise() {
     return new Promise((resolve, reject) => {
       let wsClient = new WebSocket('ws://localhost:8080');
-      console.log(wsClient);
       wsClient.onopen = () => {
         console.log('connected');
         resolve(wsClient);

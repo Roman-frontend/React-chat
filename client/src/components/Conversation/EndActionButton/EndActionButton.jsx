@@ -8,6 +8,7 @@ export default function EndActionButton(props) {
     closeBtnReplyMsg,
     setCloseBtnReplyMsg,
     inputRef,
+    changeMessageRef,
   } = props;
   const topInput = document
     .querySelector('.conversation-input__input')
@@ -17,6 +18,7 @@ export default function EndActionButton(props) {
   function hideButtonExit() {
     setCloseBtnReplyMsg(null);
     setCloseBtnChangeMsg(null);
+    changeMessageRef.current = null;
     inputRef.current.children[1].children[0].value = '';
   }
 

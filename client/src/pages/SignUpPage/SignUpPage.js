@@ -3,16 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { connect } from 'react-redux';
-import { postRegister } from '../../redux/actions/actions.js';
-import { POST_REGISTER } from '../../redux/types.js';
 import { useValidate } from '../../hooks/validate.hook.js';
 import {
   validateName,
   validateEmail,
   validatePassword,
 } from '../../components/Helpers/validateMethods.jsx';
+import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SignUpPage = () => {
+  const { register } = useAuth();
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { errors, validate } = useValidate({
     name: validateName,
     email: validateEmail,
@@ -49,8 +46,10 @@ export const SignUpPage = () => {
     validate(formData);
 
     try {
-      await dispatch(postRegister(POST_REGISTER, null, formData));
-    } catch (e) {}
+      register(formData);
+    } catch (e) {
+      console.log('Помилка при реєстрації -', e);
+    }
   };
 
   return (
@@ -106,7 +105,3 @@ export const SignUpPage = () => {
     </div>
   );
 };
-
-const mapDispatchToProps = { postRegister };
-
-export default connect(null, mapDispatchToProps)(SignUpPage);

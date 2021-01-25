@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { wsSend } from '../../WebSocket/soket';
+import React, { useState, useRef } from 'react';
+import { wsSend, wsSingleton } from '../../WebSocket/soket';
 import { STORAGE_NAME } from '../../redux/types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
 import { Messages } from './Messages/Messages.jsx';
 import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
@@ -18,30 +18,8 @@ export default function Conversation(props) {
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
-  const [isJoin, setIsJoin] = useState(false);
   const inputRef = useRef();
-
-  useEffect(() => {
-    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    const storageData = sessionStorageData ? sessionStorageData : null;
-    if (!storageData) setIsJoin(false);
-    if (
-      storageData &&
-      storageData.userData &&
-      storageData.userData.channels[0] &&
-      !isJoin
-    ) {
-      setIsJoin(true);
-      const allUserChats = storageData.userData.channels.concat(
-        storageData.userData.directMessages
-      );
-      wsSend({
-        userRooms: allUserChats,
-        meta: 'join',
-        userId: storageData.userData._id,
-      });
-    }
-  }, [channels]);
+  const changeMessageRef = useRef();
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
@@ -66,6 +44,7 @@ export default function Conversation(props) {
         setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}
         inputRef={inputRef}
+        changeMessageRef={changeMessageRef}
       />
     ) : null;
 
@@ -79,6 +58,7 @@ export default function Conversation(props) {
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}
         setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         inputRef={inputRef}
+        changeMessageRef={changeMessageRef}
       />
     ) : (
       <img src={imageError} />
@@ -146,6 +126,7 @@ export default function Conversation(props) {
       <div className='conversation-input'>
         <InputUpdateMessages
           inputRef={inputRef}
+          changeMessageRef={changeMessageRef}
           closeBtnChangeMsg={closeBtnChangeMsg}
           setCloseBtnChangeMsg={setCloseBtnChangeMsg}
           closeBtnReplyMsg={closeBtnReplyMsg}

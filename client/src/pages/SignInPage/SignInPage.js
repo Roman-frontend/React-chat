@@ -32,10 +32,9 @@ export const SignInPage = () => {
       .required('Required'),
   });
 
-  const onSubmit = async (values) => {
+  const onSubmit = (values) => {
     try {
-      const formData = { email: values.email, password: values.password };
-      login(formData);
+      login({ email: values.email, password: values.password });
     } catch (e) {
       console.error(e);
     }

@@ -20,6 +20,7 @@ import './messages.sass';
 export const Messages = React.memo((props) => {
   const {
     inputRef,
+    changeMessageRef,
     popupMessage,
     setPopupMessage,
     setCloseBtnChangeMsg,
@@ -41,12 +42,15 @@ export const Messages = React.memo((props) => {
     messagesRef.current = reduxMessages;
   }, [reduxMessages]);
 
+  console.log('readyMessages');
+
   //Підписуємось на подію що спрацює при отриманні повідомлення
   wsSingleton.clientPromise
     .then((wsClient) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
-        if (parsedRes === "З'єднання з WebSocket встановлено") {
+        console.log(parsedRes);
+        if (parsedRes.message === "З'єднання з WebSocket встановлено") {
           return;
         } else if (parsedRes.text) {
           const dispatchMessages =
@@ -134,6 +138,7 @@ export const Messages = React.memo((props) => {
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}
         setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         inputRef={inputRef}
+        changeMessageRef={changeMessageRef}
       />
     </div>
   );

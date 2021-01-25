@@ -36,26 +36,32 @@ server.on('connection', (ws) => {
   }
 
   function getRoomOnline(userRooms) {
-    let usersOnline = [];
+    let arrOfOnlineUsersId = [];
     rooms.forEach((room) => {
       if (userRooms.includes(room.chatId) && room.members[0]) {
         room.members.forEach((member) => {
           const idMember = Object.keys(member)[0];
-          const arrInclude = usersOnline.includes(idMember);
-          if (!arrInclude) usersOnline = usersOnline.concat(idMember);
+          const arrInclude = arrOfOnlineUsersId.includes(idMember);
+          if (!arrInclude)
+            arrOfOnlineUsersId = arrOfOnlineUsersId.concat(idMember);
         });
       }
     });
-    return usersOnline;
+    //console.log('arrOfOnlineUsersId --->', arrOfOnlineUsersId);
+    return arrOfOnlineUsersId;
   }
 
   function informMembersNewOnline(userRooms, members) {
     let responsed = [];
+    //console.log(rooms[0].members, userRooms);
     rooms.forEach((room) => {
       if (userRooms.includes(room.chatId)) {
+        //console.log(room.members);
         room.members.forEach((member) => {
           const memberId = Object.keys(member)[0];
+
           if (!responsed.includes(memberId)) {
+            //console.log('memberData -> ', Object.values(member)[0]);
             Object.values(member)[0].send(
               JSON.stringify({ message: 'online', members })
             );
@@ -117,7 +123,8 @@ server.on('connection', (ws) => {
   });
 
   //дозволить відправити повідомлення клієнту
-  ws.send("З'єднання з WebSocket встановлено");
+  //console.log('ONLINE');
+  ws.send(JSON.stringify({ message: "З'єднання з WebSocket встановлено" }));
 });
 
 module.exports = server;

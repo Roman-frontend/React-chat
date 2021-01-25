@@ -38,6 +38,7 @@ const theme = createMuiTheme({
 
 export const InputUpdateMessages = React.memo((props) => {
   const {
+    changeMessageRef,
     closeBtnChangeMsg,
     setCloseBtnChangeMsg,
     closeBtnReplyMsg,
@@ -54,15 +55,6 @@ export const InputUpdateMessages = React.memo((props) => {
     (state) => state.activeDirectMessageId
   );
 
-  /*   useEffect(() => {
-    document.addEventListener('click', hidePopup);
-  }, []);
-
-  function hidePopup() {
-    setPopupMessage(null);
-    document.removeEventListener('click', hidePopup);
-  } */
-
   function inputUpdateMessages(event) {
     event.preventDefault();
     const inputValue = inputRef.current.children[1].children[0].value;
@@ -78,17 +70,14 @@ export const InputUpdateMessages = React.memo((props) => {
   }
 
   async function changeMessageText(inputValue) {
-    /* let messageForEdit = []
-
-    const updatedArrayMessages = reduxMessages.map(message => {
-      if (message._id === closeBtnChangeMsg) {
-        message.text = inputValue
-        messageForEdit.push(message)
-        return message
-      } else return message
-    })
-    
-    const resPut = await putMessage(messageForEdit[0], closeBtnChangeMsg, null, token) */
+    console.log(inputValue, changeMessageRef.current);
+    dispatch(
+      putMessage(token, changeMessageRef.current._id, {
+        text: inputValue,
+        chatType: changeMessageRef.current.chatType,
+      })
+    );
+    changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
   }
 

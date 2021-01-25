@@ -1,11 +1,9 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useAuth } from '../../hooks/auth.hook.js';
 
 export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
   const token = useSelector((state) => state.token);
-  //const { login } = useAuth();
   console.log('PublicOnlyRoute');
 
   function assignRouteToApply(routeProps) {

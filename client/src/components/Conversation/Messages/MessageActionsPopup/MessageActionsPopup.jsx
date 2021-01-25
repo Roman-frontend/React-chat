@@ -9,6 +9,7 @@ export default function MessageActionsPopup(props) {
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
     inputRef,
+    changeMessageRef,
   } = props;
 
   const topPopupRelativeTopPage = useMemo(() => {
@@ -28,6 +29,7 @@ export default function MessageActionsPopup(props) {
       <SetViewPopup
         topPopupRelativeTopPage={topPopupRelativeTopPage}
         inputRef={inputRef}
+        changeMessageRef={changeMessageRef}
         popupMessage={popupMessage}
         setPopupMessage={setPopupMessage}
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}

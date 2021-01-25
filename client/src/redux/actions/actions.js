@@ -8,6 +8,7 @@ import {
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
+  PUT_MESSAGE,
   REMOVE_MESSAGE,
   REMOVE_DIRECT_MESSAGES,
   REMOVE_CHANNEL,
@@ -27,16 +28,17 @@ export function dispatcher(type, url, token, method = 'GET', body = null) {
   };
 }
 
-export const postRegister = (token, body) => {
-  return dispatcher(POST_REGISTER, 'api/auth/register', token, 'POST', body);
+export const postRegister = (body) => {
+  return dispatcher(POST_REGISTER, 'api/auth/register', null, 'POST', body);
 };
 
-export const putMessage = (messageForEdit, id, param = null, token = null) => {
+export const putMessage = (token, id, body) => {
   return dispatcher(
+    PUT_MESSAGE,
     `/api/chat/put-message${id}`,
+    token,
     'PUT',
-    { ...messageForEdit },
-    token
+    body
   );
 };
 

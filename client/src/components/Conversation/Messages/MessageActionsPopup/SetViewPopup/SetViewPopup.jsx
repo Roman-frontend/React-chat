@@ -22,6 +22,7 @@ function SetViewPopup(props) {
   const {
     topPopupRelativeTopPage,
     inputRef,
+    changeMessageRef,
     popupMessage,
     setPopupMessage,
     setCloseBtnChangeMsg,
@@ -50,6 +51,7 @@ function SetViewPopup(props) {
 
   const handleChange = () => {
     setCloseBtnChangeMsg(true);
+    changeMessageRef.current = popupMessage;
     setPopupMessage(null);
     inputRef.current.children[1].children[0].focus();
     inputRef.current.children[1].children[0].value = popupMessage.text;

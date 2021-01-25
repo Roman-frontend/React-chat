@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const DirectMessageChat = new Schema({
   reply: { type: String },
@@ -7,6 +7,7 @@ const DirectMessageChat = new Schema({
   text: { type: String, required: true },
   createdAt: { type: String, default: Date.now, required: true },
   chatId: { type: String },
+  chatType: { type: String, default: 'DirectMessage' },
 });
 
-module.exports = model("DirectMessageChat", DirectMessageChat);
+module.exports = model('DirectMessageChat', DirectMessageChat);

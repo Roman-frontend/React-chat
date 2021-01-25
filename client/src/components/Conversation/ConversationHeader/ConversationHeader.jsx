@@ -1,7 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { wsSingleton } from '../../../WebSocket/soket';
-import { GET_USERS_ONLINE } from '../../../redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { addPeopleToChannel } from '../../../redux/actions/actions.js';
@@ -21,7 +19,6 @@ export const ConversationHeader = React.memo((props) => {
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
-  const usersOnline = useSelector((state) => state.usersOnline);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
@@ -35,26 +32,6 @@ export const ConversationHeader = React.memo((props) => {
       }
     }
   }, [activeChannelId, channels]);
-
-  useEffect(() => {
-    wsSingleton.clientPromise
-      .then((wsClient) => {
-        wsClient.addEventListener('message', (response) => {
-          const parsedRes = JSON.parse(response.data);
-          if (parsedRes.message === 'online') {
-            if (
-              JSON.stringify(usersOnline) !== JSON.stringify(parsedRes.members)
-            ) {
-              dispatch({
-                type: GET_USERS_ONLINE,
-                payload: parsedRes.members,
-              });
-            }
-          }
-        });
-      })
-      .catch((error) => console.log(error));
-  }, []);
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {

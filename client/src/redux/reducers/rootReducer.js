@@ -60,7 +60,11 @@ export const rootReducer = (state = initialState, action) => {
         userData: action.payload.userData,
       };
 
+<<<<<<< HEAD
     case AUTH:
+=======
+    case POST_LOGIN:
+>>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
       return { ...state, ...action.payload };
 
     case POST_MESSAGE:
@@ -108,6 +112,7 @@ export const rootReducer = (state = initialState, action) => {
           directMessages: newDirectMessagesId,
         },
       };
+<<<<<<< HEAD
 
     case PUT_MESSAGE:
       const updatedMsg = state.messages.map((message) => {
@@ -117,6 +122,8 @@ export const rootReducer = (state = initialState, action) => {
         return message;
       });
       return { ...state, messages: updatedMsg.reverse() };
+=======
+>>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
 
     case REMOVE_CHANNEL:
       const filteredChannels = state.channels.filter(

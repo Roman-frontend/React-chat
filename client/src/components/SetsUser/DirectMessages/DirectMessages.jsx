@@ -16,7 +16,11 @@ import { useCallback } from 'react';
 export function DirectMessages(props) {
   const { resSuspense } = props;
   const { t } = useTranslation();
+<<<<<<< HEAD
   const { changeStorage } = useAuth();
+=======
+  const { changeStorageUserDataDirectMessages } = useAuth();
+>>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
   const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);

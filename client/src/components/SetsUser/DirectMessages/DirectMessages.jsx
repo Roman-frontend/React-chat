@@ -120,6 +120,7 @@ export function DirectMessages(props) {
         style={{ background: colors.indigo[500], width: '100%' }}
         onClick={() => setModalAddPeopleIsOpen(true)}
       >
+<<<<<<< HEAD
         + Invite people
       </Button>
       <AddPeopleToDirectMessages
@@ -131,6 +132,28 @@ export function DirectMessages(props) {
         <Link className='main-font' to={`/filterContacts`}>
           Filter Contants
         </Link>
+=======
+        {createLinksDirectMessages()}
+        <Button
+          variant='contained'
+          color='primary'
+          size='small'
+          style={{ background: colors.indigo[500], width: '100%' }}
+          onClick={() => setModalAddPeopleIsOpen(true)}
+        >
+          + Invite people
+        </Button>
+        <AddPeopleToDirectMessages
+          done={doneInvite}
+          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        />
+        <div className='user-sets__channel'>
+          <Link className='main-font' to={`/filterContacts`}>
+            Filter Contants
+          </Link>
+        </div>
+>>>>>>> before work over GrafQL
       </div>
     </>
   );

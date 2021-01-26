@@ -17,10 +17,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Chat = () => {
-  const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-  const resSuspense = useMemo(() => {
-    return fetchData(sessionStorageData.token, sessionStorageData.userData);
-  }, []);
   const classes = useStyles();
   const dispatch = useDispatch();
   const online = useSelector((state) => state.usersOnline);

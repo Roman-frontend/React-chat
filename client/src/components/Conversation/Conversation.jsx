@@ -21,28 +21,6 @@ export default function Conversation(props) {
   const inputRef = useRef();
   const changeMessageRef = useRef();
 
-  useEffect(() => {
-    const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    const storageData = sessionStorageData ? sessionStorageData : null;
-    if (!storageData) setIsJoin(false);
-    if (
-      storageData &&
-      storageData.userData &&
-      storageData.userData.channels[0] &&
-      !isJoin
-    ) {
-      setIsJoin(true);
-      const allUserChats = storageData.userData.channels.concat(
-        storageData.userData.directMessages
-      );
-      wsSend({
-        userRooms: allUserChats,
-        meta: 'join',
-        userId: storageData.userData._id,
-      });
-    }
-  }, [channels]);
-
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
     if (channels && channels[0] && activeChannelId) {

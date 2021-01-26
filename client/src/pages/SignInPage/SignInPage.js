@@ -18,9 +18,11 @@ import {
 } from '../../components/../GraphQLApp/reactiveVariables';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import './auth-body.sass';
 
 const useStyles = makeStyles((theme) => ({
+  root: { position: 'fixed', left: '50%', top: '50%' },
   button: {
     margin: theme.spacing(1, 2),
   },
@@ -29,15 +31,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignInPage = ({ route }) => {
-  console.log(route);
+export const SignInPage = () => {
   const classes = useStyles();
   const { auth } = useAuth();
   const initialValues = { email: '', password: '' };
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [stopLogin, setStopLogin] = useState(true);
 
-  const { loading, data, refetch } = useQuery(LOGIN, {
+  const { loading, refetch } = useQuery(LOGIN, {
     skip: stopLogin,
     variables: { email: loginData.email, password: loginData.password },
     onError(error) {
@@ -50,23 +51,11 @@ export const SignInPage = ({ route }) => {
       reactiveVarName(login.name);
       reactiveVarEmail(login.email);
       reactiveVarId(login.id);
-      console.log(login);
       reactiveVarChannels(login.channels);
       reactiveDirectMessages(login.directMessages);
       auth(login);
     },
   });
-
-  /*   useEffect(() => {
-    if (data && data.login) {
-      const { id, name, email, channels, directMessages, token } = data.login;
-      const authData = {
-        userData: { id, name, email, channels, directMessages },
-        token,
-      };
-      auth(authData);
-    }
-  }, [data]); */
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email format').required('Required!'),
@@ -78,7 +67,6 @@ export const SignInPage = ({ route }) => {
 
   const onSubmit = (values) => {
     try {
-      console.log({ email: values.email, password: values.password });
       setLoginData({ email: values.email, password: values.password });
       setStopLogin(false);
       refetch();
@@ -87,7 +75,13 @@ export const SignInPage = ({ route }) => {
     }
   };
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress color='secondary' />
+      </div>
+    );
+  }
 
   return (
     <div className='auth-body'>

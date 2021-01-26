@@ -6,7 +6,6 @@ export const FilterContacts = (props) => {
   const inputContactsRef = useRef(null);
   const [listContacts, setListContacts] = useState(null);
   const [storageContacts, setStorageContacts] = useState('');
-  const { handleClickHistory } = props;
 
   useEffect(() => {
     inputContactsRef.current.focus();
@@ -177,12 +176,6 @@ export const FilterContacts = (props) => {
     }
   } */
 
-  const location = {
-    pathname: `/chat`,
-    state: { fromDashboard: true },
-  };
-
-  console.log(handleClickHistory);
   console.log('storageContacts -', storageContacts);
 
   return (
@@ -202,9 +195,7 @@ export const FilterContacts = (props) => {
         <button onClick={saveContactsToLocalStorage}>Save in storage</button>
         <button onClick={cleanStorage}>Clean storage</button>
         <button className='sign-up'>
-          <Link to={`/chat`} onClick={(path) => handleClickHistory(location)}>
-            SignUp
-          </Link>
+          <Link to={`/app/chat`}>SignUp</Link>
         </button>
       </div>
       <div className='filter__list-result'>{listContacts}</div>

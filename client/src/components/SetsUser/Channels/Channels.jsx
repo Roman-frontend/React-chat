@@ -29,24 +29,25 @@ export function Channels(props) {
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!activeChannelId && !activeDirectMessageId) {
-      if (
-        allChannels &&
-        Array.isArray(allChannels.userChannels) &&
-        allChannels.userChannels[0] &&
-        allChannels.userChannels[0].id
-      ) {
-        activeChatId({ activeChannelId: allChannels.userChannels[0].id });
-      } else if (
-        listDirectMessages &&
-        Array.isArray(listDirectMessages.directMessages) &&
-        listDirectMessages.directMessages[0] &&
-        listDirectMessages.directMessages[0].id
-      ) {
-        activeChatId({
-          activeDirectMessageId: listDirectMessages.directMessages[0].id,
-        });
-      }
+    if (activeChannelId || activeDirectMessageId) {
+      return;
+    }
+    if (
+      allChannels &&
+      Array.isArray(allChannels.userChannels) &&
+      allChannels.userChannels[0] &&
+      allChannels.userChannels[0].id
+    ) {
+      activeChatId({ activeChannelId: allChannels.userChannels[0].id });
+    } else if (
+      listDirectMessages &&
+      Array.isArray(listDirectMessages.directMessages) &&
+      listDirectMessages.directMessages[0] &&
+      listDirectMessages.directMessages[0].id
+    ) {
+      activeChatId({
+        activeDirectMessageId: listDirectMessages.directMessages[0].id,
+      });
     }
   }, [allChannels, listDirectMessages]);
 

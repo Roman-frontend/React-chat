@@ -26,7 +26,6 @@ app.use(express.json({ extended: true }));
 app.use(express.static(path.resolve(__dirname, 'client', 'src', 'components')));
 
 app.get('*', (req, res) => {
-  console.log('Запит за неоприділеним URL', req.path);
   res
     .status(200)
     .sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'));

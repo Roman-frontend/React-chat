@@ -128,7 +128,7 @@ export function DirectMessages(props) {
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
       />
       <div className='user-sets__channel'>
-        <Link className='main-font' to={`/filterContacts`}>
+        <Link className='main-font' to={`/app/filterContacts`}>
           Filter Contants
         </Link>
       </div>

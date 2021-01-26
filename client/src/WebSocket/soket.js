@@ -19,10 +19,6 @@ class Ws extends Object {
   }
 }
 
-console.log({
-  a: 'a',
-  b: 'b',
-});
 export function wsSend(data) {
   wsSingleton.clientPromise
     .then((wsClient) => {

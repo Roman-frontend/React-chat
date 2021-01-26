@@ -1,69 +1,13 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
-import { matchRoutes, renderRoutes } from 'react-router-config';
-import { useAuth } from './hooks/auth.hook';
-//createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
-import { createBrowserHistory } from 'history';
-import { PrivateRoute } from './components/Helpers/PrivateRoute.jsx';
-import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute.jsx';
-import { routes } from './routes';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { FilterContacts } from './pages/FilterContacts/FilterContacts';
+import { routesCreater } from './routes';
 import './css/style.sass';
-import { reactiveVarToken } from './GraphQLApp/reactiveVariables';
-import { useReactiveVar } from '@apollo/client';
-import SignUpPage from './pages/SignUpPage/SignUpPage.js';
-import { SignInPage } from './pages/SignInPage/SignInPage.js';
-import { Chat } from './pages/Chat/Chat.js';
-import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
-
-const history = createBrowserHistory();
 
 export default function App() {
-  const token = useReactiveVar(reactiveVarToken);
-  function handleClickHistory(path) {
-    //.push() - додає в історію - руху по силках значення path. (де крім доданого є ті переходи які додаються автоматично після переходів по силках)
-    history.push(path); //"/home" ;
-  }
-
-  //console.log(renderRoutes(routes));
-
-  /*   function RouteWithSubRoutes(route) {
-    console.log(route);
-    return (
-      <Route
-        path={route.path}
-        render={(props) => (
-          // pass the sub-routes down to keep nesting
-          <route.component {...props} routes={route.routes} />
-        )}
-      />
-    );
-  }
-
   return (
-    <Router history={history}>
-      {routes.map((route, i) => (
-        <RouteWithSubRoutes key={i} {...route} />
-      ))}
-    </Router>
-  ); */
-
-  return (
-    <Router history={history}>
-      <Switch>
-        <Route exact path='/filterContacts'>
-          <FilterContacts handleClickHistory={handleClickHistory} />
-        </Route>
-        <PubliсOnlyRoute exact path='/signIn' component={SignInPage} />
-        <PubliсOnlyRoute exact path='/signUp' component={SignUpPage} />
-        <PrivateRoute exact path='/chat' component={Chat} />
-        <PrivateRoute path='/' component={Chat} />
-      </Switch>
-      ;
+    <Router>
+      <Switch>{routesCreater()}</Switch>
     </Router>
   );
 }

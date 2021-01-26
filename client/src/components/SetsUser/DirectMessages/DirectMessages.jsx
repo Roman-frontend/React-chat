@@ -21,7 +21,7 @@ export function DirectMessages(props) {
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
-  const listDirectMessages = useSelector((state) => state.listDirectMessages);
+  const directMsgs = useSelector((state) => state.listDirectMessages);
   const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const resourseDirectMessages = resSuspense.listDirectMessages.read();
@@ -36,40 +36,27 @@ export function DirectMessages(props) {
   }, [resourseDirectMessages]);
 
   useEffect(() => {
-    if (listDirectMessages && listDirectMessages[0]) {
-      const newList = listDirectMessages.map((directMsg) => directMsg._id);
+    if (directMsgs && directMsgs[0]) {
+      const newList = directMsgs.map((directMsg) => directMsg._id);
       changeStorage({ directMessages: newList });
     }
-  }, [listDirectMessages]);
+  }, [directMsgs]);
 
-  const createArrDirectMessages = useCallback(() => {
-    if (
-      listDirectMessages &&
-      listDirectMessages[0] &&
-      allUsers &&
-      allUsers[0]
-    ) {
-      let allRowDirectMessages = [];
-      listDirectMessages.forEach((directMessage) => {
-        allRowDirectMessages.push(directMessage);
-      });
+  const createLinksDirectMessages = useCallback(() => {
+    if (directMsgs && directMsgs[0] && allUsers && allUsers[0]) {
       return (
-        <CreateLists
-          arrElements={allRowDirectMessages}
-          listName={'directMessages'}
-        />
+        <CreateLists reqRowElements={directMsgs} listName={'directMessages'} />
       );
     }
-  }, [listDirectMessages, allUsers]);
+  }, [directMsgs, allUsers]);
 
   function doneInvite(action, invited = []) {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited[0]) {
-      let dataInvitedPeoples = [];
-      invited.forEach((people) => {
+      const invitedData = invited.map((people) => {
         const { _id, name, email } = { ...people };
-        dataInvitedPeoples.push({ _id, name, email });
+        return { _id, name, email };
       });
       const body = {
         inviter: {
@@ -77,7 +64,7 @@ export function DirectMessages(props) {
           name: userData.name,
           email: userData.email,
         },
-        invitedUsers: dataInvitedPeoples,
+        invitedUsers: invitedData,
       };
       console.log('postDirectMessages');
       dispatch(postDirectMessages(token, body));
@@ -99,7 +86,7 @@ export function DirectMessages(props) {
         className='user-sets__users'
         style={{ display: listMembersIsOpen ? 'block' : 'none' }}
       >
-        {createArrDirectMessages()}
+        {createLinksDirectMessages()}
         <Button
           variant='contained'
           color='primary'

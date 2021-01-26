@@ -97,7 +97,7 @@ export function Channels(props) {
   const createLinksChannels = useCallback(
     (allChannels) => {
       if (allChannels && allChannels[0]) {
-        return <CreateLists arrElements={allChannels} />;
+        return <CreateLists reqRowElements={allChannels} />;
       }
     },
     [allChannels]

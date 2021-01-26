@@ -4,10 +4,6 @@ import { useSelector } from 'react-redux';
 
 export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
   const token = useSelector((state) => state.token);
-<<<<<<< HEAD
-=======
-  //const { login } = useAuth();
->>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
   console.log('PublicOnlyRoute');
 
   function assignRouteToApply(routeProps) {

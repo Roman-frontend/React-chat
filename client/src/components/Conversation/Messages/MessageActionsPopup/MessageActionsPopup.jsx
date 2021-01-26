@@ -29,10 +29,7 @@ export default function MessageActionsPopup(props) {
       <SetViewPopup
         topPopupRelativeTopPage={topPopupRelativeTopPage}
         inputRef={inputRef}
-<<<<<<< HEAD
         changeMessageRef={changeMessageRef}
-=======
->>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
         popupMessage={popupMessage}
         setPopupMessage={setPopupMessage}
         setCloseBtnChangeMsg={setCloseBtnChangeMsg}

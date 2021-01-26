@@ -19,7 +19,7 @@ import {
 } from './ChatStyles.jsx';
 
 export const CreateLists = withStyles(styles)((props) => {
-  const { arrElements, listName, classes } = props;
+  const { reqRowElements, listName, classes } = props;
   const { changeStorage } = useAuth();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
@@ -55,19 +55,6 @@ export const CreateLists = withStyles(styles)((props) => {
       listName === 'directMessages'
         ? createDirectMsgName(linkData.invited.name)
         : createChannelName(linkData.isPrivate, linkData);
-<<<<<<< HEAD:client/src/components/SetsUser/HelpersSetUsers/ChatItem/CreateChatItem.jsx
-=======
-    const styleIsNotActiveLink = {
-      borderRadius: '0.4rem',
-      background: colors.blue[900],
-      padding: '0.5rem',
-      margin: '0rem 1.5rem',
-    };
-    const styleActiveLink = {
-      padding: '0.5rem 2rem',
-      background: colors.indigo[900],
-    };
->>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449:client/src/components/SetsUser/HelpersSetUsers/CreateChatItem.jsx
 
     return (
       <div
@@ -117,10 +104,6 @@ export const CreateLists = withStyles(styles)((props) => {
         }
       );
       const body = { userId, filteredUserDirectMessages };
-<<<<<<< HEAD:client/src/components/SetsUser/HelpersSetUsers/ChatItem/CreateChatItem.jsx
-=======
-      console.log({ userId, filteredUserDirectMessages });
->>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449:client/src/components/SetsUser/HelpersSetUsers/CreateChatItem.jsx
       dispatch(removeDirectMessages(token, id, { ...body }));
     } else if (token && userId && channels && userChannels) {
       const channel = channels.filter((channel) => channel._id === id)[0];
@@ -166,7 +149,7 @@ export const CreateLists = withStyles(styles)((props) => {
   }
 
   let allDirectMessages = [];
-  arrElements.forEach((element) =>
+  reqRowElements.forEach((element) =>
     allDirectMessages.push(createLink(element, listName))
   );
 

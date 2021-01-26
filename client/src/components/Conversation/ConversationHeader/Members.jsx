@@ -37,10 +37,7 @@ export function Members(props) {
               key={user._id}
               style={{ border: 0 }}
               overlap='circle'
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant={chatsOnline.includes(user._id) ? 'dot' : 'standard'}
             >
               <Avatar alt={user.name} src='/static/images/avatar/2.jpg' />
@@ -49,6 +46,7 @@ export function Members(props) {
         }
       });
     });
+    console.log(avatars);
     const readyIcons = createAvatar(avatars);
     setIconMembers(readyIcons);
   };
@@ -57,7 +55,7 @@ export function Members(props) {
     return (
       <AvatarGroup
         max={3}
-        style={{ fontSize: 30, cursor: 'pointer' }}
+        style={{ fontSize: 30, cursor: 'pointer', justifyContent: 'flex-end' }}
         onClick={() => setModalIsShowsMembers(true)}
       >
         {avatars}
@@ -75,7 +73,7 @@ export function Members(props) {
         <Grid item xs={6} style={{ alignSelf: 'center' }}>
           {iconMembers}
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={5} style={{ textAlign: 'center' }}>
           <GroupAddIcon
             style={{ fontSize: 45, cursor: 'pointer' }}
             onClick={() => openModalAddPeoples()}

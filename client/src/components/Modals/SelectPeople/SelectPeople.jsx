@@ -121,7 +121,6 @@ export const SelectPeople = withStyles(styles)((props) => {
             open={open}
             onClose={() => setOpen(false)}
             onOpen={getSelectElements}
-            value=''
             classes={{ root: classes.selectRoot }}
             className={classes.selectMenu}
           >

@@ -15,7 +15,7 @@ export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
       return <Component {...routeProps} />;
     } else {
       console.log('Redirect in PublickOnlyRoute', routeProps);
-      return <Redirect to='/app/chat' />;
+      return <Redirect to='/chat' />;
     }
   }
   console.log('PublicOnlyRoute');

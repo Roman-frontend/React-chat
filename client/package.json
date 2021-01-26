@@ -19,6 +19,7 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-http-backend": "^1.0.21",
     "materialize-css": "^1.0.0-rc.2",
+    "nanoid": "^3.1.22",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import ReplyIcon from '@material-ui/icons/Reply';
@@ -27,6 +27,7 @@ export const SetViewPopup = (props) => {
   } = props;
   const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
+  const popupRef = useRef();
 
   const [removeMessage] = useMutation(REMOVE_MESSAGE, {
     update: (cache) => {
@@ -50,9 +51,11 @@ export const SetViewPopup = (props) => {
     document.addEventListener('click', hidePopup);
   }, []);
 
-  function hidePopup() {
-    setPopupMessage(null);
-    document.removeEventListener('click', hidePopup);
+  function hidePopup(event) {
+    if (popupMessage && popupRef.current.contains(event.target)) {
+      setPopupMessage(null);
+      document.removeEventListener('click', hidePopup);
+    }
   }
 
   const handleAnswer = () => {
@@ -82,6 +85,7 @@ export const SetViewPopup = (props) => {
     <div
       className='field-actions popup popup_opened'
       style={{ top: `${topPopupRelativeTopPage}px` }}
+      ref={popupRef}
     >
       <Button
         size='small'

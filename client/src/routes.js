@@ -5,56 +5,42 @@ import { Chat } from './pages/Chat/Chat.js';
 import { PrivateRoute } from './components/Helpers/PrivateRoute';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute';
 import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
+import { nanoid } from 'nanoid';
 
 export const routes = [
   {
-    component: PubliсOnlyRoute,
-    routes: [
-      {
-        path: '/signIn',
-        exact: true,
-        component: SignInPage,
-      },
-      {
-        path: '/signUp',
-        exact: true,
-        component: SignUpPage,
-      },
-      {
-        path: '/',
-        exact: true,
-        component: SignInPage,
-      },
-    ],
+    path: '/filterContacts',
+    private: true,
+    exact: true,
+    component: FilterContacts,
   },
   {
-    component: PrivateRoute,
-    routes: [
-      {
-        path: '/app/chat',
-        exact: true,
-        component: Chat,
-      },
-      {
-        path: '/app/filterContacts',
-        exact: true,
-        component: FilterContacts,
-      },
-    ],
+    path: '/signIn',
+    exact: true,
+    component: SignInPage,
+  },
+  {
+    path: '/signUp',
+    exact: true,
+    component: SignUpPage,
+  },
+  {
+    path: '/chat',
+    exact: true,
+    private: true,
+    component: Chat,
+  },
+  {
+    path: '/',
+    component: SignInPage,
   },
 ];
 
 export function routesCreater() {
-  const componentsRoutes = routes.map((route, i) => {
-    const Component = route.component;
-    if (!route.routes) {
-      return <Component key={i} {...route} />;
+  return routes.map((route) => {
+    if (route.private) {
+      return <PrivateRoute key={nanoid()} {...route} />;
     }
-    const childRoutes = [];
-    route.routes.forEach((childRoute) => {
-      childRoutes.push(<Component key={childRoute.path} {...childRoute} />);
-    });
-    return childRoutes;
+    return <PubliсOnlyRoute key={nanoid()} {...route} />;
   });
-  return componentsRoutes.flat();
 }

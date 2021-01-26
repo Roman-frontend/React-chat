@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { wsSend } from '../../WebSocket/soket';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
 import { Messages } from './Messages/Messages.jsx';
@@ -19,6 +19,14 @@ export default function Conversation(props) {
   const inputRef = useRef();
   const changeMessageRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
+  const activeDirectMessageId = useReactiveVar(activeChatId)
+    .activeDirectMessageId;
+
+  useEffect(() => {
+    if (inputRef.current && inputRef.current.children[1].children[0]) {
+      inputRef.current.children[1].children[0].focus();
+    }
+  }, [inputRef, activeChannelId, activeDirectMessageId]);
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;

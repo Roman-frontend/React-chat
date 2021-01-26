@@ -195,7 +195,7 @@ export const FilterContacts = (props) => {
         <button onClick={saveContactsToLocalStorage}>Save in storage</button>
         <button onClick={cleanStorage}>Clean storage</button>
         <button className='sign-up'>
-          <Link to={`/app/chat`}>SignUp</Link>
+          <Link to={`/chat`}>SignUp</Link>
         </button>
       </div>
       <div className='filter__list-result'>{listContacts}</div>

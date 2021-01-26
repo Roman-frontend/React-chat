@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { FilterContacts } from './pages/FilterContacts/FilterContacts';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { routesCreater } from './routes';
 import './css/style.sass';
 

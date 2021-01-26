@@ -28,22 +28,8 @@ export function dispatcher(type, url, token, method = 'GET', body = null) {
   };
 }
 
-<<<<<<< HEAD
 export const postRegister = (body) => {
   return dispatcher(POST_REGISTER, 'api/auth/register', null, 'POST', body);
-=======
-export const postData = (method, token = null, body = null, param = null) => {
-  switch (method) {
-    case POST_REGISTER:
-      return dispatcher(
-        POST_REGISTER,
-        'api/auth/register',
-        token,
-        'POST',
-        body
-      );
-  }
->>>>>>> bd58be86d4452ab3b6fe2b628dc8f01b0733d449
 };
 
 export const putMessage = (token, id, body) => {

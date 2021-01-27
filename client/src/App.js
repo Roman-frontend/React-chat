@@ -1,17 +1,26 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
 import { useAuth } from './hooks/auth.hook';
 //createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
 import { createBrowserHistory } from 'history';
 import { PrivateRoute } from './components/Helpers/PrivateRoute.jsx';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute.jsx';
-import { SignUpPage } from './pages/SignUpPage/SignUpPage.js';
+import SignUpPage from './pages/SignUpPage/SignUpPage.js';
 import { SignInPage } from './pages/SignInPage/SignInPage.js';
 import { Chat } from './pages/Chat/Chat.js';
+import GraphQL from './pages/GraphQLTest/GraphQl.jsx';
 import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
 import { useDispatch } from 'react-redux';
 import { LOGIN_DATA, STORAGE_NAME } from './redux/types.js';
 import './css/style.sass';
+
+//Задоємо конфігурацію нашого сервера
+const client = new ApolloClient({
+  //url - адрес сервера
+  url: 'http://localhost:5000/graphql',
+});
 
 const history = createBrowserHistory();
 
@@ -39,17 +48,21 @@ export default function App() {
   }
 
   return (
-    <Router history={history}>
-      <Switch>
-        <Route exact path='/filterContacts'>
-          <FilterContacts handleClickHistory={handleClickHistory} />
-        </Route>
-        <PubliсOnlyRoute exact path='/signIn' component={SignInPage} />
-        <PubliсOnlyRoute exact path='/signUp' component={SignUpPage} />
-        <PrivateRoute exact path='/chat' component={Chat} />
-        <PrivateRoute path='/' component={Chat} />
-      </Switch>
-    </Router>
+    //Обгортаємо в <ApolloProvider> - аби використовувати apollo і виконувати graphql-запити
+    <ApolloProvider client={client}>
+      <Router history={history}>
+        <Switch>
+          <Route exact path='/filterContacts'>
+            <FilterContacts handleClickHistory={handleClickHistory} />
+          </Route>
+          <PubliсOnlyRoute exact path='/signIn' component={SignInPage} />
+          <PubliсOnlyRoute exact path='/signUp' component={SignUpPage} />
+          <PubliсOnlyRoute exact path='/graphql' component={GraphQL} />
+          <PrivateRoute exact path='/chat' component={Chat} />
+          <PrivateRoute path='/' component={Chat} />
+        </Switch>
+      </Router>
+    </ApolloProvider>
   );
 }
 

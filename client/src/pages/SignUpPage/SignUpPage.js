@@ -11,6 +11,7 @@ import {
 } from '../../components/Helpers/validateMethods.jsx';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
+import withHocs from './SignUpHoc';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -21,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignUpPage = () => {
+export const SignUpPage = (props) => {
+  const { addUser, deleteUser, updateUser, data } = props;
   const { register } = useAuth();
   const classes = useStyles();
   const { errors, validate } = useValidate({
@@ -37,20 +39,45 @@ export const SignUpPage = () => {
   };
 
   const handleSubmit = async () => {
+    console.log(addUser);
     const formData = {
       name: ref.name.current.children[1].children[0].value,
       email: ref.email.current.children[1].children[0].value,
       password: ref.password.current.children[1].children[0].value,
     };
+    addUser({ ...formData });
+    console.log(props.data);
 
-    validate(formData);
+    /* validate(formData);
 
     try {
       register(formData);
     } catch (e) {
       console.log('Помилка при реєстрації -', e);
-    }
+    } */
   };
+
+  const handleRemove = () => {
+    const removeId = prompt('Введите id юзера для видалення!');
+    deleteUser({ id: removeId });
+  };
+
+  const handleUpdate = () => {
+    const name = ref.name.current.children[1].children[0].value;
+    const removeId = prompt('Введите name юзера для оновлення!!');
+    updateUser({ id: removeId, name });
+  };
+
+  const handleFilter = () => {
+    const regExp = prompt('Введите name юзера для оновлення!!');
+    console.log(regExp);
+    data.fetchMore({
+      variables: { name: String(regExp) },
+      updateQuery: (previousResult, { fetchMoreResult }) => fetchMoreResult,
+    });
+  };
+
+  console.log(props.data.filteredMovies);
 
   return (
     <div className='auth-body'>
@@ -96,6 +123,39 @@ export const SignUpPage = () => {
           Register
         </Button>
 
+        <Button
+          size='small'
+          variant='contained'
+          color='primary'
+          className={classes.button}
+          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
+          onClick={handleRemove}
+        >
+          Remove
+        </Button>
+
+        <Button
+          size='small'
+          variant='contained'
+          color='primary'
+          className={classes.button}
+          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
+          onClick={handleUpdate}
+        >
+          Update
+        </Button>
+
+        <Button
+          size='small'
+          variant='contained'
+          color='primary'
+          className={classes.button}
+          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
+          onClick={handleFilter}
+        >
+          Filter
+        </Button>
+
         <Link to={`/signIn`}>
           <Button size='small' variant='contained' className={classes.button}>
             Has account go to login
@@ -105,3 +165,5 @@ export const SignUpPage = () => {
     </div>
   );
 };
+
+export default withHocs(SignUpPage);

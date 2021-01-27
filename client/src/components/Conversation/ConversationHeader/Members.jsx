@@ -19,7 +19,7 @@ export function Members(props) {
   } = props;
   const { data: users } = useQuery(GET_USERS);
   const [iconMembers, setIconMembers] = useState([]);
-  const activeChannelId = useReactiveVar(activeChatId).activeChannworking under errorselId;
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   useEffect(() => {

@@ -7,12 +7,15 @@ import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH } from '../../GraphQLApp/queryes';
-import { activeChatId } from '../../GraphQLApp/reactiveVariables';
+import { CHANNELS } from '../../GraphQLApp/queryes';
+import {
+  activeChatId,
+  reactiveVarId,
+} from '../../GraphQLApp/reactiveVariables';
 
 export default function Conversation(props) {
   const { resSuspense } = props;
-  const { data: auth } = useQuery(AUTH);
+  const { data: channels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
@@ -21,6 +24,7 @@ export default function Conversation(props) {
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId = useReactiveVar(activeChatId)
     .activeDirectMessageId;
+  const userId = useReactiveVar(reactiveVarId);
 
   useEffect(() => {
     if (inputRef.current && inputRef.current.children[1].children[0]) {
@@ -29,20 +33,24 @@ export default function Conversation(props) {
   }, [inputRef, activeChannelId, activeDirectMessageId]);
 
   const checkPrivate = useCallback(() => {
-    let isOpenChat = true;
-    if (auth && auth.channels && auth.channels[0] && activeChannelId) {
-      auth.channels.forEach((channel) => {
-        if (channel.id === activeChannelId) {
-          if (!channel.isPrivate) {
-            return (isOpenChat = true);
-          } else if (auth && auth.id && channel.members.includes(auth.id)) {
-            return (isOpenChat = true);
-          } else return (isOpenChat = false);
-        }
-      });
+    if (
+      channels &&
+      Array.isArray(channels.userChannels) &&
+      channels.userChannels[0] &&
+      activeChannelId
+    ) {
+      const activeChannelIsPrivate = channels.userChannels.find(
+        (channel) =>
+          channel !== null &&
+          channel.id === activeChannelId &&
+          channel.isPrivate
+      );
+      return activeChannelIsPrivate
+        ? activeChannelIsPrivate.members.includes(userId)
+        : true;
     }
-    return isOpenChat;
-  }, [auth, activeChannelId, auth]);
+    return true;
+  }, [channels, activeChannelId, userId]);
 
   const buttonEndActive =
     closeBtnChangeMsg || closeBtnReplyMsg ? (

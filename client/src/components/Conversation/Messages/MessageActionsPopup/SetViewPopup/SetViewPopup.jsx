@@ -52,15 +52,19 @@ export const SetViewPopup = (props) => {
   }, []);
 
   function hidePopup(event) {
-    if (popupMessage && popupRef.current.contains(event.target)) {
+    //дозволяє закривати попап лише якщо натискаєш поза попапом
+    /* if (popupMessage && !popupRef.current.contains(event.target)) {
+      console.log('removeAddLister');
       setPopupMessage(null);
       document.removeEventListener('click', hidePopup);
-    }
+    } */
+    console.log('removeAddLister');
+    setPopupMessage(null);
+    document.removeEventListener('click', hidePopup);
   }
 
   const handleAnswer = () => {
     setCloseBtnReplyMsg(popupMessage.text);
-    setPopupMessage(null);
     inputRef.current.children[1].children[0].focus();
     inputRef.current.children[1].children[0].value = '';
   };
@@ -68,17 +72,14 @@ export const SetViewPopup = (props) => {
   const handleChange = () => {
     setCloseBtnChangeMsg(true);
     changeMessageRef.current = popupMessage;
-    setPopupMessage(null);
     inputRef.current.children[1].children[0].focus();
     inputRef.current.children[1].children[0].value = popupMessage.text;
   };
 
   const handleDelete = () => {
-    console.log(popupMessage);
     removeMessage({
       variables: { id: popupMessage.id, chatType: popupMessage.chatType },
     });
-    setPopupMessage(null);
   };
 
   return (

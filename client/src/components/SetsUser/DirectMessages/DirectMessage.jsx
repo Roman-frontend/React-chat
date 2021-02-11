@@ -45,7 +45,6 @@ export const DirectMessage = withStyles(styles)((props) => {
 
   function createLink(id, name) {
     const readyName = createDirectMsgName(name);
-
     return (
       <div
         key={id}

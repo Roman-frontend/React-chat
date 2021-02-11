@@ -30,6 +30,15 @@ const useStyles = makeStyles((theme) => ({
     red: colors.red,
   },
 }));
+/* 
+const GET_USERS = gql`
+  query {
+    users {
+      id
+      name
+    }
+  }
+`; */
 
 export const SignUpPage = (props) => {
   console.log('signUpPage');

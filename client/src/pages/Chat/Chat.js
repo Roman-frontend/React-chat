@@ -9,7 +9,6 @@ import SetsUser from '../../components/SetsUser/SetsUser.jsx';
 
 export const Chat = () => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
-
   useEffect(() => {
     wsSingleton.clientPromise
       .then((wsClient) => {

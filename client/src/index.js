@@ -6,12 +6,7 @@ import App from './App.js';
 import { client } from './GraphQLApp/apolloClient';
 import { reactiveVarToken } from './GraphQLApp/reactiveVariables';
 
-/* function arr() {
-  const token = useReactiveVar(reactiveVarToken);
-  console.log(token);
-  return token;
-} */
-
+//цей ApolloProvider - для - apollo-client
 const app = (
   <ApolloProvider client={client}>
     <App />

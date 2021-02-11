@@ -29,15 +29,6 @@ const theme = createMuiTheme({
   }
 });
 
-class App extends Component {
-  render() {
-      return (
-        <MuiThemeProvider theme={theme}>
-          <>page content</>
-        <MuiThemeProvider theme={theme(this.props.pageTheme)}>
-      );
-    }
-  }
 }
 
 function mapStateToProps(state) {

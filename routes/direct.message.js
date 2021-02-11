@@ -33,8 +33,6 @@ router.post('/post-direct-messages', async (req, res) => {
         invited: user,
       });
 
-      console.log('newDirectMessage._id -->>', newDirectMessage._id);
-
       const inviterDbData = await User.findById(req.body.inviter._id);
       inviterDbData.directMessages.push(newDirectMessage._id);
       await inviterDbData.save();
@@ -62,7 +60,6 @@ router.delete('/delete-direct-messages:id', verifyToken, async (req, res) => {
       if (err) console.log(err);
       console.log('updated');
     }
-    console.log('req', req.body.filteredUserDirectMessages);
     await DirectMessage.findByIdAndRemove(req.params.id);
     await User.findOneAndUpdate(
       { _id: req.body.userId },

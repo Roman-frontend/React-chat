@@ -8,9 +8,27 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLBoolean,
 } = graphql;
 const User = require('../models/User.js');
 const Channel = require('../models/Channel.js');
+const jwt = require('jsonwebtoken');
+const yup = require('yup');
+const config = require('config');
+const {
+  nameNotLongEnough,
+  duplicateEmail,
+  emailNotLongEnough,
+  invalidEmail,
+  passwordNotLongEnough,
+} = require('./errorMessages');
+const { formatYupError } = require('./formatYupError');
+
+const schema = yup.object().shape({
+  name: yup.string().min(3, nameNotLongEnough).max(255),
+  email: yup.string().min(3, emailNotLongEnough).max(255).email(invalidEmail),
+  password: yup.string().min(3, passwordNotLongEnough).max(255),
+});
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -19,36 +37,20 @@ const UserType = new GraphQLObjectType({
     name: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLString },
+    token: { type: GraphQLString },
+    errors: { type: GraphQLString },
   }),
 });
 
-const MovieType = new GraphQLObjectType({
-  name: 'Movie',
+const ChannelType = new GraphQLObjectType({
+  name: 'Channel',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    email: { type: GraphQLString },
-    director: {
-      type: DirectorType,
-      resolve(parent, args) {
-        return Channel.find((director) => director.id === parent.id);
-      },
-    },
-  }),
-});
-
-const DirectorType = new GraphQLObjectType({
-  name: 'Director',
-  fields: () => ({
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    members: { type: GraphQLInt },
-    movies: {
-      type: new GraphQLList(MovieType),
-      resolve(parent, args) {
-        return movies.filter((movie) => movie.directorId === parent.id);
-      },
-    },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    creator: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: GraphQLString },
+    members: { type: GraphQLString },
+    isPrivate: { type: GraphQLBoolean },
   }),
 });
 
@@ -60,16 +62,33 @@ const Mutation = new GraphQLObjectType({
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: GraphQLString },
+        password: { type: new GraphQLNonNull(GraphQLString) },
       },
       async resolve(parent, args) {
+        try {
+          await schema.validate(args, { abortEarly: false });
+        } catch (err) {
+          //console.log(err);
+          return formatYupError(err);
+        }
         const hashPassword = await bcrypt.hash(args.password, 12);
         const user = new User({
           name: args.name,
           email: args.email,
           password: hashPassword,
         });
-        return user.save();
+        const newUser = await user.save();
+        const token = jwt.sign(
+          { userId: newUser._id },
+          config.get('jwtSecret')
+          //{ expiresIn: '1h'}
+        );
+        return {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          token,
+        };
       },
     },
     deleteUser: {
@@ -77,7 +96,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve(parent, args) {
+      async resolve(parent, args) {
         //з допомогою mongoose метода .findByIdAndRemove() - шукаємо модель з id - args.id  - і видаляємо його
         return User.findByIdAndRemove(args.id);
       },
@@ -102,37 +121,37 @@ const Mutation = new GraphQLObjectType({
 const Query = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    movie: {
-      type: MovieType,
+    user: {
+      type: UserType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return User.findById(args.id);
       },
     },
-    director: {
-      type: DirectorType,
+    channel: {
+      type: ChannelType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return Channel.findById(args.id);
       },
     },
-    movies: {
-      type: new GraphQLList(MovieType),
+    users: {
+      type: new GraphQLList(UserType),
       resolve() {
         return User.find({});
       },
     },
-    filteredMovies: {
-      type: new GraphQLList(MovieType),
+    filteredUsers: {
+      type: new GraphQLList(UserType),
       args: { name: { type: GraphQLString } },
       resolve(parent, { name }) {
         return User.find({ name: { $regex: name, $options: 'i' } });
       },
     },
-    directors: {
-      type: new GraphQLList(DirectorType),
+    channels: {
+      type: new GraphQLList(ChannelType),
       resolve(parent, args) {
-        return directors;
+        return Channel.find({});
       },
     },
   },

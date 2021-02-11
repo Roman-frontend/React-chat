@@ -65,7 +65,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   return (
     <>
       <Dialog
-        open={modalAddPeopleIsOpen && !!activeChannelId}
+        open={modalAddPeopleIsOpen}
         onClose={() => setModalAddPeopleIsOpen(false)}
         aria-labelledby='form-dialog-title'
       >

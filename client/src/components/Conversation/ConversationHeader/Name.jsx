@@ -15,10 +15,12 @@ export function Name(props) {
     const activeDirectMessage = listDirectMessages.filter((directMessage) => {
       return directMessage._id === activeDirectMessageId;
     })[0];
-    name =
-      activeDirectMessage.inviter._id === userId
-        ? activeDirectMessage.invited.name
-        : activeDirectMessage.inviter.name;
+    if (activeDirectMessage) {
+      name =
+        activeDirectMessage.inviter._id === userId
+          ? activeDirectMessage.invited.name
+          : activeDirectMessage.inviter.name;
+    }
   }
 
   chatNameRef.current = name;

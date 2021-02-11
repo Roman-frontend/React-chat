@@ -70,15 +70,21 @@ export function Members(props) {
         spacing={1}
         style={{ height: '4.3rem', width: '19vw', alignContent: 'center' }}
       >
-        <Grid item xs={6} style={{ alignSelf: 'center' }}>
+        <Grid
+          item
+          xs={activeChannelId ? 6 : 11}
+          style={{ alignSelf: 'center' }}
+        >
           {iconMembers}
         </Grid>
-        <Grid item xs={5} style={{ textAlign: 'center' }}>
-          <GroupAddIcon
-            style={{ fontSize: 45, cursor: 'pointer' }}
-            onClick={() => openModalAddPeoples()}
-          />
-        </Grid>
+        {activeChannelId && (
+          <Grid item xs={5} style={{ textAlign: 'center' }}>
+            <GroupAddIcon
+              style={{ fontSize: 45, cursor: 'pointer' }}
+              onClick={() => openModalAddPeoples()}
+            />
+          </Grid>
+        )}
       </Grid>
     </div>
   );

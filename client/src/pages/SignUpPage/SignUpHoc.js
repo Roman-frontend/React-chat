@@ -1,4 +1,4 @@
-import { compose } from 'recompose';
+/* import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 
 import {
@@ -53,7 +53,7 @@ const withGraphqlQL = compose(
           //refetchQueries - обновить дані після отримання fetch даних
           refetchQueries: [
             {
-              query: usersQuery,
+              query: filteredUsersQuery,
               variables: { name: '' },
             },
           ],
@@ -95,6 +95,8 @@ const withGraphqlQL = compose(
       variables: { name },
     }),
   })
-);
+); */
 
-export default compose(withGraphqlQL);
+/* export default compose(
+  withGraphqlQL graphql(filteredUsersQuery), graphql(usersQuery)
+); */

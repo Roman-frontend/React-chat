@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+//import { useQuery, gql } from '@apollo/client';
+//import { useQuery, gql } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -11,7 +13,7 @@ import {
 } from '../../components/Helpers/validateMethods.jsx';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
-import withHocs from './SignUpHoc';
+//import withHocs from './SignUpHoc';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -21,9 +23,19 @@ const useStyles = makeStyles((theme) => ({
     red: colors.red,
   },
 }));
+/* 
+const GET_USERS = gql`
+  query {
+    users {
+      id
+      name
+    }
+  }
+`; */
 
 export const SignUpPage = (props) => {
   const { addUser, deleteUser, updateUser, data } = props;
+  //const { loading, error } = useQuery(GET_USERS);
   const { register } = useAuth();
   const classes = useStyles();
   const { errors, validate } = useValidate({
@@ -43,18 +55,17 @@ export const SignUpPage = (props) => {
     const formData = {
       name: ref.name.current.children[1].children[0].value,
       email: ref.email.current.children[1].children[0].value,
-      password: ref.password.current.children[1].children[0].value,
+      password: String(ref.password.current.children[1].children[0].value),
     };
-    addUser({ ...formData });
-    console.log(props.data);
-
-    /* validate(formData);
-
+    validate(formData);
     try {
-      register(formData);
+      console.log(formData);
+      //addUser({ ...formData });
+      console.log(props.data);
+      //register(formData);
     } catch (e) {
       console.log('Помилка при реєстрації -', e);
-    } */
+    }
   };
 
   const handleRemove = () => {
@@ -69,15 +80,27 @@ export const SignUpPage = (props) => {
   };
 
   const handleFilter = () => {
-    const regExp = prompt('Введите name юзера для оновлення!!');
-    console.log(regExp);
+    /*     const regExp = prompt('Введите name юзера для оновлення!!');
     data.fetchMore({
-      variables: { name: String(regExp) },
+      variables: { name: regExp },
       updateQuery: (previousResult, { fetchMoreResult }) => fetchMoreResult,
     });
+    console.log(data); */
   };
 
-  console.log(props.data.filteredMovies);
+  /*   return (
+    <Query query={GET_MOVIES}>
+      {({ loading, error, data }) => {
+        if (loading) return <div>Loading...</div>;
+        if (error) return <div>{`${error}`}</div>;
+
+        return <h1>yes</h1>;
+      }}
+    </Query>
+  ); */
+
+  /*   if (loading) return <p>Loading with apollo-client...</p>;
+  if (error) return <p>{`${error}`}</p>; */
 
   return (
     <div className='auth-body'>
@@ -129,28 +152,6 @@ export const SignUpPage = (props) => {
           color='primary'
           className={classes.button}
           style={{ backgroundColor: colors.lime[700], width: '9vw' }}
-          onClick={handleRemove}
-        >
-          Remove
-        </Button>
-
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          className={classes.button}
-          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
-          onClick={handleUpdate}
-        >
-          Update
-        </Button>
-
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          className={classes.button}
-          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
           onClick={handleFilter}
         >
           Filter
@@ -166,4 +167,5 @@ export const SignUpPage = (props) => {
   );
 };
 
-export default withHocs(SignUpPage);
+//export default withHocs(SignUpPage);
+export default SignUpPage;

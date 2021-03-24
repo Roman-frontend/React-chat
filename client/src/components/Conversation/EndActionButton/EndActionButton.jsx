@@ -16,6 +16,7 @@ export default function EndActionButton(props) {
   const topButtonClose = closeBtnReplyMsg ? topInput - 56 : topInput;
 
   function hideButtonExit() {
+    console.log('cleseBtn');
     setCloseBtnReplyMsg(null);
     setCloseBtnChangeMsg(null);
     changeMessageRef.current = null;

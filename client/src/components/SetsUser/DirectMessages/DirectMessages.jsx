@@ -40,6 +40,12 @@ export function DirectMessages(props) {
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const { loading, error, data, refetch } = useQuery(GET_DIRECT_MESSAGES, {
+    variables: { id: userData.directMessages },
+    onError(error) {
+      console.log(`Некоректні дані при отриманні прямих повідомлень ${error}`);
+    },
+  });
 
   const { data: users } = useQuery(GET_USERS);
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
@@ -94,6 +100,9 @@ export function DirectMessages(props) {
       });
     }
   }
+
+  if (loading) console.log('loading direct messages...');
+  if (data) console.log('loaded direct messages', data);
 
   return (
     <>

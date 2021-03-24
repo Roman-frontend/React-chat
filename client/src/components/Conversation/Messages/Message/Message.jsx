@@ -15,6 +15,24 @@ export default function Message(props) {
     <p className={`${classMessage}__reply`}>{replyOn}</p>
   ) : null;
 
+  function formattedDate(prevDate) {
+    const rowDate = new Date(parseInt(prevDate));
+    let result = '';
+    result +=
+      /* rowDate.getFullYear() +
+      ' ' +
+      (rowDate.getMonth() + 1) +
+      ' ' +
+      rowDate.getDate() +
+      ' ' + */
+      rowDate.getHours() +
+      ':' +
+      rowDate.getMinutes() +
+      ':' +
+      rowDate.getSeconds();
+    return result;
+  }
+
   return (
     <div
       className={classMessage}

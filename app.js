@@ -4,7 +4,7 @@ const path = require('path');
 const config = require('config');
 const mongoose = require('mongoose');
 const app = express();
-const server = require('./soket');
+const server = require('./Soket/soket');
 const schema = require('./schemaGraphQL/schema');
 //cors(cross origane resorse sharing) - дозволяє створювати кросдоменні запити - без нього запити з фронтенда на бекенд і навпаки не будуть коректно спрацьовувати. cors - дозволяє серверу відповідати фронтенду.
 const cors = require('cors');

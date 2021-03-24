@@ -2,8 +2,8 @@ const { Schema, model } = require('mongoose');
 
 /** Модель повідомлення */
 const ChannelMessage = new Schema({
-  reply: { type: String },
-  username: { type: String, required: true },
+  replyOn: { type: String },
+  userName: { type: String, required: true },
   userId: { type: String, required: true },
   text: { type: String, required: true },
   /** default: Date.now - вказує дату по замовчуванні*/

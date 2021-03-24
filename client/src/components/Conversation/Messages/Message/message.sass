@@ -56,7 +56,7 @@
   grid-template-columns: 3rem minmax(1rem, auto) 1fr
   grid-auto-rows: minmax(20px, auto)
   align-items: start
-  grid-template-areas: "icon messager date" "icon message message"  ". reply reply"
+  grid-template-areas: "icon messager date" "icon reply reply"  ". message message"
   margin: 1vh
   height: 5rem
   left: 2.5vw
@@ -84,6 +84,8 @@
     top: -0.1rem
 
   .container-reply__reply 
+    border-radius: 0.3rem
+    background: #ffc37a
     grid-area: reply
     top: -0.5rem
     left: 1rem

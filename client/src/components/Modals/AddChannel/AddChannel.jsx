@@ -46,7 +46,7 @@ export const AddChannel = withStyles(styles)((props) => {
   };
 
   const doneCreate = (action, invited = []) => {
-    if (action === 'done' && form.name) {
+    if (action === 'done') {
       const arrInvitedId = invited[0]
         ? invited.map((people) => people._id).concat(userId)
         : [userId];
@@ -55,7 +55,7 @@ export const AddChannel = withStyles(styles)((props) => {
       dispatch(
         postChannel(
           token,
-          { ...form, creator: userId, members: arrInvitedId },
+          { ...form, creator: userId, members: [userId] },
           userId
         )
       );

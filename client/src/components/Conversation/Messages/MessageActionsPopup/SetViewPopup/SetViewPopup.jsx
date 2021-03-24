@@ -43,6 +43,7 @@ function SetViewPopup(props) {
   }
 
   const handleAnswer = () => {
+    console.log(popupMessage);
     setCloseBtnReplyMsg(popupMessage.text);
     setPopupMessage(null);
     inputRef.current.children[1].children[0].focus();

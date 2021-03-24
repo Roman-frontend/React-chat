@@ -1,20 +1,16 @@
 import React, {
+  useState,
   useCallback,
   useMemo,
   useEffect,
   useLayoutEffect,
   useRef,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { connect } from 'react-redux';
-import { PROCESSED_NEW_MESSAGE, UPDATE_MESSAGES } from '../../../redux/types';
-import {
-  getMessages,
-  getMessagesForDirectMsg,
-} from '../../../redux/actions/actions.js';
-import { wsSingleton, wsSend } from '../../../WebSocket/soket';
+import { useQuery } from '@apollo/client';
+import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
+import { GET_MESSAGES } from './GraphQL/queryes';
 import './messages.sass';
 
 export const Messages = React.memo((props) => {
@@ -26,45 +22,36 @@ export const Messages = React.memo((props) => {
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   } = props;
-  const dispatch = useDispatch();
-  const reduxMessages = useSelector((state) => state.messages);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
-  const token = useSelector((state) => state.token);
-  const userId = useSelector((state) => state.userData._id);
-  const newMessage = useSelector((state) => state.newMessage);
 
   const messagesRef = useRef();
+  const { loading, error, data: reduxMessages, refetch } = useQuery(
+    GET_MESSAGES,
+    {
+      onCompleted(data) {
+        console.log('mesages', data);
+      },
+    }
+  );
 
   useLayoutEffect(() => {
-    messagesRef.current = reduxMessages;
+    if (reduxMessages) {
+      messagesRef.current = reduxMessages.messages;
+    }
   }, [reduxMessages]);
 
-  console.log('readyMessages');
+  useEffect(() => {
+    if (reduxMessages) {
+      renderMessages();
+    }
+  }, [reduxMessages]);
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
   wsSingleton.clientPromise
     .then((wsClient) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
-        console.log(parsedRes);
-        if (parsedRes.message === "З'єднання з WebSocket встановлено") {
-          return;
-        } else if (parsedRes.text) {
-          const dispatchMessages =
-            messagesRef.current[0] === undefined
-              ? [parsedRes]
-              : messagesRef.current[0]._id !== parsedRes._id
-              ? messagesRef.current.reverse().concat(parsedRes)
-              : null;
-          if (parsedRes._id && dispatchMessages) {
-            dispatch({
-              type: UPDATE_MESSAGES,
-              payload: dispatchMessages,
-            });
-          }
+        if (parsedRes && parsedRes.text) {
+          refetch();
         }
       };
     })
@@ -80,44 +67,20 @@ export const Messages = React.memo((props) => {
     );
   };
 
-  useEffect(() => {
-    async function getFetchMessages() {
-      if (activeChannelId && token && userId) {
-        dispatch(getMessages(token, activeChannelId, { userId }));
-      } else if (activeDirectMessageId && token) {
-        dispatch(getMessagesForDirectMsg(token, activeDirectMessageId));
-      }
-    }
+  if (loading) {
+    console.log('loading...');
+    return;
+  }
 
-    if (activeChannelId !== '1') getFetchMessages();
-  }, [activeChannelId, activeDirectMessageId]);
-
-  useEffect(() => {
-    const activeChatId = activeChannelId
-      ? activeChannelId
-      : activeDirectMessageId
-      ? activeDirectMessageId
-      : null;
-    if (newMessage && activeChatId) {
-      wsSend({ room: activeChatId, message: newMessage });
-      dispatch({
-        type: PROCESSED_NEW_MESSAGE,
-        payload: null,
-      });
-    }
-  }, [newMessage, activeChannelId]);
-
-  const reverseMsg = useMemo(() => {
-    if (reduxMessages === '403') {
-      return '403';
-    } else {
-      return reduxMessages.reverse();
-    }
-  }, [reduxMessages]);
-
-  const renderMessages = useCallback(() => {
-    if (reduxMessages !== '403') {
-      return reverseMsg.map((message) => {
+  const renderMessages = () => {
+    console.log(reduxMessages);
+    if (reduxMessages && reduxMessages.messages[0]) {
+      const messages = reduxMessages.messages.slice(
+        0,
+        reduxMessages.messages.length
+      );
+      const reversedMsg = messages.reverse();
+      return reversedMsg.map((message) => {
         return (
           <Message
             key={message._id || message.id}
@@ -127,7 +90,7 @@ export const Messages = React.memo((props) => {
         );
       });
     }
-  }, [reduxMessages]);
+  };
 
   return (
     <div className='messages'>
@@ -143,7 +106,3 @@ export const Messages = React.memo((props) => {
     </div>
   );
 });
-
-const mapDispatchToProps = { getMessages, getMessagesForDirectMsg };
-
-export default connect(null, mapDispatchToProps)(Messages);

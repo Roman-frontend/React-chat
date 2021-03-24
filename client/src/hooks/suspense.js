@@ -1,11 +1,9 @@
 import { reduxServer } from './http.hook';
 export const fetchData = (token, userData) => {
-  const resUsers = getUsers();
   const resChannels = getChannels(token, userData.channels);
   const resDirectMessages = getDirectMessages(token, userData.directMessages);
 
   return {
-    users: wrapPromise(resUsers),
     channels: wrapPromise(resChannels),
     listDirectMessages: wrapPromise(resDirectMessages),
   };
@@ -36,11 +34,6 @@ function wrapPromise(promise) {
       }
     },
   };
-}
-
-async function getUsers() {
-  const fetchUsers = await reduxServer(`/api/channel/get-user`);
-  return fetchUsers;
 }
 
 async function getChannels(token, channels) {

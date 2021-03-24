@@ -6,8 +6,6 @@ import {
   GET_DIRECT_MESSAGES,
   POST_REGISTER,
   AUTH,
-  POST_MESSAGE,
-  POST_MESSAGE_FOR_DIRECT_MSG,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
@@ -18,8 +16,6 @@ import {
   LOGIN_DATA,
   LOGOUT_DATA,
   ACTIVE_CHAT_ID,
-  UPDATE_MESSAGES,
-  PROCESSED_NEW_MESSAGE,
 } from '../types.js';
 
 const initialState = {
@@ -62,12 +58,6 @@ export const rootReducer = (state = initialState, action) => {
 
     case AUTH:
       return { ...state, ...action.payload };
-
-    case POST_MESSAGE:
-      return { ...state, newMessage: action.payload.newMessage };
-
-    case POST_MESSAGE_FOR_DIRECT_MSG:
-      return { ...state, newMessage: action.payload.newMessage };
 
     case POST_CHANNEL:
       const updatedChannelsWithPost = state.channels.concat(
@@ -163,12 +153,6 @@ export const rootReducer = (state = initialState, action) => {
 
     case ACTIVE_CHAT_ID:
       return { ...state, ...action.payload };
-
-    case UPDATE_MESSAGES:
-      return { ...state, messages: action.payload };
-
-    case PROCESSED_NEW_MESSAGE:
-      return { ...state, newMessage: action.payload };
 
     default:
       return state;

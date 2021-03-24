@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -11,16 +10,17 @@ import Collapse from '@material-ui/core/Collapse';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
 import { useTranslation } from 'react-i18next';
-import { GET_DIRECT_MESSAGES } from '../../../redux/types';
-import { useDispatch, useSelector } from 'react-redux';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import {
+  CREATE_DIRECT_MESSAGE,
+  GET_DIRECT_MESSAGES,
+} from '../../Conversation/Messages/GraphQL/queryes';
+import { useSelector } from 'react-redux';
 import { connect } from 'react-redux';
-import { postDirectMessages } from '../../../redux/actions/actions.js';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import DirectMessage from './DirectMessage';
-import { Title } from '../Title.jsx';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
 
@@ -38,25 +38,58 @@ export function DirectMessages(props) {
   const { resSuspense } = props;
   const { t } = useTranslation();
   const { changeStorage } = useAuth();
-  const dispatch = useDispatch();
   const allUsers = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
   const userData = useSelector((state) => state.userData);
   const directMsgs = useSelector((state) => state.listDirectMessages);
-  const [listMembersIsOpen, setListMembersIsOpen] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const resourseDirectMessages = resSuspense.listDirectMessages.read();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const { loading, error, data, refetch } = useQuery(GET_DIRECT_MESSAGES, {
+    variables: { id: userData.directMessages },
+    onError(error) {
+      console.log(`Некоректні дані при отриманні прямих повідомлень ${error}`);
+    },
+  });
 
-  useEffect(() => {
-    if (resourseDirectMessages) {
-      dispatch({
-        type: GET_DIRECT_MESSAGES,
-        payload: resourseDirectMessages,
+  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
+    update(cache, { data: { createDirectMessage } }) {
+      cache.modify({
+        fields: {
+          directMessages(existingDirectMessages = []) {
+            console.log(existingDirectMessages);
+            const newMessageRef = cache.writeFragment({
+              data: createDirectMessage.directMessages[0],
+              fragment: gql`
+                fragment CreateDirectMessage on DirectMessages {
+                  directMessages {
+                    _id
+                    inviter {
+                      _id
+                      name
+                      email
+                    }
+                    invited {
+                      _id
+                      name
+                      email
+                    }
+                    createdAt
+                  }
+                }
+              `,
+            });
+            console.log(existingDirectMessages.directMessages, newMessageRef);
+            return [...existingDirectMessages.directMessages, newMessageRef];
+          },
+        },
       });
-    }
-  }, [resourseDirectMessages]);
+    },
+    onError(error) {
+      console.log(`Помилка ${error}`);
+    },
+  });
 
   useEffect(() => {
     if (directMsgs && directMsgs[0]) {
@@ -71,27 +104,17 @@ export function DirectMessages(props) {
     }
   }, [directMsgs, allUsers]);
 
-  function doneInvite(action, invited = []) {
+  function doneInvite(action, invited) {
     setModalAddPeopleIsOpen(false);
 
-    if (action === 'done' && invited[0]) {
-      const invitedData = invited.map((people) => {
-        const { _id, name, email } = { ...people };
-        return { _id, name, email };
-      });
-      const body = {
-        inviter: {
-          _id: userData._id,
-          name: userData.name,
-          email: userData.email,
-        },
-        invitedUsers: invitedData,
-      };
-      console.log('postDirectMessages');
-      console.log(body);
-      dispatch(postDirectMessages(token, body));
+    if (action === 'done' && invited) {
+      console.log({ inviter: userData._id, invited });
+      createDirectMessage({ variables: { inviter: userData._id, invited } });
     }
   }
+
+  if (loading) console.log('loading direct messages...');
+  if (data) console.log('loaded direct messages', data);
 
   return (
     <>
@@ -134,6 +157,4 @@ export function DirectMessages(props) {
   );
 }
 
-const mapDispatchToProps = { postDirectMessages };
-
-export default connect(null, mapDispatchToProps)(DirectMessages);
+export default connect(null, null)(DirectMessages);

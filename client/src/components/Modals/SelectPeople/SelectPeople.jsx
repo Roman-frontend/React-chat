@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useQuery } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
@@ -8,7 +9,7 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { useSelector } from 'react-redux';
+import { GET_USERS } from '../../Conversation/Messages/GraphQL/queryes';
 import './select-people.sass';
 
 const styles = (theme) => ({
@@ -27,19 +28,17 @@ const styles = (theme) => ({
 
 export const SelectPeople = withStyles(styles)((props) => {
   const { notInvitedRef, done, classes } = props;
-  const [listMatchedEmails, setListMatchedEmails] = useState(
-    notInvitedRef.current
-  );
-  const users = useSelector((state) => state.users);
+  const [list, setList] = useState(notInvitedRef.current);
   const inputPeopleRef = useRef();
+  const invitedRef = useRef([]);
   const [open, setOpen] = useState(false);
   const [listPeoplesForInvite, setListPeoplesForInvite] = useState();
-  const [invited, setInvited] = useState([]);
+  const { loading, error, data: allUsers } = useQuery(GET_USERS);
 
   const getSelectElements = () => {
     setOpen(true);
-    if (listMatchedEmails) {
-      setListPeoplesForInvite(createSelectElements(listMatchedEmails));
+    if (list) {
+      setListPeoplesForInvite(createSelectElements(list));
     }
   };
 
@@ -47,10 +46,10 @@ export const SelectPeople = withStyles(styles)((props) => {
     return peoplesForChoice.map((people) => {
       return (
         <MenuItem
-          key={people._id}
+          key={people.id}
           label={people.email}
           value={people.email}
-          onClick={() => addPeopleToInvited(people._id)}
+          onClick={() => addPeopleToInvited(people.id)}
         >
           {people.email}
         </MenuItem>
@@ -59,12 +58,14 @@ export const SelectPeople = withStyles(styles)((props) => {
   }
 
   function addPeopleToInvited(idElectPeople) {
-    setListMatchedEmails((prevList) => {
-      return prevList.filter((people) => people._id !== idElectPeople);
+    setList((prevList) => {
+      return prevList.filter((people) => people.id !== idElectPeople);
     });
-    if (users && users[0]) {
-      const electData = users.filter((user) => user._id === idElectPeople);
-      setInvited((prev) => prev.concat(electData));
+    if (allUsers.users && allUsers.users[0]) {
+      const electData = allUsers.users.filter(
+        (user) => user.id === idElectPeople
+      );
+      invitedRef.current = invitedRef.current.concat(electData[0].id);
     }
   }
 
@@ -72,14 +73,14 @@ export const SelectPeople = withStyles(styles)((props) => {
     changeListPeoples();
     if (event.key === 'Enter') {
       addToInvitedInputPeople();
-      setListMatchedEmails(null);
+      setList(null);
     }
     setOpen(true);
   }
 
   function changeListPeoples() {
     const regExp = new RegExp(`${inputPeopleRef.current.value}`);
-    setListMatchedEmails((prevList) => {
+    setList((prevList) => {
       return prevList.filter((people) =>
         people.email.match(regExp) ? people : undefined
       );
@@ -87,10 +88,10 @@ export const SelectPeople = withStyles(styles)((props) => {
   }
 
   function addToInvitedInputPeople() {
-    const electPeople = listMatchedEmails.filter(
+    const electPeople = list.filter(
       (people) => people.email === inputPeopleRef.current.value
     );
-    addPeopleToInvited(electPeople[0]._id);
+    addPeopleToInvited(electPeople[0].id);
     inputPeopleRef.current.value = '';
   }
 
@@ -130,7 +131,10 @@ export const SelectPeople = withStyles(styles)((props) => {
             <Button color='primary' onClick={done}>
               Close
             </Button>
-            <Button color='primary' onClick={() => done('done', invited)}>
+            <Button
+              color='primary'
+              onClick={() => done('done', invitedRef.current)}
+            >
               Done
             </Button>
           </DialogActions>

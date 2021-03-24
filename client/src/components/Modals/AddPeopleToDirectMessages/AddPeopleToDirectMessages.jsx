@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { useQuery } from '@apollo/client';
+import { GET_USERS } from '../../Conversation/Messages/GraphQL/queryes';
 import { useSelector } from 'react-redux';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
@@ -13,7 +15,7 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
-  const users = useSelector((state) => state.users);
+  const { loading, error, data: allUsers } = useQuery(GET_USERS);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const {
@@ -25,18 +27,20 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
   const notInvitedRef = useRef();
 
   useEffect(() => {
-    if (users && users[0] && userData) {
-      let allNotInvited = users.filter((user) => user._id !== userData._id);
+    if (allUsers && allUsers.users[0] && userData) {
+      let allNotInvited = allUsers.users.filter(
+        (user) => user.id !== userData._id
+      );
       if (listDirectMessages && listDirectMessages[0]) {
         listDirectMessages.forEach((directMessage) => {
           allNotInvited = allNotInvited.filter(
-            (user) => user._id !== directMessage.invited._id
+            (user) => user.id !== directMessage.invited._id
           );
         });
       }
       notInvitedRef.current = allNotInvited;
     }
-  }, [users, listDirectMessages, userData]);
+  }, [allUsers, listDirectMessages, userData]);
 
   return (
     <>

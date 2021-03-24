@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ThemeProvider,
   makeStyles,
@@ -7,13 +7,10 @@ import {
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch, useSelector } from 'react-redux';
-import { connect } from 'react-redux';
-import {
-  postMessage,
-  postMessageToDirectMsg,
-  putMessage,
-} from '../../../redux/actions/actions.js';
+import { useSelector } from 'react-redux';
+import { gql, useMutation } from '@apollo/client';
+import { CREATE_MESSAGE, UPDATE_MESSAGE } from '../Messages/GraphQL/queryes';
+import { wsSend } from '../../../WebSocket/soket';
 import './input-message.sass';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,14 +43,78 @@ export const InputUpdateMessages = React.memo((props) => {
     inputRef,
   } = props;
   const classes = useStyles();
-  const dispatch = useDispatch();
   const name = useSelector((state) => state.userData.name);
   const userId = useSelector((state) => state.userData._id);
-  const token = useSelector((state) => state.token);
   const activeChannelId = useSelector((state) => state.activeChannelId);
   const activeDirectMessageId = useSelector(
     (state) => state.activeDirectMessageId
   );
+  const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
+  const chatType = activeChannelId ? 'Channel' : 'DirectMessage';
+
+  const [createMessage] = useMutation(CREATE_MESSAGE, {
+    update(cache, { data: { createMessage } }) {
+      cache.modify({
+        fields: {
+          messages(existingMessages = []) {
+            const newMessageRef = cache.writeFragment({
+              data: createMessage,
+              fragment: gql`
+                fragment CreateMessages on Message {
+                  id
+                  userName
+                  userId
+                  text
+                  replyOn
+                  chatId
+                  chatType
+                  createdAt
+                }
+              `,
+            });
+            console.log(existingMessages, newMessageRef);
+            return [...existingMessages, newMessageRef];
+          },
+        },
+      });
+    },
+    onError(error) {
+      console.log(`Помилка ${error}`);
+    },
+    onCompleted(data) {
+      const messageData = data.createMessage;
+      wsSend({
+        meta: 'sendMessage',
+        action: 'create',
+        room: messageData.chatId,
+        message: messageData,
+      });
+    },
+  });
+
+  const [changeMessage] = useMutation(UPDATE_MESSAGE, {
+    update(cache) {
+      cache.modify({
+        fields: {
+          messages(existingMessages = []) {
+            return [...existingMessages];
+          },
+        },
+      });
+    },
+    onError(error) {
+      console.log(`Помилка ${error}`);
+    },
+    onCompleted(data) {
+      const messageData = data.changeMessage;
+      wsSend({
+        meta: 'sendMessage',
+        action: 'change',
+        room: messageData.chatId,
+        message: messageData,
+      });
+    },
+  });
 
   function inputUpdateMessages(event) {
     event.preventDefault();
@@ -62,59 +123,45 @@ export const InputUpdateMessages = React.memo((props) => {
     if (!(inputValue.trim() === '')) {
       if (closeBtnChangeMsg) changeMessageText(inputValue);
       else if (closeBtnReplyMsg) messageInReply(inputValue);
-      else {
-        newMessage(inputValue);
-      }
+      else newMessage(inputValue);
       inputRef.current.children[1].children[0].value = null;
     }
   }
 
   async function changeMessageText(inputValue) {
-    console.log(inputValue, changeMessageRef.current);
-    dispatch(
-      putMessage(token, changeMessageRef.current._id, {
-        text: inputValue,
-        chatType: changeMessageRef.current.chatType,
-      })
-    );
+    const newMsg = {
+      id: changeMessageRef.current.id,
+      text: inputValue,
+      createdAt: Date.now().toString(),
+      chatType: changeMessageRef.current.chatType,
+    };
+    changeMessage({ variables: { ...newMsg } });
     changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
   }
 
   const messageInReply = (response) => {
-    const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
     const replyMsg = {
-      id: Date.now(),
       userId,
-      username: name,
-      text: closeBtnReplyMsg.text,
-      createdAt: new Date().toLocaleString(),
+      userName: name,
+      replyOn: closeBtnReplyMsg,
+      text: response,
       chatId,
-      reply: response,
+      chatType,
     };
-    dispatchMessage(replyMsg, chatId);
+    createMessage({ variables: { ...replyMsg } });
     setCloseBtnReplyMsg(null);
   };
 
   function newMessage(textMessage) {
-    const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
     const newMsg = {
-      id: Date.now(),
       userId,
-      username: name,
+      userName: name,
       text: textMessage,
-      createdAt: new Date().toLocaleString(),
       chatId,
+      chatType,
     };
-    dispatchMessage(newMsg, chatId);
-  }
-
-  function dispatchMessage(message, chatId) {
-    if (activeChannelId) {
-      dispatch(postMessage(token, { userId, ...message }, chatId));
-    } else if (activeDirectMessageId) {
-      dispatch(postMessageToDirectMsg(token, { ...message }, chatId));
-    }
+    createMessage({ variables: { ...newMsg } });
   }
 
   return (
@@ -148,11 +195,3 @@ export const InputUpdateMessages = React.memo((props) => {
     </div>
   );
 });
-
-const mapDispatchToProps = {
-  postMessage,
-  postMessageToDirectMsg,
-  putMessage,
-};
-
-export default connect(null, mapDispatchToProps)(InputUpdateMessages);

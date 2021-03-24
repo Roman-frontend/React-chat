@@ -1,14 +1,9 @@
 import {
-  GET_USERS,
   GET_CHANNELS,
   GET_MESSAGES,
-  POST_REGISTER,
-  POST_MESSAGE,
-  POST_MESSAGE_FOR_DIRECT_MSG,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
-  PUT_MESSAGE,
   REMOVE_MESSAGE,
   REMOVE_DIRECT_MESSAGES,
   REMOVE_CHANNEL,
@@ -28,38 +23,10 @@ export function dispatcher(type, url, token, method = 'GET', body = null) {
   };
 }
 
-export const postRegister = (body) => {
-  return dispatcher(POST_REGISTER, 'api/auth/register', null, 'POST', body);
-};
-
-export const putMessage = (token, id, body) => {
-  return dispatcher(
-    PUT_MESSAGE,
-    `/api/chat/put-message${id}`,
-    token,
-    'PUT',
-    body
-  );
-};
-
-export function getUsers(token, param) {
-  return dispatcher(GET_USERS, `/api/channel/get-users${param}`, token);
-}
-
 export const getChannels = (token, body) => {
   return dispatcher(
     GET_CHANNELS,
     '/api/channel/get-chunnels',
-    token,
-    'POST',
-    body
-  );
-};
-
-export const getMessages = (token, param, body) => {
-  return dispatcher(
-    GET_MESSAGES,
-    `/api/chat/get-messages${param}`,
     token,
     'POST',
     body
@@ -71,26 +38,6 @@ export const getMessagesForDirectMsg = (token, param) => {
     GET_MESSAGES,
     `/api/direct-message-chat/get-messages${param}`,
     token
-  );
-};
-
-export const postMessage = (token, body, param) => {
-  return dispatcher(
-    POST_MESSAGE,
-    `/api/chat/post-message${param}`,
-    token,
-    'POST',
-    body
-  );
-};
-
-export const postMessageToDirectMsg = (token, body, param) => {
-  return dispatcher(
-    POST_MESSAGE_FOR_DIRECT_MSG,
-    `/api/direct-message-chat/post-message${param}`,
-    token,
-    'POST',
-    body
   );
 };
 

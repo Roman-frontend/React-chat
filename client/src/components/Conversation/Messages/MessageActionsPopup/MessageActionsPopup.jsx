@@ -16,7 +16,7 @@ export default function MessageActionsPopup(props) {
     if (popupMessage) {
       const inputEl = document.getElementById('mainInput');
       const inputTop = inputEl.getBoundingClientRect().top;
-      const activeMessageEl = document.getElementById(popupMessage._id);
+      const activeMessageEl = document.getElementById(popupMessage.id);
       const activeMessageTop = activeMessageEl.getBoundingClientRect().top + 4;
       return inputTop - activeMessageTop > 143
         ? activeMessageTop

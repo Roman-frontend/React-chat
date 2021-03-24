@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-//import { useQuery, gql } from '@apollo/client';
-//import { useQuery, gql } from 'react-apollo';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -13,7 +12,10 @@ import {
 } from '../../components/Helpers/validateMethods.jsx';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
-//import withHocs from './SignUpHoc';
+import {
+  ADD_USER,
+  GET_USERS,
+} from '../../components/Conversation/Messages/GraphQL/queryes';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -23,20 +25,9 @@ const useStyles = makeStyles((theme) => ({
     red: colors.red,
   },
 }));
-/* 
-const GET_USERS = gql`
-  query {
-    users {
-      id
-      name
-    }
-  }
-`; */
 
 export const SignUpPage = (props) => {
-  const { addUser, deleteUser, updateUser, data } = props;
-  //const { loading, error } = useQuery(GET_USERS);
-  const { register } = useAuth();
+  const { auth } = useAuth();
   const classes = useStyles();
   const { errors, validate } = useValidate({
     name: validateName,
@@ -49,58 +40,62 @@ export const SignUpPage = (props) => {
     email: useRef(undefined),
     password: useRef(undefined),
   };
+  const { loading: queryLoading, error, data } = useQuery(GET_USERS);
+  //Коли ADD_USER мутація запущено, нещодавно доданий і повернений user обєкт зберігається в cache. Однак попередньо кешований список юзерів, спостерігаючий за GET_USERS запитом, не буде автоматично оновлено. Це означає, що запит GET_USERS не отримує сповіщення про те, що додано нового user, тому запит не буде оновлено, щоб показати нового user.
+  const [addUser] = useMutation(ADD_USER, {
+    //cache - представляє такі cache API методи: readQuery, writeQuery, readFragment, writeFragment, modify
+    //data - містить результат мутації. Я можу застосувати data щоб оновити cache з cache.writeQuery, cache.writeFragment чи cache.modify.
+    update(cache, { data: { addUser } }) {
+      // cache.modify дозволяє обновляти чи удаляти пункти з кешу, застосовуючи функції модифікації.
+      cache.modify({
+        fields: {
+          //застосовуємо функцію модифікатора users для оновлення кешованого масиву щоб включити посилання на нещодавно доданого user.
+          users(existingUsers = []) {
+            //За допомогою cache.writeFragment ми отримуємо внутрішнє посилання на доданий user, потім зберігаємо це посилання в масиві ROOT_QUERY.users.
+            const newUserRef = cache.writeFragment({
+              data: addUser,
+              fragment: gql`
+                fragment NewUser on User {
+                  id
+                  name
+                  email
+                }
+              `,
+            });
+            return [...existingUsers, newUserRef];
+          },
+        },
+      });
+    },
+    onError(error) {
+      console.log(`Некоректні дані при реєстрації ${error}`);
+    },
+    onCompleted(data) {
+      console.log(data.addUser);
+      const { id, name, email, channels, directMessages, token } = data.addUser;
+      const authData = {
+        userData: { _id: id, name, email, channels, directMessages },
+        token,
+      };
+      auth(authData);
+    },
+  });
 
   const handleSubmit = async () => {
-    console.log(addUser);
     const formData = {
       name: ref.name.current.children[1].children[0].value,
       email: ref.email.current.children[1].children[0].value,
       password: String(ref.password.current.children[1].children[0].value),
     };
     validate(formData);
-    try {
-      console.log(formData);
-      //addUser({ ...formData });
-      console.log(props.data);
-      //register(formData);
-    } catch (e) {
-      console.log('Помилка при реєстрації -', e);
-    }
+    addUser({ variables: { ...formData } });
   };
 
-  const handleRemove = () => {
-    const removeId = prompt('Введите id юзера для видалення!');
-    deleteUser({ id: removeId });
-  };
-
-  const handleUpdate = () => {
-    const name = ref.name.current.children[1].children[0].value;
-    const removeId = prompt('Введите name юзера для оновлення!!');
-    updateUser({ id: removeId, name });
-  };
-
-  const handleFilter = () => {
-    /*     const regExp = prompt('Введите name юзера для оновлення!!');
-    data.fetchMore({
-      variables: { name: regExp },
-      updateQuery: (previousResult, { fetchMoreResult }) => fetchMoreResult,
-    });
-    console.log(data); */
-  };
-
-  /*   return (
-    <Query query={GET_MOVIES}>
-      {({ loading, error, data }) => {
-        if (loading) return <div>Loading...</div>;
-        if (error) return <div>{`${error}`}</div>;
-
-        return <h1>yes</h1>;
-      }}
-    </Query>
-  ); */
-
-  /*   if (loading) return <p>Loading with apollo-client...</p>;
-  if (error) return <p>{`${error}`}</p>; */
+  if (queryLoading) {
+    console.log('queryLoading with apollo-client...');
+  }
+  if (error) console.log(`error in SignUpPage --->>> ${error}`);
+  if (data) console.log(data);
 
   return (
     <div className='auth-body'>
@@ -146,17 +141,6 @@ export const SignUpPage = (props) => {
           Register
         </Button>
 
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          className={classes.button}
-          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
-          onClick={handleFilter}
-        >
-          Filter
-        </Button>
-
         <Link to={`/signIn`}>
           <Button size='small' variant='contained' className={classes.button}>
             Has account go to login
@@ -167,5 +151,4 @@ export const SignUpPage = (props) => {
   );
 };
 
-//export default withHocs(SignUpPage);
 export default SignUpPage;

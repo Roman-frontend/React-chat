@@ -1,11 +1,11 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const DirectMessage = model(
-  "DirectMessage",
+  'DirectMessage',
   new Schema({
     inviter: { type: Object, required: true },
     invited: { type: Object, required: true },
-    createdAt: { type: String, default: Date.now, required: true },
+    createdAt: { type: String, default: Date.now },
   })
 );
 

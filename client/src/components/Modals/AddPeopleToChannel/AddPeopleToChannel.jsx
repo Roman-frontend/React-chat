@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { GET_USERS } from '../../../redux/types';
+import { useQuery } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
-import { connect } from 'react-redux';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { GET_USERS } from '../../Conversation/Messages/GraphQL/queryes';
 import './add-people-to-channel.sass';
 Modal.setAppElement('#root');
 
@@ -17,42 +17,35 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToChannel = withStyles(styles)((props) => {
-  const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
   const channels = useSelector((state) => state.channels);
   const activeChannelId = useSelector((state) => state.activeChannelId);
-  const userId = useSelector((state) => state.userData._id);
   const {
-    resSuspense,
     chatNameRef,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
     doneInvite,
     classes,
   } = props;
-  const allUsers = resSuspense.users.read();
+  const { loading, error, data: allUsers } = useQuery(GET_USERS, {
+    onCompleted(data) {
+      console.log(data);
+    },
+  });
+
   const notInvitedRef = useRef();
 
   useEffect(() => {
-    if (userId && allUsers) {
-      dispatch({
-        type: GET_USERS,
-        payload: allUsers,
-      });
-    }
-  }, [userId, allUsers]);
-
-  useEffect(() => {
-    if (allUsers.users && userData) {
+    if (allUsers && allUsers.users && userData) {
       let allNotInvited = allUsers.users.filter(
-        (user) => user._id !== userData._id
+        (user) => user.id !== userData._id
       );
       if (activeChannelId && channels && channels[0]) {
         channels.forEach((channel) => {
           if (channel._id === activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
-                return user._id !== memberId;
+                return user.id !== memberId;
               });
             });
           }
@@ -80,5 +73,3 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     </>
   );
 });
-
-export default connect(null, null)(AddPeopleToChannel);

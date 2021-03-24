@@ -7,17 +7,35 @@ import './message.sass';
 
 export default function Message(props) {
   const { message, setPopupMessage } = props;
-  const { username, text, createdAt, _id } = message;
+  const { userName, text, createdAt, id, replyOn } = message;
 
-  const classMessage = message.reply ? 'container-reply' : 'container';
-  const replyMessage = message.reply ? (
-    <p className={`${classMessage}__reply`}>&#8593; {message.reply}</p>
+  const classMessage = replyOn ? 'container-reply' : 'container';
+  const replyMessage = replyOn ? (
+    <p className={`${classMessage}__reply`}>{replyOn}</p>
   ) : null;
+
+  function formattedDate(prevDate) {
+    const rowDate = new Date(parseInt(prevDate));
+    let result = '';
+    result +=
+      /* rowDate.getFullYear() +
+      ' ' +
+      (rowDate.getMonth() + 1) +
+      ' ' +
+      rowDate.getDate() +
+      ' ' + */
+      rowDate.getHours() +
+      ':' +
+      rowDate.getMinutes() +
+      ':' +
+      rowDate.getSeconds();
+    return result;
+  }
 
   return (
     <div
       className={classMessage}
-      id={_id}
+      id={id}
       onClick={() => setPopupMessage(message)}
     >
       <Box>
@@ -28,8 +46,8 @@ export default function Message(props) {
           style={{ fontSize: 50 }}
         />
       </Box>
-      <p className={`${classMessage}__messager`}>{username}</p>
-      <p className={`${classMessage}__date`}>{createdAt}</p>
+      <p className={`${classMessage}__messager`}>{userName}</p>
+      <p className={`${classMessage}__date`}>{formattedDate(createdAt)}</p>
       <p className={`${classMessage}__message`}>{text}</p>
       {replyMessage}
     </div>

@@ -28,10 +28,12 @@ export const useAuth = () => {
       userData: data.userData,
       token: data.token,
     });
+    console.log('auth.hook', toStorage);
     sessionStorage.setItem(STORAGE_NAME, toStorage);
     wsSingleton.clientPromise
       .then((wsClient) => console.log('ONLINE'))
       .catch((error) => console.log(error));
+    console.log('auth.hook', data);
     dispatch({ type: AUTH, payload: data });
     const allUserChats = data.userData.channels.concat(
       data.userData.directMessages
@@ -75,5 +77,5 @@ export const useAuth = () => {
     }
   };
 
-  return { login, register, logout, changeStorage };
+  return { login, register, auth, logout, changeStorage };
 };

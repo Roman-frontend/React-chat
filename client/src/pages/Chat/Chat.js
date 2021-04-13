@@ -30,7 +30,7 @@ export const Chat = () => {
       .then((wsClient) => {
         wsClient.addEventListener('message', (response) => {
           const parsedRes = JSON.parse(response.data);
-          console.log(parsedRes);
+          //console.log(parsedRes);
           if (parsedRes.message === 'online') {
             if (JSON.stringify(online) !== JSON.stringify(parsedRes.members)) {
               dispatch({ type: GET_USERS_ONLINE, payload: parsedRes.members });
@@ -44,7 +44,7 @@ export const Chat = () => {
   useEffect(() => {
     //check for Navigation Timing API support
     if (window.performance) {
-      console.info('window.performance works fine on this browser');
+      //console.info('window.performance works fine on this browser');
     }
     //console.info(performance.navigation.type);
     if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
@@ -57,9 +57,9 @@ export const Chat = () => {
         const allUserChats = userData.channels.concat(userData.directMessages);
         wsSend({ userRooms: allUserChats, meta: 'join', userId: userData._id });
       }
-      console.info('This page is reloaded');
+      //console.info('This page is reloaded');
     } else {
-      console.info('This page is not reloaded');
+      //console.info('This page is not reloaded');
     }
   }, []);
 

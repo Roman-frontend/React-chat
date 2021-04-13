@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import ApolloClient, { InMemoryCache } from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
+// import ApolloClient, { InMemoryCache } from 'apollo-boost';
+// import { ApolloProvider } from 'react-apollo';
 import { useAuth } from './hooks/auth.hook';
 //createBrowserHistory - Дозволяє курувати історією силок і руху по силках, наприклад встановити кнопку щоб перейти на попередню силку, або наступну(яку вкажу), замінити щось в історії.
 import { createBrowserHistory } from 'history';

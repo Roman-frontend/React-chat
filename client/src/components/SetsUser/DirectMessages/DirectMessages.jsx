@@ -11,10 +11,12 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useTranslation } from 'react-i18next';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { useApolloClient, gql, useQuery, useMutation } from '@apollo/client';
 import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
+  GET_ALL_DIRECT_MESSAGES,
+  GET_USERS,
 } from '../../Conversation/Messages/GraphQL/queryes';
 import { useSelector } from 'react-redux';
 import { connect } from 'react-redux';
@@ -46,46 +48,41 @@ export function DirectMessages(props) {
   const resourseDirectMessages = resSuspense.listDirectMessages.read();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const { loading, error, data, refetch } = useQuery(GET_DIRECT_MESSAGES, {
-    variables: { id: userData.directMessages },
+
+  const { data: users } = useQuery(GET_USERS, {
     onError(error) {
-      console.log(`Некоректні дані при отриманні прямих повідомлень ${error}`);
+      console.log(`Некоректні дані при отриманні users ${error}`);
     },
   });
 
-  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
+  const { data: drMessages } = useQuery(GET_ALL_DIRECT_MESSAGES, {
+    onCompleted(data) {
+      console.log(data);
+    },
+    onError(error) {
+      console.log(`Некоректні дані  ${error}`);
+    },
+  });
+
+  const [
+    createDirectMessage,
+    { data: created, called, loading: loaded, error: errorCreate, client },
+  ] = useMutation(CREATE_DIRECT_MESSAGE, {
     update(cache, { data: { createDirectMessage } }) {
-      cache.modify({
-        fields: {
-          directMessages(existingDirectMessages = []) {
-            console.log(existingDirectMessages);
-            const newMessageRef = cache.writeFragment({
-              data: createDirectMessage.directMessages[0],
-              fragment: gql`
-                fragment CreateDirectMessage on DirectMessages {
-                  directMessages {
-                    _id
-                    inviter {
-                      _id
-                      name
-                      email
-                    }
-                    invited {
-                      _id
-                      name
-                      email
-                    }
-                    createdAt
-                  }
-                }
-              `,
-            });
-            console.log(existingDirectMessages.directMessages, newMessageRef);
-            return [...existingDirectMessages.directMessages, newMessageRef];
-          },
+      const ready = cache.readQuery({
+        query: GET_ALL_DIRECT_MESSAGES,
+      });
+      cache.writeQuery({
+        query: GET_ALL_DIRECT_MESSAGES,
+        data: {
+          allDirectMessages: [
+            ...ready.allDirectMessages,
+            ...createDirectMessage,
+          ],
         },
       });
     },
+    refetchQueries: true,
     onError(error) {
       console.log(`Помилка ${error}`);
     },
@@ -99,22 +96,34 @@ export function DirectMessages(props) {
   }, [directMsgs]);
 
   const createLinksDirectMessages = useCallback(() => {
-    if (directMsgs && directMsgs[0] && allUsers && allUsers[0]) {
-      return <DirectMessage reqRowElements={directMsgs} />;
+    console.log(users.users, drMessages);
+    if (
+      drMessages &&
+      drMessages.allDirectMessages &&
+      drMessages.allDirectMessages[0] &&
+      users.users &&
+      users.users[0]
+    ) {
+      console.log(drMessages.allDirectMessages);
+      return <DirectMessage reqRowElements={drMessages.allDirectMessages} />;
     }
-  }, [directMsgs, allUsers]);
+  }, [drMessages, users]);
 
   function doneInvite(action, invited) {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited) {
-      console.log({ inviter: userData._id, invited });
-      createDirectMessage({ variables: { inviter: userData._id, invited } });
+      //console.log({ inviter: userData._id, invited });
+      createDirectMessage({
+        variables: {
+          inviter: userData._id,
+          invited,
+        },
+      });
     }
   }
 
-  if (loading) console.log('loading direct messages...');
-  if (data) console.log('loaded direct messages', data);
+  console.log(drMessages);
 
   return (
     <>

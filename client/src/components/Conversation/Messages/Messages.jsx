@@ -28,7 +28,7 @@ export const Messages = React.memo((props) => {
     GET_MESSAGES,
     {
       onCompleted(data) {
-        console.log('mesages', data);
+        //console.log('mesages', data);
       },
     }
   );
@@ -51,7 +51,7 @@ export const Messages = React.memo((props) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
         if (parsedRes && parsedRes.text) {
-          refetch();
+          //refetch();
         }
       };
     })
@@ -68,12 +68,11 @@ export const Messages = React.memo((props) => {
   };
 
   if (loading) {
-    console.log('loading...');
     return;
   }
 
   const renderMessages = () => {
-    console.log(reduxMessages);
+    //console.log(reduxMessages);
     if (reduxMessages && reduxMessages.messages[0]) {
       const messages = reduxMessages.messages.slice(
         0,

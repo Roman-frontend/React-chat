@@ -84,17 +84,10 @@ const InvitedType = new GraphQLObjectType({
 const DirectMessageType = new GraphQLObjectType({
   name: 'DirectMessage',
   fields: () => ({
-    _id: { type: GraphQLID },
+    id: { type: GraphQLID },
     inviter: { type: new GraphQLNonNull(InviterType) },
     invited: { type: InvitedType },
     createdAt: { type: GraphQLString },
-  }),
-});
-
-const DirectMessagesType = new GraphQLObjectType({
-  name: 'DirectMessages',
-  fields: () => ({
-    directMessages: { type: new GraphQLList(DirectMessageType) },
   }),
 });
 
@@ -102,13 +95,13 @@ const MessageType = new GraphQLObjectType({
   name: 'Message',
   fields: () => ({
     id: { type: GraphQLID },
-    userName: { type: new GraphQLNonNull(GraphQLString) },
-    userId: { type: new GraphQLNonNull(GraphQLString) },
-    text: { type: new GraphQLNonNull(GraphQLString) },
+    userName: { type: GraphQLString },
+    userId: { type: GraphQLString },
+    text: { type: GraphQLString },
     replyOn: { type: GraphQLString },
     createdAt: { type: GraphQLString },
-    chatId: { type: new GraphQLNonNull(GraphQLString) },
-    chatType: { type: new GraphQLNonNull(GraphQLString) },
+    chatId: { type: GraphQLString },
+    chatType: { type: GraphQLString },
   }),
 });
 
@@ -130,13 +123,11 @@ const Query = new GraphQLObjectType({
         const { email, password } = args;
         const userData = await User.findOne({ email });
         if (!userData) {
-          console.log('пользователь не найден');
           return { message: 'Такой пользователь не найден' };
         }
         const isMatch = await bcrypt.compare(password, userData.password);
 
         if (!isMatch) {
-          console.log('неверний пароль');
           return { message: 'Невірний пароль, спробуйте знову' };
         }
         const token = jwt.sign(
@@ -163,8 +154,14 @@ const Query = new GraphQLObjectType({
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve() {
-        return User.find({});
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        console.log(args);
+        if (args && args.id) {
+          return User.findById(args.id);
+        } else {
+          return User.find({});
+        }
       },
     },
     filteredUsers: {
@@ -188,7 +185,7 @@ const Query = new GraphQLObjectType({
       },
     },
     directMessages: {
-      type: DirectMessagesType,
+      type: new GraphQLList(DirectMessageType),
       args: { id: { type: GraphQLList(GraphQLID) } },
       async resolve(parent, args) {
         let allFinded = [];
@@ -196,7 +193,20 @@ const Query = new GraphQLObjectType({
           const finded = await DirectMessage.findById(id);
           allFinded.push(finded);
         }
-        return { directMessages: allFinded };
+        return allFinded;
+      },
+    },
+
+    allDirectMessages: {
+      type: new GraphQLList(DirectMessageType),
+      args: { id: { type: GraphQLID } },
+      async resolve(parent, args) {
+        console.log(args);
+        if (args && args.id) {
+          return DirectMessage.findById(args.id);
+        } else {
+          return DirectMessage.find({});
+        }
       },
     },
   },
@@ -267,13 +277,13 @@ const Mutation = new GraphQLObjectType({
     createMessage: {
       type: MessageType,
       args: {
-        userName: { type: new GraphQLNonNull(GraphQLString) },
-        userId: { type: new GraphQLNonNull(GraphQLString) },
-        text: { type: new GraphQLNonNull(GraphQLString) },
+        userName: { type: GraphQLString },
+        userId: { type: GraphQLString },
+        text: { type: GraphQLString },
         replyOn: { type: GraphQLString },
         createdAt: { type: GraphQLString },
-        chatId: { type: new GraphQLNonNull(GraphQLString) },
-        chatType: { type: new GraphQLNonNull(GraphQLString) },
+        chatId: { type: GraphQLString },
+        chatType: { type: GraphQLString },
       },
       async resolve(parent, args) {
         const { userName, userId, text, replyOn, chatId, chatType } = args;
@@ -338,15 +348,13 @@ const Mutation = new GraphQLObjectType({
       },
     },
     createDirectMessage: {
-      type: DirectMessagesType,
+      type: new GraphQLList(DirectMessageType),
       args: {
         inviter: { type: new GraphQLNonNull(GraphQLID) },
         invited: { type: new GraphQLList(GraphQLID) },
       },
       async resolve(parent, args) {
-        console.log(args);
         const { inviter, invited } = args;
-        console.log('createdDire', invited);
         let allNew = [];
 
         for (let invitedId of invited) {
@@ -365,7 +373,6 @@ const Mutation = new GraphQLObjectType({
               email: dbInvited.email,
             },
           });
-          console.log(newDirectMessage, invitedId);
 
           dbInviter.directMessages.push(newDirectMessage._id);
           await dbInviter.save();
@@ -373,12 +380,10 @@ const Mutation = new GraphQLObjectType({
           dbInvited.directMessages.push(newDirectMessage._id);
           await dbInvited.save();
 
-          console.log(newDirectMessage);
           allNew = allNew.concat(newDirectMessage);
         }
 
-        console.log('line 384', allNew);
-        return { directMessages: allNew };
+        return allNew;
       },
     },
   },

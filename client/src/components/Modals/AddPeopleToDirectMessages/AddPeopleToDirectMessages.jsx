@@ -15,7 +15,7 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
-  const { loading, error, data: allUsers } = useQuery(GET_USERS);
+  const { loading, error, data: allUsers, client } = useQuery(GET_USERS);
   const userData = useSelector((state) => state.userData);
   const listDirectMessages = useSelector((state) => state.listDirectMessages);
   const {

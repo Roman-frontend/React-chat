@@ -128,7 +128,7 @@ export const SelectPeople = withStyles(styles)((props) => {
             {listPeoplesForInvite}
           </Select>
           <DialogActions>
-            <Button color='primary' onClick={done}>
+            <Button color='secondary' onClick={done}>
               Close
             </Button>
             <Button

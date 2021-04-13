@@ -24,7 +24,7 @@ export const CreateLists = withStyles(styles)((props) => {
   const [activeId, setActiveId] = useState(false);
 
   function createLink(linkData) {
-    const id = linkData._id;
+    const id = linkData.id;
     const name = createDirectMsgName(linkData.invited.name);
 
     return (

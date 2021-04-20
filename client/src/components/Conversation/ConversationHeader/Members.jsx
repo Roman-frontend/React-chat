@@ -73,7 +73,7 @@ export function Members(props) {
       >
         <Grid
           item
-          xs={activeChannelId ? 6 : 11}
+          xs={app && app.activeChannelId ? 6 : 11}
           style={{ alignSelf: 'center' }}
         >
           {iconMembers}

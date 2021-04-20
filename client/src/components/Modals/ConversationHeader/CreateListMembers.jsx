@@ -56,7 +56,7 @@ export function CreateListMembers(props) {
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        variant={usersOnline.includes(memberId) ? 'dot' : 'standard'}
+        variant={app.usersOnline.includes(memberId) ? 'dot' : 'standard'}
       >
         <Box>
           <PersonIcon

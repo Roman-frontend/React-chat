@@ -166,6 +166,18 @@ export const InputUpdateMessages = React.memo((props) => {
     setCloseBtnReplyMsg(null);
   };
 
+  function formattedDate() {
+    const rowDate = new Date(parseInt(Date.now()));
+    let result = '';
+    result +=
+      rowDate.getHours() +
+      ':' +
+      rowDate.getMinutes() +
+      ':' +
+      rowDate.getSeconds();
+    return result;
+  }
+
   function newMessage(textMessage) {
     const newMsg = {
       userId: auth.id,

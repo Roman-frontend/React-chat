@@ -21,19 +21,6 @@ import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './auth-body.sass';
 
-const LOGIN = gql`
-  query Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      id
-      name
-      email
-      channels
-      directMessages
-      token
-    }
-  }
-`;
-
 const useStyles = makeStyles((theme) => ({
   root: { position: 'fixed', left: '50%', top: '50%' },
   button: {

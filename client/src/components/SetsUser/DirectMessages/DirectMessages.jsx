@@ -63,8 +63,14 @@ export function DirectMessages(props) {
           },
         },
       });
+      console.log(ready, createDirectMessage);
+      /* cache.writeQuery({
+        query: GET_DIRECT_MESSAGES,
+        data: {
+          directMessages: [...ready.directMessages, ...createDirectMessage],
+        },
+      }); */
     },
-    refetchQueries: true,
     onError(error) {
       console.log(`Помилка ${error}`);
     },
@@ -101,8 +107,6 @@ export function DirectMessages(props) {
       });
     }
   }
-
-  console.log(drMessages);
 
   return (
     <>

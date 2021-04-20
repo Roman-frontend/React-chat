@@ -1,15 +1,16 @@
 import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
+import { useQuery } from '@apollo/client';
+import { AUTH } from '../../GraphQL/queryes';
 
 const HeaderProfile = (props) => {
   const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;
   const history = useHistory();
+  const { data: auth } = useQuery(AUTH);
   const { logout } = useAuth();
-  const userData = useSelector((state) => state.userData);
   const isMenuOpen = Boolean(anchorEl);
 
   const logoutHandler = (event) => {
@@ -33,7 +34,9 @@ const HeaderProfile = (props) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>{userData.name}</MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        {auth && auth.name ? auth.name : '#general'}
+      </MenuItem>
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       <MenuItem onClick={logoutHandler}>Log out</MenuItem>

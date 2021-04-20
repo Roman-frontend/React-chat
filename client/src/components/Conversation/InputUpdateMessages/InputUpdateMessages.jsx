@@ -7,9 +7,14 @@ import {
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { useSelector } from 'react-redux';
-import { gql, useMutation } from '@apollo/client';
-import { CREATE_MESSAGE, UPDATE_MESSAGE } from '../Messages/GraphQL/queryes';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import {
+  CREATE_MESSAGE,
+  UPDATE_MESSAGE,
+  GET_MESSAGES,
+  APP,
+  AUTH,
+} from '../../GraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
 import './input-message.sass';
 
@@ -43,38 +48,26 @@ export const InputUpdateMessages = React.memo((props) => {
     inputRef,
   } = props;
   const classes = useStyles();
-  const name = useSelector((state) => state.userData.name);
-  const userId = useSelector((state) => state.userData._id);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
-  const chatId = activeChannelId ? activeChannelId : activeDirectMessageId;
-  const chatType = activeChannelId ? 'Channel' : 'DirectMessage';
+  const { data: auth } = useQuery(AUTH);
+  const { data: activeChat } = useQuery(APP);
+  const chatId =
+    activeChat && activeChat.activeChannelId
+      ? activeChat.activeChannelId
+      : activeChat && activeChat.activeDirectMessageId
+      ? activeChat.activeDirectMessageId
+      : null;
+  const chatType =
+    activeChat && activeChat.activeChannelId ? 'Channel' : 'DirectMessage';
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
-    update(cache, { data: { createMessage } }) {
-      cache.modify({
-        fields: {
-          messages(existingMessages = []) {
-            const newMessageRef = cache.writeFragment({
-              data: createMessage,
-              fragment: gql`
-                fragment CreateMessages on Message {
-                  id
-                  userName
-                  userId
-                  text
-                  replyOn
-                  chatId
-                  chatType
-                  createdAt
-                }
-              `,
-            });
-            console.log(existingMessages, newMessageRef);
-            return [...existingMessages, newMessageRef];
-          },
+    update: (proxy, { data: { createMessage } }) => {
+      // Read the data from our cache for this query.
+      const data = proxy.readQuery({ query: GET_MESSAGES });
+      // Write our data back to the cache with the new comment in it
+      proxy.writeQuery({
+        query: GET_MESSAGES,
+        data: {
+          messages: [...data.messages, createMessage],
         },
       });
     },
@@ -142,8 +135,8 @@ export const InputUpdateMessages = React.memo((props) => {
 
   const messageInReply = (response) => {
     const replyMsg = {
-      userId,
-      userName: name,
+      userId: auth.id,
+      userName: auth.name,
       replyOn: closeBtnReplyMsg,
       text: response,
       chatId,
@@ -153,15 +146,43 @@ export const InputUpdateMessages = React.memo((props) => {
     setCloseBtnReplyMsg(null);
   };
 
+  function formattedDate() {
+    const rowDate = new Date(parseInt(Date.now()));
+    let result = '';
+    result +=
+      rowDate.getHours() +
+      ':' +
+      rowDate.getMinutes() +
+      ':' +
+      rowDate.getSeconds();
+    return result;
+  }
+
   function newMessage(textMessage) {
     const newMsg = {
-      userId,
-      userName: name,
+      userId: auth.id,
+      userName: auth.name,
       text: textMessage,
       chatId,
       chatType,
     };
-    createMessage({ variables: { ...newMsg } });
+
+    createMessage({
+      variables: { ...newMsg },
+      optimisticResponse: {
+        createMessage: {
+          chatId,
+          chatType,
+          createdAt: formattedDate(),
+          id: '607703c23e21201041cb84cb',
+          replyOn: null,
+          text: 'edited',
+          userId: auth.id,
+          userName: auth.name,
+          __typename: 'Message',
+        },
+      },
+    });
   }
 
   return (

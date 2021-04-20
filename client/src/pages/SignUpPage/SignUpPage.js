@@ -12,10 +12,16 @@ import {
 } from '../../components/Helpers/validateMethods.jsx';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
+import { ADD_USER, GET_USERS } from '../../components/GraphQL/queryes';
 import {
-  ADD_USER,
-  GET_USERS,
-} from '../../components/Conversation/Messages/GraphQL/queryes';
+  authReactiveVar,
+  reactiveVarId,
+  reactiveVarName,
+  reactiveVarEmail,
+  reactiveVarToken,
+  reactiveVarChannels,
+  reactiveDirectMessages,
+} from '../../components/GraphQL/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -74,9 +80,16 @@ export const SignUpPage = (props) => {
       console.log(data.addUser);
       const { id, name, email, channels, directMessages, token } = data.addUser;
       const authData = {
-        userData: { _id: id, name, email, channels, directMessages },
+        userData: { id, name, email, channels, directMessages },
         token,
       };
+      authReactiveVar(data.addUser);
+      reactiveVarToken(token);
+      reactiveVarName(name);
+      reactiveVarEmail(email);
+      reactiveVarId(id);
+      reactiveVarChannels(channels);
+      reactiveDirectMessages(directMessages);
       auth(authData);
     },
   });
@@ -92,7 +105,7 @@ export const SignUpPage = (props) => {
   };
 
   if (queryLoading) {
-    console.log('queryLoading with apollo-client...');
+    console.log('loading queryLoading');
   }
   if (error) console.log(`error in SignUpPage --->>> ${error}`);
   if (data) console.log(data);

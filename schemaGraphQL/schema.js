@@ -51,15 +51,30 @@ const UserType = new GraphQLObjectType({
   }),
 });
 
+const AuthType = new GraphQLObjectType({
+  name: 'Auth',
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: GraphQLString },
+    channels: { type: new GraphQLList(GraphQLString) },
+    directMessages: { type: new GraphQLList(GraphQLString) },
+    token: { type: GraphQLString },
+  }),
+});
+
 const ChannelType = new GraphQLObjectType({
   name: 'Channel',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    creator: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: GraphQLString },
+    creator: { type: GraphQLID },
     description: { type: GraphQLString },
-    members: { type: GraphQLString },
+    members: { type: new GraphQLList(GraphQLID) },
     isPrivate: { type: GraphQLBoolean },
+    createdAt: { type: GraphQLString },
+    updatedAt: { type: GraphQLString },
   }),
 });
 
@@ -109,12 +124,13 @@ const Query = new GraphQLObjectType({
   name: 'Query',
   fields: {
     login: {
-      type: UserType,
+      type: AuthType,
       args: {
         email: { type: GraphQLString },
         password: { type: GraphQLString },
       },
       async resolve(parent, args) {
+        console.log('login');
         try {
           await schema.validate(args, { abortEarly: false });
         } catch {
@@ -145,11 +161,22 @@ const Query = new GraphQLObjectType({
         };
       },
     },
-    channel: {
-      type: ChannelType,
-      args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return Channel.findById(args.id);
+    userChannels: {
+      type: new GraphQLList(ChannelType),
+      args: { channelsId: { type: new GraphQLList(GraphQLID) } },
+      async resolve(parent, { channelsId }) {
+        console.log('aaaa', channelsId);
+        if (channelsId) {
+          let userChannels = [];
+          for (let id of channelsId) {
+            const findChannel = await Channel.findById(id);
+            userChannels = userChannels.concat(findChannel);
+          }
+          console.log('userChannels ', userChannels);
+          return userChannels;
+        } else {
+          return Channel.find({});
+        }
       },
     },
     users: {
@@ -165,48 +192,33 @@ const Query = new GraphQLObjectType({
       },
     },
     filteredUsers: {
-      type: new GraphQLList(UserType),
+      type: new GraphQLList(AuthType),
       args: { name: { type: GraphQLString } },
       resolve(parent, { name }) {
         return User.find({ name: { $regex: name, $options: 'i' } });
       },
     },
-    channels: {
-      type: new GraphQLList(ChannelType),
-      resolve(parent, args) {
-        return Channel.find({});
-      },
-    },
     messages: {
       type: new GraphQLList(MessageType),
       async resolve() {
-        const dbMessages = ChannelMessage.find({});
-        return dbMessages;
+        return DirectMessageChat.find({});
       },
     },
     directMessages: {
       type: new GraphQLList(DirectMessageType),
-      args: { id: { type: GraphQLList(GraphQLID) } },
+      args: {
+        id: { type: GraphQLList(GraphQLID) },
+      },
       async resolve(parent, args) {
+        console.log('directMessages', args);
+        if (!args || !args.id) return null;
         let allFinded = [];
         for (let id of args.id) {
           const finded = await DirectMessage.findById(id);
           allFinded.push(finded);
         }
+        console.log(allFinded);
         return allFinded;
-      },
-    },
-
-    allDirectMessages: {
-      type: new GraphQLList(DirectMessageType),
-      args: { id: { type: GraphQLID } },
-      async resolve(parent, args) {
-        console.log(args);
-        if (args && args.id) {
-          return DirectMessage.findById(args.id);
-        } else {
-          return DirectMessage.find({});
-        }
       },
     },
   },
@@ -215,8 +227,9 @@ const Query = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    //user mutations
     addUser: {
-      type: UserType,
+      type: AuthType,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
@@ -250,18 +263,8 @@ const Mutation = new GraphQLObjectType({
         };
       },
     },
-    deleteUser: {
-      type: UserType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      async resolve(parent, args) {
-        //з допомогою mongoose метода .findByIdAndRemove() - шукаємо модель з id - args.id  - і видаляємо його
-        return User.findByIdAndRemove(args.id);
-      },
-    },
     updateUser: {
-      type: UserType,
+      type: AuthType,
       args: {
         id: { type: GraphQLID },
         name: { type: new GraphQLNonNull(GraphQLString) },
@@ -274,6 +277,18 @@ const Mutation = new GraphQLObjectType({
         );
       },
     },
+    deleteUser: {
+      type: AuthType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      async resolve(parent, args) {
+        //з допомогою mongoose метода .findByIdAndRemove() - шукаємо модель з id - args.id  - і видаляємо його
+        return User.findByIdAndRemove(args.id);
+      },
+    },
+
+    //message mutations
     createMessage: {
       type: MessageType,
       args: {
@@ -311,6 +326,7 @@ const Mutation = new GraphQLObjectType({
             chatType,
           });
         }
+        console.log(newMessage);
         return newMessage;
       },
     },
@@ -347,6 +363,8 @@ const Mutation = new GraphQLObjectType({
         return updatedMessage;
       },
     },
+
+    //direct message mutations
     createDirectMessage: {
       type: new GraphQLList(DirectMessageType),
       args: {
@@ -357,10 +375,11 @@ const Mutation = new GraphQLObjectType({
         const { inviter, invited } = args;
         let allNew = [];
 
+        /* const dbInviter = await User.findById(inviter);
+        const dbInvited = await User.findById(invited[0]); */
         for (let invitedId of invited) {
           const dbInviter = await User.findById(inviter);
           const dbInvited = await User.findById(invitedId);
-
           const newDirectMessage = await DirectMessage.create({
             inviter: {
               _id: dbInviter._id,
@@ -384,6 +403,45 @@ const Mutation = new GraphQLObjectType({
         }
 
         return allNew;
+        /* return [
+          {
+            id: Date.now(),
+            inviter: {
+              _id: dbInviter._id,
+              name: dbInviter.name,
+              email: dbInviter.email,
+            },
+            invited: {
+              _id: dbInvited._id,
+              name: dbInvited.name,
+              email: dbInvited.email,
+            },
+            createdAt: Date.now(),
+          },
+        ]; */
+      },
+    },
+    createChannel: {
+      type: ChannelType,
+      args: {
+        token: { type: GraphQLString },
+        creator: { type: GraphQLID },
+        name: { type: GraphQLString },
+        members: { type: new GraphQLList(GraphQLID) },
+        discription: { type: GraphQLString },
+        isPrivate: { type: GraphQLBoolean },
+      },
+      async resolve(parent, args) {
+        console.log(args);
+        const { token, creator, name, members, discription, isPrivate } = args;
+        const newChannel = await Channel.create({ ...args });
+        for (let memberId of args.members) {
+          const user = await User.findById(memberId);
+          user.channels.push(newChannel._id);
+          await user.save();
+        }
+        console.log(newChannel);
+        return newChannel;
       },
     },
   },

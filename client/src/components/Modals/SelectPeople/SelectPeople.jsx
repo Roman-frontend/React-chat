@@ -9,7 +9,7 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { GET_USERS } from '../../Conversation/Messages/GraphQL/queryes';
+import { GET_USERS } from '../../GraphQL/queryes';
 import './select-people.sass';
 
 const styles = (theme) => ({
@@ -33,7 +33,7 @@ export const SelectPeople = withStyles(styles)((props) => {
   const invitedRef = useRef([]);
   const [open, setOpen] = useState(false);
   const [listPeoplesForInvite, setListPeoplesForInvite] = useState();
-  const { loading, error, data: allUsers } = useQuery(GET_USERS);
+  const { data: allUsers } = useQuery(GET_USERS);
 
   const getSelectElements = () => {
     setOpen(true);
@@ -61,7 +61,7 @@ export const SelectPeople = withStyles(styles)((props) => {
     setList((prevList) => {
       return prevList.filter((people) => people.id !== idElectPeople);
     });
-    if (allUsers.users && allUsers.users[0]) {
+    if (allUsers && allUsers.users && allUsers.users[0]) {
       const electData = allUsers.users.filter(
         (user) => user.id === idElectPeople
       );

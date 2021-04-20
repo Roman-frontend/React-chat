@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
 import {
   removeChannelMessage,
@@ -11,6 +11,8 @@ import ReplyIcon from '@material-ui/icons/Reply';
 import EditIcon from '@material-ui/icons/Edit';
 import ForwardIcon from '@material-ui/icons/Forward';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { APP, AUTH } from '../../../../GraphQL/queryes';
+import { useQuery } from '@apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -30,8 +32,8 @@ function SetViewPopup(props) {
   } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.token);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const { data: auth } = useQuery(AUTH);
+  const { data: activeChat } = useQuery(APP);
 
   useEffect(() => {
     document.addEventListener('click', hidePopup);
@@ -60,10 +62,10 @@ function SetViewPopup(props) {
 
   const handleDelete = async () => {
     setPopupMessage(null);
-    const removeFunc = activeChannelId
+    const removeFunc = activeChat.activeChannelId
       ? removeChannelMessage
       : removeMessageOfDirectMessage;
-    dispatch(removeFunc(token, popupMessage._id));
+    dispatch(removeFunc(auth.token, popupMessage._id));
   };
 
   return (

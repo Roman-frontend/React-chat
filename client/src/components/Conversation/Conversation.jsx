@@ -1,20 +1,19 @@
-import React, { useState, useRef } from 'react';
-import { wsSend, wsSingleton } from '../../WebSocket/soket';
+import React, { useState, useRef, useCallback } from 'react';
+import { wsSend } from '../../WebSocket/soket';
 import { STORAGE_NAME } from '../../redux/types';
-import { useDispatch, useSelector } from 'react-redux';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
 import { Messages } from './Messages/Messages.jsx';
 import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
 import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
-import { useCallback } from 'react';
+import { useQuery } from '@apollo/client';
+import { AUTH, APP } from '../GraphQL/queryes';
 
 export default function Conversation(props) {
   const { resSuspense } = props;
-  const userId = useSelector((state) => state.userData._id);
-  const channels = useSelector((state) => state.channels);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const { data: auth } = useQuery(AUTH);
+  const { data: activeChat } = useQuery(APP);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
@@ -23,19 +22,25 @@ export default function Conversation(props) {
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
-    if (channels && channels[0] && activeChannelId) {
-      channels.forEach((channel) => {
-        if (channel._id === activeChannelId) {
+    if (
+      auth &&
+      auth.channels &&
+      auth.channels[0] &&
+      activeChat &&
+      activeChat.activeChannelId
+    ) {
+      auth.channels.forEach((channel) => {
+        if (channel.id === activeChat.activeChannelId) {
           if (!channel.isPrivate) {
             return (isOpenChat = true);
-          } else if (channel.members.includes(userId)) {
+          } else if (auth && auth.id && channel.members.includes(auth.id)) {
             return (isOpenChat = true);
           } else return (isOpenChat = false);
         }
       });
     }
     return isOpenChat;
-  }, [channels, activeChannelId, userId]);
+  }, [auth, activeChat, auth]);
 
   const buttonEndActive =
     closeBtnChangeMsg || closeBtnReplyMsg ? (
@@ -96,14 +101,13 @@ export default function Conversation(props) {
 
   registerUnload('Leaving page', function () {
     const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-    if (storageData && storageData.userData.channels[0]) {
-      const allUserChats = storageData.userData.channels.concat(
-        storageData.userData.directMessages
+    if (storageData && storageData.channels[0]) {
+      const allUserChats = storageData.channels.concat(
+        storageData.directMessages
       );
-      console.log('leave ()()()()()');
       wsSend({
         userRooms: allUserChats,
-        userId: storageData.userData._id,
+        userId: storageData.id,
         meta: 'leave',
         path: 'Conversation',
       });

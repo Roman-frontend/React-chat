@@ -18,7 +18,7 @@ server.on('connection', (ws) => {
       join(userRooms, userId, ws, uuid); // User has joined
       resOnline(userRooms);
     } else if (meta === 'leave') {
-      console.log('leave \n\n leave path -->>', parseData.path);
+      console.log('leave \n\n leave path -->>', parseData);
       parseData.userRooms.forEach((resRoom) => {
         leave(resRoom, parseData.userId);
       });

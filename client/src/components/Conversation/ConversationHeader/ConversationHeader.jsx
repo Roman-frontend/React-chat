@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
 import { addPeopleToChannel } from '../../../redux/actions/actions.js';
 import { Name } from './Name';
@@ -9,35 +9,44 @@ import { ConversationMembers } from '../../Modals/ConversationHeader/Conversatio
 import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
+import { useQuery } from '@apollo/client';
+import { CHANNELS, APP, AUTH } from '../../GraphQL/queryes.js';
 
-export const ConversationHeader = React.memo((props) => {
+export const ConversationHeader = (props) => {
   const { resSuspense } = props;
   const dispatch = useDispatch();
-  const channels = useSelector((state) => state.channels);
-  const token = useSelector((state) => state.token);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
+  const { data: queryAllChannels } = useQuery(CHANNELS);
+  const { data: auth } = useQuery(AUTH);
+  const { data: activeChat } = useQuery(APP);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
 
   const activeChannel = useMemo(() => {
-    if (channels) {
-      if (activeChannelId && channels[0]) {
-        return channels.filter((channel) => channel._id === activeChannelId)[0];
-      } else if (activeDirectMessageId) {
-        return null;
-      }
+    if (
+      activeChat &&
+      activeChat.activeChannelId &&
+      queryAllChannels &&
+      queryAllChannels.channels &&
+      queryAllChannels.channels[0]
+    ) {
+      return queryAllChannels.channels.filter(
+        (channel) => channel.id === activeChat.activeChannelId
+      )[0];
+    } else if (activeChat && activeChat.activeDirectMessageId) {
+      return null;
     }
-  }, [activeChannelId, channels]);
+  }, [activeChat, queryAllChannels]);
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {
       const arrInvited = invited.map((people) => people._id);
       dispatch(
-        addPeopleToChannel(token, { invitedUsers: arrInvited }, activeChannelId)
+        addPeopleToChannel(
+          auth.token,
+          { invitedUsers: arrInvited },
+          activeChat.activeChannelId
+        )
       );
     }
     setModalAddPeopleIsOpen(false);
@@ -71,7 +80,7 @@ export const ConversationHeader = React.memo((props) => {
       />
     </div>
   );
-});
+};
 
 const mapDispatchToProps = { addPeopleToChannel };
 

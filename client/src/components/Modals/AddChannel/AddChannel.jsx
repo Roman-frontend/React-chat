@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import { useDispatch, useSelector } from 'react-redux';
-import { connect } from 'react-redux';
-import { postChannel } from '../../../redux/actions/actions.js';
+import { useQuery, useMutation } from '@apollo/client';
+import {
+  AUTH,
+  GET_USERS,
+  CREATE_CHANNEL,
+  CHANNELS,
+} from '../../GraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import './add-channel.sass';
+import { reactiveVarChannels } from '../../GraphQL/reactiveVariables';
 
 const styles = (theme) => ({
   input: {
@@ -20,11 +25,9 @@ const styles = (theme) => ({
 });
 
 export const AddChannel = withStyles(styles)((props) => {
-  const dispatch = useDispatch();
-  const userId = useSelector((state) => state.userData._id);
-  const token = useSelector((state) => state.token);
-  const allUsers = useSelector((state) => state.users);
   const { setModalAddChannelIsOpen, modalAddChannelIsOpen, classes } = props;
+  const { data: auth } = useQuery(AUTH);
+  const { data: allUsers } = useQuery(GET_USERS);
   const [isPrivate, setIsPrivate] = useState(false);
   const notInvitedRef = useRef();
   const [form, setForm] = useState({
@@ -33,10 +36,38 @@ export const AddChannel = withStyles(styles)((props) => {
     isPrivate: false,
     members: [],
   });
+  const [createChannel] = useMutation(CREATE_CHANNEL, {
+    update: (proxy, { data: { createChannel } }) => {
+      const ready = proxy.readQuery({
+        query: CHANNELS,
+        variables: { channelsId: reactiveVarChannels() },
+      });
+      proxy.writeQuery({
+        query: CHANNELS,
+        data: {
+          userChannels: [...ready.userChannels, createChannel],
+        },
+      });
+    },
+    onCompleted(data) {
+      const storage = JSON.parse(sessionStorage.getItem('storageData'));
+      const toStorage = JSON.stringify({
+        ...storage,
+        channels: [...storage.channels, data.createChannel.id],
+      });
+      sessionStorage.setItem('storageData', toStorage);
+      reactiveVarChannels([...reactiveVarChannels(), data.createChannel.id]);
+    },
+    onError(error) {
+      console.log(`Помилка при створенні каналу ${error}`);
+    },
+  });
 
   useEffect(() => {
-    if (allUsers && allUsers[0]) {
-      const peoplesInvite = allUsers.filter((people) => people._id !== userId);
+    if (allUsers && allUsers.users && auth) {
+      const peoplesInvite = allUsers.users.filter(
+        (people) => people._id !== auth.id
+      );
       notInvitedRef.current = peoplesInvite;
     }
   }, [allUsers]);
@@ -47,18 +78,15 @@ export const AddChannel = withStyles(styles)((props) => {
 
   const doneCreate = (action, invited = []) => {
     if (action === 'done') {
-      const arrInvitedId = invited[0]
-        ? invited.map((people) => people._id).concat(userId)
-        : [userId];
-
-      console.log('postChannel');
-      dispatch(
-        postChannel(
-          token,
-          { ...form, creator: userId, members: [userId] },
-          userId
-        )
-      );
+      const listInvited = invited[0] ? invited.concat(auth.id) : [auth.id];
+      createChannel({
+        variables: {
+          token: auth.token,
+          ...form,
+          creator: auth.id,
+          members: listInvited,
+        },
+      });
     }
     setModalAddChannelIsOpen(false);
   };
@@ -120,7 +148,3 @@ export const AddChannel = withStyles(styles)((props) => {
     </div>
   );
 });
-
-const mapDispatchToProps = { postChannel };
-
-export default connect(null, mapDispatchToProps)(AddChannel);

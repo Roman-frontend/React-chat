@@ -22,11 +22,11 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
   }
 });
 
-router.post('/get-messages:activeChannelId', verifyToken, async (req, res) => {
+router.post('/get-messages:channelId', verifyToken, async (req, res) => {
   try {
     console.log('validatedPostMessage => ', 'userHasAccesToChannel');
     const userHasAccesToChannel = await checkAccesToChannel(
-      req.params.activeChannelId,
+      req.params.channelId,
       req.body.userId
     );
 
@@ -34,7 +34,7 @@ router.post('/get-messages:activeChannelId', verifyToken, async (req, res) => {
       res.status(403).json({ message: 'Ви не є учасником приватного чату' });
     } else {
       const messages = await ChannelMessage.find({
-        chatId: req.params.activeChannelId,
+        chatId: req.params.channelId,
       });
       res.json({ messages, message: 'Повідомлення повернені' });
     }

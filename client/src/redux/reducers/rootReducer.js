@@ -3,7 +3,6 @@ import {
   GET_USERS_ONLINE,
   GET_CHANNELS,
   GET_MESSAGES,
-  GET_DIRECT_MESSAGES,
   POST_REGISTER,
   AUTH,
   POST_CHANNEL,
@@ -23,8 +22,8 @@ const initialState = {
   usersOnline: [],
   channels: null,
   listDirectMessages: [],
-  activeChannelId: null,
-  activeDirectMessageId: null,
+  channelId: null,
+  directMessageId: null,
   messages: [],
   token: null,
   userData: null,
@@ -45,9 +44,6 @@ export const rootReducer = (state = initialState, action) => {
 
     case GET_MESSAGES:
       return { ...state, messages: action.payload.messages };
-
-    case GET_DIRECT_MESSAGES:
-      return { ...state, listDirectMessages: action.payload.directMessages };
 
     case POST_REGISTER:
       return {
@@ -152,6 +148,7 @@ export const rootReducer = (state = initialState, action) => {
       return initialState;
 
     case ACTIVE_CHAT_ID:
+      //console.log(action.payload);
       return { ...state, ...action.payload };
 
     default:

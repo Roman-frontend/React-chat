@@ -1,7 +1,7 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-const Channels = model(
-  "Channel",
+const Channel = model(
+  'Channel',
   new Schema(
     {
       name: { type: String, required: true },
@@ -14,4 +14,4 @@ const Channels = model(
   )
 );
 
-module.exports = Channels;
+module.exports = Channel;

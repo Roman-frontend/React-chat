@@ -11,17 +11,19 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useTranslation } from 'react-i18next';
-import { useApolloClient, gql, useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
-  GET_ALL_DIRECT_MESSAGES,
   GET_USERS,
-} from '../../Conversation/Messages/GraphQL/queryes';
-import { useSelector } from 'react-redux';
+  AUTH,
+} from '../../GraphQL/queryes';
+import {
+  reactiveActiveDirrectMessageId,
+  reactiveDirectMessages,
+} from '../../GraphQL/reactiveVariables';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../../hooks/auth.hook.js';
 import DirectMessage from './DirectMessage';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
@@ -37,93 +39,73 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function DirectMessages(props) {
-  const { resSuspense } = props;
   const { t } = useTranslation();
-  const { changeStorage } = useAuth();
-  const allUsers = useSelector((state) => state.users);
-  const token = useSelector((state) => state.token);
-  const userData = useSelector((state) => state.userData);
-  const directMsgs = useSelector((state) => state.listDirectMessages);
+  const { data: auth } = useQuery(AUTH);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
-  const resourseDirectMessages = resSuspense.listDirectMessages.read();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
 
-  const { data: users } = useQuery(GET_USERS, {
-    onError(error) {
-      console.log(`Некоректні дані при отриманні users ${error}`);
-    },
-  });
+  const { data: users } = useQuery(GET_USERS);
+  const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
 
-  const { data: drMessages } = useQuery(GET_ALL_DIRECT_MESSAGES, {
-    onCompleted(data) {
-      console.log(data);
-    },
-    onError(error) {
-      console.log(`Некоректні дані  ${error}`);
-    },
-  });
-
-  const [
-    createDirectMessage,
-    { data: created, called, loading: loaded, error: errorCreate, client },
-  ] = useMutation(CREATE_DIRECT_MESSAGE, {
+  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
     update(cache, { data: { createDirectMessage } }) {
       const ready = cache.readQuery({
-        query: GET_ALL_DIRECT_MESSAGES,
+        query: GET_DIRECT_MESSAGES,
+        variables: { id: auth.directMessagesId },
       });
-      cache.writeQuery({
-        query: GET_ALL_DIRECT_MESSAGES,
-        data: {
-          allDirectMessages: [
-            ...ready.allDirectMessages,
-            ...createDirectMessage,
-          ],
+      cache.modify({
+        fields: {
+          directMessages() {
+            return [...ready.directMessages, ...createDirectMessage];
+          },
         },
       });
+      console.log(ready, createDirectMessage);
+      /* cache.writeQuery({
+        query: GET_DIRECT_MESSAGES,
+        data: {
+          directMessages: [...ready.directMessages, ...createDirectMessage],
+        },
+      }); */
     },
-    refetchQueries: true,
     onError(error) {
       console.log(`Помилка ${error}`);
     },
+    onCompleted(data) {
+      const storage = JSON.parse(sessionStorage.getItem('storageData'));
+      const newDrMsgIds = data.createDirectMessage.map((drMsg) => drMsg.id);
+      const toStorage = JSON.stringify({
+        ...storage,
+        directMessages: [...storage.directMessages, ...newDrMsgIds],
+      });
+      sessionStorage.setItem('storageData', toStorage);
+      reactiveDirectMessages([...reactiveDirectMessages(), ...newDrMsgIds]);
+    },
   });
 
-  useEffect(() => {
-    if (directMsgs && directMsgs[0]) {
-      const newList = directMsgs.map((directMsg) => directMsg._id);
-      changeStorage({ directMessages: newList });
-    }
-  }, [directMsgs]);
-
   const createLinksDirectMessages = useCallback(() => {
-    console.log(users.users, drMessages);
     if (
-      drMessages &&
-      drMessages.allDirectMessages &&
-      drMessages.allDirectMessages[0] &&
+      directMessages &&
+      directMessages.directMessages &&
+      directMessages.directMessages[0] &&
+      users &&
       users.users &&
       users.users[0]
     ) {
-      console.log(drMessages.allDirectMessages);
-      return <DirectMessage reqRowElements={drMessages.allDirectMessages} />;
+      return <DirectMessage reqRowElements={directMessages.directMessages} />;
     }
-  }, [drMessages, users]);
+  }, [directMessages, users]);
 
   function doneInvite(action, invited) {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited) {
-      //console.log({ inviter: userData._id, invited });
       createDirectMessage({
-        variables: {
-          inviter: userData._id,
-          invited,
-        },
+        variables: { inviter: auth.id, invited },
       });
     }
   }
-
-  console.log(drMessages);
 
   return (
     <>

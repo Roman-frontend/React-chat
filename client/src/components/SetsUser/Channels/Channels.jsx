@@ -1,107 +1,58 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  GET_CHANNELS,
-  ACTIVE_CHAT_ID,
-  STORAGE_NAME,
-} from '../../../redux/types';
-import { useDispatch, useSelector } from 'react-redux';
-import { connect } from 'react-redux';
-import { getChannels } from '../../../redux/actions/actions.js';
-import { useAuth } from '../../../hooks/auth.hook.js';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
 import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
+import { useQuery } from '@apollo/client';
+import { APP, CHANNELS, GET_DIRECT_MESSAGES } from '../../GraphQL/queryes';
+import {
+  reactiveActiveChannelId,
+  reactiveActiveDirrectMessageId,
+} from '../../GraphQL/reactiveVariables';
 
 export function Channels(props) {
-  const { resSuspense } = props;
   const { t } = useTranslation();
-  const resourseChannels = resSuspense.channels.read();
-  const dispatch = useDispatch();
-  const allChannels = useSelector((state) => state.channels);
-  const listDirectMessages = useSelector((state) => state.listDirectMessages);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
+  const { data: activeChat } = useQuery(APP);
+  const { data: allChannels } = useQuery(CHANNELS);
+  const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
-  const { changeStorage } = useAuth();
 
   useEffect(() => {
-    function defineActiveChat() {
-      const sessionStorageData = JSON.parse(
-        sessionStorage.getItem(STORAGE_NAME)
-      );
-      const storageData = sessionStorageData
-        ? sessionStorageData.userData
-        : null;
-      if (activeChannelId) {
-        return { activeChannelId };
-      } else if (activeDirectMessageId) {
-        return { activeDirectMessageId };
-      } else if (storageData && storageData.lastActiveChatId) {
-        if (storageData.channels) {
-          const channelHasLast = storageData.channels.includes(
-            storageData.lastActiveChatId
-          );
-          if (channelHasLast) {
-            return { activeChannelId: storageData.lastActiveChatId };
-          } else if (storageData.directMessages) {
-            const listDrMsgHasLast = storageData.directMessages.includes(
-              storageData.lastActiveChatId
-            );
-            if (listDrMsgHasLast) {
-              return { activeDirectMessageId: storageData.lastActiveChatId };
-            }
-          }
-        }
-      } else if (allChannels && allChannels[0]) {
-        return { activeChannelId: allChannels[0]._id };
-      } else if (listDirectMessages && listDirectMessages[0]) {
-        return {
-          activeDirectMessageId: listDirectMessages[0]._id,
-        };
-      } else {
-        return null;
-      }
+    if (activeChat && activeChat.activeChannelId) {
+      reactiveActiveChannelId(activeChat.activeChannelId);
+      reactiveActiveDirrectMessageId(null);
+    } else if (activeChat && activeChat.activeDirectMessageId) {
+      reactiveActiveChannelId(null);
+      reactiveActiveDirrectMessageId(activeChat.activeDirectMessageId);
+    } else if (
+      allChannels &&
+      allChannels.userChannels &&
+      allChannels.userChannels[0]
+    ) {
+      reactiveActiveChannelId(allChannels.userChannels[0].id);
+      reactiveActiveDirrectMessageId(null);
+    } else if (
+      listDirectMessages &&
+      listDirectMessages.directMessages &&
+      listDirectMessages.directMessages[0]
+    ) {
+      reactiveActiveChannelId(null);
+      reactiveActiveDirrectMessageId(listDirectMessages.directMessages[0].id);
     }
+  }, [allChannels, listDirectMessages]);
 
-    if (allChannels) {
-      const activeChat = defineActiveChat();
-      dispatch({ type: ACTIVE_CHAT_ID, payload: activeChat });
+  function createLinksChannels(allChannels) {
+    if (
+      allChannels &&
+      allChannels.userChannels &&
+      allChannels.userChannels[0]
+    ) {
+      return <CreateLists reqRowElements={allChannels.userChannels} />;
     }
-  }, [allChannels]);
-
-  useEffect(() => {
-    if (resourseChannels) {
-      dispatch({ type: GET_CHANNELS, payload: resourseChannels });
-    }
-  }, [resourseChannels]);
-
-  useEffect(() => {
-    if (allChannels && allChannels[0]) {
-      const sessionStorageData = JSON.parse(
-        sessionStorage.getItem(STORAGE_NAME)
-      );
-      const storageData = sessionStorageData ? sessionStorageData : null;
-      const idChannels = allChannels.map((channel) => channel._id);
-      if (idChannels !== storageData.userData.channels) {
-        changeStorage({ channels: idChannels });
-      }
-    }
-  }, [allChannels]);
-
-  const createLinksChannels = useCallback(
-    (allChannels) => {
-      if (allChannels && allChannels[0]) {
-        return <CreateLists reqRowElements={allChannels} />;
-      }
-    },
-    [allChannels]
-  );
+  }
 
   return (
     <>
@@ -126,7 +77,7 @@ export function Channels(props) {
           style={{ background: colors.indigo[500], width: '100%' }}
           onClick={() => setModalAddChannelIsOpen(true)}
         >
-          + Add channel
+          + Add Channel
         </Button>
         <AddChannel
           modalAddChannelIsOpen={modalAddChannelIsOpen}
@@ -136,7 +87,3 @@ export function Channels(props) {
     </>
   );
 }
-
-const mapDispatchToProps = { getChannels };
-
-export default connect(null, mapDispatchToProps)(Channels);

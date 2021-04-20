@@ -1,18 +1,23 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { reactiveVarToken } from '../GraphQL/reactiveVariables';
+import { AUTH } from '../GraphQL/queryes';
 
 export const PubliсOnlyRoute = ({ component: Component, ...rest }) => {
-  const token = useSelector((state) => state.token);
-  console.log('PublicOnlyRoute');
+  const sessionStorageData = JSON.parse(sessionStorage.getItem('storageData'));
+  const token = useReactiveVar(reactiveVarToken);
+  const { data: auth, loading } = useQuery(AUTH);
+  //const data = reactiveVarToken();
 
   function assignRouteToApply(routeProps) {
-    if (!token) {
+    console.log(token, sessionStorageData);
+    if (!token && !sessionStorageData) {
       return <Component {...routeProps} />;
     } else {
       return <Redirect to='/chat' />;
     }
   }
-
+  if (loading) return <div>"Loading"</div>;
   return <Route {...rest} render={assignRouteToApply} />;
 };

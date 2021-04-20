@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import HeaderProfile from './HeaderProfile/HeaderProfile';
+import HeaderNotifications from './HeaderNotifications';
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
 import useStyles from './HeaderStyles.jsx';
-import HeaderProfile from './HeaderProfile/HeaderProfile';
-import HeaderNotifications from './HeaderNotifications';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';

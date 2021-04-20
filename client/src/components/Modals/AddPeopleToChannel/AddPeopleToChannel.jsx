@@ -2,11 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
-import { useSelector } from 'react-redux';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { GET_USERS } from '../../Conversation/Messages/GraphQL/queryes';
+import { GET_USERS, APP, AUTH, CHANNELS } from '../../GraphQL/queryes';
 import './add-people-to-channel.sass';
 Modal.setAppElement('#root');
 
@@ -17,9 +16,9 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToChannel = withStyles(styles)((props) => {
-  const userData = useSelector((state) => state.userData);
-  const channels = useSelector((state) => state.channels);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
+  const { data: auth } = useQuery(AUTH);
+  const { data: allChannels } = useQuery(CHANNELS);
+  const { data: activeChat } = useQuery(APP);
   const {
     chatNameRef,
     modalAddPeopleIsOpen,
@@ -27,22 +26,25 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     doneInvite,
     classes,
   } = props;
-  const { loading, error, data: allUsers } = useQuery(GET_USERS, {
+  const { data: allUsers } = useQuery(GET_USERS, {
     onCompleted(data) {
-      console.log(data);
+      //console.log(data);
     },
   });
 
   const notInvitedRef = useRef();
 
   useEffect(() => {
-    if (allUsers && allUsers.users && userData) {
-      let allNotInvited = allUsers.users.filter(
-        (user) => user.id !== userData._id
-      );
-      if (activeChannelId && channels && channels[0]) {
-        channels.forEach((channel) => {
-          if (channel._id === activeChannelId) {
+    if (allUsers && allUsers.users && auth && auth.id) {
+      let allNotInvited = allUsers.users.filter((user) => user.id !== auth.id);
+      if (
+        activeChat &&
+        activeChat.activeChannelId &&
+        allChannels &&
+        allChannels.userChannels[0]
+      ) {
+        allChannels.userChannels.forEach((channel) => {
+          if (channel._id === activeChat.activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
                 return user.id !== memberId;
@@ -53,7 +55,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
       }
       notInvitedRef.current = allNotInvited;
     }
-  }, [allUsers, channels, userData, activeChannelId]);
+  }, [allUsers, allChannels, auth, activeChat]);
 
   return (
     <>

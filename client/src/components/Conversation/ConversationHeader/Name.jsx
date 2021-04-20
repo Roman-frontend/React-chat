@@ -1,23 +1,30 @@
 import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useQuery } from '@apollo/client';
+import { APP, AUTH, GET_DIRECT_MESSAGES } from '../../GraphQL/queryes';
 
 export function Name(props) {
   const { activeChannel } = props;
-  const userId = useSelector((state) => state.userData._id);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
-  const listDirectMessages = useSelector((state) => state.listDirectMessages);
+  const { data: auth } = useQuery(AUTH);
+  const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { data: activeChat } = useQuery(APP);
   const chatNameRef = useRef('#general');
 
   let name = activeChannel ? activeChannel.name : 'general';
-  if (activeDirectMessageId && listDirectMessages && listDirectMessages[0]) {
-    const activeDirectMessage = listDirectMessages.filter((directMessage) => {
-      return directMessage._id === activeDirectMessageId;
-    })[0];
-    if (activeDirectMessage) {
+  if (
+    activeChat &&
+    activeChat.activeDirectMessageId &&
+    listDirectMessages &&
+    listDirectMessages.directMessages &&
+    listDirectMessages.directMessages[0]
+  ) {
+    const activeDirectMessage = listDirectMessages.directMessages.filter(
+      (directMessage) => {
+        return directMessage.id === activeChat.activeDirectMessageId;
+      }
+    )[0];
+    if (activeDirectMessage && auth && auth.id) {
       name =
-        activeDirectMessage.inviter._id === userId
+        activeDirectMessage.inviter.id === auth.id
           ? activeDirectMessage.invited.name
           : activeDirectMessage.inviter.name;
     }

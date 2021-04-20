@@ -1,60 +1,44 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
-import { STORAGE_NAME } from '../../../../redux/types';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
-import { useAuth } from '../../../../hooks/auth.hook.js';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 //import Button from '@material-ui/core/Button';
-import { ACTIVE_CHAT_ID } from '../../../../redux/types.js';
 import {
   removeChannel,
   removeDirectMessages,
 } from '../../../../redux/actions/actions';
-import { createDirectMsgName, createChannelName } from './ChatName.jsx';
+import { createChannelName } from './ChatName.jsx';
 import {
   styles,
   styleActiveLink,
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
+import { AUTH, CHANNELS } from '../../../GraphQL/queryes';
+import { useQuery } from '@apollo/client';
+import {
+  reactiveActiveChannelId,
+  reactiveActiveDirrectMessageId,
+} from '../../../GraphQL/reactiveVariables';
 
 export const CreateLists = withStyles(styles)((props) => {
   const { reqRowElements, listName, classes } = props;
-  const { changeStorage } = useAuth();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.userData);
-  const userId = useSelector((state) => state.userData._id);
-  const userChannels = useSelector((state) => state.userData.channels);
-  const token = useSelector((state) => state.token);
-  const activeChannelId = useSelector((state) => state.activeChannelId);
-  const channels = useSelector((state) => state.channels);
-  const activeDirectMessageId = useSelector(
-    (state) => state.activeDirectMessageId
-  );
+  const { data: auth } = useQuery(AUTH);
+  const { data: queryChannels } = useQuery(CHANNELS);
   const refUpdatedChannels = useRef(null);
   const [focusedId, setFocusedId] = useState(false);
   const [activeId, setActiveId] = useState(false);
 
   useEffect(() => {
-    if (channels) {
-      refUpdatedChannels.current = channels;
+    if (queryChannels && queryChannels.channels) {
+      refUpdatedChannels.current = queryChannels.channels;
     }
-  }, [channels]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      const storage = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-      const isStorage = storage ? storage : null;
-      setActiveId(isStorage.userData.lastActiveChatId);
-    }, 1000);
-  }, []);
+  }, [queryChannels]);
 
   function createLink(linkData, listName) {
-    const id = linkData._id;
-    const name =
-      listName === 'directMessages'
-        ? createDirectMsgName(linkData.invited.name)
-        : createChannelName(linkData.isPrivate, linkData);
+    const id = linkData.id;
+    const name = createChannelName(linkData.isPrivate, linkData);
 
     return (
       <div
@@ -64,7 +48,9 @@ export const CreateLists = withStyles(styles)((props) => {
         onMouseLeave={() => setFocusedId(false)}
         onClick={() => setActiveId(id)}
         className='main-font chatHover'
-        style={activeId === id ? styleActiveLink : styleIsNotActiveLink}
+        style={
+          activeId && activeId === id ? styleActiveLink : styleIsNotActiveLink
+        }
       >
         <Grid
           container
@@ -97,55 +83,53 @@ export const CreateLists = withStyles(styles)((props) => {
   }
 
   function showMore(id, typeChat) {
-    if (typeChat === 'directMessages' && token) {
-      const filteredUserDirectMessages = userData.directMessages.filter(
-        (directMessageId) => {
-          return directMessageId !== id;
-        }
-      );
-      const body = { userId, filteredUserDirectMessages };
-      dispatch(removeDirectMessages(token, id, { ...body }));
-    } else if (token && userId && channels && userChannels) {
-      const channel = channels.filter((channel) => channel._id === id)[0];
+    if (
+      auth &&
+      auth.token &&
+      auth &&
+      queryChannels &&
+      queryChannels.channels &&
+      queryChannels.channels[0] &&
+      auth.channels
+    ) {
+      const channel = queryChannels.channels.filter(
+        (channel) => channel.id === id
+      )[0];
       const filteredChannelMembers = channel.members.filter(
-        (id) => id !== userId
+        (id) => id !== auth.id
       );
-      const filteredUserChannels = userChannels.filter(
+      const filteredUserChannels = auth.channels.filter(
         (channelId) => channelId !== id
       );
-      const body = { userId, filteredChannelMembers, filteredUserChannels };
-      dispatch(removeChannel(token, id, { ...body }));
+      const body = {
+        userId: auth.id,
+        filteredChannelMembers,
+        filteredUserChannels,
+      };
+      dispatch(removeChannel(auth.token, id, { ...body }));
     }
-    toActive(channels[0]._id);
+    toActive(queryChannels.channels[0].id);
   }
 
-  const toActive = useCallback(
-    async (idActive) => {
-      if (refUpdatedChannels.current) {
-        changeStorage({ lastActiveChatId: idActive });
-        changeActiveChatId(idActive);
-      }
-    },
-    [activeChannelId, activeDirectMessageId]
-  );
+  async function toActive(idActive) {
+    if (refUpdatedChannels.current) {
+      changeChat(idActive);
+    }
+  }
 
-  const changeActiveChatId = useCallback(
-    (idActive) => {
-      if (channels && refUpdatedChannels.current) {
-        const objectChatNameAndId = createPayloadForChange(idActive);
-        dispatch({ type: ACTIVE_CHAT_ID, payload: objectChatNameAndId });
+  function changeChat(idActive) {
+    if (refUpdatedChannels.current) {
+      const channelActiveId = refUpdatedChannels.current.filter(
+        (channel) => channel.id === idActive
+      )[0];
+      if (channelActiveId) {
+        reactiveActiveChannelId(channelActiveId.id);
+        reactiveActiveDirrectMessageId(null);
+      } else {
+        reactiveActiveChannelId(null);
+        reactiveActiveDirrectMessageId(idActive);
       }
-    },
-    [channels, activeDirectMessageId, activeChannelId]
-  );
-
-  function createPayloadForChange(idActive) {
-    const channelActiveId = refUpdatedChannels.current.filter(
-      (channel) => channel._id === idActive
-    )[0];
-    return channelActiveId
-      ? { activeChannelId: channelActiveId._id, activeDirectMessageId: null }
-      : { activeChannelId: null, activeDirectMessageId: idActive };
+    }
   }
 
   let allDirectMessages = [];

@@ -1,11 +1,12 @@
 import React, { Suspense, lazy, useMemo, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { STORAGE_NAME, GET_USERS_ONLINE } from '../../redux/types';
+import { STORAGE_NAME } from '../../redux/types';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { fetchData } from '../../hooks/suspense';
+import { reactiveOnlineMembers } from '../../components/GraphQL/reactiveVariables';
 import './chat-page.sass';
+import { useQuery } from '@apollo/client';
+import { APP } from '../../components/GraphQL/queryes';
 const Header = lazy(() => import('../../components/Header/Header.jsx'));
 const Conversation = lazy(() =>
   import('../../components/Conversation/Conversation.jsx')
@@ -18,12 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const Chat = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const online = useSelector((state) => state.usersOnline);
-  const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-  const resSuspense = useMemo(() => {
-    return fetchData(sessionStorageData.token, sessionStorageData.userData);
-  }, []);
+  const { data: app } = useQuery(APP);
 
   useEffect(() => {
     wsSingleton.clientPromise
@@ -32,8 +28,13 @@ export const Chat = () => {
           const parsedRes = JSON.parse(response.data);
           //console.log(parsedRes);
           if (parsedRes.message === 'online') {
-            if (JSON.stringify(online) !== JSON.stringify(parsedRes.members)) {
-              dispatch({ type: GET_USERS_ONLINE, payload: parsedRes.members });
+            if (
+              app &&
+              app.usersOnline &&
+              JSON.stringify(app.usersOnline) !==
+                JSON.stringify(parsedRes.members)
+            ) {
+              reactiveOnlineMembers(parsedRes.members);
             }
           }
         });
@@ -51,11 +52,10 @@ export const Chat = () => {
       wsSingleton.clientPromise
         .then((wsClient) => console.log('ONLINE'))
         .catch((error) => console.log(error));
-      const sStorage = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
-      if (sStorage && sStorage.userData) {
-        const userData = sStorage.userData;
-        const allUserChats = userData.channels.concat(userData.directMessages);
-        wsSend({ userRooms: allUserChats, meta: 'join', userId: userData._id });
+      const storage = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+      if (storage && storage.channels && storage.directMessages) {
+        const allUserChats = storage.channels.concat(storage.directMessages);
+        wsSend({ userRooms: allUserChats, meta: 'join', userId: storage.id });
       }
       //console.info('This page is reloaded');
     } else {
@@ -73,8 +73,8 @@ export const Chat = () => {
         }
       >
         <Header />
-        <SetsUser resSuspense={resSuspense} />
-        <Conversation resSuspense={resSuspense} />
+        <SetsUser />
+        <Conversation />
       </Suspense>
     </div>
   );

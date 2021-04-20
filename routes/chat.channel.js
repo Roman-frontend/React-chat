@@ -50,22 +50,20 @@ router.post('/post-channel:userId', verifyToken, async (req, res) => {
 console.log('chat.channel файл');
 
 router.post(
-  '/post-add-members-to-channel:activeChannelId',
+  '/post-add-members-to-channel:channelId',
   verifyToken,
   async (req, res) => {
     try {
       for await (const userId of req.body.invitedUsers) {
         const addedUser = await User.findById(userId);
-        addedUser.channels.push(req.params.activeChannelId);
+        addedUser.channels.push(req.params.channelId);
         await addedUser.save();
 
-        const activeChannel = await Channel.findById(
-          req.params.activeChannelId
-        );
+        const activeChannel = await Channel.findById(req.params.channelId);
         activeChannel.members.push(userId);
         await activeChannel.save();
       }
-      const updatedChannel = await Channel.findById(req.params.activeChannelId);
+      const updatedChannel = await Channel.findById(req.params.channelId);
 
       res.status(201).json({
         userChannels: updatedChannel,

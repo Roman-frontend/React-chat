@@ -10,7 +10,7 @@ import { useQuery } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
-import { GET_MESSAGES } from './GraphQL/queryes';
+import { GET_MESSAGES } from '../../GraphQL/queryes';
 import './messages.sass';
 
 export const Messages = React.memo((props) => {
@@ -51,7 +51,7 @@ export const Messages = React.memo((props) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
         if (parsedRes && parsedRes.text) {
-          //refetch();
+          refetch();
         }
       };
     })

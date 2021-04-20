@@ -1,12 +1,17 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { STORAGE_NAME } from '../../redux/types';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { reactiveVarToken } from '../GraphQL/reactiveVariables';
+import { AUTH } from '../GraphQL/queryes';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
-  const sessionStorageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+  const { data: auth } = useQuery(AUTH);
+  const sessionStorageData = JSON.parse(sessionStorage.getItem('storageData'));
+  const reactiveToken = useReactiveVar(reactiveVarToken);
 
   function assignRouteToApply(routeProps) {
-    if (sessionStorageData && sessionStorageData.token) {
+    console.log(reactiveToken, sessionStorageData);
+    if (reactiveToken || (sessionStorageData && sessionStorageData.token)) {
       return <Component {...routeProps} />;
     } else {
       return <Redirect to='/signIn' />;

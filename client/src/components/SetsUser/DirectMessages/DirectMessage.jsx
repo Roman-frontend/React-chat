@@ -1,25 +1,26 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
-import { useAuth } from '../../../hooks/auth.hook.js';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 import { removeDirectMessages } from '../../../redux/actions/actions';
-import { ACTIVE_CHAT_ID } from '../../../redux/types';
 import { createDirectMsgName } from './ChatName.jsx';
 import {
   styles,
   styleActiveLink,
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
+import {
+  reactiveActiveChannelId,
+  reactiveActiveDirrectMessageId,
+} from '../../GraphQL/reactiveVariables';
+import { AUTH } from '../../GraphQL/queryes';
+import { useQuery } from '@apollo/client';
 
 export const CreateLists = withStyles(styles)((props) => {
   const { reqRowElements, classes } = props;
-  const { changeStorage } = useAuth();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.userData);
-  const userId = useSelector((state) => state.userData._id);
-  const token = useSelector((state) => state.token);
+  const { data: auth } = useQuery(AUTH);
   const [focusedId, setFocusedId] = useState(false);
   const [activeId, setActiveId] = useState(false);
 
@@ -68,26 +69,27 @@ export const CreateLists = withStyles(styles)((props) => {
   }
 
   function showMore(id) {
-    if (token && userData && userData.directMessages) {
-      const filteredUserDirectMessages = userData.directMessages.filter(
+    if (
+      auth &&
+      auth.token &&
+      auth.directMessagesId &&
+      auth.directMessagesId[0]
+    ) {
+      const filteredUserDirectMessages = auth.directMessagesId.filter(
         (directMessageId) => {
           return directMessageId !== id;
         }
       );
       if (Array.isArray(filteredUserDirectMessages)) {
-        const body = { userId, filteredUserDirectMessages };
-        dispatch(removeDirectMessages(token, id, { ...body }));
+        const body = { userId: auth.id, filteredUserDirectMessages };
+        dispatch(removeDirectMessages(auth.token, id, { ...body }));
       }
     }
   }
 
   function toActive(idActive) {
-    changeStorage({ lastActiveChatId: idActive });
-    const payload = {
-      activeChannelId: null,
-      activeDirectMessageId: idActive,
-    };
-    dispatch({ type: ACTIVE_CHAT_ID, payload });
+    reactiveActiveChannelId(null);
+    reactiveActiveDirrectMessageId(idActive);
   }
 
   return reqRowElements.map((element) => createLink(element));

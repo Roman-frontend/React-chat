@@ -29,16 +29,18 @@ export const APP = gql`
     usersOnline @client
     activeChannelId @client
     activeDirectMessageId @client
+    activeChatId @client
+    activeChatType @client
   }
 `;
 
 export const CREATE_MESSAGE = gql`
   mutation createMessage(
     $userName: String
-    $userId: String
+    $userId: ID
     $text: String
     $replyOn: String
-    $chatId: String
+    $chatId: ID
     $chatType: String
   ) {
     createMessage(
@@ -61,19 +63,9 @@ export const CREATE_MESSAGE = gql`
   }
 `;
 
-export const UPDATE_MESSAGE = gql`
-  mutation changeMessage(
-    $id: ID!
-    $text: String!
-    $chatType: String!
-    $createdAt: String
-  ) {
-    changeMessage(
-      id: $id
-      text: $text
-      chatType: $chatType
-      createdAt: $createdAt
-    ) {
+export const CHANGE_MESSAGE = gql`
+  mutation changeMessage($id: ID!, $text: String!, $chatType: String!) {
+    changeMessage(id: $id, text: $text, chatType: $chatType) {
       id
       userName
       userId
@@ -86,17 +78,30 @@ export const UPDATE_MESSAGE = gql`
   }
 `;
 
-export const GET_MESSAGES = gql`
-  query {
-    messages {
+export const REMOVE_MESSAGE = gql`
+  mutation removeMessage($id: ID!, $chatType: String!) {
+    removeMessage(id: $id, chatType: $chatType) {
       id
-      userName
-      userId
-      text
-      replyOn
-      chatId
-      chatType
-      createdAt
+    }
+  }
+`;
+
+export const GET_MESSAGES = gql`
+  query messages($chatId: ID!, $chatType: String!) {
+    activeChatId @client @export(as: $chatId)
+    activeChatType @client @export(as: $chatType)
+    messages(chatId: $chatId, chatType: $chatType) {
+      id
+      chatMessages {
+        id
+        userName
+        userId
+        text
+        replyOn
+        createdAt
+        chatType
+        chatId
+      }
     }
   }
 `;
@@ -140,6 +145,14 @@ export const CREATE_CHANNEL = gql`
   }
 `;
 
+export const REMOVE_CHAT = gql`
+  mutation removeChat($id: ID!, $chatType: String!) {
+    removeChat(id: $id, chatType: $chatType) {
+      id
+    }
+  }
+`;
+
 export const ADD_USER = gql`
   mutation addUserMutation(
     $name: String!
@@ -173,12 +186,12 @@ export const CREATE_DIRECT_MESSAGE = gql`
     createDirectMessage(inviter: $inviter, invited: $invited) {
       id
       inviter {
-        _id
+        id
         name
         email
       }
       invited {
-        _id
+        id
         name
         email
       }
@@ -188,17 +201,17 @@ export const CREATE_DIRECT_MESSAGE = gql`
 `;
 
 export const GET_DIRECT_MESSAGES = gql`
-  query directMessages($id: [ID]) {
+  query directMessages($id: [ID]!) {
     directMessagesId @client @export(as: "id")
     directMessages(id: $id) {
       id
       inviter {
-        _id
+        id
         name
         email
       }
       invited {
-        _id
+        id
         name
         email
       }

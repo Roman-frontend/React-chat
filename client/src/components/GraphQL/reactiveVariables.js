@@ -14,4 +14,4 @@ export const reactiveVarChannels = storage
 export const authReactiveVar = makeVar(storage);
 export const reactiveActiveChannelId = makeVar();
 export const reactiveActiveDirrectMessageId = makeVar();
-export const reactiveOnlineMembers = makeVar();
+export const reactiveOnlineMembers = makeVar([]);

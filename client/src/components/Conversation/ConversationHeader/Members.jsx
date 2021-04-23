@@ -47,7 +47,6 @@ export function Members(props) {
         }
       });
     });
-    console.log(avatars);
     const readyIcons = createAvatar(avatars);
     setIconMembers(readyIcons);
   };
@@ -73,7 +72,7 @@ export function Members(props) {
       >
         <Grid
           item
-          xs={app && app.activeChannelId ? 6 : 11}
+          xs={activeChannelId ? 6 : 11}
           style={{ alignSelf: 'center' }}
         >
           {iconMembers}

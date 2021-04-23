@@ -27,6 +27,8 @@ export function Channels(props) {
     .activeDirectMessageId;
   const [listChannelsIsOpen, setListChannelsIsOpen] = useState(true);
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
 
   useEffect(() => {
     if (activeChannelId || activeDirectMessageId) {
@@ -49,7 +51,7 @@ export function Channels(props) {
         activeDirectMessageId: listDirectMessages.directMessages[0].id,
       });
     }
-  }, [allChannels, listDirectMessages]);
+  }, [allChannels, listDirectMessages, activeChannelId, activeDirectMessageId]);
 
   function createLinksChannels(allChannels) {
     if (

@@ -45,7 +45,7 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
       ) {
         drMessages.directMessages.forEach((directMessage) => {
           allNotInvited = allNotInvited.filter(
-            (user) => user.id !== directMessage.invited._id
+            (user) => user.id !== directMessage.invited.id
           );
         });
       }

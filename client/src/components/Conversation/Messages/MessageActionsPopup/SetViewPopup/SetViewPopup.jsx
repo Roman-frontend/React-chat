@@ -1,18 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { connect } from 'react-redux';
-import {
-  removeChannelMessage,
-  removeMessageOfDirectMessage,
-} from '../../../../../redux/actions/actions';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import ReplyIcon from '@material-ui/icons/Reply';
 import EditIcon from '@material-ui/icons/Edit';
 import ForwardIcon from '@material-ui/icons/Forward';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { APP, AUTH } from '../../../../GraphQL/queryes';
-import { useQuery } from '@apollo/client';
+import { REMOVE_MESSAGE, AUTH } from '../../../../GraphQL/queryes';
+import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
+import { reactiveActiveChannelId } from '../../../../GraphQL/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -20,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SetViewPopup(props) {
+export const SetViewPopup = (props) => {
   const {
     topPopupRelativeTopPage,
     inputRef,
@@ -31,9 +26,27 @@ function SetViewPopup(props) {
     setCloseBtnReplyMsg,
   } = props;
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { data: auth } = useQuery(AUTH);
-  const { data: activeChat } = useQuery(APP);
+
+  const [removeMessage] = useMutation(REMOVE_MESSAGE, {
+    update: (cache) => {
+      cache.modify({
+        fields: {
+          messages({ DELETE }) {
+            return DELETE;
+          },
+        },
+      });
+    },
+    onCompleted(data) {
+      console.log(`remove message`);
+    },
+    onError(error) {
+      console.log(`Помилка при видаленні повідомлення ${error}`);
+    },
+  });
+
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
 
   useEffect(() => {
     document.addEventListener('click', hidePopup);
@@ -45,7 +58,6 @@ function SetViewPopup(props) {
   }
 
   const handleAnswer = () => {
-    console.log(popupMessage);
     setCloseBtnReplyMsg(popupMessage.text);
     setPopupMessage(null);
     inputRef.current.children[1].children[0].focus();
@@ -60,12 +72,12 @@ function SetViewPopup(props) {
     inputRef.current.children[1].children[0].value = popupMessage.text;
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
+    console.log(popupMessage);
+    removeMessage({
+      variables: { id: popupMessage.id, chatType: popupMessage.chatType },
+    });
     setPopupMessage(null);
-    const removeFunc = activeChat.activeChannelId
-      ? removeChannelMessage
-      : removeMessageOfDirectMessage;
-    dispatch(removeFunc(auth.token, popupMessage._id));
   };
 
   return (
@@ -114,11 +126,4 @@ function SetViewPopup(props) {
       </Button>
     </div>
   );
-}
-
-const mapDispatchToProps = {
-  removeChannelMessage,
-  removeMessageOfDirectMessage,
 };
-
-export default connect(null, mapDispatchToProps)(SetViewPopup);

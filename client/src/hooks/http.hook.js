@@ -11,7 +11,6 @@ export const reduxServer = async (url, token, method = 'GET', body = null) => {
       headers['Content-Type'] = 'application/json';
     }
 
-    //console.log('http req ', url, { method, body, headers });
     const response = await fetch(url, { method, body, headers });
     const data = await response.json();
 
@@ -20,7 +19,6 @@ export const reduxServer = async (url, token, method = 'GET', body = null) => {
       throw new Error(data.message || 'Щось пішло не так ');
     }
 
-    //console.log('http data ', data);
     return data;
   } catch (e) {
     console.log('http response error ', e);

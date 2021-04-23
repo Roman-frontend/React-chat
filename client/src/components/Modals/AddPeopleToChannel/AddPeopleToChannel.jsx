@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
@@ -7,6 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { GET_USERS, APP, AUTH, CHANNELS } from '../../GraphQL/queryes';
 import './add-people-to-channel.sass';
+import { reactiveActiveChannelId } from '../../GraphQL/reactiveVariables.js';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({
@@ -26,6 +27,8 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     doneInvite,
     classes,
   } = props;
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+
   const { data: allUsers } = useQuery(GET_USERS, {
     onCompleted(data) {
       //console.log(data);
@@ -37,14 +40,9 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
       let allNotInvited = allUsers.users.filter((user) => user.id !== auth.id);
-      if (
-        activeChat &&
-        activeChat.activeChannelId &&
-        allChannels &&
-        allChannels.userChannels[0]
-      ) {
+      if (activeChannelId && allChannels && allChannels.userChannels[0]) {
         allChannels.userChannels.forEach((channel) => {
-          if (channel._id === activeChat.activeChannelId) {
+          if (channel.id === activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
                 return user.id !== memberId;

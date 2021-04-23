@@ -16,7 +16,7 @@ export function CreateListMembers(props) {
   const { data: app } = useQuery(APP);
 
   useEffect(() => {
-    if (allUsers && allUsers.users && allUsers.users[0] && activeChannel) {
+    if (allUsers && Array.isArray(allUsers.users) && activeChannel) {
       createListMembers();
     }
   }, [app, activeChannel, allUsers]);
@@ -27,9 +27,9 @@ export function CreateListMembers(props) {
       <List dense className={classes.root}>
         {listMembers.map((member) => {
           return (
-            <ListItem key={member._id} button>
-              <ListItemAvatar>{createAvatar(member._id)}</ListItemAvatar>
-              <ListItemText id={member._id} primary={member.email} />
+            <ListItem key={member.id} button>
+              <ListItemAvatar>{createAvatar(member.id)}</ListItemAvatar>
+              <ListItemText id={member.id} primary={member.email} />
             </ListItem>
           );
         })}
@@ -40,10 +40,9 @@ export function CreateListMembers(props) {
 
   function getMembersActiveChannel() {
     let listMembers = [];
-    if (activeChannel && allUsers && allUsers.users && allUsers.users[0]) {
-      const allUsers = allUsers.users;
+    if (activeChannel && allUsers && Array.isArray(allUsers.users)) {
       activeChannel.members.forEach((memberId) => {
-        const filteredUsers = allUsers.filter(
+        const filteredUsers = allUsers.users.filter(
           (member) => member.id === memberId
         );
         listMembers = listMembers.concat(filteredUsers);

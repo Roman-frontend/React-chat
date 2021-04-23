@@ -61,13 +61,6 @@ export function DirectMessages(props) {
           },
         },
       });
-      console.log(ready, createDirectMessage);
-      /* cache.writeQuery({
-        query: GET_DIRECT_MESSAGES,
-        data: {
-          directMessages: [...ready.directMessages, ...createDirectMessage],
-        },
-      }); */
     },
     onError(error) {
       console.log(`Помилка ${error}`);
@@ -87,11 +80,9 @@ export function DirectMessages(props) {
   const createLinksDirectMessages = useCallback(() => {
     if (
       directMessages &&
-      directMessages.directMessages &&
-      directMessages.directMessages[0] &&
+      Array.isArray(directMessages.directMessages) &&
       users &&
-      users.users &&
-      users.users[0]
+      Array.isArray(users.users)
     ) {
       return <DirectMessage reqRowElements={directMessages.directMessages} />;
     }
@@ -101,6 +92,7 @@ export function DirectMessages(props) {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited) {
+      console.log('done ', { inviter: auth.id, invited });
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });

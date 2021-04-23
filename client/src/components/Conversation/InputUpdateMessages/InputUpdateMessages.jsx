@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import {
   ThemeProvider,
   makeStyles,
@@ -7,16 +7,20 @@ import {
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import {
   CREATE_MESSAGE,
-  UPDATE_MESSAGE,
+  CHANGE_MESSAGE,
   GET_MESSAGES,
-  APP,
   AUTH,
 } from '../../GraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
+import { messageDate } from '../../Helpers/DateCreators';
 import './input-message.sass';
+import {
+  reactiveActiveChannelId,
+  reactiveActiveDirrectMessageId,
+} from '../../GraphQL/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,25 +53,55 @@ export const InputUpdateMessages = React.memo((props) => {
   } = props;
   const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
-  const { data: activeChat } = useQuery(APP);
-  const chatId =
-    activeChat && activeChat.activeChannelId
-      ? activeChat.activeChannelId
-      : activeChat && activeChat.activeDirectMessageId
-      ? activeChat.activeDirectMessageId
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+
+  const chatType = useMemo(() => {
+    return activeDirectMessageId
+      ? 'DirectMessage'
+      : activeChannelId
+      ? 'Channel'
       : null;
-  const chatType =
-    activeChat && activeChat.activeChannelId ? 'Channel' : 'DirectMessage';
+  }, [activeChannelId, activeDirectMessageId]);
+
+  const chatId = useMemo(() => {
+    return activeDirectMessageId
+      ? activeDirectMessageId
+      : activeChannelId
+      ? activeChannelId
+      : null;
+  }, [activeChannelId, activeDirectMessageId]);
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
-    update: (proxy, { data: { createMessage } }) => {
+    update: (cache, { data: { createMessage } }) => {
       // Read the data from our cache for this query.
-      const data = proxy.readQuery({ query: GET_MESSAGES });
+      const cacheMsg = cache.readQuery({
+        query: GET_MESSAGES,
+        variables: { chatId, chatType },
+      });
+      const chatMessages =
+        cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
+          ? cacheMsg.messages.chatMessages
+          : [];
       // Write our data back to the cache with the new comment in it
-      proxy.writeQuery({
+      /* cache.modify({
+        id: cache.identify(cacheMsg.messages),
+        fields: {
+          messages(existingMessages, { readField }) {
+            return {
+              ...cacheMsg.messages,
+              chatMessages: [...cacheMsg.messages.chatMessages, createMessage],
+            };
+          },
+        },
+      }); */
+      cache.writeQuery({
         query: GET_MESSAGES,
         data: {
-          messages: [...data.messages, createMessage],
+          messages: {
+            ...cacheMsg.messages,
+            chatMessages: [...chatMessages, createMessage],
+          },
         },
       });
     },
@@ -85,16 +119,7 @@ export const InputUpdateMessages = React.memo((props) => {
     },
   });
 
-  const [changeMessage] = useMutation(UPDATE_MESSAGE, {
-    update(cache) {
-      cache.modify({
-        fields: {
-          messages(existingMessages = []) {
-            return [...existingMessages];
-          },
-        },
-      });
-    },
+  const [changeMessage] = useMutation(CHANGE_MESSAGE, {
     onError(error) {
       console.log(`Помилка ${error}`);
     },
@@ -121,42 +146,40 @@ export const InputUpdateMessages = React.memo((props) => {
     }
   }
 
-  async function changeMessageText(inputValue) {
-    const newMsg = {
-      id: changeMessageRef.current.id,
-      text: inputValue,
-      createdAt: Date.now().toString(),
-      chatType: changeMessageRef.current.chatType,
-    };
-    changeMessage({ variables: { ...newMsg } });
+  async function changeMessageText(text) {
+    const newMsg = { id: changeMessageRef.current.id, text, chatType };
+    changeMessage({ variables: newMsg });
     changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
   }
 
-  const messageInReply = (response) => {
+  const messageInReply = (text) => {
     const replyMsg = {
       userId: auth.id,
       userName: auth.name,
       replyOn: closeBtnReplyMsg,
-      text: response,
+      text,
       chatId,
       chatType,
     };
-    createMessage({ variables: { ...replyMsg } });
+    createMessage({
+      variables: replyMsg,
+      optimisticResponse: {
+        createMessage: {
+          chatId,
+          chatType,
+          createdAt: messageDate(),
+          id: messageDate(),
+          replyOn: null,
+          text,
+          userId: auth.id,
+          userName: auth.name,
+          __typename: 'Message',
+        },
+      },
+    });
     setCloseBtnReplyMsg(null);
   };
-
-  function formattedDate() {
-    const rowDate = new Date(parseInt(Date.now()));
-    let result = '';
-    result +=
-      rowDate.getHours() +
-      ':' +
-      rowDate.getMinutes() +
-      ':' +
-      rowDate.getSeconds();
-    return result;
-  }
 
   function newMessage(textMessage) {
     const newMsg = {
@@ -168,15 +191,15 @@ export const InputUpdateMessages = React.memo((props) => {
     };
 
     createMessage({
-      variables: { ...newMsg },
+      variables: newMsg,
       optimisticResponse: {
         createMessage: {
           chatId,
           chatType,
-          createdAt: formattedDate(),
-          id: '607703c23e21201041cb84cb',
+          createdAt: messageDate(),
+          id: messageDate(),
           replyOn: null,
-          text: 'edited',
+          text: textMessage,
           userId: auth.id,
           userName: auth.name,
           __typename: 'Message',

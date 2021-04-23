@@ -1,13 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 //import Button from '@material-ui/core/Button';
-import {
-  removeChannel,
-  removeDirectMessages,
-} from '../../../../redux/actions/actions';
+import { removeChannel } from '../../../../redux/actions/actions';
 import { createChannelName } from './ChatName.jsx';
 import {
   styles,
@@ -15,7 +12,7 @@ import {
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
 import { AUTH, CHANNELS } from '../../../GraphQL/queryes';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
@@ -26,15 +23,8 @@ export const CreateLists = withStyles(styles)((props) => {
   const dispatch = useDispatch();
   const { data: auth } = useQuery(AUTH);
   const { data: queryChannels } = useQuery(CHANNELS);
-  const refUpdatedChannels = useRef(null);
   const [focusedId, setFocusedId] = useState(false);
-  const [activeId, setActiveId] = useState(false);
-
-  useEffect(() => {
-    if (queryChannels && queryChannels.channels) {
-      refUpdatedChannels.current = queryChannels.channels;
-    }
-  }, [queryChannels]);
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
 
   function createLink(linkData, listName) {
     const id = linkData.id;
@@ -46,18 +36,10 @@ export const CreateLists = withStyles(styles)((props) => {
         id={id}
         onMouseEnter={() => setFocusedId(id)}
         onMouseLeave={() => setFocusedId(false)}
-        onClick={() => setActiveId(id)}
         className='main-font chatHover'
-        style={
-          activeId && activeId === id ? styleActiveLink : styleIsNotActiveLink
-        }
+        style={activeChannelId === id ? styleActiveLink : styleIsNotActiveLink}
       >
-        <Grid
-          container
-          style={{
-            alignItems: 'center',
-          }}
-        >
+        <Grid container style={{ alignItems: 'center' }}>
           <Grid item xs={10} onClick={() => toActive(id)}>
             {name}
           </Grid>
@@ -82,15 +64,14 @@ export const CreateLists = withStyles(styles)((props) => {
     );
   }
 
-  function showMore(id, typeChat) {
+  function showMore(id) {
     if (
       auth &&
       auth.token &&
-      auth &&
+      auth.channels &&
       queryChannels &&
       queryChannels.channels &&
-      queryChannels.channels[0] &&
-      auth.channels
+      queryChannels.channels[0]
     ) {
       const channel = queryChannels.channels.filter(
         (channel) => channel.id === id
@@ -111,23 +92,15 @@ export const CreateLists = withStyles(styles)((props) => {
     toActive(queryChannels.channels[0].id);
   }
 
-  async function toActive(idActive) {
-    if (refUpdatedChannels.current) {
-      changeChat(idActive);
-    }
-  }
-
-  function changeChat(idActive) {
-    if (refUpdatedChannels.current) {
-      const channelActiveId = refUpdatedChannels.current.filter(
-        (channel) => channel.id === idActive
-      )[0];
-      if (channelActiveId) {
-        reactiveActiveChannelId(channelActiveId.id);
+  async function toActive(resId) {
+    if (queryChannels && queryChannels.channels) {
+      const activeId = queryChannels.channels.find((id) => id === resId);
+      if (activeId) {
+        reactiveActiveChannelId(activeId);
         reactiveActiveDirrectMessageId(null);
       } else {
         reactiveActiveChannelId(null);
-        reactiveActiveDirrectMessageId(idActive);
+        reactiveActiveDirrectMessageId(resId);
       }
     }
   }
@@ -140,6 +113,6 @@ export const CreateLists = withStyles(styles)((props) => {
   return allDirectMessages;
 });
 
-const mapDispatchToProps = { removeChannel, removeDirectMessages };
+const mapDispatchToProps = { removeChannel };
 
 export default connect(null, mapDispatchToProps)(CreateLists);

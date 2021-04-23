@@ -1,17 +1,14 @@
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from 'react';
-import { useQuery } from '@apollo/client';
+import React, { useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
 import { GET_MESSAGES } from '../../GraphQL/queryes';
 import './messages.sass';
+import {
+  reactiveActiveChannelId,
+  reactiveActiveDirrectMessageId,
+} from '../../GraphQL/reactiveVariables';
 
 export const Messages = React.memo((props) => {
   const {
@@ -22,28 +19,36 @@ export const Messages = React.memo((props) => {
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   } = props;
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+  const chatType = useMemo(() => {
+    return activeDirectMessageId
+      ? 'DirectMessage'
+      : activeChannelId
+      ? 'Channel'
+      : null;
+  }, [activeChannelId, activeDirectMessageId]);
 
-  const messagesRef = useRef();
-  const { loading, error, data: reduxMessages, refetch } = useQuery(
-    GET_MESSAGES,
-    {
-      onCompleted(data) {
-        //console.log('mesages', data);
-      },
-    }
-  );
+  const chatId = useMemo(() => {
+    return activeDirectMessageId
+      ? activeDirectMessageId
+      : activeChannelId
+      ? activeChannelId
+      : null;
+  }, [activeChannelId, activeDirectMessageId]);
 
-  useLayoutEffect(() => {
-    if (reduxMessages) {
-      messagesRef.current = reduxMessages.messages;
-    }
-  }, [reduxMessages]);
+  const { loading, data: messages, client, refetch } = useQuery(GET_MESSAGES, {
+    variables: { chatId, chatType },
+    onCompleted(data) {
+      console.log('mesages', data);
+    },
+  });
 
   useEffect(() => {
-    if (reduxMessages) {
+    if (messages) {
       renderMessages();
     }
-  }, [reduxMessages]);
+  }, [messages]);
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
   wsSingleton.clientPromise
@@ -67,22 +72,22 @@ export const Messages = React.memo((props) => {
     );
   };
 
-  if (loading) {
-    return;
-  }
-
   const renderMessages = () => {
-    //console.log(reduxMessages);
-    if (reduxMessages && reduxMessages.messages[0]) {
-      const messages = reduxMessages.messages.slice(
+    console.log(messages);
+    if (
+      messages &&
+      messages.messages &&
+      Array.isArray(messages.messages.chatMessages)
+    ) {
+      const slicedMessages = messages.messages.chatMessages.slice(
         0,
-        reduxMessages.messages.length
+        messages.messages.chatMessages.length
       );
-      const reversedMsg = messages.reverse();
+      const reversedMsg = slicedMessages.reverse();
       return reversedMsg.map((message) => {
         return (
           <Message
-            key={message._id || message.id}
+            key={message.id}
             message={message}
             setPopupMessage={setPopupMessage}
           />

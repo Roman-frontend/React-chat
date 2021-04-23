@@ -4,8 +4,12 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Grid from '@material-ui/core/Grid';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { StyledBadge } from './ConversationHeaderStyles';
-import { useQuery } from '@apollo/client';
-import { GET_USERS, APP } from '../../GraphQL/queryes';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { GET_USERS } from '../../GraphQL/queryes';
+import {
+  reactiveActiveChannelId,
+  reactiveOnlineMembers,
+} from '../../GraphQL/reactiveVariables';
 
 export function Members(props) {
   const {
@@ -14,15 +18,18 @@ export function Members(props) {
     setModalAddPeopleIsOpen,
   } = props;
   const { data: users } = useQuery(GET_USERS);
-  const { data: app } = useQuery(APP);
   const [iconMembers, setIconMembers] = useState([]);
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+  const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   useEffect(() => {
-    if (users && users.users && activeChannel) createAvatars();
-  }, [app, users, activeChannel]);
+    if (users && Array.isArray(users.users) && activeChannel) {
+      createAvatars();
+    }
+  }, [activeChannelId, users, activeChannel]);
 
   function openModalAddPeoples() {
-    if (app.activeChannelId) {
+    if (activeChannelId) {
       setModalAddPeopleIsOpen(true);
     }
   }
@@ -31,14 +38,14 @@ export function Members(props) {
     let avatars = [];
     activeChannel.members.forEach((memberId) => {
       users.users.forEach((user) => {
-        if (user._id === memberId) {
+        if (user.id === memberId) {
           avatars = avatars.concat(
             <StyledBadge
-              key={user._id}
+              key={user.id}
               style={{ border: 0 }}
               overlap='circle'
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              variant={app.usersOnline.includes(user._id) ? 'dot' : 'standard'}
+              variant={usersOnline.includes(user.id) ? 'dot' : 'standard'}
             >
               <Avatar alt={user.name} src='/static/images/avatar/2.jpg' />
             </StyledBadge>
@@ -46,7 +53,6 @@ export function Members(props) {
         }
       });
     });
-    console.log(avatars);
     const readyIcons = createAvatar(avatars);
     setIconMembers(readyIcons);
   };
@@ -72,12 +78,12 @@ export function Members(props) {
       >
         <Grid
           item
-          xs={app && app.activeChannelId ? 6 : 11}
+          xs={activeChannelId ? 6 : 11}
           style={{ alignSelf: 'center' }}
         >
           {iconMembers}
         </Grid>
-        {app && app.activeChannelId && (
+        {activeChannelId && (
           <Grid item xs={5} style={{ textAlign: 'center' }}>
             <GroupAddIcon
               style={{ fontSize: 45, cursor: 'pointer' }}

@@ -66,7 +66,7 @@ export const AddChannel = withStyles(styles)((props) => {
   useEffect(() => {
     if (allUsers && allUsers.users && auth) {
       const peoplesInvite = allUsers.users.filter(
-        (people) => people._id !== auth.id
+        (people) => people.id !== auth.id
       );
       notInvitedRef.current = peoplesInvite;
     }

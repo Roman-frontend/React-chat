@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import SetViewPopup from './SetViewPopup/SetViewPopup.jsx';
+import { SetViewPopup } from './SetViewPopup/SetViewPopup.jsx';
 import './message-actions-popup.sass';
 
 export default function MessageActionsPopup(props) {

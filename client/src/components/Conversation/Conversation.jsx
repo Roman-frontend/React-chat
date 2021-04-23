@@ -7,30 +7,25 @@ import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.j
 import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
-import { useQuery } from '@apollo/client';
-import { AUTH, APP } from '../GraphQL/queryes';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { AUTH } from '../GraphQL/queryes';
+import { reactiveActiveChannelId } from '../GraphQL/reactiveVariables';
 
 export default function Conversation(props) {
   const { resSuspense } = props;
   const { data: auth } = useQuery(AUTH);
-  const { data: activeChat } = useQuery(APP);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
   const inputRef = useRef();
   const changeMessageRef = useRef();
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
 
   const checkPrivate = useCallback(() => {
     let isOpenChat = true;
-    if (
-      auth &&
-      auth.channels &&
-      auth.channels[0] &&
-      activeChat &&
-      activeChat.activeChannelId
-    ) {
+    if (auth && auth.channels && auth.channels[0] && activeChannelId) {
       auth.channels.forEach((channel) => {
-        if (channel.id === activeChat.activeChannelId) {
+        if (channel.id === activeChannelId) {
           if (!channel.isPrivate) {
             return (isOpenChat = true);
           } else if (auth && auth.id && channel.members.includes(auth.id)) {
@@ -40,7 +35,7 @@ export default function Conversation(props) {
       });
     }
     return isOpenChat;
-  }, [auth, activeChat, auth]);
+  }, [auth, activeChannelId, auth]);
 
   const buttonEndActive =
     closeBtnChangeMsg || closeBtnReplyMsg ? (

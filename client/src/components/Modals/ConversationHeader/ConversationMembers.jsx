@@ -40,10 +40,11 @@ export const ConversationMembers = withStyles(styles)((props) => {
   const searchInputRef = useRef();
 
   const title = useMemo(() => {
+    const quantityMembers = activeChannel ? activeChannel.members.length : 1;
+    const channelName = activeChannel ? `#${activeChannel.name}` : '#general';
     return (
       <p style={{ margin: 0 }}>
-        {activeChannel ? activeChannel.members.length : 1} members in
-        {activeChannel ? `#${activeChannel.name}` : '#general'}
+        {`${quantityMembers} members in ${channelName}`}
       </p>
     );
   }, [activeChannel]);

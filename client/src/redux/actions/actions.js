@@ -1,6 +1,5 @@
 import {
   GET_CHANNELS,
-  GET_MESSAGES,
   POST_CHANNEL,
   POST_ADD_PEOPLES_TO_CHANNEL,
   POST_ADD_PEOPLE_TO_DIRECT_MESSAGES,
@@ -30,14 +29,6 @@ export const getChannels = (token, body) => {
     token,
     'POST',
     body
-  );
-};
-
-export const getMessagesForDirectMsg = (token, param) => {
-  return dispatcher(
-    GET_MESSAGES,
-    `/api/direct-message-chat/get-messages${param}`,
-    token
   );
 };
 

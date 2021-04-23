@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
@@ -14,15 +13,32 @@ import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
 } from '../../GraphQL/reactiveVariables';
-import { AUTH } from '../../GraphQL/queryes';
-import { useQuery } from '@apollo/client';
+import { AUTH, REMOVE_CHAT } from '../../GraphQL/queryes';
+import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 
 export const CreateLists = withStyles(styles)((props) => {
   const { reqRowElements, classes } = props;
-  const dispatch = useDispatch();
   const { data: auth } = useQuery(AUTH);
   const [focusedId, setFocusedId] = useState(false);
-  const [activeId, setActiveId] = useState(false);
+  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
+
+  const [removeChat] = useMutation(REMOVE_CHAT, {
+    update: (cache) => {
+      cache.modify({
+        fields: {
+          directMessages({ DELETE }) {
+            return DELETE;
+          },
+        },
+      });
+    },
+    onCompleted(data) {
+      console.log(`remove chat`);
+    },
+    onError(error) {
+      console.log(`Помилка при видаленні повідомлення ${error}`);
+    },
+  });
 
   function createLink(linkData) {
     const id = linkData.id;
@@ -34,9 +50,11 @@ export const CreateLists = withStyles(styles)((props) => {
         id={id}
         onMouseEnter={() => setFocusedId(id)}
         onMouseLeave={() => setFocusedId(false)}
-        onClick={() => setActiveId(id)}
+        onClick={() => toActive(id)}
         className='main-font chatHover'
-        style={activeId === id ? styleActiveLink : styleIsNotActiveLink}
+        style={
+          activeDirectMessageId === id ? styleActiveLink : styleIsNotActiveLink
+        }
       >
         <Grid
           container
@@ -44,7 +62,7 @@ export const CreateLists = withStyles(styles)((props) => {
             alignItems: 'center',
           }}
         >
-          <Grid item xs={10} onClick={() => toActive(id)}>
+          <Grid item xs={10}>
             {name}
           </Grid>
           <Grid
@@ -82,7 +100,8 @@ export const CreateLists = withStyles(styles)((props) => {
       );
       if (Array.isArray(filteredUserDirectMessages)) {
         const body = { userId: auth.id, filteredUserDirectMessages };
-        dispatch(removeDirectMessages(auth.token, id, { ...body }));
+        console.log({ id, chatType: 'DirectMessage' });
+        removeChat({ variables: { id, chatType: 'DirectMessage' } });
       }
     }
   }

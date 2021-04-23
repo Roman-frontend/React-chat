@@ -56,15 +56,25 @@ const cache = new InMemoryCache({
         usersOnline() {
           return reactiveOnlineMembers();
         },
-        activeChannelId: {
-          read() {
-            return reactiveActiveChannelId();
-          },
+        activeChannelId() {
+          return reactiveActiveChannelId();
         },
-        activeDirectMessageId: {
-          read() {
+        activeDirectMessageId() {
+          return reactiveActiveDirrectMessageId();
+        },
+        activeChatId() {
+          if (reactiveActiveChannelId()) {
+            return reactiveActiveChannelId();
+          } else if (reactiveActiveDirrectMessageId()) {
             return reactiveActiveDirrectMessageId();
-          },
+          }
+        },
+        activeChatType() {
+          if (reactiveActiveChannelId()) {
+            return 'Channel';
+          } else if (reactiveActiveDirrectMessageId()) {
+            return 'DirectMessage';
+          }
         },
       },
     },
@@ -77,6 +87,9 @@ const cache = new InMemoryCache({
         },
       },
     },
+    /* Message: {
+      keyFields: ['chatType', 'chatId', ['id']],
+    }, */
   },
 });
 
@@ -85,6 +98,7 @@ const client = new ApolloClient({
   typeDefs,
   cache,
   resolvers: {},
+  connectToDevTools: true,
 });
 
 const store = createStore(

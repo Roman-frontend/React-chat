@@ -9,43 +9,41 @@ import { ConversationMembers } from '../../Modals/ConversationHeader/Conversatio
 import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
-import { useQuery } from '@apollo/client';
-import { CHANNELS, APP, AUTH } from '../../GraphQL/queryes.js';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { CHANNELS, AUTH } from '../../GraphQL/queryes.js';
+import { reactiveActiveChannelId } from '../../GraphQL/reactiveVariables.js';
 
 export const ConversationHeader = (props) => {
   const { resSuspense } = props;
   const dispatch = useDispatch();
   const { data: queryAllChannels } = useQuery(CHANNELS);
   const { data: auth } = useQuery(AUTH);
-  const { data: activeChat } = useQuery(APP);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
+  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
 
   const activeChannel = useMemo(() => {
     if (
-      activeChat &&
-      activeChat.activeChannelId &&
+      activeChannelId &&
       queryAllChannels &&
-      queryAllChannels.channels &&
-      queryAllChannels.channels[0]
+      Array.isArray(queryAllChannels.userChannels)
     ) {
-      return queryAllChannels.channels.filter(
-        (channel) => channel.id === activeChat.activeChannelId
-      )[0];
-    } else if (activeChat && activeChat.activeDirectMessageId) {
-      return null;
+      return queryAllChannels.userChannels.find(
+        (channel) => channel.id === activeChannelId
+      );
     }
-  }, [activeChat, queryAllChannels]);
+    return null;
+  }, [activeChannelId, queryAllChannels]);
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {
-      const arrInvited = invited.map((people) => people._id);
+      const arrInvited = invited.map((people) => people.id);
       dispatch(
         addPeopleToChannel(
           auth.token,
           { invitedUsers: arrInvited },
-          activeChat.activeChannelId
+          activeChannelId
         )
       );
     }

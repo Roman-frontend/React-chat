@@ -2,7 +2,6 @@ import {
   GET_USERS,
   GET_USERS_ONLINE,
   GET_CHANNELS,
-  GET_MESSAGES,
   POST_REGISTER,
   AUTH,
   POST_CHANNEL,
@@ -41,9 +40,6 @@ export const rootReducer = (state = initialState, action) => {
 
     case GET_CHANNELS:
       return { ...state, channels: action.payload.userChannels };
-
-    case GET_MESSAGES:
-      return { ...state, messages: action.payload.messages };
 
     case POST_REGISTER:
       return {

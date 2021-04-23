@@ -24,7 +24,6 @@ router.get(`/get-users:userId`, verifyToken, async (req, res) => {
 
 router.post('/get-messages:channelId', verifyToken, async (req, res) => {
   try {
-    console.log('validatedPostMessage => ', 'userHasAccesToChannel');
     const userHasAccesToChannel = await checkAccesToChannel(
       req.params.channelId,
       req.body.userId

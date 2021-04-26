@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { compose, createStore, applyMiddleware } from 'redux';
 import {
   ApolloClient,
   InMemoryCache,
@@ -18,9 +17,6 @@ import {
   reactiveActiveDirrectMessageId,
   reactiveOnlineMembers,
 } from './components/GraphQL/reactiveVariables';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
-import { rootReducer } from './redux/reducers/rootReducer.js';
 import './i18n';
 import App from './App.js';
 
@@ -78,18 +74,6 @@ const cache = new InMemoryCache({
         },
       },
     },
-    DirectMessage: {
-      fields: {
-        addNew: {
-          read(directMessages = "Не визначене Ім'я", { variables }) {
-            return directMessages;
-          },
-        },
-      },
-    },
-    /* Message: {
-      keyFields: ['chatType', 'chatId', ['id']],
-    }, */
   },
 });
 
@@ -101,20 +85,9 @@ const client = new ApolloClient({
   connectToDevTools: true,
 });
 
-const store = createStore(
-  rootReducer,
-  compose(
-    applyMiddleware(thunk),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  )
-);
-
-//цей ApolloProvider - для - apollo-client
 const app = (
   <ApolloProvider client={client}>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <App />
   </ApolloProvider>
 );
 

@@ -1,41 +1,26 @@
-import React, { Suspense, lazy, useMemo, useEffect } from 'react';
-import { STORAGE_NAME } from '../../redux/types';
+import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { reactiveOnlineMembers } from '../../components/GraphQL/reactiveVariables';
 import './chat-page.sass';
-import { useQuery } from '@apollo/client';
-import { APP } from '../../components/GraphQL/queryes';
-const Header = lazy(() => import('../../components/Header/Header.jsx'));
-const Conversation = lazy(() =>
-  import('../../components/Conversation/Conversation.jsx')
-);
-const SetsUser = lazy(() => import('../../components/SetsUser/SetsUser.jsx'));
-
-const useStyles = makeStyles((theme) => ({
-  root: { position: 'fixed', left: '50%', top: '50%' },
-}));
+import { useQuery, useReactiveVar } from '@apollo/client';
+import Header from '../../components/Header/Header.jsx';
+import Conversation from '../../components/Conversation/Conversation.jsx';
+import SetsUser from '../../components/SetsUser/SetsUser.jsx';
 
 export const Chat = () => {
-  const classes = useStyles();
-  const { data: app } = useQuery(APP);
+  const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   useEffect(() => {
     wsSingleton.clientPromise
       .then((wsClient) => {
         wsClient.addEventListener('message', (response) => {
           const parsedRes = JSON.parse(response.data);
-          //console.log(parsedRes);
-          if (parsedRes.message === 'online') {
-            if (
-              app &&
-              app.usersOnline &&
-              JSON.stringify(app.usersOnline) !==
-                JSON.stringify(parsedRes.members)
-            ) {
-              reactiveOnlineMembers(parsedRes.members);
-            }
+          if (
+            parsedRes.message === 'online' &&
+            JSON.stringify(usersOnline) !== JSON.stringify(parsedRes.members)
+          ) {
+            console.log('new online ', parsedRes.members);
+            reactiveOnlineMembers(parsedRes.members);
           }
         });
       })
@@ -52,7 +37,7 @@ export const Chat = () => {
       wsSingleton.clientPromise
         .then((wsClient) => console.log('ONLINE'))
         .catch((error) => console.log(error));
-      const storage = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+      const storage = JSON.parse(sessionStorage.getItem('storageData'));
       if (storage && storage.channels && storage.directMessages) {
         const allUserChats = storage.channels.concat(storage.directMessages);
         wsSend({ userRooms: allUserChats, meta: 'join', userId: storage.id });
@@ -65,17 +50,9 @@ export const Chat = () => {
 
   return (
     <div className='chat-page'>
-      <Suspense
-        fallback={
-          <div className={classes.root}>
-            <CircularProgress color='secondary' />
-          </div>
-        }
-      >
-        <Header />
-        <SetsUser />
-        <Conversation />
-      </Suspense>
+      <Header />
+      <SetsUser />
+      <Conversation />
     </div>
   );
 };

@@ -72,7 +72,7 @@ export const InputUpdateMessages = React.memo((props) => {
       : null;
   }, [activeChannelId, activeDirectMessageId]);
 
-  const [createMessage] = useMutation(CREATE_MESSAGE, {
+  const [createMessage, { error }] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data: { createMessage } }) => {
       // Read the data from our cache for this query.
       const cacheMsg = cache.readQuery({
@@ -83,30 +83,17 @@ export const InputUpdateMessages = React.memo((props) => {
         cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
           ? cacheMsg.messages.chatMessages
           : [];
-      // Write our data back to the cache with the new comment in it
-      /* cache.modify({
-        id: cache.identify(cacheMsg.messages),
-        fields: {
-          messages(existingMessages, { readField }) {
-            return {
+      if (cacheMsg) {
+        cache.writeQuery({
+          query: GET_MESSAGES,
+          data: {
+            messages: {
               ...cacheMsg.messages,
-              chatMessages: [...cacheMsg.messages.chatMessages, createMessage],
-            };
+              chatMessages: [...chatMessages, createMessage],
+            },
           },
-        },
-      }); */
-      cache.writeQuery({
-        query: GET_MESSAGES,
-        data: {
-          messages: {
-            ...cacheMsg.messages,
-            chatMessages: [...chatMessages, createMessage],
-          },
-        },
-      });
-    },
-    onError(error) {
-      console.log(`Помилка ${error}`);
+        });
+      }
     },
     onCompleted(data) {
       const messageData = data.createMessage;

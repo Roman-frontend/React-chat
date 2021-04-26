@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DrawTitles } from '../DrawTitles.jsx';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
-import CreateLists from '../HelpersSetUsers/ChatItem/CreateChatItem';
+import { CreateLists } from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 import { useQuery, useReactiveVar } from '@apollo/client';
@@ -38,7 +38,8 @@ export function Channels(props) {
       reactiveActiveDirrectMessageId(null);
     } else if (
       listDirectMessages &&
-      Array.isArray(listDirectMessages.directMessages)
+      Array.isArray(listDirectMessages.directMessages) &&
+      listDirectMessages.directMessages[0]
     ) {
       reactiveActiveChannelId(null);
       reactiveActiveDirrectMessageId(listDirectMessages.directMessages[0].id);

@@ -37,7 +37,7 @@ export const Messages = React.memo((props) => {
       : null;
   }, [activeChannelId, activeDirectMessageId]);
 
-  const { loading, data: messages, client, refetch } = useQuery(GET_MESSAGES, {
+  const { data: messages, client } = useQuery(GET_MESSAGES, {
     variables: { chatId, chatType },
     onCompleted(data) {
       console.log('mesages', data);
@@ -45,9 +45,7 @@ export const Messages = React.memo((props) => {
   });
 
   useEffect(() => {
-    if (messages) {
-      renderMessages();
-    }
+    renderMessages();
   }, [messages]);
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
@@ -56,7 +54,24 @@ export const Messages = React.memo((props) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
         if (parsedRes && parsedRes.text) {
-          refetch();
+          console.log('refetch()', parsedRes);
+          const oldMsg = client.readQuery({
+            query: GET_MESSAGES,
+            variables: { chatId, chatType },
+          });
+          const chatMessages =
+            oldMsg && oldMsg.messages && oldMsg.messages.chatMessages
+              ? oldMsg.messages.chatMessages
+              : [];
+          client.writeQuery({
+            query: GET_MESSAGES,
+            data: {
+              messages: {
+                ...oldMsg.messages,
+                chatMessages: [...chatMessages, parsedRes],
+              },
+            },
+          });
         }
       };
     })
@@ -73,18 +88,15 @@ export const Messages = React.memo((props) => {
   };
 
   const renderMessages = () => {
-    console.log(messages);
     if (
       messages &&
       messages.messages &&
       Array.isArray(messages.messages.chatMessages)
     ) {
-      const slicedMessages = messages.messages.chatMessages.slice(
-        0,
-        messages.messages.chatMessages.length
-      );
-      const reversedMsg = slicedMessages.reverse();
-      return reversedMsg.map((message) => {
+      const reversedMessages = messages.messages.chatMessages
+        .slice(0, messages.messages.chatMessages.length)
+        .reverse();
+      return reversedMessages.map((message) => {
         return (
           <Message
             key={message.id}

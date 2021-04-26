@@ -38,6 +38,11 @@ async function checkAccesToChannel(chatId, userId) {
   return channel.isPrivate && !channel.members.includes(userId) ? true : false;
 }
 
+function infoError(err) {
+  if (err) console.log(err);
+  console.log('updated');
+}
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -103,6 +108,12 @@ const DirectMessageType = new GraphQLObjectType({
     inviter: { type: new GraphQLNonNull(InviterType) },
     invited: { type: InvitedType },
     createdAt: { type: GraphQLString },
+  }),
+});
+const RemovedDirectMessageType = new GraphQLObjectType({
+  name: 'RemovedDirectMessage',
+  fields: () => ({
+    id: { type: GraphQLID },
   }),
 });
 
@@ -177,6 +188,7 @@ const Query = new GraphQLObjectType({
           let userChannels = [];
           for (let id of channelsId) {
             const findChannel = await Channel.findById(id);
+            console.log(findChannel);
             userChannels = userChannels.concat(findChannel);
           }
           return userChannels;
@@ -210,23 +222,16 @@ const Query = new GraphQLObjectType({
         chatType: { type: new GraphQLNonNull(GraphQLString) },
       },
       async resolve(parent, { chatId, chatType }) {
-        //const { chatId, chatType } = args;
         /* const isNotMember = await checkAccesToChannel(chatId, userId);
         if (isNotMember) {
           return;
         } */
-        //console.log('messages ->', chatId, chatType);
+        console.log('geting messages...', chatId, chatType);
         if (chatType === 'DirectMessage') {
           const chatMessages = await DirectMessageChat.find({ chatId });
-          // console.log('readyDrMsg  ------>> ', {
-          //   id: chatMessages[0].chatId,
-          //   chatMessages,
-          // });
           return { id: chatMessages[0].chatId, chatMessages };
         } else if (chatType === 'Channel') {
-          //return ChannelMessage.find({ chatId });
           const chatMessages = await ChannelMessage.find({ chatId });
-          //console.log({ id: chatMessages[0].chatId, chatMessages });
           return { id: chatMessages[0].chatId, chatMessages };
         }
       },
@@ -237,11 +242,11 @@ const Query = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
       async resolve(parent, { id }) {
-        console.log('getDirectMessages: ', id);
+        //console.log('getDirectMessages: ', id);
         let allFinded = [];
         for (let directMessageId of id) {
           const finded = await DirectMessage.findById(directMessageId);
-          console.log(finded);
+          //console.log(finded);
           if (finded) {
             allFinded.push({
               id: finded._id,
@@ -259,7 +264,7 @@ const Query = new GraphQLObjectType({
             });
           }
         }
-        console.log('getDirectMessages: ', allFinded);
+        //console.log('getDirectMessages: ', allFinded);
         return allFinded;
       },
     },
@@ -350,7 +355,6 @@ const Mutation = new GraphQLObjectType({
         } else if (chatType === 'DirectMessage') {
           newMessage = await DirectMessageChat.create(args);
         }
-        console.log(newMessage);
         return newMessage;
       },
     },
@@ -362,10 +366,6 @@ const Mutation = new GraphQLObjectType({
         chatType: { type: new GraphQLNonNull(GraphQLString) },
       },
       async resolve(parent, { id, text, chatType }) {
-        function infoError(err) {
-          if (err) console.log(err);
-          console.log('updated');
-        }
         if (chatType === 'Channel') {
           return ChannelMessage.findOneAndUpdate(
             { _id: id },
@@ -411,16 +411,11 @@ const Mutation = new GraphQLObjectType({
         inviter: { type: new GraphQLNonNull(GraphQLID) },
         invited: { type: new GraphQLList(GraphQLID) },
       },
-      async resolve(parent, args) {
-        const { inviter, invited } = args;
+      async resolve(parent, { inviter, invited }) {
         let allNew = [];
-        console.log('create direct message ', args);
-        /* const dbInviter = await User.findById(inviter);
-        const dbInvited = await User.findById(invited[0]); */
         for (let invitedId of invited) {
           const dbInviter = await User.findById(inviter);
           const dbInvited = await User.findById(invitedId);
-          console.log(dbInviter, invited);
           const newDrMsg = await DirectMessage.create({
             inviter: {
               _id: dbInviter._id,
@@ -455,7 +450,6 @@ const Mutation = new GraphQLObjectType({
             createdAt: newDrMsg.createdAt,
           });
         }
-        console.log('createDirectMessage  --> ', allNew);
         return allNew;
       },
     },
@@ -470,7 +464,7 @@ const Mutation = new GraphQLObjectType({
         isPrivate: { type: GraphQLBoolean },
       },
       async resolve(parent, args) {
-        const { token, creator, name, members, discription, isPrivate } = args;
+        console.log(args);
         const newChannel = await Channel.create({ ...args });
         for (let memberId of args.members) {
           const user = await User.findById(memberId);
@@ -480,26 +474,110 @@ const Mutation = new GraphQLObjectType({
         return newChannel;
       },
     },
-    removeChat: {
+    addMember: {
+      type: ChannelType,
+      args: {
+        token: { type: new GraphQLNonNull(GraphQLString) },
+        invited: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        chatId: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      async resolve(parent, { token, invited, chatId }) {
+        for await (const invitedId of invited) {
+          const addedUser = await User.findById(invitedId);
+          addedUser.channels.push(chatId);
+          await addedUser.save();
+
+          const activeChannel = await Channel.findById(chatId);
+          activeChannel.members.push(invitedId);
+          await activeChannel.save();
+        }
+        return Channel.findById(chatId);
+      },
+    },
+
+    removeDirectMessage: {
       type: DirectMessageType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
         chatType: { type: new GraphQLNonNull(GraphQLString) },
       },
       async resolve(parent, { id, chatType }) {
-        console.log('removeDirectMessage -> ', id, chatType);
-        if (chatType === 'Channel') {
-          await Channel.findByIdAndRemove(
-            { _id: id },
-            { useFindAndModify: false, new: true }
-          );
-        } else if (chatType === 'DirectMessage') {
-          console.log('DirectMessage removing');
-          await DirectMessage.findByIdAndRemove(
-            { _id: id },
-            { useFindAndModify: false, new: true }
-          );
+        const removed = await DirectMessage.findByIdAndRemove(
+          { _id: id },
+          { useFindAndModify: false, new: true }
+        );
+        const inviter = await User.findById(removed.inviter._id);
+        const updaterInvited = inviter.directMessages.filter(
+          (drMsg) => drMsg != id
+        );
+        await User.findOneAndUpdate(
+          { _id: removed.inviter._id },
+          { directMessages: updaterInvited },
+          { useFindAndModify: false, new: true },
+          (err) => infoError(err)
+        );
+
+        const invited = await User.findById(removed.invited._id);
+        const updatedInvited = invited.directMessages.filter(
+          (drMsg) => drMsg != id
+        );
+        await User.findOneAndUpdate(
+          { _id: removed.invited._id },
+          { directMessages: updatedInvited },
+          { useFindAndModify: false, new: true },
+          (err) => infoError(err)
+        );
+        for (;;) {
+          const removedMessage = await DirectMessageChat.findOneAndDelete({
+            chatId: id,
+          });
+          if (!removedMessage) {
+            break;
+          }
         }
+      },
+    },
+    removeChannel: {
+      type: ChannelType,
+      args: {
+        channelId: { type: new GraphQLNonNull(GraphQLID) },
+        userId: { type: new GraphQLNonNull(GraphQLID) },
+        token: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, { channelId, userId, token }) {
+        console.log('removeChannel -> ', channelId, userId);
+        const channel = await Channel.findById(channelId);
+        const filteredMembers = channel.members.filter((id) => id != userId);
+        if (filteredMembers[0]) {
+          await Channel.findOneAndUpdate(
+            { _id: channelId },
+            { members: filteredMembers },
+            { useFindAndModify: false, new: true },
+            (err) => infoError(err)
+          );
+        } else {
+          await Channel.findByIdAndRemove(
+            { _id: channelId },
+            { useFindAndModify: false, new: true }
+          );
+          for (;;) {
+            const removedMessage = await ChannelMessage.findOneAndDelete({
+              chatId: channelId,
+            });
+            if (!removedMessage) {
+              break;
+            }
+          }
+        }
+
+        const user = await User.findById(userId);
+        const filteredChannels = user.channels.filter((id) => id != channelId);
+        await User.findOneAndUpdate(
+          { _id: userId },
+          { channels: filteredChannels },
+          { useFindAndModify: false, new: true },
+          (err) => infoError(err)
+        );
       },
     },
   },

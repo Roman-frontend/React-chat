@@ -89,7 +89,7 @@ function getRoomOnline(userRooms) {
       });
     }
   });
-  //console.log('arrOfOnlineUsersId --->', arrOfOnlineUsersId);
+  console.log('arrOfOnlineUsersId --->', arrOfOnlineUsersId);
   return arrOfOnlineUsersId;
 }
 

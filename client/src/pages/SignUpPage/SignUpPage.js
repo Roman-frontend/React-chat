@@ -14,7 +14,6 @@ import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
 import { ADD_USER, GET_USERS } from '../../components/GraphQL/queryes';
 import {
-  authReactiveVar,
   reactiveVarId,
   reactiveVarName,
   reactiveVarEmail,
@@ -83,7 +82,6 @@ export const SignUpPage = (props) => {
         userData: { id, name, email, channels, directMessages },
         token,
       };
-      authReactiveVar(data.addUser);
       reactiveVarToken(token);
       reactiveVarName(name);
       reactiveVarEmail(email);

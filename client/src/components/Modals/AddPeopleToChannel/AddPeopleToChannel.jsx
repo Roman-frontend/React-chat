@@ -40,9 +40,14 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
       let allNotInvited = allUsers.users.filter((user) => user.id !== auth.id);
-      if (activeChannelId && allChannels && allChannels.userChannels[0]) {
+      if (
+        activeChannelId &&
+        allChannels &&
+        allChannels.userChannels &&
+        allChannels.userChannels[0]
+      ) {
         allChannels.userChannels.forEach((channel) => {
-          if (channel.id === activeChannelId) {
+          if (channel && channel.id === activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
                 return user.id !== memberId;

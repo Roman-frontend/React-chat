@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { LOGIN } from '../../components/GraphQL/queryes';
 import {
-  authReactiveVar,
   reactiveVarId,
   reactiveVarToken,
   reactiveVarName,
@@ -46,7 +45,6 @@ export const SignInPage = () => {
     onCompleted(data) {
       console.log(data);
       const login = data.login;
-      authReactiveVar(login);
       reactiveVarToken(login.token);
       reactiveVarName(login.name);
       reactiveVarEmail(login.email);

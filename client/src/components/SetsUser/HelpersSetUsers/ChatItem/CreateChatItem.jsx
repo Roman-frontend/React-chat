@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 //import Button from '@material-ui/core/Button';
-import { removeChannel } from '../../../../redux/actions/actions';
 import { createChannelName } from './ChatName.jsx';
 import {
   styles,
   styleActiveLink,
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
-import { AUTH, CHANNELS } from '../../../GraphQL/queryes';
-import { useQuery, useReactiveVar } from '@apollo/client';
+import { AUTH, CHANNELS, REMOVE_CHANNEL } from '../../../GraphQL/queryes';
+import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
@@ -20,11 +17,31 @@ import {
 
 export const CreateLists = withStyles(styles)((props) => {
   const { reqRowElements, listName, classes } = props;
-  const dispatch = useDispatch();
   const { data: auth } = useQuery(AUTH);
   const { data: queryChannels } = useQuery(CHANNELS);
   const [focusedId, setFocusedId] = useState(false);
   const activeChannelId = useReactiveVar(reactiveActiveChannelId);
+
+  const [removeChannel] = useMutation(REMOVE_CHANNEL, {
+    update: (cache) => {
+      cache.modify({
+        fields: {
+          userChannels({ DELETE }) {
+            return DELETE;
+          },
+          messages({ DELETE }) {
+            return DELETE;
+          },
+        },
+      });
+    },
+    onCompleted(data) {
+      console.log(`remove chat ${data}`);
+    },
+    onError(error) {
+      console.log(`Помилка при видаленні повідомлення ${error}`);
+    },
+  });
 
   function createLink(linkData, listName) {
     const id = linkData.id;
@@ -67,27 +84,16 @@ export const CreateLists = withStyles(styles)((props) => {
   function showMore(id) {
     if (
       auth &&
+      auth.id &&
       auth.token &&
       auth.channels &&
       queryChannels &&
       queryChannels.channels &&
       queryChannels.channels[0]
     ) {
-      const channel = queryChannels.channels.filter(
-        (channel) => channel.id === id
-      )[0];
-      const filteredChannelMembers = channel.members.filter(
-        (id) => id !== auth.id
-      );
-      const filteredUserChannels = auth.channels.filter(
-        (channelId) => channelId !== id
-      );
-      const body = {
-        userId: auth.id,
-        filteredChannelMembers,
-        filteredUserChannels,
-      };
-      dispatch(removeChannel(auth.token, id, { ...body }));
+      removeChannel({
+        variables: { channelId: id, userId: auth.id, token: auth.token },
+      });
     }
     toActive(queryChannels.channels[0].id);
   }
@@ -106,13 +112,11 @@ export const CreateLists = withStyles(styles)((props) => {
   }
 
   let allDirectMessages = [];
-  reqRowElements.forEach((element) =>
-    allDirectMessages.push(createLink(element, listName))
-  );
+  reqRowElements.forEach((channel) => {
+    if (channel && channel.id) {
+      allDirectMessages.push(createLink(channel, listName));
+    }
+  });
 
   return allDirectMessages;
 });
-
-const mapDispatchToProps = { removeChannel };
-
-export default connect(null, mapDispatchToProps)(CreateLists);

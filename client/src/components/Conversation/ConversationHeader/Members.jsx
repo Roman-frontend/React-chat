@@ -26,19 +26,13 @@ export function Members(props) {
     if (users && Array.isArray(users.users) && activeChannel) {
       createAvatars();
     }
-  }, [activeChannelId, users, activeChannel]);
-
-  function openModalAddPeoples() {
-    if (activeChannelId) {
-      setModalAddPeopleIsOpen(true);
-    }
-  }
+  }, [activeChannelId, users, activeChannel, usersOnline]);
 
   const createAvatars = () => {
     let avatars = [];
     activeChannel.members.forEach((memberId) => {
       users.users.forEach((user) => {
-        if (user.id === memberId) {
+        if (user.id === memberId && usersOnline) {
           avatars = avatars.concat(
             <StyledBadge
               key={user.id}
@@ -74,7 +68,7 @@ export function Members(props) {
       <Grid
         container
         spacing={1}
-        style={{ height: '4.3rem', width: '19vw', alignContent: 'center' }}
+        style={{ width: '19vw', alignContent: 'center' }}
       >
         <Grid
           item
@@ -83,14 +77,12 @@ export function Members(props) {
         >
           {iconMembers}
         </Grid>
-        {activeChannelId && (
-          <Grid item xs={5} style={{ textAlign: 'center' }}>
-            <GroupAddIcon
-              style={{ fontSize: 45, cursor: 'pointer' }}
-              onClick={() => openModalAddPeoples()}
-            />
-          </Grid>
-        )}
+        <Grid item xs={5} style={{ textAlign: 'center' }}>
+          <GroupAddIcon
+            style={{ fontSize: 45, cursor: 'pointer' }}
+            onClick={() => activeChannelId && setModalAddPeopleIsOpen(true)}
+          />
+        </Grid>
       </Grid>
     </div>
   );

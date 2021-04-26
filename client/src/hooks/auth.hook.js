@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { STORAGE_NAME } from '../redux/types.js';
 import { wsSend, wsSingleton } from '../WebSocket/soket';
 import {
   reactiveVarToken,
@@ -8,7 +7,7 @@ import {
   reactiveVarEmail,
   reactiveVarId,
   reactiveVarName,
-  authReactiveVar,
+  reactiveOnlineMembers,
 } from '../components/GraphQL/reactiveVariables';
 import { useReactiveVar } from '@apollo/client';
 
@@ -19,11 +18,12 @@ export const useAuth = () => {
 
   const auth = useCallback((data) => {
     const toStorage = JSON.stringify(data);
-    sessionStorage.setItem(STORAGE_NAME, toStorage);
+    sessionStorage.setItem('storageData', toStorage);
     wsSingleton.clientPromise
       .then((wsClient) => console.log('ONLINE'))
       .catch((error) => console.log(error));
     const userRooms = data.channels.concat(data.directMessages);
+    console.log({ userRooms, meta: 'join', userId: data.id });
     wsSend({ userRooms, meta: 'join', userId: data.id });
   }, []);
 
@@ -34,12 +34,12 @@ export const useAuth = () => {
     }
     sessionStorage.clear();
     reactiveVarToken(null);
-    authReactiveVar(null);
     reactiveVarName(null);
     reactiveVarEmail(null);
     reactiveVarId(null);
     reactiveVarChannels(null);
     reactiveDirectMessages(null);
+    reactiveOnlineMembers(null);
   }, []);
 
   return { auth, logout };

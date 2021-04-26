@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { wsSend } from '../../WebSocket/soket';
-import { STORAGE_NAME } from '../../redux/types';
 import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
 import { Messages } from './Messages/Messages.jsx';
 import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
@@ -95,7 +94,7 @@ export default function Conversation(props) {
   }
 
   registerUnload('Leaving page', function () {
-    const storageData = JSON.parse(sessionStorage.getItem(STORAGE_NAME));
+    const storageData = JSON.parse(sessionStorage.getItem('storageData'));
     if (storageData && storageData.channels[0]) {
       const allUserChats = storageData.channels.concat(
         storageData.directMessages

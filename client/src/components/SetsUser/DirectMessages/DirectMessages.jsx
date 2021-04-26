@@ -24,7 +24,7 @@ import {
 } from '../../GraphQL/reactiveVariables';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import DirectMessage from './DirectMessage';
+import { DirectMessage } from './DirectMessage';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
 import { useCallback } from 'react';
 

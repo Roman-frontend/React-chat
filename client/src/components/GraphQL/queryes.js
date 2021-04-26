@@ -145,9 +145,29 @@ export const CREATE_CHANNEL = gql`
   }
 `;
 
+export const ADD_MEMBER_CHANNEL = gql`
+  mutation addMember($token: String!, $invited: [ID]!, $chatId: ID!) {
+    addMember(token: $token, invited: $invited, chatId: $chatId) {
+      id
+      name
+      creator
+      members
+      isPrivate
+    }
+  }
+`;
+
 export const REMOVE_CHAT = gql`
-  mutation removeChat($id: ID!, $chatType: String!) {
-    removeChat(id: $id, chatType: $chatType) {
+  mutation removeDirectMessage($id: ID!, $chatType: String!) {
+    removeDirectMessage(id: $id, chatType: $chatType) {
+      id
+    }
+  }
+`;
+
+export const REMOVE_CHANNEL = gql`
+  mutation removeChannel($channelId: ID!, $userId: ID!, $token: String!) {
+    removeChannel(channelId: $channelId, userId: $userId, token: $token) {
       id
     }
   }

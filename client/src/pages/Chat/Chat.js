@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
+<<<<<<< HEAD
 import { reactiveOnlineMembers } from '../../components/../GraphQLApp/reactiveVariables';
+=======
+import { reactiveOnlineMembers } from '../../components/GraphQL/reactiveVariables';
+>>>>>>> ready
 import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Header from '../../components/Header/Header.jsx';
@@ -9,6 +13,10 @@ import SetsUser from '../../components/SetsUser/SetsUser.jsx';
 
 export const Chat = () => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
+<<<<<<< HEAD
+=======
+
+>>>>>>> ready
   useEffect(() => {
     wsSingleton.clientPromise
       .then((wsClient) => {

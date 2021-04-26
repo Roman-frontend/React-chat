@@ -29,6 +29,12 @@ export const ConversationHeader = (props) => {
     },
   });
 
+  const [addMember] = useMutation(ADD_MEMBER_CHANNEL, {
+    onError(error) {
+      console.log(`Помилка при додаванні учасника ${error}`);
+    },
+  });
+
   const activeChannel = useMemo(() => {
     if (
       activeChannelId &&

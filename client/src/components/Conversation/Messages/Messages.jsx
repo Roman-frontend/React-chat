@@ -6,6 +6,7 @@ import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
 import { GET_MESSAGES } from '../../GraphQL/queryes';
 import './messages.sass';
 import {
+  reactiveVarId,
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
 } from '../../GraphQL/reactiveVariables';
@@ -19,6 +20,7 @@ export const Messages = React.memo((props) => {
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   } = props;
+  const userId = useReactiveVar(reactiveVarId);
   const activeChannelId = useReactiveVar(reactiveActiveChannelId);
   const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
   const chatType = useMemo(() => {
@@ -38,7 +40,7 @@ export const Messages = React.memo((props) => {
   }, [activeChannelId, activeDirectMessageId]);
 
   const { data: messages, client } = useQuery(GET_MESSAGES, {
-    variables: { chatId, chatType },
+    variables: { chatId, chatType, userId },
     onCompleted(data) {
       console.log('mesages', data);
     },

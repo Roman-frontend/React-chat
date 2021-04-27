@@ -77,7 +77,7 @@ export const InputUpdateMessages = React.memo((props) => {
       // Read the data from our cache for this query.
       const cacheMsg = cache.readQuery({
         query: GET_MESSAGES,
-        variables: { chatId, chatType },
+        variables: { chatId, chatType, userId: auth.id },
       });
       const chatMessages =
         cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages

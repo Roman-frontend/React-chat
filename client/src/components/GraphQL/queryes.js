@@ -87,10 +87,11 @@ export const REMOVE_MESSAGE = gql`
 `;
 
 export const GET_MESSAGES = gql`
-  query messages($chatId: ID!, $chatType: String!) {
+  query messages($chatId: ID!, $chatType: String!, $userId: ID!) {
+    id @client @export(as: $userId)
     activeChatId @client @export(as: $chatId)
     activeChatType @client @export(as: $chatType)
-    messages(chatId: $chatId, chatType: $chatType) {
+    messages(chatId: $chatId, chatType: $chatType, userId: $userId) {
       id
       chatMessages {
         id

@@ -1,0 +1,60 @@
+type Channel {
+  id: ID
+  name: String
+  creator: ID
+  description: String
+  members: [ID]
+  isPrivate: Boolean
+  createdAt: String
+  updatedAt: String
+}
+
+type DirectMessage {
+  id: ID
+  inviter: Inviter!
+  invited: Invited
+  createdAt: String
+}
+
+type Invited {
+  id: ID
+  name: String
+  email: String
+}
+
+type Inviter {
+  id: ID
+  name: String
+  email: String
+}
+
+type User {
+  id: ID
+  name: String!
+  email: String!
+  password: String
+  channels: [String]
+  directMessages: [String]
+  token: String
+}
+
+type Query {
+  userChannels(channelsId: [ID]): [Channel]
+  directMessages(id: [ID]!): [DirectMessage]
+  users(id: ID): [User]
+}
+
+type Mutation {
+  createChannel(
+    token: String
+    creator: ID
+    name: String
+    members: [ID]
+    discription: String
+    isPrivate: Boolean
+  ): Channel
+  addMember(token: String!, invited: [ID]!, chatId: ID!): Channel
+  createDirectMessage(inviter: ID!, invited: [ID]): [DirectMessage]
+  removeDirectMessage(id: ID!, chatType: String!): DirectMessage
+  removeChannel(channelId: ID!, userId: ID!, token: String!): Channel
+}

@@ -7,7 +7,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { LOGIN } from '../../components/GraphQL/queryes';
+import { LOGIN } from '../../components/../GraphQLApp/queryes';
 import {
   reactiveVarId,
   reactiveVarToken,
@@ -15,7 +15,7 @@ import {
   reactiveVarEmail,
   reactiveVarChannels,
   reactiveDirectMessages,
-} from '../../components/GraphQL/reactiveVariables';
+} from '../../components/../GraphQLApp/reactiveVariables';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
 import './auth-body.sass';
@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignInPage = () => {
+export const SignInPage = ({ route }) => {
+  console.log(route);
   const classes = useStyles();
   const { auth } = useAuth();
   const initialValues = { email: '', password: '' };
@@ -49,6 +50,7 @@ export const SignInPage = () => {
       reactiveVarName(login.name);
       reactiveVarEmail(login.email);
       reactiveVarId(login.id);
+      console.log(login);
       reactiveVarChannels(login.channels);
       reactiveDirectMessages(login.directMessages);
       auth(login);

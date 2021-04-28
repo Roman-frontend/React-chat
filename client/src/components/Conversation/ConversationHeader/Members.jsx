@@ -5,11 +5,11 @@ import Grid from '@material-ui/core/Grid';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { StyledBadge } from './ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GET_USERS } from '../../GraphQL/queryes';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   reactiveActiveChannelId,
   reactiveOnlineMembers,
-} from '../../GraphQL/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVariables';
 
 export function Members(props) {
   const {

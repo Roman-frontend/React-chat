@@ -12,16 +12,15 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
+import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
-  GET_USERS,
-  AUTH,
-} from '../../GraphQL/queryes';
+} from '../../SetsUser/SetsUserGraphQL/queryes';
 import {
   reactiveActiveDirrectMessageId,
   reactiveDirectMessages,
-} from '../../GraphQL/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVariables';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { DirectMessage } from './DirectMessage';

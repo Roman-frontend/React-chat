@@ -9,7 +9,7 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { GET_USERS } from '../../GraphQL/queryes';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 import './select-people.sass';
 
 const styles = (theme) => ({

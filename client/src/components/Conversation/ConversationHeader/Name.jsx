@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH, GET_DIRECT_MESSAGES } from '../../GraphQL/queryes';
-import { reactiveActiveDirrectMessageId } from '../../GraphQL/reactiveVariables';
+import { AUTH } from '../../../GraphQLApp/queryes';
+import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
+import { reactiveActiveDirrectMessageId } from '../../../GraphQLApp/reactiveVariables';
 
 export function Name(props) {
   const { activeChannel } = props;

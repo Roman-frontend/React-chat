@@ -7,8 +7,12 @@ import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToC
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
-import { CHANNELS, AUTH, ADD_MEMBER_CHANNEL } from '../../GraphQL/queryes.js';
-import { reactiveActiveChannelId } from '../../GraphQL/reactiveVariables.js';
+import { AUTH } from '../../../GraphQLApp/queryes.js';
+import {
+  CHANNELS,
+  ADD_MEMBER_CHANNEL,
+} from '../../SetsUser/SetsUserGraphQL/queryes';
+import { reactiveActiveChannelId } from '../../../GraphQLApp/reactiveVariables.js';
 
 export const ConversationHeader = (props) => {
   const { resSuspense } = props;

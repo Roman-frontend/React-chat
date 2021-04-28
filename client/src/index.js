@@ -16,7 +16,7 @@ import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
   reactiveOnlineMembers,
-} from './components/GraphQL/reactiveVariables';
+} from './components/../GraphQLApp/reactiveVariables';
 import './i18n';
 import App from './App.js';
 
@@ -34,7 +34,7 @@ const cache = new InMemoryCache({
           return reactiveDirectMessages();
         },
         channels() {
-          reactiveVarChannels();
+          console.log(reactiveVarChannels());
           return reactiveVarChannels();
         },
         token() {

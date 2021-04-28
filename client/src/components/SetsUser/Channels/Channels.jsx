@@ -6,11 +6,14 @@ import { CreateLists } from '../HelpersSetUsers/ChatItem/CreateChatItem';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { CHANNELS, GET_DIRECT_MESSAGES } from '../../GraphQL/queryes';
+import {
+  CHANNELS,
+  GET_DIRECT_MESSAGES,
+} from '../../SetsUser/SetsUserGraphQL/queryes';
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
-} from '../../GraphQL/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVariables';
 
 export function Channels(props) {
   const { t } = useTranslation();

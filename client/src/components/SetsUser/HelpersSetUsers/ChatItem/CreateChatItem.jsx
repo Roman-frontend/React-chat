@@ -8,12 +8,16 @@ import {
   styleActiveLink,
   styleIsNotActiveLink,
 } from './ChatStyles.jsx';
-import { AUTH, CHANNELS, REMOVE_CHANNEL } from '../../../GraphQL/queryes';
+import { AUTH } from '../../../../GraphQLApp/queryes';
+import {
+  CHANNELS,
+  REMOVE_CHANNEL,
+} from '../../../SetsUser/SetsUserGraphQL/queryes';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
-} from '../../../GraphQL/reactiveVariables';
+} from '../../../../GraphQLApp/reactiveVariables';
 
 export const CreateLists = withStyles(styles)((props) => {
   const { reqRowElements, listName, classes } = props;

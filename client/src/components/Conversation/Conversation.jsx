@@ -7,8 +7,8 @@ import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH } from '../GraphQL/queryes';
-import { reactiveActiveChannelId } from '../GraphQL/reactiveVariables';
+import { AUTH } from '../../GraphQLApp/queryes';
+import { reactiveActiveChannelId } from '../../GraphQLApp/reactiveVariables';
 
 export default function Conversation(props) {
   const { resSuspense } = props;

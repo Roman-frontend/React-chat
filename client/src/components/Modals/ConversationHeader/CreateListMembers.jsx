@@ -7,7 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { StyledBadge } from '../../Conversation/ConversationHeader/ConversationHeaderStyles';
 import { useQuery } from '@apollo/client';
-import { APP, GET_USERS } from '../../GraphQL/queryes';
+import { APP } from '../../SetsUser/SetsUserGraphQL/queryes';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 
 export function CreateListMembers(props) {
   const { activeChannel, classes } = props;

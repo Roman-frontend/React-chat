@@ -10,8 +10,8 @@ import {
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
-} from '../../GraphQL/reactiveVariables';
-import { AUTH, REMOVE_CHAT } from '../../GraphQL/queryes';
+} from '../../../GraphQLApp/reactiveVariables';
+import { AUTH, REMOVE_CHAT } from '../../../GraphQLApp/queryes';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 
 export const DirectMessage = withStyles(styles)((props) => {

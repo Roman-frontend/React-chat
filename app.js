@@ -5,10 +5,10 @@ const path = require('path');
 const config = require('config');
 const mongoose = require('mongoose');
 const app = express();
-const typeDefs = require('./schemaGraphQL/types/index');
-const resolvers = require('./schemaGraphQL/resolvers/index');
+const typeDefs = require('./schema/types/index');
+const resolvers = require('./schema/resolvers/index');
 const server = require('./Soket/soket');
-//const schema = require('./schemaGraphQL/schema');
+//const schema = require('./schema/schema');
 //cors(cross origane resorse sharing) - дозволяє створювати кросдоменні запити - без нього запити з фронтенда на бекенд і навпаки не будуть коректно спрацьовувати. cors - дозволяє серверу відповідати фронтенду.
 const cors = require('cors');
 //express-graphql - пакет що дозволяє нашому експрес серверу спокійно використовувати graphql-api
@@ -23,11 +23,6 @@ app.use('/graphql', graphqlHTTP({ schema, graphiql: true }));
 //дозволить коректно парсити body який приходить з фронтента бо по замовчуванні node js сприймає body як
 //стріми(потік даних) - тобто як дані з фротента що передаються частинами що не дозволить прочитати їх
 app.use(express.json({ extended: true }));
-app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/chat', require('./routes/chat.message'));
-app.use('/api/channel', require('./routes/chat.channel'));
-app.use('/api/direct-message', require('./routes/direct.message'));
-app.use('/api/direct-message-chat', require('./routes/direct.message.chat'));
 app.use(express.static(path.resolve(__dirname, 'client', 'src', 'components')));
 
 app.get('*', (req, res) => {

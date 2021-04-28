@@ -8,19 +8,19 @@ import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { gql, useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_MESSAGE,
   CHANGE_MESSAGE,
   GET_MESSAGES,
-  AUTH,
-} from '../../GraphQL/queryes';
+} from '../ConversationGraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
 import { messageDate } from '../../Helpers/DateCreators';
 import './input-message.sass';
 import {
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
-} from '../../GraphQL/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/client';
-import { GET_USERS } from '../../GraphQL/queryes';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -9,8 +9,8 @@ import './add-people-to-channel.sass';
 import {
   reactiveVarName,
   reactiveVarId,
-} from '../../GraphQL/reactiveVariables';
-import { GET_DIRECT_MESSAGES } from '../../GraphQL/queryes';
+} from '../../../GraphQLApp/reactiveVariables';
+import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
 
 const styles = (theme) => ({
   titleRoot: {

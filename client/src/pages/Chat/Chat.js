@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
-import { reactiveOnlineMembers } from '../../components/GraphQL/reactiveVariables';
+import { reactiveOnlineMembers } from '../../components/../GraphQLApp/reactiveVariables';
 import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Header from '../../components/Header/Header.jsx';

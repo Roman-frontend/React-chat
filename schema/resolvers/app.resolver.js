@@ -7,20 +7,19 @@ const { infoError } = require('../helpers');
 const resolvers = {
   Query: {
     userChannels: async (_, { channelsId }) => {
+      console.log('userChannels -- ', channelsId);
       if (channelsId) {
         let userChannels = [];
         for (let id of channelsId) {
           const findChannel = await Channel.findById(id);
-          console.log(findChannel);
           userChannels = userChannels.concat(findChannel);
         }
         return userChannels;
-      } else {
-        return Channel.find({});
       }
+      console.log('returned all channels');
+      return [];
     },
     users: (_, { id }) => {
-      console.log('usersId - ', id);
       if (id) {
         return User.findById(id);
       } else {
@@ -54,7 +53,6 @@ const resolvers = {
 
   Mutation: {
     createChannel: async (_, args) => {
-      console.log(args);
       const newChannel = await Channel.create({ ...args });
       for (let memberId of args.members) {
         const user = await User.findById(memberId);
@@ -155,21 +153,20 @@ const resolvers = {
       console.log('removed directMessage...');
     },
     removeChannel: async (_, { channelId, userId, token }) => {
-      console.log('removing channel -> ');
       const channel = await Channel.findById(channelId);
       const filteredMembers = channel.members.filter((id) => id != userId);
       if (filteredMembers[0]) {
         await Channel.findOneAndUpdate(
           { _id: channelId },
           { members: filteredMembers },
-          { useFindAndModify: false, new: true },
-          (err) => infoError(err)
+          { useFindAndModify: false, new: true }
         );
       } else {
         await Channel.findByIdAndRemove(
           { _id: channelId },
           { useFindAndModify: false, new: true }
         );
+        console.log('removing channel -> ');
         for (;;) {
           const removedMessage = await ChannelMessage.findOneAndDelete({
             chatId: channelId,
@@ -178,6 +175,7 @@ const resolvers = {
             break;
           }
         }
+        console.log('removed channel -> ');
       }
 
       const user = await User.findById(userId);
@@ -185,8 +183,7 @@ const resolvers = {
       await User.findOneAndUpdate(
         { _id: userId },
         { channels: filteredChannels },
-        { useFindAndModify: false, new: true },
-        (err) => infoError(err)
+        { useFindAndModify: false, new: true }
       );
     },
   },

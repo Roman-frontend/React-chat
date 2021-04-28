@@ -14,6 +14,7 @@ exports.checkAccesToChannel = async (chatId, userId) => {
 exports.infoError = (err) => {
   if (err) console.log(err);
   console.log('updated');
+  return true;
 };
 
 exports.formatYupError = (err) => {

@@ -3,19 +3,18 @@ import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import { useQuery, useMutation } from '@apollo/client';
+import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import {
-  AUTH,
-  GET_USERS,
   CREATE_CHANNEL,
   CHANNELS,
-} from '../../GraphQL/queryes';
+} from '../../SetsUser/SetsUserGraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import './add-channel.sass';
-import { reactiveVarChannels } from '../../GraphQL/reactiveVariables';
+import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVariables';
 
 const styles = (theme) => ({
   input: {

@@ -8,7 +8,7 @@ import {
   reactiveVarId,
   reactiveVarName,
   reactiveOnlineMembers,
-} from '../components/GraphQL/reactiveVariables';
+} from '../components/../GraphQLApp/reactiveVariables';
 import { useReactiveVar } from '@apollo/client';
 
 export const useAuth = () => {

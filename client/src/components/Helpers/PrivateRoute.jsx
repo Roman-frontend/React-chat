@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useReactiveVar } from '@apollo/client';
-import { reactiveVarToken } from '../GraphQL/reactiveVariables';
+import { reactiveVarToken } from '../../GraphQLApp/reactiveVariables';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
   const sessionStorageData = JSON.parse(sessionStorage.getItem('storageData'));

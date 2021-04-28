@@ -3,13 +3,13 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
-import { GET_MESSAGES } from '../../GraphQL/queryes';
+import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
 import './messages.sass';
 import {
   reactiveVarId,
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
-} from '../../GraphQL/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVariables';
 
 export const Messages = React.memo((props) => {
   const {

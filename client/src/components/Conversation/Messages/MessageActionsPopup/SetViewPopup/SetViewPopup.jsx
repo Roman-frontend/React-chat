@@ -5,9 +5,10 @@ import ReplyIcon from '@material-ui/icons/Reply';
 import EditIcon from '@material-ui/icons/Edit';
 import ForwardIcon from '@material-ui/icons/Forward';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { REMOVE_MESSAGE, AUTH } from '../../../../GraphQL/queryes';
+import { AUTH } from '../../../../../GraphQLApp/queryes';
+import { REMOVE_MESSAGE } from '../../../ConversationGraphQL/queryes';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import { reactiveActiveChannelId } from '../../../../GraphQL/reactiveVariables';
+import { reactiveActiveChannelId } from '../../../../../GraphQLApp/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   button: {

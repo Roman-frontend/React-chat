@@ -4,7 +4,7 @@ import Menu from '@material-ui/core/Menu';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { useQuery } from '@apollo/client';
-import { AUTH } from '../../GraphQL/queryes';
+import { AUTH } from '../../../GraphQLApp/queryes';
 
 const HeaderProfile = (props) => {
   const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;

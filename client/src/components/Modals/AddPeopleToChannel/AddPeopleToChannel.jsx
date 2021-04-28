@@ -5,9 +5,10 @@ import Modal from 'react-modal';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { GET_USERS, APP, AUTH, CHANNELS } from '../../GraphQL/queryes';
+import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
+import { APP, CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import './add-people-to-channel.sass';
-import { reactiveActiveChannelId } from '../../GraphQL/reactiveVariables.js';
+import { reactiveActiveChannelId } from '../../../GraphQLApp/reactiveVariables.js';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({

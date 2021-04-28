@@ -12,7 +12,7 @@ import {
 } from '../../components/Helpers/validateMethods.jsx';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
-import { ADD_USER, GET_USERS } from '../../components/GraphQL/queryes';
+import { ADD_USER, GET_USERS } from '../../components/../GraphQLApp/queryes';
 import {
   reactiveVarId,
   reactiveVarName,
@@ -20,7 +20,7 @@ import {
   reactiveVarToken,
   reactiveVarChannels,
   reactiveDirectMessages,
-} from '../../components/GraphQL/reactiveVariables';
+} from '../../components/../GraphQLApp/reactiveVariables';
 
 const useStyles = makeStyles((theme) => ({
   button: {

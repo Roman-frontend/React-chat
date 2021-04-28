@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { reactiveOnlineMembers } from '../../components/../GraphQLApp/reactiveVariables';
 =======
 import { reactiveOnlineMembers } from '../../components/GraphQL/reactiveVariables';
 >>>>>>> ready
+=======
+import { reactiveOnlineMembers } from '../../components/../GraphQLApp/reactiveVariables';
+>>>>>>> divede graphql queryes in apollo-client
 import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Header from '../../components/Header/Header.jsx';

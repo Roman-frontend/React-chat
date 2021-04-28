@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignInPage = () => {
+export const SignInPage = ({ route }) => {
+  console.log(route);
   const classes = useStyles();
   const { auth } = useAuth();
   const initialValues = { email: '', password: '' };
@@ -51,6 +52,7 @@ export const SignInPage = () => {
       reactiveVarName(login.name);
       reactiveVarEmail(login.email);
       reactiveVarId(login.id);
+      console.log(login);
       reactiveVarChannels(login.channels);
       reactiveDirectMessages(login.directMessages);
       auth(login);

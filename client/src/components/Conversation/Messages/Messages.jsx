@@ -13,8 +13,12 @@ import {
 =======
   reactiveActiveChannelId,
   reactiveActiveDirrectMessageId,
+<<<<<<< HEAD
 } from '../../GraphQL/reactiveVariables';
 >>>>>>> cut schema
+=======
+} from '../../../GraphQLApp/reactiveVariables';
+>>>>>>> divede graphql queryes in apollo-client
 
 export const Messages = React.memo((props) => {
   const {

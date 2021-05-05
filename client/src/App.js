@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { routesCreater } from './routes';
 import './css/style.sass';
 
+//Hi man
+
 export default function App() {
   return (
     <Router>

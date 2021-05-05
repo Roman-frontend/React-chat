@@ -5,10 +5,9 @@ const path = require('path');
 const config = require('config');
 const mongoose = require('mongoose');
 const app = express();
-const typeDefs = require('./schema/types/index');
-const resolvers = require('./schema/resolvers/index');
+const typeDefs = require('./graphql/types/index');
+const resolvers = require('./graphql/resolvers/index');
 const server = require('./Soket/soket');
-//const schema = require('./schema/schema');
 //cors(cross origane resorse sharing) - дозволяє створювати кросдоменні запити - без нього запити з фронтенда на бекенд і навпаки не будуть коректно спрацьовувати. cors - дозволяє серверу відповідати фронтенду.
 const cors = require('cors');
 //express-graphql - пакет що дозволяє нашому експрес серверу спокійно використовувати graphql-api

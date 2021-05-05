@@ -9,7 +9,7 @@ const {
   emailNotLongEnough,
   invalidEmail,
   passwordNotLongEnough,
-} = require('../helpers');
+} = require('../../common/errors');
 
 const schema = yup.object().shape({
   name: yup.string().min(3, nameNotLongEnough).max(255),

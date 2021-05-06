@@ -7,18 +7,8 @@ import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
 import './messages.sass';
 import {
   reactiveVarId,
-<<<<<<< HEAD
   activeChatId,
 } from '../../../GraphQLApp/reactiveVariables';
-=======
-  reactiveActiveChannelId,
-  reactiveActiveDirrectMessageId,
-<<<<<<< HEAD
-} from '../../GraphQL/reactiveVariables';
->>>>>>> cut schema
-=======
-} from '../../../GraphQLApp/reactiveVariables';
->>>>>>> divede graphql queryes in apollo-client
 
 export const Messages = React.memo((props) => {
   const {
@@ -30,14 +20,9 @@ export const Messages = React.memo((props) => {
     setCloseBtnReplyMsg,
   } = props;
   const userId = useReactiveVar(reactiveVarId);
-<<<<<<< HEAD
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId = useReactiveVar(activeChatId)
     .activeDirectMessageId;
-=======
-  const activeChannelId = useReactiveVar(reactiveActiveChannelId);
-  const activeDirectMessageId = useReactiveVar(reactiveActiveDirrectMessageId);
->>>>>>> cut schema
   const chatType = useMemo(() => {
     return activeDirectMessageId
       ? 'DirectMessage'

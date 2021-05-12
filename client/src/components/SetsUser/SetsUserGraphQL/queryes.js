@@ -4,16 +4,7 @@ export const CREATE_DIRECT_MESSAGE = gql`
   mutation createDirectMessage($inviter: ID!, $invited: [ID]!) {
     createDirectMessage(inviter: $inviter, invited: $invited) {
       id
-      inviter {
-        id
-        name
-        email
-      }
-      invited {
-        id
-        name
-        email
-      }
+      members
       createdAt
     }
   }
@@ -24,16 +15,7 @@ export const GET_DIRECT_MESSAGES = gql`
     directMessagesId @client @export(as: "id")
     directMessages(id: $id) {
       id
-      inviter {
-        id
-        name
-        email
-      }
-      invited {
-        id
-        name
-        email
-      }
+      members
       createdAt
     }
   }
@@ -101,8 +83,8 @@ export const ADD_MEMBER_CHANNEL = gql`
 `;
 
 export const REMOVE_CHAT = gql`
-  mutation removeDirectMessage($id: ID!, $chatType: String!) {
-    removeDirectMessage(id: $id, chatType: $chatType) {
+  mutation removeDirectMessage($id: ID!, $token: String!) {
+    removeDirectMessage(id: $id, token: $token) {
       id
     }
   }

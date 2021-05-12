@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useReactiveVar } from '@apollo/client';
-import { reactiveVarToken } from '../../GraphQLApp/reactiveVariables';
+import { reactiveVarToken } from '../../GraphQLApp/reactiveVars';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
   console.log('PrivateRoute');

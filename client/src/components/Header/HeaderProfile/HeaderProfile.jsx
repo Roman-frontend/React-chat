@@ -5,16 +5,15 @@ import { useAuth } from '../../../hooks/auth.hook.js';
 import { useQuery } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 
-const HeaderProfile = (props) => {
-  const { menuId, anchorEl, setAnchorEl, handleMobileMenuClose } = props;
+const HeaderProfile = ({
+  menuId,
+  anchorEl,
+  setAnchorEl,
+  handleMobileMenuClose,
+}) => {
   const { data: auth } = useQuery(AUTH);
   const { logout } = useAuth();
   const isMenuOpen = Boolean(anchorEl);
-
-  const logoutHandler = (event) => {
-    event.preventDefault();
-    logout();
-  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -36,7 +35,7 @@ const HeaderProfile = (props) => {
       </MenuItem>
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logoutHandler}>Log out</MenuItem>
+      <MenuItem onClick={logout}>Log out</MenuItem>
     </Menu>
   );
 };

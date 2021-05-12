@@ -8,38 +8,38 @@ import {
   reactiveVarId,
   reactiveVarName,
   reactiveOnlineMembers,
-} from '../components/../GraphQLApp/reactiveVariables';
+} from '../GraphQLApp/reactiveVars';
 import { useReactiveVar } from '@apollo/client';
 
 export const useAuth = () => {
-  const channelsId = useReactiveVar(reactiveVarChannels);
+  const channels = useReactiveVar(reactiveVarChannels);
   const directMessagesId = useReactiveVar(reactiveDirectMessages);
   const userId = useReactiveVar(reactiveVarId);
 
   const auth = useCallback((data) => {
+    reactiveVarToken(data.token);
+    reactiveVarName(data.name);
+    reactiveVarEmail(data.email);
+    reactiveVarId(data.id);
+    reactiveVarChannels(data.channels);
+    reactiveDirectMessages(data.directMessages);
     const toStorage = JSON.stringify(data);
     sessionStorage.setItem('storageData', toStorage);
-    wsSingleton.clientPromise
-      .then((wsClient) => console.log('ONLINE'))
-      .catch((error) => console.log(error));
-    const userRooms = data.channels.concat(data.directMessages);
-    console.log({ userRooms, meta: 'join', userId: data.id });
-    wsSend({ userRooms, meta: 'join', userId: data.id });
   }, []);
 
   const logout = useCallback(() => {
-    if (Array.isArray(channelsId) && Array.isArray(directMessagesId)) {
-      const userRooms = channelsId.concat(directMessagesId);
+    if (Array.isArray(channels) && Array.isArray(directMessagesId)) {
+      const userRooms = channels.concat(directMessagesId);
       wsSend({ userRooms, userId, meta: 'leave' });
     }
     sessionStorage.clear();
     reactiveVarToken(null);
-    reactiveVarName(null);
+    /* reactiveVarName(null);
     reactiveVarEmail(null);
     reactiveVarId(null);
     reactiveVarChannels(null);
     reactiveDirectMessages(null);
-    reactiveOnlineMembers(null);
+    reactiveOnlineMembers(null); */
   }, []);
 
   return { auth, logout };

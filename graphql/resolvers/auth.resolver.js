@@ -4,12 +4,12 @@ const jwt = require('jsonwebtoken');
 const yup = require('yup');
 const config = require('config');
 const {
-  formatYupError,
   nameNotLongEnough,
   emailNotLongEnough,
   invalidEmail,
   passwordNotLongEnough,
 } = require('../../common/errors');
+const { formatYupError } = require('../helpers');
 
 const schema = yup.object().shape({
   name: yup.string().min(3, nameNotLongEnough).max(255),
@@ -20,72 +20,68 @@ const schema = yup.object().shape({
 const resolvers = {
   Query: {
     login: async (_, args) => {
-      console.log('login');
       try {
         await schema.validate(args, { abortEarly: false });
       } catch {
         return formatYupError(err);
       }
       const { email, password } = args;
-      console.log('ready');
-      const userData = await User.findOne({ email });
-      if (!userData) {
+      const user = await User.findOne({ email });
+      if (!user) {
         throw new Error(`Couldn't find email: ${email}`);
-        //return { message: 'Такой пользователь не найден' };
       }
-      const isMatch = await bcrypt.compare(password, userData.password);
+      const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return { message: 'Невірний пароль, спробуйте знову' };
+        throw new Error('Невірний пароль, спробуйте знову');
       }
       const token = jwt.sign(
-        { userId: userData._id },
+        { userId: user.id },
         config.get('jwtSecret')
         //{ expiresIn: '1h'}
       );
       return {
-        id: userData._id,
-        name: userData.name,
-        email: userData.email,
-        channels: userData.channels,
-        directMessages: userData.directMessages,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        channels: user.channels,
+        directMessages: user.directMessages,
         token,
       };
     },
   },
 
   Mutation: {
-    addUser: async (_, args) => {
+    register: async (_, args) => {
       try {
         await schema.validate(args, { abortEarly: false });
       } catch (err) {
-        return formatYupError(err);
+        throw new Error(`Error : ${formatYupError(err)}`);
       }
-      const hashPassword = await bcrypt.hash(args.password, 12);
-      const user = new User({
-        name: args.name,
-        email: args.email,
+      const { name, email, password } = args;
+
+      const emailIsBasy = await User.findOne({ email });
+      if (emailIsBasy) {
+        throw new Error(`Email: ${email} is basy`);
+      }
+      const hashPassword = await bcrypt.hash(password, 12);
+      const newUser = await User.create({
+        name,
+        email,
         password: hashPassword,
       });
-      const newUser = await user.save();
       const token = jwt.sign(
-        { userId: newUser._id },
+        { userId: newUser.id },
         config.get('jwtSecret')
         //{ expiresIn: '1h'}
       );
       return {
-        id: newUser._id,
+        id: newUser.id,
         name: newUser.name,
         email: newUser.email,
         channels: newUser.channels,
         directMessages: newUser.directMessages,
         token,
       };
-    },
-    updateUser: (_, { id, name }) => {
-      return User.findByIdAndUpdate(id, { $set: { name } }, { new: true });
-    },
-    deleteUser: async (_, { id }) => {
-      return User.findByIdAndRemove(id);
     },
   },
 };

@@ -14,7 +14,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import './add-channel.sass';
-import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVariables';
+import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVars';
 
 const styles = (theme) => ({
   input: {

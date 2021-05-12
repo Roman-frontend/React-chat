@@ -7,11 +7,8 @@ import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { CHANNELS } from '../../GraphQLApp/queryes';
-import {
-  activeChatId,
-  reactiveVarId,
-} from '../../GraphQLApp/reactiveVariables';
+import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
+import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
 
 export default function Conversation(props) {
   const { resSuspense } = props;
@@ -22,8 +19,8 @@ export default function Conversation(props) {
   const inputRef = useRef();
   const changeMessageRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-  const activeDirectMessageId = useReactiveVar(activeChatId)
-    .activeDirectMessageId;
+  const activeDirectMessageId =
+    useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
 
   useEffect(() => {
@@ -66,18 +63,21 @@ export default function Conversation(props) {
   const contentMessages = () => {
     const hasNotAccesToChat = checkPrivate();
 
-    return hasNotAccesToChat ? (
-      <Messages
-        popupMessage={popupMessage}
-        setPopupMessage={setPopupMessage}
-        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
-        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
-        inputRef={inputRef}
-        changeMessageRef={changeMessageRef}
-      />
-    ) : (
-      <img src={imageError} />
-    );
+    if (!hasNotAccesToChat) {
+      return <img src={imageError} />;
+    }
+    if (activeChannelId || activeDirectMessageId) {
+      return (
+        <Messages
+          popupMessage={popupMessage}
+          setPopupMessage={setPopupMessage}
+          setCloseBtnChangeMsg={setCloseBtnChangeMsg}
+          setCloseBtnReplyMsg={setCloseBtnReplyMsg}
+          inputRef={inputRef}
+          changeMessageRef={changeMessageRef}
+        />
+      );
+    }
   };
 
   function registerUnload(msg, onunloadFunc) {

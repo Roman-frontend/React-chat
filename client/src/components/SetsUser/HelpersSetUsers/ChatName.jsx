@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
 
-export function createDirectMsgName(name) {
+export function CreateDirectMsgName({ name }) {
   return (
     <Grid container style={{ alignItems: 'center' }}>
       <Grid item xs={2}>
@@ -17,11 +18,11 @@ export function createDirectMsgName(name) {
   );
 }
 
-export function createChannelName(isPrivate, channel) {
+export function CreateChannelName({ isPrivate, name }) {
   const nameChannel = isPrivate ? (
-    <p className='main-font'>&#128274;{channel.name}</p>
+    <p className='main-font'>&#128274;{name}</p>
   ) : (
-    <p className='main-font'>{`#${channel.name}`}</p>
+    <p className='main-font'>{`#${name}`}</p>
   );
 
   return (
@@ -32,3 +33,10 @@ export function createChannelName(isPrivate, channel) {
     </Grid>
   );
 }
+
+CreateDirectMsgName.defaultProps = {
+  name: 'Невизначений',
+};
+CreateChannelName.defaultProps = {
+  name: 'Невизначений',
+};

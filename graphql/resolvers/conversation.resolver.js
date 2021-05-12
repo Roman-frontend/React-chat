@@ -25,10 +25,12 @@ const resolvers = {
       const { chatType } = args;
       let newMessage;
       if (chatType === 'Channel') {
+        console.log(args);
         newMessage = await ChannelMessage.create(args);
       } else if (chatType === 'DirectMessage') {
         newMessage = await DirectMessageChat.create(args);
       }
+      console.log(newMessage);
       return newMessage;
     },
     changeMessage: async (_, { id, text, chatType }) => {

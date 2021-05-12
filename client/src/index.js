@@ -4,12 +4,14 @@ import { ApolloProvider, useReactiveVar } from '@apollo/client';
 import './i18n';
 import App from './App.js';
 import { client } from './GraphQLApp/apolloClient';
-import { reactiveVarToken } from './GraphQLApp/reactiveVariables';
+import { ErrorBoundary } from './components/Helpers/ErrorBoundare';
 
 //цей ApolloProvider - для - apollo-client
 const app = (
   <ApolloProvider client={client}>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </ApolloProvider>
 );
 render(app, document.getElementById('root'));

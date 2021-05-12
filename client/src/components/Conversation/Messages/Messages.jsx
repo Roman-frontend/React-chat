@@ -1,28 +1,18 @@
-import React, { useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, Profiler, memo } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import MessageActionsPopup from './MessageActionsPopup/MessageActionsPopup.jsx';
 import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
 import './messages.sass';
-import {
-  reactiveVarId,
-  activeChatId,
-} from '../../../GraphQLApp/reactiveVariables';
+import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
+import { Loader } from '../../Helpers/Loader';
 
-export const Messages = React.memo((props) => {
-  const {
-    inputRef,
-    changeMessageRef,
-    popupMessage,
-    setPopupMessage,
-    setCloseBtnChangeMsg,
-    setCloseBtnReplyMsg,
-  } = props;
+export const Messages = memo((props) => {
   const userId = useReactiveVar(reactiveVarId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-  const activeDirectMessageId = useReactiveVar(activeChatId)
-    .activeDirectMessageId;
+  const activeDirectMessageId =
+    useReactiveVar(activeChatId).activeDirectMessageId;
   const chatType = useMemo(() => {
     return activeDirectMessageId
       ? 'DirectMessage'
@@ -35,19 +25,18 @@ export const Messages = React.memo((props) => {
     return activeDirectMessageId || activeChannelId || null;
   }, [activeChannelId, activeDirectMessageId]);
 
-  console.log({ chatId, chatType, userId });
-  const { data: messages, client } = useQuery(GET_MESSAGES, {
+  const {
+    loading,
+    data: messages,
+    client,
+  } = useQuery(GET_MESSAGES, {
     variables: { chatId, chatType, userId },
     onCompleted(data) {
-      console.log('mesages', data);
+      if (data.messages) {
+        renderMessages();
+      }
     },
   });
-
-  console.log('activeChatId', activeChannelId || activeDirectMessageId);
-
-  useEffect(() => {
-    renderMessages();
-  }, [messages]);
 
   //Підписуємось на подію що спрацює при отриманні повідомлення
   wsSingleton.clientPromise
@@ -88,6 +77,10 @@ export const Messages = React.memo((props) => {
     );
   };
 
+  const callback = (id, phase, actualTime, baseTime, startTime, commitTime) => {
+    console.log(`${id}'s ${phase} phase:`);
+  };
+
   const renderMessages = () => {
     if (
       messages &&
@@ -99,27 +92,27 @@ export const Messages = React.memo((props) => {
         .reverse();
       return reversedMessages.map((message) => {
         return (
-          <Message
-            key={message.id}
-            message={message}
-            setPopupMessage={setPopupMessage}
-          />
+          <Profiler id='Message' key={message.id} onRender={callback}>
+            <Message
+              key={message.id}
+              message={message}
+              setPopupMessage={props.setPopupMessage}
+            />
+          </Profiler>
         );
       });
     }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+  console.log('messages');
+
   return (
     <div className='messages'>
       {renderMessages()}
-      <MessageActionsPopup
-        popupMessage={popupMessage}
-        setPopupMessage={setPopupMessage}
-        setCloseBtnChangeMsg={setCloseBtnChangeMsg}
-        setCloseBtnReplyMsg={setCloseBtnReplyMsg}
-        inputRef={inputRef}
-        changeMessageRef={changeMessageRef}
-      />
+      <MessageActionsPopup {...props} />
     </div>
   );
 });

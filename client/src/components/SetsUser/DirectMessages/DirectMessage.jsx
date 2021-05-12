@@ -2,21 +2,21 @@ import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
-import { createDirectMsgName } from './ChatName.jsx';
+import { CreateDirectMsgName } from '../HelpersSetUsers/ChatName.jsx';
 import {
   styles,
   styleActiveLink,
   styleIsNotActiveLink,
-} from './ChatStyles.jsx';
-import {
-  activeChatId,
-  reactiveVarId,
-} from '../../../GraphQLApp/reactiveVariables';
-import { AUTH, REMOVE_CHAT } from '../../../GraphQLApp/queryes';
+} from '../HelpersSetUsers/ChatStyles.jsx';
+import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
+import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
+import { REMOVE_CHAT } from '../SetsUserGraphQL/queryes';
+import { determineActiveChat } from '../../Helpers/determineActiveChat';
 
 export const DirectMessage = withStyles(styles)((props) => {
   const { reqRowElements, classes } = props;
   const { data: auth } = useQuery(AUTH);
+  const { data: allUsers } = useQuery(GET_USERS);
   const [focusedId, setFocusedId] = useState(false);
   const authId = useReactiveVar(reactiveVarId);
   const activeDirectMessageId = useReactiveVar(activeChatId)
@@ -39,12 +39,11 @@ export const DirectMessage = withStyles(styles)((props) => {
       //console.log(`remove chat ${data}`);
     },
     onError(error) {
-      //console.log(`Помилка при видаленні повідомлення ${error}`);
+      console.log(`Помилка при видаленні повідомлення ${error}`);
     },
   });
 
   function createLink(id, name) {
-    const readyName = createDirectMsgName(name);
     return (
       <div
         key={id}
@@ -64,7 +63,7 @@ export const DirectMessage = withStyles(styles)((props) => {
           }}
         >
           <Grid item xs={10}>
-            {readyName}
+            <CreateDirectMsgName name={name} />
           </Grid>
           <Grid
             item
@@ -89,15 +88,12 @@ export const DirectMessage = withStyles(styles)((props) => {
 
   function showMore(id) {
     if (auth && auth.token) {
-      removeDirectMessage({ variables: { id, chatType: 'DirectMessage' } });
+      removeDirectMessage({ variables: { id, token: auth.token } });
     }
   }
 
   return reqRowElements.map((directMsg) => {
-    const name =
-      directMsg.inviter.id !== authId
-        ? directMsg.inviter.name
-        : directMsg.invited.name;
+    const name = determineActiveChat(directMsg, allUsers.users, authId);
     return createLink(directMsg.id, name);
   });
 });

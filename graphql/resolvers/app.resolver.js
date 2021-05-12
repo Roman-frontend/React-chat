@@ -3,12 +3,11 @@ const Channel = require('../../models/Channel');
 const DirectMessage = require('../../models/DirectMessage');
 const DirectMessageChat = require('../../models/DirectMessageChat');
 const ChannelMessage = require('../../models/ChannelMessage');
-const { infoError } = require('../helpers');
+const { infoError, verifyToken } = require('../helpers');
 
 const resolvers = {
   Query: {
     userChannels: async (_, { channelsId }) => {
-      console.log('userChannels -- ', channelsId);
       if (channelsId) {
         let userChannels = [];
         for (let id of channelsId) {
@@ -17,7 +16,6 @@ const resolvers = {
         }
         return userChannels;
       }
-      console.log('returned all channels');
       return [];
     },
     users: (_, { id }) => {
@@ -29,25 +27,14 @@ const resolvers = {
     },
     directMessages: async (_, { id }) => {
       let allFinded = [];
+      //Можна створити валідатор який перевіряє чи це юзер має доступ до цих повідомлень ждя цього сюди треба передати ід юзера, знайти його модель в ДБ і через інклудес перевірити і якщо перевірку проходить то тоді продовжити.
       for (let directMessageId of id) {
         const finded = await DirectMessage.findById(directMessageId);
         if (finded) {
-          allFinded.push({
-            id: finded._id,
-            inviter: {
-              id: finded.inviter._id,
-              name: finded.inviter.name,
-              email: finded.inviter.email,
-            },
-            invited: {
-              id: finded.invited._id,
-              name: finded.invited.name,
-              email: finded.invited.email,
-            },
-            createdAt: finded.createdAt,
-          });
+          allFinded.push(finded);
         }
       }
+      //console.log('allFinded', allFinded);
       return allFinded;
     },
   },
@@ -63,14 +50,25 @@ const resolvers = {
       return newChannel;
     },
     addMember: async (_, { token, invited, chatId }) => {
+      const tokenIsCorrect = verifyToken(token);
+      if (!tokenIsCorrect) {
+        console.log('token is not correct sorry!   :-)');
+        return;
+      }
       for await (const invitedId of invited) {
         const addedUser = await User.findById(invitedId);
-        addedUser.channels.push(chatId);
-        await addedUser.save();
+        const isIncludesChannel = addedUser.channels.includes(chatId);
+        if (!isIncludesChannel) {
+          addedUser.channels.push(chatId);
+          await addedUser.save();
+        }
 
         const activeChannel = await Channel.findById(chatId);
-        activeChannel.members.push(invitedId);
-        await activeChannel.save();
+        const isIncludesMember = activeChannel.members.includes(invited);
+        if (!isIncludesMember) {
+          activeChannel.members.push(invitedId);
+          await activeChannel.save();
+        }
       }
       return Channel.findById(chatId);
     },
@@ -78,106 +76,84 @@ const resolvers = {
     createDirectMessage: async (_, { inviter, invited }) => {
       let allNew = [];
       for (let invitedId of invited) {
+        const sortedMembers = [inviter, invitedId].sort();
+        const userHasChat = await DirectMessage.exists({
+          members: sortedMembers,
+        });
+        if (userHasChat || inviter === invitedId) {
+          console.log('userHasChat');
+          continue;
+        }
         const dbInviter = await User.findById(inviter);
         const dbInvited = await User.findById(invitedId);
-        const newDrMsg = await DirectMessage.create({
-          inviter: {
-            _id: dbInviter._id,
-            name: dbInviter.name,
-            email: dbInviter.email,
-          },
-          invited: {
-            _id: dbInvited._id,
-            name: dbInvited.name,
-            email: dbInvited.email,
-          },
-        });
+        const newDrMsg = await DirectMessage.create({ members: sortedMembers });
 
-        dbInviter.directMessages.push(newDrMsg._id);
+        dbInviter.directMessages.push(newDrMsg.id);
         await dbInviter.save();
 
-        dbInvited.directMessages.push(newDrMsg._id);
+        dbInvited.directMessages.push(newDrMsg.id);
         await dbInvited.save();
 
-        allNew = allNew.concat({
-          id: newDrMsg._id,
-          inviter: {
-            id: newDrMsg.inviter._id,
-            name: newDrMsg.inviter.email,
-            email: newDrMsg.inviter.email,
-          },
-          invited: {
-            id: newDrMsg.invited._id,
-            name: newDrMsg.invited.name,
-            email: newDrMsg.invited.email,
-          },
-          createdAt: newDrMsg.createdAt,
-        });
+        allNew = allNew.concat(newDrMsg);
       }
       return allNew;
     },
 
-    removeDirectMessage: async (_, { id, chatType }) => {
+    removeDirectMessage: async (_, { id, token }) => {
+      const tokenIsCorrect = verifyToken(token);
+      if (!tokenIsCorrect) {
+        console.log('token is not correct sorry!   :-)');
+        return;
+      }
       const removed = await DirectMessage.findByIdAndRemove(
         { _id: id },
         { useFindAndModify: false, new: true }
       );
-      const inviter = await User.findById(removed.inviter._id);
+      const inviter = await User.findById(removed.members[0]);
       const updaterInvited = inviter.directMessages.filter(
         (drMsg) => drMsg != id
       );
       await User.findOneAndUpdate(
-        { _id: removed.inviter._id },
+        { _id: removed.members[0] },
         { directMessages: updaterInvited },
         { useFindAndModify: false, new: true },
         (err) => infoError(err)
       );
 
-      const invited = await User.findById(removed.invited._id);
+      const invited = await User.findById(removed.members[1]);
       const updatedInvited = invited.directMessages.filter(
         (drMsg) => drMsg != id
       );
       await User.findOneAndUpdate(
-        { _id: removed.invited._id },
+        { _id: removed.members[1] },
         { directMessages: updatedInvited },
         { useFindAndModify: false, new: true },
         (err) => infoError(err)
       );
-      for (;;) {
-        const removedMessage = await DirectMessageChat.findOneAndDelete({
-          chatId: id,
-        });
-        if (!removedMessage) {
-          break;
-        }
-      }
-      console.log('removed directMessage...');
+      await DirectMessageChat.deleteMany({ chatId: id });
     },
     removeChannel: async (_, { channelId, userId, token }) => {
+      const tokenIsCorrect = verifyToken(token);
+      console.log(token);
+      if (!tokenIsCorrect) {
+        console.log('token is not correct sorry!   :-)');
+        return;
+      }
       const channel = await Channel.findById(channelId);
       const filteredMembers = channel.members.filter((id) => id != userId);
-      console.log(filteredMembers);
+      if (channel.creator === userId || !filteredMembers[0]) {
+        await Channel.findByIdAndRemove(
+          { _id: channelId },
+          { useFindAndModify: false, new: true }
+        );
+        await ChannelMessage.deleteMany({ chatId: channelId });
+      }
       if (filteredMembers[0]) {
         await Channel.findOneAndUpdate(
           { _id: channelId },
           { members: filteredMembers },
           { useFindAndModify: false, new: true }
         );
-      } else {
-        await Channel.findByIdAndRemove(
-          { _id: channelId },
-          { useFindAndModify: false, new: true }
-        );
-        console.log('removing channel -> ');
-        for (;;) {
-          const removedMessage = await ChannelMessage.findOneAndDelete({
-            chatId: channelId,
-          });
-          if (!removedMessage) {
-            break;
-          }
-        }
-        console.log('removed channel -> ');
       }
 
       const user = await User.findById(userId);

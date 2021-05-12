@@ -8,7 +8,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { StyledBadge } from '../../Conversation/ConversationHeader/ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
-import { reactiveOnlineMembers } from '../../../GraphQLApp/reactiveVariables';
+import { reactiveOnlineMembers } from '../../../GraphQLApp/reactiveVars';
 
 export function CreateListMembers(props) {
   const { activeChannel, classes } = props;
@@ -56,7 +56,7 @@ export function CreateListMembers(props) {
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        variant={app.usersOnline.includes(memberId) ? 'dot' : 'standard'}
+        variant={usersOnline.includes(memberId) ? 'dot' : 'standard'}
       >
         <Box>
           <PersonIcon

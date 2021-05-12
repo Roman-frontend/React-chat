@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 /** Модель повідомлення */
-const ChannelMessage = new Schema({
+let ChannelMessage = new Schema({
   replyOn: { type: String },
   userName: { type: String, required: true },
   userId: { type: String, required: true },
@@ -14,6 +14,15 @@ const ChannelMessage = new Schema({
   chatId: { type: String },
   chatType: { type: String, default: 'Channel' },
 });
+
+if (!ChannelMessage.options.toObject) {
+  ChannelMessage.options.toObject = {};
+}
+ChannelMessage.options.toObject.transform = function (doc, ret, options) {
+  ret.id = ret._id;
+  delete ret._id;
+  return ret;
+};
 
 /**
  * .model() - створює моделі зі схем

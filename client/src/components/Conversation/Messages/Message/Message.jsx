@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import Avatar from '@material-ui/core/Avatar';
 import PersonIcon from '@material-ui/icons/Person';
@@ -14,24 +15,6 @@ export default function Message(props) {
   const replyMessage = replyOn ? (
     <p className={`${classMessage}__reply`}>{replyOn}</p>
   ) : null;
-
-  function formattedDate(prevDate) {
-    const rowDate = new Date(parseInt(prevDate));
-    let result = '';
-    result +=
-      /* rowDate.getFullYear() +
-      ' ' +
-      (rowDate.getMonth() + 1) +
-      ' ' +
-      rowDate.getDate() +
-      ' ' + */
-      rowDate.getHours() +
-      ':' +
-      rowDate.getMinutes() +
-      ':' +
-      rowDate.getSeconds();
-    return result;
-  }
 
   return (
     <div
@@ -54,3 +37,7 @@ export default function Message(props) {
     </div>
   );
 }
+
+Message.propTypes = {
+  message: PropTypes.object,
+};

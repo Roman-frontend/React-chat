@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { APP, CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import './add-people-to-channel.sass';
-import { activeChatId } from '../../../GraphQLApp/reactiveVariables.js';
+import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({
@@ -28,6 +28,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     doneInvite,
     classes,
   } = props;
+  const notInvitedRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
   const { data: allUsers } = useQuery(GET_USERS, {
@@ -35,8 +36,6 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
       //console.log(data);
     },
   });
-
-  const notInvitedRef = useRef();
 
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
@@ -57,7 +56,8 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
           }
         });
       }
-      notInvitedRef.current = allNotInvited;
+      //notInvitedRef.current = allNotInvited;
+      notInvitedRef.current = allUsers.users;
     }
   }, [allUsers, allChannels, auth, activeChat]);
 

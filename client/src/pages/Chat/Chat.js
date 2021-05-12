@@ -1,14 +1,24 @@
 import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
-import { reactiveOnlineMembers } from '../../components/../GraphQLApp/reactiveVariables';
+import { reactiveOnlineMembers } from '../../GraphQLApp/reactiveVars';
+import { GET_USERS } from '../../GraphQLApp/queryes';
 import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Header from '../../components/Header/Header.jsx';
 import Conversation from '../../components/Conversation/Conversation.jsx';
 import SetsUser from '../../components/SetsUser/SetsUser.jsx';
+import {
+  CHANNELS,
+  GET_DIRECT_MESSAGES,
+} from '../../components/SetsUser/SetsUserGraphQL/queryes';
+import { Loader } from '../../components/Helpers/Loader';
 
 export const Chat = () => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
+  const { loading: lUsers } = useQuery(GET_USERS);
+  const { loading: lChannels } = useQuery(CHANNELS);
+  const { loading: lDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
+
   useEffect(() => {
     wsSingleton.clientPromise
       .then((wsClient) => {
@@ -39,6 +49,7 @@ export const Chat = () => {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       if (storage && storage.channels && storage.directMessages) {
         const allUserChats = storage.channels.concat(storage.directMessages);
+        console.log('Chat join');
         wsSend({ userRooms: allUserChats, meta: 'join', userId: storage.id });
       }
       //console.info('This page is reloaded');
@@ -47,11 +58,17 @@ export const Chat = () => {
     }
   }, []);
 
+  if (lUsers || lChannels || lDirectMessages) {
+    return <Loader />;
+  }
+
   return (
-    <div className='chat-page'>
-      <Header />
-      <SetsUser />
-      <Conversation />
-    </div>
+    <React.StrictMode>
+      <div className='chat-page'>
+        <Header />
+        <SetsUser />
+        <Conversation />
+      </div>
+    </React.StrictMode>
   );
 };

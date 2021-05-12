@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
 //import Button from '@material-ui/core/Button';
-import { createChannelName } from './ChatName.jsx';
+import { CreateChannelName } from '../HelpersSetUsers/ChatName.jsx';
 import {
   styles,
   styleActiveLink,
   styleIsNotActiveLink,
-} from './ChatStyles.jsx';
-import { REMOVE_CHANNEL } from '../../../SetsUser/SetsUserGraphQL/queryes';
+} from '../HelpersSetUsers/ChatStyles.jsx';
+import { REMOVE_CHANNEL } from '../SetsUserGraphQL/queryes';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import {
   activeChatId,
   reactiveVarId,
   reactiveVarToken,
-} from '../../../../GraphQLApp/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVars';
 
 export const CreateChannels = withStyles(styles)((props) => {
   const { channels, classes } = props;
@@ -45,8 +45,6 @@ export const CreateChannels = withStyles(styles)((props) => {
   });
 
   function create(id, isPrivate, name) {
-    const readyName = createChannelName(isPrivate, name);
-
     return (
       <div
         key={id}
@@ -62,7 +60,7 @@ export const CreateChannels = withStyles(styles)((props) => {
             xs={10}
             onClick={() => activeChatId({ activeChannelId: id })}
           >
-            {readyName}
+            <CreateChannelName isPrivate={isPrivate} name={name} />
           </Grid>
           <Grid
             item

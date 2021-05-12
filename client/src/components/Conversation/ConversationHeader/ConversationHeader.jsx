@@ -12,7 +12,7 @@ import {
   CHANNELS,
   ADD_MEMBER_CHANNEL,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId } from '../../../GraphQLApp/reactiveVariables.js';
+import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 
 export const ConversationHeader = (props) => {
   const { resSuspense } = props;
@@ -22,12 +22,6 @@ export const ConversationHeader = (props) => {
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-
-  const [addMember] = useMutation(ADD_MEMBER_CHANNEL, {
-    onError(error) {
-      console.log(`Помилка при додаванні учасника ${error}`);
-    },
-  });
 
   const [addMember] = useMutation(ADD_MEMBER_CHANNEL, {
     onError(error) {

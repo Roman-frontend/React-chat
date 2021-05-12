@@ -103,7 +103,7 @@ function informMembersNewOnline(userRooms, members) {
         const memberId = Object.keys(member)[0];
 
         if (!responsed.includes(memberId)) {
-          //console.log('memberData -> ', Object.values(member)[0]);
+          console.log('send info aboute online');
           Object.values(member)[0].send(
             JSON.stringify({ message: 'online', members })
           );

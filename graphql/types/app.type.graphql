@@ -11,21 +11,8 @@ type Channel {
 
 type DirectMessage {
   id: ID
-  inviter: Inviter!
-  invited: Invited
+  members: [ID]!
   createdAt: String
-}
-
-type Invited {
-  id: ID
-  name: String
-  email: String
-}
-
-type Inviter {
-  id: ID
-  name: String
-  email: String
 }
 
 type User {
@@ -55,6 +42,6 @@ type Mutation {
   ): Channel
   addMember(token: String!, invited: [ID]!, chatId: ID!): Channel
   createDirectMessage(inviter: ID!, invited: [ID]): [DirectMessage]
-  removeDirectMessage(id: ID!, chatType: String!): DirectMessage
+  removeDirectMessage(id: ID!, token: String!): DirectMessage
   removeChannel(channelId: ID!, userId: ID!, token: String!): Channel
 }

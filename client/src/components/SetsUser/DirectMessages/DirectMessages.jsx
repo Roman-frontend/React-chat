@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,8 +17,7 @@ import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVariables';
-import { connect } from 'react-redux';
+import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
 import { Link } from 'react-router-dom';
 import { DirectMessage } from './DirectMessage';
 import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
@@ -34,19 +33,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function DirectMessages(props) {
+export function DirectMessages() {
   const { t } = useTranslation();
   const { data: auth } = useQuery(AUTH);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
-
-  const { data: users } = useQuery(GET_USERS, {
-    onError(error) {
-      console.log(`Некоректні дані при отриманні users ${error}`);
-    },
-  });
-
+  const [open, setOpen] = useState(true);
   const { data: users } = useQuery(GET_USERS);
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
 
@@ -63,13 +55,6 @@ export function DirectMessages(props) {
           },
         },
       });
-      console.log(ready, createDirectMessage);
-      /* cache.writeQuery({
-        query: GET_DIRECT_MESSAGES,
-        data: {
-          directMessages: [...ready.directMessages, ...createDirectMessage],
-        },
-      }); */
     },
     onError(error) {
       console.log(`Помилка ${error}`);
@@ -148,5 +133,3 @@ export function DirectMessages(props) {
     </>
   );
 }
-
-export default connect(null, null)(DirectMessages);

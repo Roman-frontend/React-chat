@@ -9,7 +9,7 @@ import './add-people-to-channel.sass';
 import {
   reactiveVarName,
   reactiveVarId,
-} from '../../../GraphQLApp/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVars';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
 
 const styles = (theme) => ({
@@ -41,15 +41,18 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
       if (
         drMessages &&
         drMessages.directMessages &&
-        drMessages.directMessages
+        drMessages.directMessages[0]
       ) {
         drMessages.directMessages.forEach((directMessage) => {
-          allNotInvited = allNotInvited.filter(
-            (user) => user.id !== directMessage.invited.id
-          );
+          directMessage.members.forEach((memberId) => {
+            allNotInvited = allNotInvited.filter(
+              (user) => user.id !== memberId
+            );
+          });
         });
       }
-      notInvitedRef.current = allNotInvited;
+      //notInvitedRef.current = allNotInvited;
+      notInvitedRef.current = allUsers.users;
     }
   }, [allUsers, drMessages, reactiveVarId()]);
 

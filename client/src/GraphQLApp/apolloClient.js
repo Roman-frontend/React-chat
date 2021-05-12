@@ -8,7 +8,7 @@ import {
   reactiveVarChannels,
   reactiveOnlineMembers,
   activeChatId,
-} from './reactiveVariables';
+} from './reactiveVars';
 
 export const client = new ApolloClient({
   uri: 'http://localhost:5000/graphql',

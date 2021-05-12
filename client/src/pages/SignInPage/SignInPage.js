@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -8,21 +8,12 @@ import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { LOGIN } from '../../components/../GraphQLApp/queryes';
-import {
-  reactiveVarId,
-  reactiveVarToken,
-  reactiveVarName,
-  reactiveVarEmail,
-  reactiveVarChannels,
-  reactiveDirectMessages,
-} from '../../components/../GraphQLApp/reactiveVariables';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Loader } from '../../components/Helpers/Loader';
 import './auth-body.sass';
 
 const useStyles = makeStyles((theme) => ({
-  root: { position: 'fixed', left: '50%', top: '50%' },
   button: {
     margin: theme.spacing(1, 2),
   },
@@ -46,16 +37,7 @@ export const SignInPage = ({ route }) => {
       console.log(`Помилка авторизації ${error}`);
     },
     onCompleted(data) {
-      console.log(data);
-      const login = data.login;
-      reactiveVarToken(login.token);
-      reactiveVarName(login.name);
-      reactiveVarEmail(login.email);
-      reactiveVarId(login.id);
-      console.log(login);
-      reactiveVarChannels(login.channels);
-      reactiveDirectMessages(login.directMessages);
-      auth(login);
+      auth(data.login);
     },
   });
 
@@ -78,11 +60,7 @@ export const SignInPage = ({ route }) => {
   };
 
   if (loading) {
-    return (
-      <div className={classes.root}>
-        <CircularProgress color='secondary' />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

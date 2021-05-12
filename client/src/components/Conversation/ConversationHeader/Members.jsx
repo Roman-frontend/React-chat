@@ -9,7 +9,7 @@ import { GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   activeChatId,
   reactiveOnlineMembers,
-} from '../../../GraphQLApp/reactiveVariables';
+} from '../../../GraphQLApp/reactiveVars';
 
 export function Members(props) {
   const {

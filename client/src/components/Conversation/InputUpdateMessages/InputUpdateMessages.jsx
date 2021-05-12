@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import {
   ThemeProvider,
   makeStyles,
@@ -17,7 +17,7 @@ import {
 import { wsSend } from '../../../WebSocket/soket';
 import { messageDate } from '../../Helpers/DateCreators';
 import './input-message.sass';
-import { activeChatId } from '../../../GraphQLApp/reactiveVariables';
+import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +39,7 @@ const theme = createMuiTheme({
   },
 });
 
-export const InputUpdateMessages = React.memo((props) => {
+export const InputUpdateMessages = memo((props) => {
   const {
     changeMessageRef,
     closeBtnChangeMsg,
@@ -51,8 +51,8 @@ export const InputUpdateMessages = React.memo((props) => {
   const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-  const activeDirectMessageId = useReactiveVar(activeChatId)
-    .activeDirectMessageId;
+  const activeDirectMessageId =
+    useReactiveVar(activeChatId).activeDirectMessageId;
 
   const chatType = useMemo(() => {
     return activeDirectMessageId
@@ -70,7 +70,7 @@ export const InputUpdateMessages = React.memo((props) => {
       : null;
   }, [activeChannelId, activeDirectMessageId]);
 
-  const [createMessage, { error }] = useMutation(CREATE_MESSAGE, {
+  const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data: { createMessage } }) => {
       // Read the data from our cache for this query.
       const cacheMsg = cache.readQuery({
@@ -94,13 +94,8 @@ export const InputUpdateMessages = React.memo((props) => {
       }
     },
     onCompleted(data) {
-      const messageData = data.createMessage;
-      wsSend({
-        meta: 'sendMessage',
-        action: 'create',
-        room: messageData.chatId,
-        message: messageData,
-      });
+      const createdMessage = data.createMessage;
+      sendMessageToWS(createdMessage);
     },
   });
 
@@ -109,15 +104,19 @@ export const InputUpdateMessages = React.memo((props) => {
       console.log(`Помилка ${error}`);
     },
     onCompleted(data) {
-      const messageData = data.changeMessage;
-      wsSend({
-        meta: 'sendMessage',
-        action: 'change',
-        room: messageData.chatId,
-        message: messageData,
-      });
+      const changedMessage = data.changeMessage;
+      sendMessageToWS(changedMessage);
     },
   });
+
+  function sendMessageToWS(data) {
+    wsSend({
+      meta: 'sendMessage',
+      action: 'change',
+      room: data.chatId,
+      message: data,
+    });
+  }
 
   function inputUpdateMessages(event) {
     event.preventDefault();

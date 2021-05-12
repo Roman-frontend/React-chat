@@ -1,10 +1,10 @@
 type Auth {
-  id: ID!
   name: String
   email: String
   password: String
   channels: [String]
   directMessages: [String]
+  id: ID
   token: String
 }
 
@@ -13,7 +13,5 @@ type Query {
 }
 
 type Mutation {
-  addUser(name: String!, email: String!, password: String!): Auth
-  updateUser(id: ID, name: String!): Auth
-  deleteUser(id: ID!): Auth
+  register(name: String!, email: String!, password: String!): Auth
 }

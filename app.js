@@ -12,6 +12,8 @@ require('./Soket/soket');
 //cors(cross origane resorse sharing) - дозволяє створювати кросдоменні запити - без нього запити з фронтенда на бекенд і навпаки не будуть коректно спрацьовувати. cors - дозволяє серверу відповідати фронтенду.
 const cors = require('cors');
 
+//test
+
 async function startApolloServer() {
   const server = new ApolloServer({
     typeDefs,

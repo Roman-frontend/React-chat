@@ -25,6 +25,8 @@
   "dependencies": {
     "@material-ui/lab": "^4.0.0-alpha.57",
     "apollo-link-error": "^1.1.13",
+    "apollo-server": "^2.24.0",
+    "apollo-server-express": "^2.24.0",
     "bcryptjs": "^2.4.3",
     "concurrently": "^5.2.0",
     "config": "^3.3.1",
@@ -38,7 +40,7 @@
     "graphql-tools": "^7.0.4",
     "jsonwebtoken": "^8.5.1",
     "materialize-css": "^1.0.0-rc.2",
-    "mongoose": "^5.9.20",
+    "mongoose": "^5.12.8",
     "nodemon": "^2.0.4",
     "proxy": "^1.0.2",
     "uuid": "^8.1.0",

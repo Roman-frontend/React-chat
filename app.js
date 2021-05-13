@@ -1,4 +1,5 @@
 const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { graphqlHTTP } = require('express-graphql');
 const path = require('path');
@@ -7,14 +8,68 @@ const mongoose = require('mongoose');
 const app = express();
 const typeDefs = require('./graphql/types/index');
 const resolvers = require('./graphql/resolvers/index');
-const server = require('./Soket/soket');
+require('./Soket/soket');
 //cors(cross origane resorse sharing) - дозволяє створювати кросдоменні запити - без нього запити з фронтенда на бекенд і навпаки не будуть коректно спрацьовувати. cors - дозволяє серверу відповідати фронтенду.
 const cors = require('cors');
-//express-graphql - пакет що дозволяє нашому експрес серверу спокійно використовувати graphql-api
+
+async function startApolloServer() {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
+  await server.start();
+
+  const app = express();
+  app.use(
+    cors({
+      origin: 'http://localhost:3001',
+      credentials: true,
+    })
+  );
+
+  console.log('aaaaaaaaaa');
+
+  // Additional middleware can be mounted at this point to run before Apollo.
+  //app.use('*', jwtCheck, requireAuth, checkScope);
+
+  // Mount Apollo middleware here.
+  server.applyMiddleware({
+    app,
+    cors: false,
+  });
+  await new Promise((resolve) => app.listen({ port: 5000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:5000${server.graphqlPath}`);
+  return { server, app };
+}
+
+startApolloServer();
+
+/* //express-graphql - пакет що дозволяє нашому експрес серверу спокійно використовувати graphql-api
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+const corsOptions = {
+  origin: 'http://localhost:3001',
+  credentials: true, // <-- REQUIRED backend setting
+};
+
+//app.use(cors(corsOptions));
 app.use(cors());
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => {
+    // Get the user token from the headers.
+    const token = req.headers.authorization || '';
+
+    // Try to retrieve a user with the token
+    const user = getUser(token);
+
+    // Add the user to the context
+    return { user };
+  },
+});
 
 //graphqlHTTP - використовуємо як middlewsre на певному роуті(шляху)
 app.use('/graphql', graphqlHTTP({ schema, graphiql: true }));
@@ -45,7 +100,7 @@ async function start() {
       useCreateIndex: true,
     });
     console.log('mongoose conected');
-    app.listen(PORT, () =>
+    server.listen(PORT, () =>
       console.log(`Server has been started on port ${PORT}...`)
     );
   } catch (e) {
@@ -54,4 +109,4 @@ async function start() {
   }
 }
 
-start();
+start(); */

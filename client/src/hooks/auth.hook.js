@@ -34,12 +34,6 @@ export const useAuth = () => {
     }
     sessionStorage.clear();
     reactiveVarToken(null);
-    /* reactiveVarName(null);
-    reactiveVarEmail(null);
-    reactiveVarId(null);
-    reactiveVarChannels(null);
-    reactiveDirectMessages(null);
-    reactiveOnlineMembers(null); */
   }, []);
 
   return { auth, logout };

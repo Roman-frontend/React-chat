@@ -20,17 +20,17 @@ const resolvers = {
     },
   },
   Mutation: {
-    createMessage: async (_, args) => {
-      console.log('creating message');
-      const { chatType } = args;
+    createMessage: async (_, { message }) => {
+      console.log('creating message', message);
+      const { chatType } = message;
       let newMessage;
       if (chatType === 'Channel') {
-        console.log(args);
-        newMessage = await ChannelMessage.create(args);
+        console.log('message', message);
+        newMessage = await ChannelMessage.create(message);
       } else if (chatType === 'DirectMessage') {
-        newMessage = await DirectMessageChat.create(args);
+        newMessage = await DirectMessageChat.create(message);
       }
-      console.log(newMessage);
+      console.log('newMessage', newMessage);
       return newMessage;
     },
     changeMessage: async (_, { id, text, chatType }) => {

@@ -10,12 +10,14 @@ export const CREATE_MESSAGE = gql`
     $chatType: String
   ) {
     createMessage(
-      userName: $userName
-      userId: $userId
-      text: $text
-      replyOn: $replyOn
-      chatId: $chatId
-      chatType: $chatType
+      message: {
+        userName: $userName
+        userId: $userId
+        text: $text
+        replyOn: $replyOn
+        chatId: $chatId
+        chatType: $chatType
+      }
     ) {
       id
       userName

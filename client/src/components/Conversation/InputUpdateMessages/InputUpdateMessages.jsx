@@ -147,18 +147,20 @@ export const InputUpdateMessages = memo((props) => {
       chatType,
     };
     createMessage({
-      variables: replyMsg,
+      variables: { message: replyMsg },
       optimisticResponse: {
         createMessage: {
-          chatId,
-          chatType,
-          createdAt: messageDate(),
-          id: messageDate(),
-          replyOn: null,
-          text,
-          userId: auth.id,
-          userName: auth.name,
-          __typename: 'Message',
+          message: {
+            chatId,
+            chatType,
+            createdAt: messageDate(),
+            id: messageDate(),
+            replyOn: null,
+            text,
+            userId: auth.id,
+            userName: auth.name,
+            __typename: 'Message',
+          },
         },
       },
     });

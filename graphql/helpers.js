@@ -1,21 +1,4 @@
 const Channel = require('../models/Channel');
-const jsonWebToken = require('jsonwebtoken');
-const config = require('config');
-
-exports.verifyToken = (token) => {
-  if (!token) {
-    return false;
-  }
-  const result = jsonWebToken.verify(
-    token,
-    config.get('jwtSecret'),
-    (err, success) => {
-      return err ? false : true;
-    }
-  );
-  console.log('result verify token', result);
-  return result;
-};
 
 exports.checkAccesToChannel = async (chatId, userId) => {
   const channel = await Channel.findById(chatId);

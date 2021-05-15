@@ -11,23 +11,17 @@ import {
   activeChatId,
 } from './reactiveVars';
 
-const httpLink = createHttpLink({
-  uri: 'http://localhost:5000/graphql',
-});
+const httpLink = createHttpLink({ uri: '/graphql' });
 
 const authLink = setContext((_, { headers }) => {
-  const token = sessionStorage.getItem('storageData').token;
+  const auth = JSON.parse(sessionStorage.getItem('storageData'));
   // return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
+  const token = auth && auth.token ? auth.token : '';
+  return { headers: { ...headers, authorization: token } };
 });
 
 export const client = new ApolloClient({
-  uri: httpLink, //authLink.concat(httpLink),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

@@ -3,11 +3,12 @@ const Channel = require('../../models/Channel');
 const DirectMessage = require('../../models/DirectMessage');
 const DirectMessageChat = require('../../models/DirectMessageChat');
 const ChannelMessage = require('../../models/ChannelMessage');
-const { infoError, verifyToken } = require('../helpers');
+const { infoError } = require('../helpers');
 
 const resolvers = {
   Query: {
-    userChannels: async (_, { channelsId }) => {
+    userChannels: async (_, { channelsId }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       if (channelsId) {
         let userChannels = [];
         for (let id of channelsId) {
@@ -18,14 +19,16 @@ const resolvers = {
       }
       return [];
     },
-    users: (_, { id }) => {
+    users: (_, { id }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       if (id) {
         return User.findById(id);
       } else {
         return User.find({});
       }
     },
-    directMessages: async (_, { id }) => {
+    directMessages: async (_, { id }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       let allFinded = [];
       //Можна створити валідатор який перевіряє чи це юзер має доступ до цих повідомлень ждя цього сюди треба передати ід юзера, знайти його модель в ДБ і через інклудес перевірити і якщо перевірку проходить то тоді продовжити.
       for (let directMessageId of id) {
@@ -40,7 +43,8 @@ const resolvers = {
   },
 
   Mutation: {
-    createChannel: async (_, args) => {
+    createChannel: async (_, args, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       const newChannel = await Channel.create({ ...args });
       for (let memberId of args.members) {
         const user = await User.findById(memberId);
@@ -49,12 +53,8 @@ const resolvers = {
       }
       return newChannel;
     },
-    addMember: async (_, { token, invited, chatId }) => {
-      const tokenIsCorrect = verifyToken(token);
-      if (!tokenIsCorrect) {
-        console.log('token is not correct sorry!   :-)');
-        return;
-      }
+    addMember: async (_, { token, invited, chatId }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       for await (const invitedId of invited) {
         const addedUser = await User.findById(invitedId);
         const isIncludesChannel = addedUser.channels.includes(chatId);
@@ -73,7 +73,8 @@ const resolvers = {
       return Channel.findById(chatId);
     },
 
-    createDirectMessage: async (_, { inviter, invited }) => {
+    createDirectMessage: async (_, { inviter, invited }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       let allNew = [];
       for (let invitedId of invited) {
         const sortedMembers = [inviter, invitedId].sort();
@@ -99,12 +100,8 @@ const resolvers = {
       return allNew;
     },
 
-    removeDirectMessage: async (_, { id, token }) => {
-      const tokenIsCorrect = verifyToken(token);
-      if (!tokenIsCorrect) {
-        console.log('token is not correct sorry!   :-)');
-        return;
-      }
+    removeDirectMessage: async (_, { id, token }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       const removed = await DirectMessage.findByIdAndRemove(
         { _id: id },
         { useFindAndModify: false, new: true }
@@ -132,13 +129,8 @@ const resolvers = {
       );
       await DirectMessageChat.deleteMany({ chatId: id });
     },
-    removeChannel: async (_, { channelId, userId, token }) => {
-      const tokenIsCorrect = verifyToken(token);
-      console.log(token);
-      if (!tokenIsCorrect) {
-        console.log('token is not correct sorry!   :-)');
-        return;
-      }
+    removeChannel: async (_, { channelId, userId, token }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       const channel = await Channel.findById(channelId);
       const filteredMembers = channel.members.filter((id) => id != userId);
       if (channel.creator === userId || !filteredMembers[0]) {

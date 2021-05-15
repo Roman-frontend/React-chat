@@ -4,8 +4,9 @@ const { checkAccesToChannel, infoError } = require('../helpers');
 
 const resolvers = {
   Query: {
-    messages: async (_, { chatId, chatType, userId }) => {
-      console.log('geting messages...', chatId, chatType);
+    messages: async (_, { chatId, chatType, userId }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
+      console.log('geting messages...');
       if (chatType === 'DirectMessage') {
         const chatMessages = await DirectMessageChat.find({ chatId });
         return { id: chatMessages[0].chatId, chatMessages };
@@ -20,7 +21,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createMessage: async (_, args) => {
+    createMessage: async (_, args, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       console.log('creating message');
       const { chatType } = args;
       let newMessage;
@@ -33,7 +35,8 @@ const resolvers = {
       console.log(newMessage);
       return newMessage;
     },
-    changeMessage: async (_, { id, text, chatType }) => {
+    changeMessage: async (_, { id, text, chatType }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       console.log('changing message');
       if (chatType === 'Channel') {
         return ChannelMessage.findOneAndUpdate(
@@ -51,7 +54,8 @@ const resolvers = {
         );
       }
     },
-    removeMessage: async (_, { id, chatType }) => {
+    removeMessage: async (_, { id, chatType }, context) => {
+      if (!context.isAuth) throw new Error('you must be logged in');
       console.log('removing message');
       if (chatType === 'Channel') {
         await ChannelMessage.findByIdAndRemove(

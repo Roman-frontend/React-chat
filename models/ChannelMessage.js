@@ -3,8 +3,7 @@ const { Schema, model } = require('mongoose');
 /** Модель повідомлення */
 let ChannelMessage = new Schema({
   replyOn: { type: String },
-  userName: { type: String, required: true },
-  userId: { type: String, required: true },
+  senderId: { type: String, required: true },
   text: { type: String, required: true },
   /** default: Date.now - вказує дату по замовчуванні*/
   createdAt: { type: String, default: Date.now, required: true },

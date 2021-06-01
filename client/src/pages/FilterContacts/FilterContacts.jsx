@@ -68,6 +68,19 @@ export const FilterContacts = (props) => {
 
     return compareContacts;
   }
+  /* Інший варіант filterInputContacts
+  function checkForDuplicates(array) {
+    let valuesAlreadySeen = []
+  
+    for (let i = 0; i < array.length; i++) {
+      let value = array[i]
+      if (valuesAlreadySeen.indexOf(value) !== -1) {
+        return true
+      }
+      valuesAlreadySeen.push(value)
+    }
+    return false
+  } */
 
   function compareWithStorageContacts(inputContacts) {
     let filteredContacts = inputContacts;
@@ -85,9 +98,8 @@ export const FilterContacts = (props) => {
 
   function saveContactsToLocalStorage() {
     if (listContacts) {
-      const combinedArrayStorageAndInputNumbers = listContacts.concat(
-        storageContacts
-      );
+      const combinedArrayStorageAndInputNumbers =
+        listContacts.concat(storageContacts);
       localStorage.setItem(
         'storageContacts',
         JSON.stringify(` - ${combinedArrayStorageAndInputNumbers}`)
@@ -102,79 +114,6 @@ export const FilterContacts = (props) => {
     localStorage.removeItem('storageContacts');
     setStorageContacts('');
   }
-
-  /*Робота над класами:
-  class filter {
-    constructor(contacts) {
-      this.contacts = contacts;
-    }
-
-    static filterContacts() {
-      const arrayInputContacts = this.createArrayContacts(
-        inputContactsRef.current.value
-      );
-      let filterList = this.filterInputContacts(arrayInputContacts);
-      if (storageContacts) {
-        filterList = this.compareWithStorageContacts(filterList);
-      }
-      console.log("filterList -", filterList);
-      if (filterList) {
-        const contactsWithoutEmptyElements = filterList.filter(
-          (contact) => contact !== ""
-        );
-        const filteredList = contactsWithoutEmptyElements.join(" - ");
-        console.log("readyList -", filteredList);
-        setListContacts(`- ${filteredList}`);
-      }
-    }
-
-    createArrayContacts(listContacts) {
-      const regExp = /[\d ]+\d/gi;
-      const inputContacts = listContacts;
-      const arrayContacts = inputContacts.match(regExp);
-
-      const readyContactsArray = arrayContacts.map((contact) => {
-        return contact.split(" ").join("").split("").splice(-10, 10).join("");
-      });
-
-      return readyContactsArray;
-    }
-
-    filterInputContacts(arrayInputContacts) {
-      let compareContacts = arrayInputContacts;
-
-      for (let index in compareContacts) {
-        for (let secendIndex in compareContacts) {
-          if (
-            compareContacts[index] === compareContacts[secendIndex] &&
-            index !== secendIndex
-          ) {
-            console.log(
-              `Повторний з індексами - ${index} i ${secendIndex}`,
-              compareContacts[index]
-            );
-            compareContacts.splice(secendIndex, 1);
-          }
-        }
-      }
-
-      return compareContacts;
-    }
-
-    compareWithStorageContacts(inputContacts) {
-      let filteredContacts = inputContacts;
-      const storageArrayContacts = this.createArrayContacts(storageContacts);
-
-      for (const index in inputContacts) {
-        for (const secendIndex in storageArrayContacts) {
-          if (inputContacts[index] === storageArrayContacts[secendIndex]) {
-            filteredContacts.splice(index, 1, "");
-          }
-        }
-      }
-      return filteredContacts;
-    }
-  } */
 
   console.log('storageContacts -', storageContacts);
 

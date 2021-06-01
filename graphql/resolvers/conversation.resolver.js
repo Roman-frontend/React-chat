@@ -1,8 +1,26 @@
 const ChannelMessage = require('../../models/ChannelMessage');
 const DirectMessageChat = require('../../models/DirectMessageChat');
 const { checkAccesToChannel, infoError } = require('../helpers');
+const { GraphQLScalarType, Kind } = require('graphql');
 
 const resolvers = {
+  ChatType: new GraphQLScalarType({
+    name: 'ChatType',
+    description: 'Сhat type custom scalar type',
+    parseValue(value) {
+      if (value === 'DirectMessage' || value === 'Channel') return value;
+      return null;
+    },
+    serialize(value) {
+      console.log(value, 'ast.value');
+      //Коли ми надсилаємо скаляр дати у відповіді GraphQL, ми серіалізуємо його (у відповіді return Я.).
+      return value; // value sent to the client
+    },
+    parseLiteral(ast) {
+      console.log(ast.value);
+      return ast.value;
+    },
+  }),
   Query: {
     messages: async (_, { chatId, chatType, userId }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
@@ -21,21 +39,25 @@ const resolvers = {
     },
   },
   Mutation: {
-    createMessage: async (_, args, context) => {
+    message: () => ({}),
+  },
+
+  MessageMutations: {
+    create: async (_, { text, replyOn, chat }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
       console.log('creating message');
-      const { chatType } = args;
+      const data = { text, replyOn, ...chat };
       let newMessage;
-      if (chatType === 'Channel') {
-        console.log(args);
-        newMessage = await ChannelMessage.create(args);
-      } else if (chatType === 'DirectMessage') {
-        newMessage = await DirectMessageChat.create(args);
+      if (chat.chatType === 'Channel') {
+        console.log(data);
+        newMessage = await ChannelMessage.create(data);
+      } else if (chat.chatType === 'DirectMessage') {
+        newMessage = await DirectMessageChat.create(data);
       }
       console.log(newMessage);
       return newMessage;
     },
-    changeMessage: async (_, { id, text, chatType }, context) => {
+    change: async (_, { id, text, chatType }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
       console.log('changing message');
       if (chatType === 'Channel') {
@@ -54,7 +76,7 @@ const resolvers = {
         );
       }
     },
-    removeMessage: async (_, { id, chatType }, context) => {
+    remove: async (_, { id, chatType }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
       console.log('removing message');
       if (chatType === 'Channel') {

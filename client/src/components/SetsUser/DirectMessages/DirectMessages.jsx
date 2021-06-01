@@ -43,15 +43,16 @@ export function DirectMessages() {
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
 
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
-    update(cache, { data: { createDirectMessage } }) {
+    update(cache, { data: { directMessage } }) {
       const ready = cache.readQuery({
         query: GET_DIRECT_MESSAGES,
         variables: { id: auth.directMessagesId },
       });
+      console.log(directMessage);
       cache.modify({
         fields: {
           directMessages() {
-            return [...ready.directMessages, ...createDirectMessage];
+            return [...ready.directMessages, ...directMessage.create];
           },
         },
       });
@@ -61,7 +62,7 @@ export function DirectMessages() {
     },
     onCompleted(data) {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
-      const newDrMsgIds = data.createDirectMessage.map(({ id }) => id);
+      const newDrMsgIds = data.directMessage.create.map(({ id }) => id);
       const toStorage = JSON.stringify({
         ...storage,
         directMessages: [...storage.directMessages, ...newDrMsgIds],

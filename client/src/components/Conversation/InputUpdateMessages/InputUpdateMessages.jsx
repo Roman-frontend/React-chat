@@ -7,7 +7,7 @@ import {
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { gql, useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_MESSAGE,
@@ -71,7 +71,7 @@ export const InputUpdateMessages = memo((props) => {
   }, [activeChannelId, activeDirectMessageId]);
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
-    update: (cache, { data: { createMessage } }) => {
+    update: (cache, { data: { message } }) => {
       // Read the data from our cache for this query.
       const cacheMsg = cache.readQuery({
         query: GET_MESSAGES,
@@ -81,20 +81,20 @@ export const InputUpdateMessages = memo((props) => {
         cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
           ? cacheMsg.messages.chatMessages
           : [];
-      if (cacheMsg) {
+      if (cacheMsg && message) {
         cache.writeQuery({
           query: GET_MESSAGES,
           data: {
             messages: {
               ...cacheMsg.messages,
-              chatMessages: [...chatMessages, createMessage],
+              chatMessages: [...chatMessages, message.create],
             },
           },
         });
       }
     },
     onCompleted(data) {
-      const createdMessage = data.createMessage;
+      const createdMessage = data.message.create;
       sendMessageToWS(createdMessage);
     },
   });
@@ -104,7 +104,7 @@ export const InputUpdateMessages = memo((props) => {
       console.log(`Помилка ${error}`);
     },
     onCompleted(data) {
-      const changedMessage = data.changeMessage;
+      const changedMessage = data.message.change;
       sendMessageToWS(changedMessage);
     },
   });
@@ -139,12 +139,11 @@ export const InputUpdateMessages = memo((props) => {
 
   const messageInReply = (text) => {
     const replyMsg = {
-      userId: auth.id,
-      userName: auth.name,
-      replyOn: closeBtnReplyMsg,
-      text,
       chatId,
       chatType,
+      senderId: auth.id,
+      replyOn: closeBtnReplyMsg,
+      text,
     };
     createMessage({
       variables: replyMsg,
@@ -156,8 +155,7 @@ export const InputUpdateMessages = memo((props) => {
           id: messageDate(),
           replyOn: null,
           text,
-          userId: auth.id,
-          userName: auth.name,
+          senderId: auth.id,
           __typename: 'Message',
         },
       },
@@ -167,11 +165,10 @@ export const InputUpdateMessages = memo((props) => {
 
   function newMessage(textMessage) {
     const newMsg = {
-      userId: auth.id,
-      userName: auth.name,
-      text: textMessage,
       chatId,
       chatType,
+      senderId: auth.id,
+      text: textMessage,
     };
 
     createMessage({
@@ -184,8 +181,7 @@ export const InputUpdateMessages = memo((props) => {
           id: messageDate(),
           replyOn: null,
           text: textMessage,
-          userId: auth.id,
-          userName: auth.name,
+          senderId: auth.id,
           __typename: 'Message',
         },
       },

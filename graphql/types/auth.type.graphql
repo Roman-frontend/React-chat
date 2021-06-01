@@ -1,17 +1,21 @@
+scalar Email
+scalar AuthName
+scalar AuthPassword
+
 type Auth {
-  name: String
-  email: String
+  name: AuthName!
+  email: Email!
   password: String
-  channels: [String]
-  directMessages: [String]
-  id: ID
+  channels: [String]!
+  directMessages: [String]!
+  id: ID!
   token: String
 }
 
 type Query {
-  login(email: String, password: String): Auth
+  login(email: Email!, password: AuthPassword!): Auth!
 }
 
 type Mutation {
-  register(name: String!, email: String!, password: String!): Auth
+  register(name: AuthName!, email: Email!, password: AuthPassword!): Auth!
 }

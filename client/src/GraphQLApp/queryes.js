@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const LOGIN = gql`
-  query Login($email: String!, $password: String!) {
+  query Login($email: Email!, $password: AuthPassword!) {
     login(email: $email, password: $password) {
       id
       name
@@ -36,9 +36,9 @@ export const APP = gql`
 
 export const REGISTER = gql`
   mutation registerMutation(
-    $name: String!
-    $email: String!
-    $password: String!
+    $name: AuthName!
+    $email: Email!
+    $password: AuthPassword!
   ) {
     register(name: $name, email: $email, password: $password) {
       id

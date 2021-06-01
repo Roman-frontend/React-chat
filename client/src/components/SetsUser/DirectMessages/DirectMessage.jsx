@@ -9,18 +9,17 @@ import {
   styleIsNotActiveLink,
 } from '../HelpersSetUsers/ChatStyles.jsx';
 import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 import { REMOVE_CHAT } from '../SetsUserGraphQL/queryes';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
 
 export const DirectMessage = withStyles(styles)((props) => {
   const { reqRowElements, classes } = props;
-  const { data: auth } = useQuery(AUTH);
   const { data: allUsers } = useQuery(GET_USERS);
   const [focusedId, setFocusedId] = useState(false);
   const authId = useReactiveVar(reactiveVarId);
-  const activeDirectMessageId = useReactiveVar(activeChatId)
-    .activeDirectMessageId;
+  const activeDirectMessageId =
+    useReactiveVar(activeChatId).activeDirectMessageId;
 
   const [removeDirectMessage] = useMutation(REMOVE_CHAT, {
     update: (cache) => {
@@ -76,7 +75,7 @@ export const DirectMessage = withStyles(styles)((props) => {
               size='small'
               style={{ background: 'white' }}
               classes={{ root: classes.buttonRoot }}
-              onClick={() => showMore(id)}
+              onClick={() => removeDirectMessage({ variables: { id } })}
             >
               X
             </Button>
@@ -84,12 +83,6 @@ export const DirectMessage = withStyles(styles)((props) => {
         </Grid>
       </div>
     );
-  }
-
-  function showMore(id) {
-    if (auth && auth.token) {
-      removeDirectMessage({ variables: { id, token: auth.token } });
-    }
   }
 
   return reqRowElements.map((directMsg) => {

@@ -107,7 +107,6 @@ export const Messages = memo((props) => {
   if (loading) {
     return <Loader />;
   }
-  console.log('messages');
 
   return (
     <div className='messages'>

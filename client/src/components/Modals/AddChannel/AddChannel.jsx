@@ -36,15 +36,16 @@ export const AddChannel = withStyles(styles)((props) => {
     members: [],
   });
   const [createChannel] = useMutation(CREATE_CHANNEL, {
-    update: (proxy, { data: { createChannel } }) => {
+    update: (proxy, { data: { channel } }) => {
       const ready = proxy.readQuery({
         query: CHANNELS,
         variables: { channelsId: reactiveVarChannels() },
       });
+      console.log(channel.create);
       proxy.writeQuery({
         query: CHANNELS,
         data: {
-          userChannels: [...ready.userChannels, createChannel],
+          userChannels: [...ready.userChannels, channel.create],
         },
       });
     },
@@ -52,10 +53,10 @@ export const AddChannel = withStyles(styles)((props) => {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       const toStorage = JSON.stringify({
         ...storage,
-        channels: [...storage.channels, data.createChannel.id],
+        channels: [...storage.channels, data.channel.create.id],
       });
       sessionStorage.setItem('storageData', toStorage);
-      reactiveVarChannels([...reactiveVarChannels(), data.createChannel.id]);
+      reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
     },
     onError(error) {
       console.log(`Помилка при створенні каналу ${error}`);
@@ -79,12 +80,7 @@ export const AddChannel = withStyles(styles)((props) => {
     if (action === 'done') {
       const listInvited = invited[0] ? invited.concat(auth.id) : [auth.id];
       createChannel({
-        variables: {
-          token: auth.token,
-          ...form,
-          creator: auth.id,
-          members: listInvited,
-        },
+        variables: { ...form, creator: auth.id, members: listInvited },
       });
     }
     setModalAddChannelIsOpen(false);

@@ -1,11 +1,13 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_DIRECT_MESSAGE = gql`
-  mutation createDirectMessage($inviter: ID!, $invited: [ID]!) {
-    createDirectMessage(inviter: $inviter, invited: $invited) {
-      id
-      members
-      createdAt
+  mutation ($inviter: ID!, $invited: [ID]!) {
+    directMessage {
+      create(inviter: $inviter, invited: $invited) {
+        id
+        members
+        createdAt
+      }
     }
   }
 `;
@@ -32,7 +34,7 @@ export const APP = gql`
 `;
 
 export const CHANNELS = gql`
-  query userChannels($channelsId: [ID]) {
+  query userChannels($channelsId: [ID]!) {
     channels @client @export(as: "channelsId")
     userChannels(channelsId: $channelsId) {
       id
@@ -45,55 +47,61 @@ export const CHANNELS = gql`
 `;
 
 export const CREATE_CHANNEL = gql`
-  mutation createChannelMutation(
-    $token: String!
+  mutation (
     $creator: ID!
     $discription: String
     $isPrivate: Boolean
     $members: [ID]!
     $name: String!
   ) {
-    createChannel(
-      token: $token
-      creator: $creator
-      discription: $discription
-      isPrivate: $isPrivate
-      members: $members
-      name: $name
-    ) {
-      id
-      name
-      creator
-      members
-      isPrivate
+    channel {
+      create(
+        creator: $creator
+        discription: $discription
+        isPrivate: $isPrivate
+        members: $members
+        name: $name
+      ) {
+        id
+        name
+        creator
+        members
+        isPrivate
+      }
     }
   }
 `;
 
 export const ADD_MEMBER_CHANNEL = gql`
-  mutation addMember($token: String!, $invited: [ID]!, $chatId: ID!) {
-    addMember(token: $token, invited: $invited, chatId: $chatId) {
-      id
-      name
-      creator
-      members
-      isPrivate
+  mutation ($invited: [ID]!, $chatId: ID!) {
+    channel {
+      addMember(invited: $invited, chatId: $chatId) {
+        id
+        name
+        creator
+        members
+        isPrivate
+      }
     }
   }
 `;
 
 export const REMOVE_CHAT = gql`
-  mutation removeDirectMessage($id: ID!, $token: String!) {
-    removeDirectMessage(id: $id, token: $token) {
-      id
+  mutation ($id: ID!) {
+    directMessage {
+      remove(id: $id) {
+        id
+      }
     }
   }
 `;
 
 export const REMOVE_CHANNEL = gql`
-  mutation removeChannel($channelId: ID!, $userId: ID!, $token: String!) {
-    removeChannel(channelId: $channelId, userId: $userId, token: $token) {
-      id
+  mutation ($channelId: ID!, $userId: ID!) {
+    channel {
+      remove(channelId: $channelId, userId: $userId) {
+        id
+      }
     }
   }
 `;

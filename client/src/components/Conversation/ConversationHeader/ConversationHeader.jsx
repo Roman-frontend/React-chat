@@ -7,7 +7,6 @@ import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToC
 import imageProfile from '../../../images/Profile.jpg';
 import './ConversationHeader.sass';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH } from '../../../GraphQLApp/queryes.js';
 import {
   CHANNELS,
   ADD_MEMBER_CHANNEL,
@@ -17,13 +16,12 @@ import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 export const ConversationHeader = (props) => {
   const { resSuspense } = props;
   const { data: channels } = useQuery(CHANNELS);
-  const { data: auth } = useQuery(AUTH);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
-  const [addMember] = useMutation(ADD_MEMBER_CHANNEL, {
+  const [addMemberToChannel] = useMutation(ADD_MEMBER_CHANNEL, {
     onError(error) {
       console.log(`Помилка при додаванні учасника ${error}`);
     },
@@ -45,9 +43,7 @@ export const ConversationHeader = (props) => {
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {
-      addMember({
-        variables: { token: auth.token, invited, chatId: activeChannelId },
-      });
+      addMemberToChannel({ variables: { invited, chatId: activeChannelId } });
     }
     setModalAddPeopleIsOpen(false);
   }

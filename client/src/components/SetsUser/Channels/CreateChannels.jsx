@@ -10,16 +10,11 @@ import {
 } from '../HelpersSetUsers/ChatStyles.jsx';
 import { REMOVE_CHANNEL } from '../SetsUserGraphQL/queryes';
 import { useMutation, useReactiveVar } from '@apollo/client';
-import {
-  activeChatId,
-  reactiveVarId,
-  reactiveVarToken,
-} from '../../../GraphQLApp/reactiveVars';
+import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
 
 export const CreateChannels = withStyles(styles)((props) => {
   const { channels, classes } = props;
   const userId = useReactiveVar(reactiveVarId);
-  const token = useReactiveVar(reactiveVarToken);
   const [focusedId, setFocusedId] = useState(false);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
@@ -35,9 +30,6 @@ export const CreateChannels = withStyles(styles)((props) => {
           },
         },
       });
-    },
-    onCompleted(data) {
-      console.log(`remove chat ${data}`);
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
@@ -74,7 +66,7 @@ export const CreateChannels = withStyles(styles)((props) => {
               style={{ background: 'white' }}
               classes={{ root: classes.buttonRoot }}
               onClick={() =>
-                removeChannel({ variables: { channelId: id, userId, token } })
+                removeChannel({ variables: { channelId: id, userId } })
               }
             >
               X

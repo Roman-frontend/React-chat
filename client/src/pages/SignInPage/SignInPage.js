@@ -67,7 +67,7 @@ export const SignInPage = ({ route }) => {
     <div className='auth-body'>
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        //validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
         <Form className='auth-form'>

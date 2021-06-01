@@ -79,7 +79,7 @@ export const SignUpPage = (props) => {
       email: ref.email.current.children[1].children[0].value,
       password: String(ref.password.current.children[1].children[0].value),
     };
-    validate(formData);
+    //validate(formData);
     register({ variables: { ...formData } });
   };
 

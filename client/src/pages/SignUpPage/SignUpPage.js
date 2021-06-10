@@ -49,7 +49,6 @@ export const SignUpPage = (props) => {
           //застосовуємо функцію модифікатора users для оновлення кешованого масиву щоб включити посилання на нещодавно доданого user.
           users(existingUsers = []) {
             //За допомогою cache.writeFragment ми отримуємо внутрішнє посилання на доданий user, потім зберігаємо це посилання в масиві ROOT_QUERY.users.
-            console.log(existingUsers);
             const newUserRef = cache.writeFragment({
               data: register,
               fragment: gql`

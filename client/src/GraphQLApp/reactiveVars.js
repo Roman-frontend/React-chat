@@ -13,3 +13,4 @@ export const reactiveVarChannels = storage
   : makeVar();
 export const activeChatId = makeVar({});
 export const reactiveOnlineMembers = makeVar([]);
+export const reactiveVarPrevAuth = makeVar({});

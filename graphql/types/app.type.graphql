@@ -1,53 +1,12 @@
-type Channel {
-  id: ID!
-  name: String!
-  creator: ID!
-  description: String
-  members: [ID]!
-  isPrivate: Boolean!
-  createdAt: String
-  updatedAt: String
-}
-
-type DirectMessage {
-  id: ID!
-  members: [ID]!
-  createdAt: String
-}
-
-type User {
-  id: ID!
-  name: String!
-  email: String!
+type UserPayload {
+  id: ID
+  name: String
+  email: String
   password: String
-  channels: [String]!
-  directMessages: [String]!
+  channels: [String]
+  directMessages: [String]
 }
 
 type Query {
-  userChannels(channelsId: [ID]!): [Channel]!
-  directMessages(id: [ID]!): [DirectMessage]!
-  users(id: ID): [User]!
-}
-
-type Mutation {
-  directMessage: DirectMessagesMutations!
-  channel: ChannelMutations
-}
-
-type DirectMessagesMutations {
-  remove(id: ID!): DirectMessage
-  create(inviter: ID!, invited: [ID]!): [DirectMessage]!
-}
-
-type ChannelMutations {
-  create(
-    creator: ID!
-    name: String!
-    members: [ID]!
-    discription: String
-    isPrivate: Boolean
-  ): Channel!
-  addMember(invited: [ID]!, chatId: ID!): Channel!
-  remove(channelId: ID!, userId: ID!): Channel
+  users(id: ID): [UserPayload]!
 }

@@ -1,0 +1,44 @@
+type UserChannelsPayload {
+  id: ID
+  name: String
+  admin: ID
+  description: String
+  members: [ID]
+  isPrivate: Boolean
+}
+type CreateChannelPayload {
+  id: ID
+  name: String
+  admin: ID
+  description: String
+  members: [ID]
+  isPrivate: Boolean
+}
+type AddMemberToChannelPayload {
+  id: ID
+  members: [ID]
+}
+type RemoveChannelPayload {
+  id: ID
+}
+
+type Query {
+  userChannels(channelsId: [ID]!): [UserChannelsPayload]!
+}
+
+type Mutation {
+  channel: ChannelMutations
+}
+
+type ChannelMutations {
+  create(details: ChannelDetailsInput!, members: [ID]!): CreateChannelPayload!
+  addMember(invited: [ID]!, chatId: ID!): AddMemberToChannelPayload!
+  remove(channelId: ID!, userId: ID!): RemoveChannelPayload
+}
+
+input ChannelDetailsInput {
+  name: String!
+  admin: ID!
+  discription: String
+  isPrivate: Boolean
+}

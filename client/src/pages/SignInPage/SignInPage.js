@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SignInPage = ({ route }) => {
-  console.log(route);
   const classes = useStyles();
   const { auth } = useAuth();
   const initialValues = { email: '', password: '' };
@@ -67,7 +66,7 @@ export const SignInPage = ({ route }) => {
     <div className='auth-body'>
       <Formik
         initialValues={initialValues}
-        //validationSchema={validationSchema}
+        validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
         <Form className='auth-form'>

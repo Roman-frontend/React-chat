@@ -1,22 +1,48 @@
 scalar ChatType
 
-type Message {
+type RemoveMessagePayload {
   id: ID!
-  senderId: ID!
-  text: String!
-  createdAt: String!
-  replyOn: String
-  chatType: ChatType!
-  chatId: ID!
 }
 
-type Chat {
+type CreateMessagePayload {
   id: ID
-  chatMessages: [Message]
+  senderId: ID
+  text: String
+  createdAt: String
+  replyOn: String
+  chatType: ChatType
+  chatId: ID
+}
+
+type ChangeMessagePayload {
+  id: ID
+  senderId: ID
+  text: String
+  createdAt: String
+  updatedAt: String
+  replyOn: String
+  chatType: ChatType
+  chatId: ID
+}
+
+type MessagePayload {
+  id: ID
+  senderId: ID
+  text: String
+  createdAt: String
+  updatedAt: String
+  replyOn: String
+  chatType: ChatType
+  chatId: ID
+}
+
+type ChatMessagesPayload {
+  id: ID
+  chatMessages: [MessagePayload]
 }
 
 type Query {
-  messages(chatId: ID!, chatType: ChatType!, userId: ID!): Chat
+  messages(chatId: ID!, chatType: ChatType!, userId: ID!): ChatMessagesPayload
 }
 
 type Mutation {
@@ -28,14 +54,19 @@ type MessageMutations {
     chat: ChatMessageInput!
     text: String!
     replyOn: String
-    createdAt: String
-  ): Message!
-  change(id: ID!, text: String!, chatType: ChatType!): Message!
-  remove(id: ID!, chatType: ChatType!): Message
+  ): CreateMessagePayload!
+  change(input: MessageChangeInput!): ChangeMessagePayload!
+  remove(id: ID!, chatType: ChatType!): RemoveMessagePayload
 }
 
 input ChatMessageInput {
   senderId: ID!
   chatId: ID!
+  chatType: ChatType!
+}
+
+input MessageChangeInput {
+  id: ID!
+  text: String!
   chatType: ChatType!
 }

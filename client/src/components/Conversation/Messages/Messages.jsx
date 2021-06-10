@@ -44,7 +44,6 @@ export const Messages = memo((props) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
         if (parsedRes && parsedRes.text) {
-          console.log('refetch()', parsedRes);
           const oldMsg = client.readQuery({
             query: GET_MESSAGES,
             variables: { chatId, chatType },

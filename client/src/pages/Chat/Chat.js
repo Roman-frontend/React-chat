@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
-import { reactiveOnlineMembers } from '../../GraphQLApp/reactiveVars';
+import {
+  reactiveOnlineMembers,
+  reactiveVarPrevAuth,
+} from '../../GraphQLApp/reactiveVars';
 import { GET_USERS } from '../../GraphQLApp/queryes';
 import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
@@ -28,12 +31,14 @@ export const Chat = () => {
             parsedRes.message === 'online' &&
             JSON.stringify(usersOnline) !== JSON.stringify(parsedRes.members)
           ) {
-            console.log('new online ', parsedRes.members);
             reactiveOnlineMembers(parsedRes.members);
           }
         });
       })
       .catch((error) => console.log(error));
+
+    const storage = JSON.parse(sessionStorage.getItem('storageData'));
+    if (storage) reactiveVarPrevAuth(storage);
   }, []);
 
   useEffect(() => {
@@ -49,7 +54,6 @@ export const Chat = () => {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       if (storage && storage.channels && storage.directMessages) {
         const allUserChats = storage.channels.concat(storage.directMessages);
-        console.log('Chat join');
         wsSend({ userRooms: allUserChats, meta: 'join', userId: storage.id });
       }
       //console.info('This page is reloaded');

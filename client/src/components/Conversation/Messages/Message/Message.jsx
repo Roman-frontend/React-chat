@@ -12,7 +12,7 @@ import './message.sass';
 
 export default function Message(props) {
   const { message, setPopupMessage } = props;
-  const { text, createdAt, id, senderId, replyOn } = message;
+  const { text, createdAt, updatedAt, id, senderId, replyOn } = message;
 
   const { data: users, loading } = useQuery(GET_USERS);
 
@@ -44,7 +44,9 @@ export default function Message(props) {
         />
       </Box>
       <p className={`${classMessage}__messager`}>{senderName}</p>
-      <p className={`${classMessage}__date`}>{messageDate(createdAt)}</p>
+      <p className={`${classMessage}__date`}>
+        {messageDate(updatedAt || createdAt)}
+      </p>
       <p className={`${classMessage}__message`}>{text}</p>
       {replyMessage}
     </div>

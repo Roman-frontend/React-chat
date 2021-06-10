@@ -18,19 +18,15 @@ const styles = (theme) => ({
   },
 });
 
-export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
+export const CreateDirectMessage = withStyles(styles)((props) => {
   const { data: allUsers } = useQuery(GET_USERS);
   const { data: drMessages } = useQuery(GET_DIRECT_MESSAGES, {
     onCompleted(data) {
       //console.log(data);
     },
   });
-  const {
-    done,
-    classes,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
-  } = props;
+  const { done, classes, modalAddPeopleIsOpen, setModalAddPeopleIsOpen } =
+    props;
   const notInvitedRef = useRef();
 
   useEffect(() => {
@@ -51,8 +47,8 @@ export const AddPeopleToDirectMessages = withStyles(styles)((props) => {
           });
         });
       }
-      //notInvitedRef.current = allNotInvited;
-      notInvitedRef.current = allUsers.users;
+      notInvitedRef.current = allNotInvited;
+      //notInvitedRef.current = allUsers.users;
     }
   }, [allUsers, drMessages, reactiveVarId()]);
 

@@ -5,7 +5,7 @@ const Channel = model(
   new Schema(
     {
       name: { type: String, required: true },
-      creator: { type: String, required: true },
+      admin: { type: String, required: true },
       description: { type: String },
       members: { type: Array },
       isPrivate: { type: Boolean, default: false },

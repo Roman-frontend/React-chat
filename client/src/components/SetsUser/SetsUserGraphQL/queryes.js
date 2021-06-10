@@ -1,24 +1,54 @@
 import { gql } from '@apollo/client';
 
-export const CREATE_DIRECT_MESSAGE = gql`
-  mutation ($inviter: ID!, $invited: [ID]!) {
-    directMessage {
-      create(inviter: $inviter, invited: $invited) {
-        id
-        members
-        createdAt
-      }
-    }
-  }
-`;
-
 export const GET_DIRECT_MESSAGES = gql`
   query directMessages($id: [ID]!) {
     directMessagesId @client @export(as: "id")
     directMessages(id: $id) {
       id
       members
-      createdAt
+    }
+  }
+`;
+
+export const CREATE_DIRECT_MESSAGE = gql`
+  mutation ($inviter: ID!, $invited: [ID]!) {
+    directMessages {
+      create(inviter: $inviter, invited: $invited) {
+        id
+        members
+      }
+    }
+  }
+`;
+
+export const REMOVE_DIRECT_MESSAGE = gql`
+  mutation ($id: ID!) {
+    directMessages {
+      remove(id: $id) {
+        recordId
+        status
+        query {
+          users {
+            id
+          }
+        }
+        error {
+          message
+          __typename # <--- Client will receive error type name
+          ... on ValidatorError {
+            # <--- Request additional fields according to error type
+            path
+            value
+          }
+          ... on MongoError {
+            code
+          }
+          ... on AuthError {
+            value
+            code
+          }
+        }
+      }
     }
   }
 `;
@@ -39,7 +69,7 @@ export const CHANNELS = gql`
     userChannels(channelsId: $channelsId) {
       id
       name
-      creator
+      admin
       members
       isPrivate
     }
@@ -48,7 +78,7 @@ export const CHANNELS = gql`
 
 export const CREATE_CHANNEL = gql`
   mutation (
-    $creator: ID!
+    $admin: ID!
     $discription: String
     $isPrivate: Boolean
     $members: [ID]!
@@ -56,15 +86,17 @@ export const CREATE_CHANNEL = gql`
   ) {
     channel {
       create(
-        creator: $creator
-        discription: $discription
-        isPrivate: $isPrivate
+        details: {
+          admin: $admin
+          discription: $discription
+          isPrivate: $isPrivate
+          name: $name
+        }
         members: $members
-        name: $name
       ) {
         id
         name
-        creator
+        admin
         members
         isPrivate
       }
@@ -77,20 +109,7 @@ export const ADD_MEMBER_CHANNEL = gql`
     channel {
       addMember(invited: $invited, chatId: $chatId) {
         id
-        name
-        creator
         members
-        isPrivate
-      }
-    }
-  }
-`;
-
-export const REMOVE_CHAT = gql`
-  mutation ($id: ID!) {
-    directMessage {
-      remove(id: $id) {
-        id
       }
     }
   }

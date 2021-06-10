@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button } from '@material-ui/core';
@@ -10,7 +10,7 @@ import {
 } from '../HelpersSetUsers/ChatStyles.jsx';
 import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
-import { REMOVE_CHAT } from '../SetsUserGraphQL/queryes';
+import { REMOVE_DIRECT_MESSAGE } from '../SetsUserGraphQL/queryes';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
 
 export const DirectMessage = withStyles(styles)((props) => {
@@ -21,21 +21,23 @@ export const DirectMessage = withStyles(styles)((props) => {
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
 
-  const [removeDirectMessage] = useMutation(REMOVE_CHAT, {
-    update: (cache) => {
+  const [removeDirectMessage] = useMutation(REMOVE_DIRECT_MESSAGE, {
+    update: (cache, { data: { directMessages } }) => {
+      console.log(directMessages);
       cache.modify({
         fields: {
-          directMessages({ DELETE }) {
-            return DELETE;
+          directMessages(existingDirectMessagesRefs, { readField }) {
+            return existingDirectMessagesRefs.filter(
+              (directMessageRef) =>
+                directMessages.remove.recordId !==
+                readField('id', directMessageRef)
+            );
           },
           messages({ DELETE }) {
             return DELETE;
           },
         },
       });
-    },
-    onCompleted(data) {
-      //console.log(`remove chat ${data}`);
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);

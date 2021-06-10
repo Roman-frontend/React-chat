@@ -11,7 +11,6 @@ import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
 
 export default function Conversation(props) {
-  const { resSuspense } = props;
   const { data: channels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
@@ -134,7 +133,7 @@ export default function Conversation(props) {
 
   return (
     <div className={closeBtnReplyMsg ? 'conversation-riply' : 'conversation'}>
-      <ConversationHeader resSuspense={resSuspense} />
+      <ConversationHeader />
       {fieldAnswerTo()}
       {contentMessages()}
       <div className='conversation-input'>

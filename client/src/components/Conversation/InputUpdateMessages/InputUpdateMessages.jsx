@@ -7,7 +7,7 @@ import {
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { gql, useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_MESSAGE,
@@ -72,7 +72,6 @@ export const InputUpdateMessages = memo((props) => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data: { message } }) => {
-      // Read the data from our cache for this query.
       const cacheMsg = cache.readQuery({
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
@@ -82,12 +81,13 @@ export const InputUpdateMessages = memo((props) => {
           ? cacheMsg.messages.chatMessages
           : [];
       if (cacheMsg && message) {
-        cache.writeQuery({
-          query: GET_MESSAGES,
-          data: {
-            messages: {
-              ...cacheMsg.messages,
-              chatMessages: [...chatMessages, message.create],
+        cache.modify({
+          fields: {
+            messages() {
+              return {
+                ...cacheMsg.messages,
+                chatMessages: [...chatMessages, message.create],
+              };
             },
           },
         });
@@ -100,6 +100,27 @@ export const InputUpdateMessages = memo((props) => {
   });
 
   const [changeMessage] = useMutation(CHANGE_MESSAGE, {
+    update: (cache, { data: { message } }) => {
+      const cacheMsg = cache.readQuery({
+        query: GET_MESSAGES,
+        variables: { chatId, chatType, userId: auth.id },
+      });
+      const chatMessages =
+        cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
+          ? cacheMsg.messages.chatMessages
+          : [];
+      if (cacheMsg && message) {
+        const changeMessages = chatMessages.map((msg) => {
+          return msg.id === message.change.id ? message.change : msg;
+        });
+        cache.writeQuery({
+          query: GET_MESSAGES,
+          data: {
+            messages: { ...cacheMsg.messages, chatMessages: changeMessages },
+          },
+        });
+      }
+    },
     onError(error) {
       console.log(`Помилка ${error}`);
     },
@@ -132,7 +153,7 @@ export const InputUpdateMessages = memo((props) => {
 
   async function changeMessageText(text) {
     const newMsg = { id: changeMessageRef.current.id, text, chatType };
-    changeMessage({ variables: newMsg });
+    changeMessage({ variables: { input: newMsg } });
     changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
   }

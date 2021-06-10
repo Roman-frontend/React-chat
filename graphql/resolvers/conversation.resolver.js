@@ -12,19 +12,17 @@ const resolvers = {
       return null;
     },
     serialize(value) {
-      console.log(value, 'ast.value');
       //Коли ми надсилаємо скаляр дати у відповіді GraphQL, ми серіалізуємо його (у відповіді return Я.).
       return value; // value sent to the client
     },
     parseLiteral(ast) {
-      console.log(ast.value);
       return ast.value;
     },
   }),
   Query: {
     messages: async (_, { chatId, chatType, userId }, context) => {
+      console.log('get messages with datas: ', chatId, chatType, userId);
       if (!context.isAuth) throw new Error('you must be logged in');
-      console.log('geting messages...');
       if (chatType === 'DirectMessage') {
         const chatMessages = await DirectMessageChat.find({ chatId });
         return { id: chatMessages[0].chatId, chatMessages };
@@ -45,32 +43,29 @@ const resolvers = {
   MessageMutations: {
     create: async (_, { text, replyOn, chat }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
-      console.log('creating message');
       const data = { text, replyOn, ...chat };
       let newMessage;
       if (chat.chatType === 'Channel') {
-        console.log(data);
         newMessage = await ChannelMessage.create(data);
       } else if (chat.chatType === 'DirectMessage') {
         newMessage = await DirectMessageChat.create(data);
       }
-      console.log(newMessage);
       return newMessage;
     },
-    change: async (_, { id, text, chatType }, context) => {
+    change: async (_, { input }, context) => {
+      const { id, text, chatType } = { ...input };
       if (!context.isAuth) throw new Error('you must be logged in');
-      console.log('changing message');
       if (chatType === 'Channel') {
         return ChannelMessage.findOneAndUpdate(
           { _id: id },
-          { text },
+          { text: text },
           { useFindAndModify: false, new: true },
           (err) => infoError(err)
         );
       } else if (chatType === 'DirectMessage') {
         return DirectMessageChat.findOneAndUpdate(
           { _id: id },
-          { text },
+          { text: text },
           { useFindAndModify: false, new: true },
           (err) => infoError(err)
         );
@@ -78,7 +73,6 @@ const resolvers = {
     },
     remove: async (_, { id, chatType }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
-      console.log('removing message');
       if (chatType === 'Channel') {
         await ChannelMessage.findByIdAndRemove(
           { _id: id },

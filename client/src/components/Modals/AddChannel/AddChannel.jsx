@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import { useQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, useMutation } from '@apollo/client';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   CREATE_CHANNEL,
@@ -36,19 +36,37 @@ export const AddChannel = withStyles(styles)((props) => {
     members: [],
   });
   const [createChannel] = useMutation(CREATE_CHANNEL, {
-    update: (proxy, { data: { channel } }) => {
+    update(cache, { data: { channel } }) {
+      cache.modify({
+        fields: {
+          userChannels(existingChannels) {
+            const newChannelRef = cache.writeFragment({
+              data: channel.create,
+              fragment: gql`
+                fragment NewChannel on Channel {
+                  id
+                  name
+                  admin
+                  members
+                  isPrivate
+                }
+              `,
+            });
+            return [...existingChannels, newChannelRef];
+          },
+        },
+      });
+    },
+    /* update: (proxy, { data: { channel } }) => {
       const ready = proxy.readQuery({
         query: CHANNELS,
         variables: { channelsId: reactiveVarChannels() },
       });
-      console.log(channel.create);
       proxy.writeQuery({
         query: CHANNELS,
-        data: {
-          userChannels: [...ready.userChannels, channel.create],
-        },
+        data: { userChannels: [...ready.userChannels, channel.create] },
       });
-    },
+    }, */
     onCompleted(data) {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       const toStorage = JSON.stringify({
@@ -56,7 +74,7 @@ export const AddChannel = withStyles(styles)((props) => {
         channels: [...storage.channels, data.channel.create.id],
       });
       sessionStorage.setItem('storageData', toStorage);
-      reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
+      //reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
     },
     onError(error) {
       console.log(`Помилка при створенні каналу ${error}`);
@@ -80,7 +98,7 @@ export const AddChannel = withStyles(styles)((props) => {
     if (action === 'done') {
       const listInvited = invited[0] ? invited.concat(auth.id) : [auth.id];
       createChannel({
-        variables: { ...form, creator: auth.id, members: listInvited },
+        variables: { ...form, admin: auth.id, members: listInvited },
       });
     }
     setModalAddChannelIsOpen(false);

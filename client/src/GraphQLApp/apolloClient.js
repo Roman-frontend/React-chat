@@ -8,6 +8,7 @@ import {
   reactiveDirectMessages,
   reactiveVarChannels,
   reactiveOnlineMembers,
+  reactiveVarPrevAuth,
   activeChatId,
 } from './reactiveVars';
 
@@ -27,44 +28,51 @@ export const client = new ApolloClient({
       Query: {
         fields: {
           directMessagesId() {
-            return reactiveDirectMessages();
+            return reactiveVarToken()
+              ? reactiveVarPrevAuth().directMessages
+              : null;
           },
           channels() {
-            return reactiveVarChannels();
+            return reactiveVarToken() ? reactiveVarChannels() : null;
           },
           token() {
             return reactiveVarToken();
           },
           name() {
-            return reactiveVarName();
+            return reactiveVarToken() ? reactiveVarName() : null;
           },
           email() {
-            return reactiveVarEmail();
+            return reactiveVarToken() ? reactiveVarEmail() : null;
           },
           id() {
-            return reactiveVarId();
+            return reactiveVarToken() ? reactiveVarId() : null;
           },
           usersOnline() {
-            return reactiveOnlineMembers();
+            return reactiveVarToken() ? reactiveOnlineMembers() : null;
           },
           activeChannelId() {
-            return activeChatId().activeChannelId;
+            return reactiveVarToken() ? activeChatId().activeChannelId : null;
           },
           activeDirectMessageId() {
-            return activeChatId().activeDirectMessageId;
+            return reactiveVarToken()
+              ? activeChatId().activeDirectMessageId
+              : null;
           },
           activeChatId() {
-            return (
-              activeChatId().activeChannelId ||
-              activeChatId().activeDirectMessageId
-            );
+            return reactiveVarToken()
+              ? activeChatId().activeChannelId ||
+                  activeChatId().activeDirectMessageId
+              : null;
           },
           activeChatType() {
-            if (activeChatId().activeChannelId) {
-              return 'Channel';
-            } else if (activeChatId().activeDirectMessageId) {
-              return 'DirectMessage';
+            if (reactiveVarToken()) {
+              if (activeChatId().activeChannelId) {
+                return 'Channel';
+              } else if (activeChatId().activeDirectMessageId) {
+                return 'DirectMessage';
+              }
             }
+            return null;
           },
         },
       },

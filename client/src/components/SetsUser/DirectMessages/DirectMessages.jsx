@@ -11,7 +11,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, useMutation } from '@apollo/client';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   CREATE_DIRECT_MESSAGE,
@@ -20,7 +20,7 @@ import {
 import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
 import { Link } from 'react-router-dom';
 import { DirectMessage } from './DirectMessage';
-import { AddPeopleToDirectMessages } from '../../Modals/AddPeopleToDirectMessages/AddPeopleToDirectMessages.jsx';
+import { CreateDirectMessage } from '../../Modals/CreateDirectMessage/CreateDirectMessage.jsx';
 import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme) => ({
@@ -43,16 +43,22 @@ export function DirectMessages() {
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
 
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
-    update(cache, { data: { directMessage } }) {
-      const ready = cache.readQuery({
-        query: GET_DIRECT_MESSAGES,
-        variables: { id: auth.directMessagesId },
-      });
-      console.log(directMessage);
+    update(cache, { data: { directMessages } }) {
       cache.modify({
         fields: {
-          directMessages() {
-            return [...ready.directMessages, ...directMessage.create];
+          directMessages(existingDrMsg) {
+            const newCommentRef = directMessages.create.map((newDrMsg) => {
+              return cache.writeFragment({
+                data: newDrMsg,
+                fragment: gql`
+                  fragment NewDirectMessage on DirectMessage {
+                    id
+                    members
+                  }
+                `,
+              });
+            });
+            return [...existingDrMsg, ...newCommentRef];
           },
         },
       });
@@ -62,7 +68,7 @@ export function DirectMessages() {
     },
     onCompleted(data) {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
-      const newDrMsgIds = data.directMessage.create.map(({ id }) => id);
+      const newDrMsgIds = data.directMessages.create.map(({ id }) => id);
       const toStorage = JSON.stringify({
         ...storage,
         directMessages: [...storage.directMessages, ...newDrMsgIds],
@@ -87,7 +93,6 @@ export function DirectMessages() {
     setModalAddPeopleIsOpen(false);
 
     if (action === 'done' && invited) {
-      console.log('done ', { inviter: auth.id, invited });
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });
@@ -121,7 +126,7 @@ export function DirectMessages() {
       >
         + Invite people
       </Button>
-      <AddPeopleToDirectMessages
+      <CreateDirectMessage
         done={doneInvite}
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}

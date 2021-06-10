@@ -19,12 +19,21 @@ export const CreateChannels = withStyles(styles)((props) => {
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
   const [removeChannel] = useMutation(REMOVE_CHANNEL, {
-    update: (cache) => {
+    update: (cache, { data: { channel } }) => {
       cache.modify({
         fields: {
-          userChannels({ DELETE }) {
-            return DELETE;
+          userChannels(existingChannelRefs, { readField }) {
+            return existingChannelRefs.filter(
+              (channelRef) => channel.remove.id !== readField('id', channelRef)
+            );
           },
+          /* messages(existingMessagesRef, { readField }) {
+            console.log(existingMessagesRef);
+            //return DELETE;
+            return existingMessagesRef.filter(
+              (messageRef) => channel.remove.id !== readField('id', messageRef)
+            );
+          }, */
           messages({ DELETE }) {
             return DELETE;
           },

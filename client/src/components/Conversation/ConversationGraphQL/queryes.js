@@ -12,9 +12,10 @@ export const GET_MESSAGES = gql`
         senderId
         text
         replyOn
-        createdAt
         chatType
         chatId
+        createdAt
+        updatedAt
       }
     }
   }
@@ -47,9 +48,9 @@ export const CREATE_MESSAGE = gql`
 `;
 
 export const CHANGE_MESSAGE = gql`
-  mutation ($id: ID!, $text: String!, $chatType: ChatType!) {
+  mutation ($input: MessageChangeInput!) {
     message {
-      change(id: $id, text: $text, chatType: $chatType) {
+      change(input: $input) {
         id
         senderId
         text
@@ -57,6 +58,7 @@ export const CHANGE_MESSAGE = gql`
         chatId
         chatType
         createdAt
+        updatedAt
       }
     }
   }

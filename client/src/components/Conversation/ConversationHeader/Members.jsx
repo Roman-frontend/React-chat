@@ -6,18 +6,17 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { StyledBadge } from './ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
+import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import {
   activeChatId,
   reactiveOnlineMembers,
 } from '../../../GraphQLApp/reactiveVars';
 
 export function Members(props) {
-  const {
-    activeChannel,
-    setModalIsShowsMembers,
-    setModalAddPeopleIsOpen,
-  } = props;
+  const { activeChannel, setModalIsShowsMembers, setModalAddPeopleIsOpen } =
+    props;
   const { data: users } = useQuery(GET_USERS);
+  const { data: channels } = useQuery(CHANNELS);
   const [iconMembers, setIconMembers] = useState([]);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
@@ -26,7 +25,7 @@ export function Members(props) {
     if (users && Array.isArray(users.users) && activeChannel) {
       createAvatars();
     }
-  }, [activeChannelId, users, activeChannel, usersOnline]);
+  }, [activeChannelId, users, activeChannel, usersOnline, channels]);
 
   const createAvatars = () => {
     let avatars = [];
@@ -52,6 +51,7 @@ export function Members(props) {
   };
 
   function createAvatar(avatars) {
+    console.log('avatars  ', avatars);
     return (
       <AvatarGroup
         max={3}

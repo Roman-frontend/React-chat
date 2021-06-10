@@ -7,6 +7,8 @@ import {
   reactiveVarEmail,
   reactiveVarId,
   reactiveVarName,
+  reactiveVarPrevAuth,
+  activeChatId,
   reactiveOnlineMembers,
 } from '../GraphQLApp/reactiveVars';
 import { useReactiveVar } from '@apollo/client';
@@ -23,6 +25,7 @@ export const useAuth = () => {
     reactiveVarId(data.id);
     reactiveVarChannels(data.channels);
     reactiveDirectMessages(data.directMessages);
+    reactiveVarPrevAuth(data);
     const toStorage = JSON.stringify(data);
     sessionStorage.setItem('storageData', toStorage);
   }, []);
@@ -34,6 +37,14 @@ export const useAuth = () => {
     }
     sessionStorage.clear();
     reactiveVarToken(null);
+    reactiveVarName(null);
+    reactiveVarEmail(null);
+    reactiveVarId(null);
+    reactiveVarChannels(null);
+    reactiveDirectMessages(null);
+    reactiveVarPrevAuth({});
+    activeChatId({});
+    reactiveOnlineMembers([]);
   }, []);
 
   return { auth, logout };

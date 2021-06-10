@@ -39,9 +39,6 @@ export const SetViewPopup = (props) => {
         },
       });
     },
-    onCompleted(data) {
-      console.log(`remove message`);
-    },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
     },
@@ -52,13 +49,6 @@ export const SetViewPopup = (props) => {
   }, []);
 
   function hidePopup(event) {
-    //дозволяє закривати попап лише якщо натискаєш поза попапом
-    /* if (popupMessage && !popupRef.current.contains(event.target)) {
-      console.log('removeAddLister');
-      setPopupMessage(null);
-      document.removeEventListener('click', hidePopup);
-    } */
-    console.log('removeAddLister');
     setPopupMessage(null);
     document.removeEventListener('click', hidePopup);
   }

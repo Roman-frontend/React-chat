@@ -8,7 +8,6 @@ import { colors } from '@material-ui/core';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
-  const { resSuspense } = props;
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -43,8 +42,8 @@ export default function SetsUser(props) {
       className='main-font left-block'
       style={{ background: colors.blue[900] }}
     >
-      <Channels resSuspense={resSuspense} />
-      <DirectMessages resSuspense={resSuspense} />
+      <Channels />
+      <DirectMessages />
     </div>
   );
 }

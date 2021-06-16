@@ -90,11 +90,27 @@ const resolvers = {
       const { email, password } = args;
       const user = await User.findOne({ email });
       if (!user) {
-        throw new Error(`Couldn't find email: ${email}`);
+        return {
+          status: 401,
+          query: {},
+          error: {
+            message: `Couldn't find email: ${email}`,
+            value: 'unauthorized',
+            code: 401,
+          },
+        };
       }
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        throw new Error('Невірний пароль, спробуйте знову');
+        return {
+          status: 200,
+          query: {},
+          error: {
+            message: 'Невірний пароль, спробуйте знову',
+            value: 'Internal Error',
+            code: 500,
+          },
+        };
       }
       const token = jwt.sign(
         { userId: user.id },
@@ -102,47 +118,84 @@ const resolvers = {
         //{ expiresIn: '1h'}
       );
       return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        channels: user.channels,
-        directMessages: user.directMessages,
-        token,
+        record: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          channels: user.channels,
+          directMessages: user.directMessages,
+          token,
+        },
+        status: 200,
+        query: {},
+        error: {
+          message: 'you must be logged in',
+          value: 'unauthorized',
+          code: 401,
+        },
       };
     },
   },
 
   Mutation: {
     register: async (_, args) => {
+      console.log('registration');
       try {
         await schema.validate(args, { abortEarly: false });
       } catch (err) {
-        throw new Error(`Error : ${formatYupError(err)}`);
+        return {
+          status: 400,
+          query: {},
+          error: {
+            message: `Помилочка : ${formatYupError(err)}`,
+            value: 'BAD_REQUEST',
+          },
+        };
       }
       const { name, email, password } = args;
 
       const emailIsBasy = await User.findOne({ email });
       if (emailIsBasy) {
-        throw new Error(`Email: ${email} is basy`);
+        console.log('incorect register datas');
+        return {
+          status: 403,
+          query: {},
+          error: {
+            message: `Помилочка: ${email} is basy`,
+            value: 'FORBIDDEN',
+            code: 403,
+          },
+        };
       }
-      const hashPassword = await bcrypt.hash(password, 12);
+      /* const hashPassword = await bcrypt.hash(password, 12);
       const newUser = await User.create({
         name,
         email,
         password: hashPassword,
-      });
+      }); */
+      const newUser = await User.findOne({ email: 'r@mail.ru' });
       const token = jwt.sign(
         { userId: newUser.id },
         config.get('jwtSecret')
         //{ expiresIn: '1h'}
       );
       return {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        channels: newUser.channels,
-        directMessages: newUser.directMessages,
-        token,
+        recordId: newUser.id,
+        record: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          channels: newUser.channels,
+          directMessages: newUser.directMessages,
+          token,
+        },
+        status: 200,
+        query: {},
+        error: {
+          message: 'Succes register',
+          value: 'unauthorized',
+          code: 401,
+        },
       };
     },
   },

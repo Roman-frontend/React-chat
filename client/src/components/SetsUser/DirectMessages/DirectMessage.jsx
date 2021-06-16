@@ -14,7 +14,7 @@ import { REMOVE_DIRECT_MESSAGE } from '../SetsUserGraphQL/queryes';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
 
 export const DirectMessage = withStyles(styles)((props) => {
-  const { reqRowElements, classes } = props;
+  const { reqRowElements, setAlertData, classes } = props;
   const { data: allUsers } = useQuery(GET_USERS);
   const [focusedId, setFocusedId] = useState(false);
   const authId = useReactiveVar(reactiveVarId);
@@ -23,7 +23,6 @@ export const DirectMessage = withStyles(styles)((props) => {
 
   const [removeDirectMessage] = useMutation(REMOVE_DIRECT_MESSAGE, {
     update: (cache, { data: { directMessages } }) => {
-      console.log(directMessages);
       cache.modify({
         fields: {
           directMessages(existingDirectMessagesRefs, { readField }) {
@@ -38,6 +37,10 @@ export const DirectMessage = withStyles(styles)((props) => {
           },
         },
       });
+    },
+    onCompleted(data) {
+      console.log(data);
+      setAlertData(data.directMessages.remove);
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);

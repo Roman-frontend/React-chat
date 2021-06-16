@@ -13,7 +13,7 @@ import { useMutation, useReactiveVar } from '@apollo/client';
 import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
 
 export const CreateChannels = withStyles(styles)((props) => {
-  const { channels, classes } = props;
+  const { setAlertData, channels, classes } = props;
   const userId = useReactiveVar(reactiveVarId);
   const [focusedId, setFocusedId] = useState(false);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -24,7 +24,8 @@ export const CreateChannels = withStyles(styles)((props) => {
         fields: {
           userChannels(existingChannelRefs, { readField }) {
             return existingChannelRefs.filter(
-              (channelRef) => channel.remove.id !== readField('id', channelRef)
+              (channelRef) =>
+                channel.remove.recordId !== readField('id', channelRef)
             );
           },
           /* messages(existingMessagesRef, { readField }) {
@@ -42,6 +43,9 @@ export const CreateChannels = withStyles(styles)((props) => {
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
+    },
+    onCompleted(data) {
+      setAlertData(data.channel.remove);
     },
   });
 

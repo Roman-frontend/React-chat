@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { colors } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import { Link } from 'react-router-dom';
 import { useValidate } from '../../hooks/validate.hook.js';
 import {
@@ -13,7 +14,8 @@ import {
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
 import { REGISTER } from '../../components/../GraphQLApp/queryes';
-import { Loader } from '../../components/Helpers/Loader.jsx';
+import { AuthLoader } from '../../components/Helpers/Loader.jsx';
+import './auth-body.sass';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -24,9 +26,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignUpPage = (props) => {
+export const SignUpPage = memo((props) => {
   const { auth } = useAuth();
   const classes = useStyles();
+  const [serverError, setServerError] = useState(undefined);
   const { errors, validate } = useValidate({
     name: validateName,
     email: validateEmail,
@@ -38,19 +41,14 @@ export const SignUpPage = (props) => {
     email: useRef(undefined),
     password: useRef(undefined),
   };
-  //Коли REGISTER мутація запущено, нещодавно доданий і повернений user обєкт зберігається в cache. Однак попередньо кешований список юзерів, спостерігаючий за GET_USERS запитом, не буде автоматично оновлено. Це означає, що запит GET_USERS не отримує сповіщення про те, що додано нового user, тому запит не буде оновлено, щоб показати нового user.
+
   const [register, { loading }] = useMutation(REGISTER, {
-    //cache - представляє такі cache API методи: readQuery, writeQuery, readFragment, writeFragment, modify
-    //data - містить результат мутації. Я можу застосувати data щоб оновити cache з cache.writeQuery, cache.writeFragment чи cache.modify.
     update(cache, { data: { register } }) {
-      // cache.modify дозволяє обновляти чи удаляти пункти з кешу, застосовуючи функції модифікації.
       cache.modify({
         fields: {
-          //застосовуємо функцію модифікатора users для оновлення кешованого масиву щоб включити посилання на нещодавно доданого user.
           users(existingUsers = []) {
-            //За допомогою cache.writeFragment ми отримуємо внутрішнє посилання на доданий user, потім зберігаємо це посилання в масиві ROOT_QUERY.users.
             const newUserRef = cache.writeFragment({
-              data: register,
+              data: register.record,
               fragment: gql`
                 fragment NewUser on User {
                   id
@@ -68,23 +66,29 @@ export const SignUpPage = (props) => {
       console.log(`Некоректні дані при реєстрації ${error}`);
     },
     onCompleted(data) {
-      auth(data.register);
+      console.log('res data -- ', data);
+      if (data.register.status === 'OK') {
+        auth(data.register.record);
+      }
+
+      setServerError(data.register.error.message);
     },
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
     const formData = {
       name: ref.name.current.children[1].children[0].value,
       email: ref.email.current.children[1].children[0].value,
       password: String(ref.password.current.children[1].children[0].value),
     };
-    //validate(formData);
+    ref.password.current.children[1].children[0].value = '';
+    validate(formData);
     register({ variables: { ...formData } });
   };
 
-  if (loading) {
-    return <Loader />;
-  }
+  const handleCloseSnackbar = () => {
+    setServerError(undefined);
+  };
 
   return (
     <div className='auth-body'>
@@ -135,9 +139,18 @@ export const SignUpPage = (props) => {
             Has account go to login
           </Button>
         </Link>
+
+        {loading && <AuthLoader />}
+        <Snackbar
+          autoHideDuration={5000}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={serverError}
+          onClose={handleCloseSnackbar}
+          message={serverError}
+        />
       </div>
     </div>
   );
-};
+});
 
 export default SignUpPage;

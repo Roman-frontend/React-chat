@@ -80,7 +80,16 @@ const resolvers = {
         { channels: filteredChannels },
         { useFindAndModify: false, new: true }
       );
-      return { id: channelId };
+      return {
+        recordId: channelId,
+        status: 200,
+        query: {},
+        error: {
+          message: 'Succes remove channel',
+          value: 'validation error',
+          code: 500,
+        },
+      };
     },
   },
 };

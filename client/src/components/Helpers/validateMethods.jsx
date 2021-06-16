@@ -6,7 +6,7 @@ const NAME_MIN_LENGTH = 3;
 
 const shortName = 'Слишком короткое имя';
 const longName = 'Слишком длинное имя';
-const incorrectName = 'Некоректні дані при реєстрації';
+const incorrectName = "Некоректне ім'я";
 
 const incorrectEmail = 'Некоректний емейл';
 
@@ -17,12 +17,12 @@ export const validateName = (name) => {
   const regExp = /^([A-Za-z0-9]){3,15}$/gi;
 
   if (name) {
-    if (name.match(regExp)) return true;
     if (name.length < NAME_MIN_LENGTH) return shortName;
     if (name.length > NAME_MAX_LENGTH) return longName;
+    if (!name.match(regExp)) return incorrectName;
   }
 
-  return incorrectName;
+  return true;
 };
 
 export const validateEmail = (email) => {

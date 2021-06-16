@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { Channels } from './Channels/Channels.jsx';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
+import CustomizedSnackbars from '../Helpers/AlertAction.jsx';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
 import { colors } from '@material-ui/core';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
+  const [alertData, setAlertData] = useState({});
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -42,8 +44,9 @@ export default function SetsUser(props) {
       className='main-font left-block'
       style={{ background: colors.blue[900] }}
     >
-      <Channels />
-      <DirectMessages />
+      <Channels setAlertData={setAlertData} />
+      <DirectMessages setAlertData={setAlertData} />
+      <CustomizedSnackbars alertData={alertData} setAlertData={setAlertData} />
     </div>
   );
 }

@@ -21,6 +21,7 @@
     "materialize-css": "^1.0.0-rc.2",
     "nanoid": "^3.1.22",
     "node-sass": "^4.14.1",
+    "notistack": "^1.0.9",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",

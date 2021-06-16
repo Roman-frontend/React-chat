@@ -1,11 +1,8 @@
-import React, { useMemo, useCallback } from 'react';
-import {
-  ThemeProvider,
-  makeStyles,
-  createMuiTheme,
-} from '@material-ui/core/styles';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { colors } from '@material-ui/core';
+import './auth-form.sass';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,53 +19,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const themeCorrect = createMuiTheme({
-  palette: {
-    primary: {
-      main: colors.lime[900],
-    },
-  },
-});
-
-const themeError = createMuiTheme({
-  palette: {
-    primary: {
-      main: colors.red[900],
-    },
-  },
-});
-
 export function SignUpForm(props) {
   const { label, type, id, name, fieldError = true, inputSignUpRef } = props;
   const classes = useStyles();
+  const isError =
+    fieldError === undefined || fieldError === true ? false : true;
+
+  console.log(inputSignUpRef);
 
   return (
     <div>
-      <ThemeProvider theme={fieldError === true ? themeCorrect : themeError}>
-        <TextField
-          className={(classes.margin, classes.root)}
-          style={{ width: '33.7vw', margin: '2vh 0vw' }}
-          label={label}
-          InputProps={
-            fieldError === true
-              ? { className: classes.inputIsValidated }
-              : { className: classes.inputIsNotValidated }
-          }
-          name={name}
-          type={type}
-          id='mui-theme-provider-standard-input'
-          ref={inputSignUpRef}
-        />
-      </ThemeProvider>
-      <p
-        className={
-          fieldError === undefined || fieldError === true
-            ? null
-            : 'auth-form__error'
-        }
-      >
-        {fieldError}
-      </p>
+      <TextField
+        className={(classes.margin, classes.root)}
+        style={{ width: '33.7vw', margin: '2vh 0vw' }}
+        label={label}
+        name={name}
+        type={type}
+        id='mui-theme-provider-standard-input'
+        ref={inputSignUpRef}
+        error={isError}
+        size='small'
+      />
+      <p className={isError ? 'auth-form__error' : null}>{fieldError}</p>
     </div>
   );
 }

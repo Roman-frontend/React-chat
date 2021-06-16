@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import { colors } from '@material-ui/core';
 import { Field, ErrorMessage } from 'formik';
-import './auth-form.sass';
 
 const useStyles = makeStyles((theme) => ({
   root: {

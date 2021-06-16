@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 
+const ERROR_ALERT = 'Некоректні дані при реєстрації';
+
 export const useValidate = (validateFields) => {
   const [errors, setErrors] = useState({});
 
@@ -11,6 +13,12 @@ export const useValidate = (validateFields) => {
         const validatedForm = validateFields[fieldName](inputValue[fieldName]);
         resultValidate[fieldName] = validatedForm;
       }
+
+      resultValidate.isError = Object.values(resultValidate).find(
+        (value) => typeof value === 'string'
+      )
+        ? ERROR_ALERT
+        : false;
 
       setErrors({ ...resultValidate });
     },

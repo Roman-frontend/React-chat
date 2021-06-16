@@ -1,5 +1,10 @@
 scalar JSON
 
+type DirectMessage {
+  id: ID
+  members: [ID]
+}
+
 type UserDirectMessagesPayload {
   id: ID
   members: [ID]
@@ -17,7 +22,10 @@ enum StatusEnum {
   NO_CONTENT
   BAD_REQUEST
   UNAUTHORIZED
+  FORBIDDEN
   NOT_FOUND
+  SOME_INVITED
+  ALL_INVITED
   INTERNAL_SERVER_ERROR
 }
 """
@@ -74,12 +82,15 @@ type RuntimeError implements ErrorInterface {
 }
 
 type CreateDirectMessagePayload {
-  id: ID
-  members: [ID]
+  recordId: [ID]
+  record: [DirectMessage]
+  status: StatusEnum
+  query: Query
+  error: ErrorInterface
 }
 
 type Query {
-  directMessages(id: [ID]!): [UserDirectMessagesPayload]!
+  directMessages(id: [ID]): [UserDirectMessagesPayload]!
 }
 
 type Mutation {
@@ -88,5 +99,5 @@ type Mutation {
 
 type DirectMessagesMutations {
   remove(id: ID!): RemoveDirectMessagePayload
-  create(inviter: ID!, invited: [ID]!): [CreateDirectMessagePayload]!
+  create(inviter: ID!, invited: [ID]!): CreateDirectMessagePayload!
 }

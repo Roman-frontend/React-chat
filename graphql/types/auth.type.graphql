@@ -2,7 +2,7 @@ scalar Email
 scalar AuthName
 scalar AuthPassword
 
-type LoginPayload {
+type Auth {
   name: AuthName
   email: Email
   password: String
@@ -12,14 +12,20 @@ type LoginPayload {
   token: String
 }
 
+type LoginPayload {
+  recordId: ID
+  record: Auth
+  status: StatusEnum
+  query: Query
+  error: ErrorInterface
+}
+
 type RegisterPayload {
-  name: AuthName
-  email: Email
-  password: String
-  channels: [String]
-  directMessages: [String]
-  id: ID
-  token: String
+  recordId: ID
+  record: Auth
+  status: StatusEnum
+  query: Query
+  error: ErrorInterface
 }
 
 type Query {

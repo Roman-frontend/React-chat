@@ -3,12 +3,31 @@ import { gql } from '@apollo/client';
 export const LOGIN = gql`
   query Login($email: Email!, $password: AuthPassword!) {
     login(email: $email, password: $password) {
-      id
-      name
-      email
-      channels
-      directMessages
-      token
+      record {
+        id
+        name
+        email
+        channels
+        directMessages
+        token
+      }
+      status
+      error {
+        message
+        __typename # <--- Client will receive error type name
+        ... on ValidatorError {
+          # <--- Request additional fields according to error type
+          path
+          value
+        }
+        ... on MongoError {
+          code
+        }
+        ... on AuthError {
+          value
+          code
+        }
+      }
     }
   }
 `;
@@ -41,12 +60,32 @@ export const REGISTER = gql`
     $password: AuthPassword!
   ) {
     register(name: $name, email: $email, password: $password) {
-      id
-      name
-      email
-      channels
-      directMessages
-      token
+      recordId
+      record {
+        id
+        name
+        email
+        channels
+        directMessages
+        token
+      }
+      status
+      error {
+        message
+        __typename # <--- Client will receive error type name
+        ... on ValidatorError {
+          # <--- Request additional fields according to error type
+          path
+          value
+        }
+        ... on MongoError {
+          code
+        }
+        ... on AuthError {
+          value
+          code
+        }
+      }
     }
   }
 `;

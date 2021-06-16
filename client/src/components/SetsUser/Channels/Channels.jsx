@@ -12,7 +12,7 @@ import {
   reactiveVarToken,
 } from '../../../GraphQLApp/reactiveVars';
 
-export function Channels() {
+export function Channels(props) {
   const { t } = useTranslation();
   const { data: allChannels } = useQuery(CHANNELS);
   const authId = useReactiveVar(reactiveVarId);
@@ -27,7 +27,12 @@ export function Channels() {
       authId &&
       authToken
     ) {
-      return <CreateChannels channels={allChannels.userChannels} />;
+      return (
+        <CreateChannels
+          channels={allChannels.userChannels}
+          setAlertData={props.setAlertData}
+        />
+      );
     }
   }
 
@@ -59,6 +64,7 @@ export function Channels() {
         <AddChannel
           modalAddChannelIsOpen={modalAddChannelIsOpen}
           setModalAddChannelIsOpen={setModalAddChannelIsOpen}
+          setAlertData={props.setAlertData}
         />
       </div>
     </>

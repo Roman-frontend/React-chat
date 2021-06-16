@@ -1,4 +1,11 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  HttpLink,
+  from,
+} from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import {
   reactiveVarName,
@@ -12,7 +19,19 @@ import {
   activeChatId,
 } from './reactiveVars';
 
-const httpLink = createHttpLink({ uri: '/graphql' });
+//const httpLink = createHttpLink({ uri: '/graphql' });
+const httpLink = new HttpLink({ uri: 'http://localhost:3001/graphql' });
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
 
 const authLink = setContext((_, { headers }) => {
   const auth = JSON.parse(sessionStorage.getItem('storageData'));
@@ -21,8 +40,12 @@ const authLink = setContext((_, { headers }) => {
   return { headers: { ...headers, authorization: token } };
 });
 
+const link = authLink.concat(httpLink);
+
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  //link: authLink.concat(httpLink),
+  //link: from([errorLink, httpLink]),
+  link: from([errorLink, link]),
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

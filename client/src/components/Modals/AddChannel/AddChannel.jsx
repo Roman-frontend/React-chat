@@ -24,7 +24,12 @@ const styles = (theme) => ({
 });
 
 export const AddChannel = withStyles(styles)((props) => {
-  const { setModalAddChannelIsOpen, modalAddChannelIsOpen, classes } = props;
+  const {
+    setAlertData,
+    setModalAddChannelIsOpen,
+    modalAddChannelIsOpen,
+    classes,
+  } = props;
   const { data: auth } = useQuery(AUTH);
   const { data: allUsers } = useQuery(GET_USERS);
   const [isPrivate, setIsPrivate] = useState(false);
@@ -75,6 +80,7 @@ export const AddChannel = withStyles(styles)((props) => {
       });
       sessionStorage.setItem('storageData', toStorage);
       //reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
+      setAlertData(data.channel.create);
     },
     onError(error) {
       console.log(`Помилка при створенні каналу ${error}`);

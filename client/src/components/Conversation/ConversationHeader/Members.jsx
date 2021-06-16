@@ -40,7 +40,7 @@ export function Members(props) {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant={usersOnline.includes(user.id) ? 'dot' : 'standard'}
             >
-              <Avatar alt={user.name} src='/static/images/avatar/2.jpg' />
+              <Avatar alt={user.name}>{user.name[0]}</Avatar>
             </StyledBadge>
           );
         }
@@ -51,7 +51,6 @@ export function Members(props) {
   };
 
   function createAvatar(avatars) {
-    console.log('avatars  ', avatars);
     return (
       <AvatarGroup
         max={3}

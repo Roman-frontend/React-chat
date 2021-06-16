@@ -47,8 +47,8 @@ export const CreateDirectMessage = withStyles(styles)((props) => {
           });
         });
       }
-      notInvitedRef.current = allNotInvited;
-      //notInvitedRef.current = allUsers.users;
+      //notInvitedRef.current = allNotInvited;
+      notInvitedRef.current = allUsers.users;
     }
   }, [allUsers, drMessages, reactiveVarId()]);
 

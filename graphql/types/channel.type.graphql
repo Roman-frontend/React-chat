@@ -18,12 +18,16 @@ type AddMemberToChannelPayload {
   id: ID
   members: [ID]
 }
+
 type RemoveChannelPayload {
-  id: ID
+  recordId: ID
+  status: StatusEnum
+  query: Query
+  error: ErrorInterface
 }
 
 type Query {
-  userChannels(channelsId: [ID]!): [UserChannelsPayload]!
+  userChannels(channelsId: [ID]): [UserChannelsPayload]!
 }
 
 type Mutation {

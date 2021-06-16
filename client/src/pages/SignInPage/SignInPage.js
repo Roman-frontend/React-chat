@@ -10,8 +10,8 @@ import { useQuery } from '@apollo/client';
 import { LOGIN } from '../../components/../GraphQLApp/queryes';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
-import { Loader } from '../../components/Helpers/Loader';
-import './auth-body.sass';
+import { AuthLoader } from '../../components/Helpers/Loader';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SignInPage = ({ route }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const { auth } = useAuth();
-  const initialValues = { email: '', password: '' };
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [stopLogin, setStopLogin] = useState(true);
 
@@ -36,7 +36,14 @@ export const SignInPage = ({ route }) => {
       console.log(`Помилка авторизації ${error}`);
     },
     onCompleted(data) {
-      auth(data.login);
+      console.log(data);
+      if (data.login.status === 'OK') {
+        auth(data.login.record);
+      } else {
+        enqueueSnackbar(data.login.error.message, {
+          variant: 'error',
+        });
+      }
     },
   });
 
@@ -48,24 +55,26 @@ export const SignInPage = ({ route }) => {
       .required('Required'),
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = (values, { resetForm }) => {
     try {
       setLoginData({ email: values.email, password: values.password });
+      resetForm({
+        values: {
+          email: values.email,
+          password: '',
+        },
+      });
       setStopLogin(false);
       refetch();
     } catch (e) {
-      console.error(e);
+      console.error('Помилочка : ', e);
     }
   };
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <div className='auth-body'>
       <Formik
-        initialValues={initialValues}
+        initialValues={{ email: '', password: '' }}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
@@ -102,6 +111,7 @@ export const SignInPage = ({ route }) => {
               Go to register
             </Button>
           </Link>
+          {loading && <AuthLoader />}
         </Form>
       </Formik>
     </div>

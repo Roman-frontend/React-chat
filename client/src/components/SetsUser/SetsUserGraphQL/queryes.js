@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_DIRECT_MESSAGES = gql`
-  query directMessages($id: [ID]!) {
+  query directMessages($id: [ID]) {
     directMessagesId @client @export(as: "id")
     directMessages(id: $id) {
       id
@@ -14,8 +14,33 @@ export const CREATE_DIRECT_MESSAGE = gql`
   mutation ($inviter: ID!, $invited: [ID]!) {
     directMessages {
       create(inviter: $inviter, invited: $invited) {
-        id
-        members
+        recordId
+        record {
+          id
+          members
+        }
+        status
+        query {
+          users {
+            id
+          }
+        }
+        error {
+          message
+          __typename # <--- Client will receive error type name
+          ... on ValidatorError {
+            # <--- Request additional fields according to error type
+            path
+            value
+          }
+          ... on MongoError {
+            code
+          }
+          ... on AuthError {
+            value
+            code
+          }
+        }
       }
     }
   }
@@ -27,11 +52,6 @@ export const REMOVE_DIRECT_MESSAGE = gql`
       remove(id: $id) {
         recordId
         status
-        query {
-          users {
-            id
-          }
-        }
         error {
           message
           __typename # <--- Client will receive error type name
@@ -64,7 +84,7 @@ export const APP = gql`
 `;
 
 export const CHANNELS = gql`
-  query userChannels($channelsId: [ID]!) {
+  query userChannels($channelsId: [ID]) {
     channels @client @export(as: "channelsId")
     userChannels(channelsId: $channelsId) {
       id
@@ -119,7 +139,24 @@ export const REMOVE_CHANNEL = gql`
   mutation ($channelId: ID!, $userId: ID!) {
     channel {
       remove(channelId: $channelId, userId: $userId) {
-        id
+        recordId
+        status
+        error {
+          message
+          __typename # <--- Client will receive error type name
+          ... on ValidatorError {
+            # <--- Request additional fields according to error type
+            path
+            value
+          }
+          ... on MongoError {
+            code
+          }
+          ... on AuthError {
+            value
+            code
+          }
+        }
       }
     }
   }

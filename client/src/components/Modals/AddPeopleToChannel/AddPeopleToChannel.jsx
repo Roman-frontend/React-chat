@@ -43,7 +43,6 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
           if (channel && channel.id === activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
-                console.log('filter ', user.name);
                 return user.id !== memberId;
               });
             });

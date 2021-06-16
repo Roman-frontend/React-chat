@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import { colors } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,7 +21,6 @@ import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
 import { Link } from 'react-router-dom';
 import { DirectMessage } from './DirectMessage';
 import { CreateDirectMessage } from '../../Modals/CreateDirectMessage/CreateDirectMessage.jsx';
-import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function DirectMessages() {
+export function DirectMessages(props) {
+  const { setAlertData } = props;
   const { t } = useTranslation();
   const { data: auth } = useQuery(AUTH);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
@@ -47,17 +47,19 @@ export function DirectMessages() {
       cache.modify({
         fields: {
           directMessages(existingDrMsg) {
-            const newCommentRef = directMessages.create.map((newDrMsg) => {
-              return cache.writeFragment({
-                data: newDrMsg,
-                fragment: gql`
-                  fragment NewDirectMessage on DirectMessage {
-                    id
-                    members
-                  }
-                `,
-              });
-            });
+            const newCommentRef = directMessages.create.record.map(
+              (newDrMsg) => {
+                return cache.writeFragment({
+                  data: newDrMsg,
+                  fragment: gql`
+                    fragment NewDirectMessage on DirectMessage {
+                      id
+                      members
+                    }
+                  `,
+                });
+              }
+            );
             return [...existingDrMsg, ...newCommentRef];
           },
         },
@@ -67,14 +69,16 @@ export function DirectMessages() {
       console.log(`Помилка ${error}`);
     },
     onCompleted(data) {
+      console.log(data);
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
-      const newDrMsgIds = data.directMessages.create.map(({ id }) => id);
+      const newDrMsgIds = data.directMessages.create.record.map(({ id }) => id);
       const toStorage = JSON.stringify({
         ...storage,
         directMessages: [...storage.directMessages, ...newDrMsgIds],
       });
       sessionStorage.setItem('storageData', toStorage);
       reactiveDirectMessages([...reactiveDirectMessages(), ...newDrMsgIds]);
+      setAlertData(data.directMessages.create);
     },
   });
 
@@ -85,7 +89,12 @@ export function DirectMessages() {
       users &&
       Array.isArray(users.users)
     ) {
-      return <DirectMessage reqRowElements={directMessages.directMessages} />;
+      return (
+        <DirectMessage
+          reqRowElements={directMessages.directMessages}
+          setAlertData={setAlertData}
+        />
+      );
     }
   }, [directMessages, users]);
 

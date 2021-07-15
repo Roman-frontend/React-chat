@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-import Grid from '@material-ui/core/Grid';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { StyledBadge } from './ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
@@ -13,8 +11,7 @@ import {
 } from '../../../GraphQLApp/reactiveVars';
 
 export function Members(props) {
-  const { activeChannel, setModalIsShowsMembers, setModalAddPeopleIsOpen } =
-    props;
+  const { activeChannel, setModalIsShowsMembers } = props;
   const { data: users } = useQuery(GET_USERS);
   const { data: channels } = useQuery(CHANNELS);
   const [iconMembers, setIconMembers] = useState([]);
@@ -62,27 +59,5 @@ export function Members(props) {
     );
   }
 
-  return (
-    <div style={{ flexGrow: 1 }}>
-      <Grid
-        container
-        spacing={1}
-        style={{ width: '19vw', alignContent: 'center' }}
-      >
-        <Grid
-          item
-          xs={activeChannelId ? 6 : 11}
-          style={{ alignSelf: 'center' }}
-        >
-          {iconMembers}
-        </Grid>
-        <Grid item xs={5} style={{ textAlign: 'center' }}>
-          <GroupAddIcon
-            style={{ fontSize: 45, cursor: 'pointer' }}
-            onClick={() => activeChannelId && setModalAddPeopleIsOpen(true)}
-          />
-        </Grid>
-      </Grid>
-    </div>
-  );
+  return iconMembers;
 }

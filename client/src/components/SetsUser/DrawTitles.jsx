@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Button from '@material-ui/core/Button';
 import './user-sets.sass';
@@ -39,9 +40,9 @@ export const DrawTitles = memo(
     const msgIconRef = useRef();
     const msgTitleRef = useRef();
     const stateIcon = stateShowing ? (
-      <KeyboardArrowDownIcon fontSize='large' />
+      <KeyboardArrowUpIcon fontSize='large' />
     ) : (
-      <ChevronRightIcon fontSize='large' />
+      <KeyboardArrowDownIcon fontSize='large' />
     );
     const translationChannel = t('description.channelTitle');
     const iconRef = name === translationChannel ? channelsIconRef : msgIconRef;

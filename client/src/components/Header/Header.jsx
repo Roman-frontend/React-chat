@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import HeaderProfile from './HeaderProfile/HeaderProfile';
 import HeaderNotifications from './HeaderNotifications';
 import Tippy from '@tippy.js/react';
@@ -21,8 +22,16 @@ import Button from '@material-ui/core/Button';
 import imageProfile from '../../images/Profile.jpg';
 
 export default function Header(props) {
+  const {
+    leftBarClasses,
+    isOpenLeftBar,
+    setIsOpenLeftBar,
+    isOpenRightBarUser,
+    setIsOpenRightBarUser,
+    setIsOpenRightBarDrMsg,
+    setIsOpenRightBarChannels,
+  } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -33,7 +42,9 @@ export default function Header(props) {
   };
 
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    setIsOpenRightBarDrMsg(false);
+    setIsOpenRightBarChannels(false);
+    setIsOpenRightBarUser(!isOpenRightBarUser);
   };
 
   const handleMobileMenuClose = () => {
@@ -46,11 +57,18 @@ export default function Header(props) {
 
   return (
     <div className={classes.rootHeader}>
-      <AppBar position='static' style={{ height: '9vh' }}>
-        <Toolbar>
+      <AppBar
+        position='fixed'
+        style={{ height: '9vh' }}
+        className={clsx(leftBarClasses.appBar, {
+          [leftBarClasses.appBarShift]: isOpenLeftBar,
+        })}
+      >
+        <Toolbar variant='dense'>
           <IconButton
             edge='start'
             className={classes.menuButton}
+            onClick={() => setIsOpenLeftBar(!isOpenLeftBar)}
             color='inherit'
             aria-label='open drawer'
           >
@@ -121,12 +139,6 @@ export default function Header(props) {
         mobileMoreAnchorEl={mobileMoreAnchorEl}
         handleMobileMenuClose={handleMobileMenuClose}
         handleProfileMenuOpen={handleProfileMenuOpen}
-      />
-      <HeaderProfile
-        menuId={menuId}
-        anchorEl={anchorEl}
-        handleMobileMenuClose={handleMobileMenuClose}
-        setAnchorEl={setAnchorEl}
       />
     </div>
   );

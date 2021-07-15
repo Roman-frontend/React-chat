@@ -81,6 +81,7 @@ export const InputUpdateMessages = memo((props) => {
           ? cacheMsg.messages.chatMessages
           : [];
       if (cacheMsg && message) {
+        console.log(message);
         cache.modify({
           fields: {
             messages() {
@@ -141,12 +142,15 @@ export const InputUpdateMessages = memo((props) => {
 
   function inputUpdateMessages(event) {
     event.preventDefault();
-    const inputValue = inputRef.current.children[1].children[0].value;
+    //const value = event.target.value;
+    const value = inputRef.current.children[1].children[0].value;
+    console.log(value);
 
-    if (!(inputValue.trim() === '')) {
-      if (closeBtnChangeMsg) changeMessageText(inputValue);
-      else if (closeBtnReplyMsg) messageInReply(inputValue);
-      else newMessage(inputValue);
+    //event.ctrlKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи Ctrl
+    if (value.trim() !== '' && event.ctrlKey && event.key === 'Enter') {
+      if (closeBtnChangeMsg) changeMessageText(value);
+      else if (closeBtnReplyMsg) messageInReply(value);
+      else newMessage(value);
       inputRef.current.children[1].children[0].value = null;
     }
   }
@@ -228,10 +232,13 @@ export const InputUpdateMessages = memo((props) => {
             <ThemeProvider theme={theme}>
               <TextField
                 style={{ width: '67vw' }}
-                className={'conversation-input__input'}
                 label='Enter text'
                 id='mui-theme-provider-standard-input'
                 ref={inputRef}
+                multiline={true}
+                rowsMax={4}
+                onKeyUp={(event) => inputUpdateMessages(event)}
+                //onChange={inputUpdateMessages}
               />
             </ThemeProvider>
           </form>

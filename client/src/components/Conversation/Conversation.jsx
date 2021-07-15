@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { wsSend } from '../../WebSocket/soket';
-import { ConversationHeader } from './ConversationHeader/ConversationHeader.jsx';
+import { ConversationHeaderChannel } from './ConversationHeader/ConversationHeaderChannel.jsx';
+import { ConversationHeaderDrMsg } from './ConversationHeader/ConversationHeaderDrMsg.jsx';
 import { Messages } from './Messages/Messages.jsx';
 import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
 import EndActionButton from './EndActionButton/EndActionButton.jsx';
@@ -11,6 +12,12 @@ import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
 
 export default function Conversation(props) {
+  const {
+    isOpenRightBarDrMsg,
+    setIsOpenRightBarDrMsg,
+    isOpenRightBarChannels,
+    setIsOpenRightBarChannels,
+  } = props;
   const { data: channels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
@@ -133,7 +140,17 @@ export default function Conversation(props) {
 
   return (
     <div className={closeBtnReplyMsg ? 'conversation-riply' : 'conversation'}>
-      <ConversationHeader />
+      {activeChannelId ? (
+        <ConversationHeaderChannel
+          isOpenRightBarChannels={isOpenRightBarChannels}
+          setIsOpenRightBarChannels={setIsOpenRightBarChannels}
+        />
+      ) : (
+        <ConversationHeaderDrMsg
+          isOpenRightBarDrMsg={isOpenRightBarDrMsg}
+          setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
+        />
+      )}
       {fieldAnswerTo()}
       {contentMessages()}
       <div className='conversation-input'>

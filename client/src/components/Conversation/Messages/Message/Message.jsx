@@ -14,6 +14,8 @@ export default function Message(props) {
   const { message, setPopupMessage } = props;
   const { text, createdAt, updatedAt, id, senderId, replyOn } = message;
 
+  console.log(text);
+
   const { data: users, loading } = useQuery(GET_USERS);
 
   const senderName = useMemo(() => {

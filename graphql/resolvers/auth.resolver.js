@@ -94,7 +94,7 @@ const resolvers = {
           status: 401,
           query: {},
           error: {
-            message: `Couldn't find email: ${email}`,
+            message: `email or password is not correct`,
             value: 'unauthorized',
             code: 401,
           },
@@ -103,10 +103,10 @@ const resolvers = {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return {
-          status: 200,
+          status: 500,
           query: {},
           error: {
-            message: 'Невірний пароль, спробуйте знову',
+            message: `email or password is not correct`,
             value: 'Internal Error',
             code: 500,
           },
@@ -129,7 +129,7 @@ const resolvers = {
         status: 200,
         query: {},
         error: {
-          message: 'you must be logged in',
+          message: `email or password is not correct`,
           value: 'unauthorized',
           code: 401,
         },
@@ -161,19 +161,19 @@ const resolvers = {
           status: 403,
           query: {},
           error: {
-            message: `Помилочка: ${email} is basy`,
+            message: `incorrect data entered`,
             value: 'FORBIDDEN',
             code: 403,
           },
         };
       }
-      /* const hashPassword = await bcrypt.hash(password, 12);
+      const hashPassword = await bcrypt.hash(password, 12);
       const newUser = await User.create({
         name,
         email,
         password: hashPassword,
-      }); */
-      const newUser = await User.findOne({ email: 'r@mail.ru' });
+      });
+      //const newUser = await User.findOne({ email: 'r@mail.ru' });
       const token = jwt.sign(
         { userId: newUser.id },
         config.get('jwtSecret')

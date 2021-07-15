@@ -31,7 +31,7 @@ const theme = createMuiTheme({
 });
 
 export function SignInForm(props) {
-  const { label, placeholder, type, id, name } = props;
+  const { label, type, name } = props;
   const classes = useStyles();
 
   return (
@@ -68,13 +68,3 @@ export function SignInForm(props) {
     </div>
   );
 }
-
-/* 
-<input 
-className={!meta.touched ? "auth-form__input-border-bottom" : 
-  meta.touched && meta.error ? "auth-form__input-border-bottom" : "auth-form__input-border-bottom-green"}
-placeholder={placeholder}
-type={type}
-id={id}
-{...field} 
-/> */

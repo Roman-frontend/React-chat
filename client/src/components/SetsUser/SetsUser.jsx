@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { Channels } from './Channels/Channels.jsx';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
 import CustomizedSnackbars from '../Helpers/AlertAction.jsx';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
 import { colors } from '@material-ui/core';
+import { useStyles } from '../../pages/Chat/ChatStyles.jsx';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
-  const [alertData, setAlertData] = useState({});
+  const { isOpenLeftBar, setIsOpenLeftBar, alertData, setAlertData } = props;
+  const classes = useStyles();
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -44,8 +48,16 @@ export default function SetsUser(props) {
       className='main-font left-block'
       style={{ background: colors.blue[900] }}
     >
-      <Channels setAlertData={setAlertData} />
-      <DirectMessages setAlertData={setAlertData} />
+      <div className={classes.toolbar}>
+        <IconButton />
+      </div>
+      <Divider />
+      <Channels setAlertData={setAlertData} isOpenLeftBar={isOpenLeftBar} />
+      <DirectMessages
+        setAlertData={setAlertData}
+        isOpenLeftBar={isOpenLeftBar}
+        setIsOpenLeftBar={setIsOpenLeftBar}
+      />
       <CustomizedSnackbars alertData={alertData} setAlertData={setAlertData} />
     </div>
   );

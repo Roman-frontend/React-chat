@@ -1,8 +1,8 @@
-import React from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   rootHeader: {
+    minHeight: '0px',
     gridArea: 'header',
     background: '#3F0E40',
     color: '#ffffff',

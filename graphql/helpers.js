@@ -19,6 +19,13 @@ exports.formatYupError = (err) => {
       message: e.message,
     });
   });
+
+  console.log({
+    errors: errors[0].message,
+    name: 'errorName',
+    email: 'errorEmail',
+    password: 'errorPassword',
+  });
   return JSON.stringify({
     errors: errors[0].message,
     name: 'errorName',

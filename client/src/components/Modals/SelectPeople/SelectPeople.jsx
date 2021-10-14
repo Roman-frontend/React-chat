@@ -9,8 +9,11 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import { makeStyles } from '@material-ui/core';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
 import './select-people.sass';
+
+//коли відкриваю попап створення чату і нічого не заповняю, нажимаю done і воно просто закриває попап має показати шо є якісь обовязкові поля
 
 const styles = (theme) => ({
   input: {
@@ -26,14 +29,44 @@ const styles = (theme) => ({
   },
 });
 
+const popapWithoutPadding = makeStyles((theme) => ({
+  root: {
+    padding: 0,
+  },
+}));
+
+const popapWithPadding = makeStyles((theme) => ({
+  root: {
+    padding: '8px 24px',
+  },
+}));
+
 export const SelectPeople = withStyles(styles)((props) => {
-  const { notInvitedRef, done, classes } = props;
+  const { isDialogChanged, closePopap, notInvitedRef, done, classes } = props;
+  const dialogClasses = isDialogChanged
+    ? popapWithoutPadding()
+    : popapWithPadding();
   const [list, setList] = useState(notInvitedRef.current);
   const inputPeopleRef = useRef();
   const invitedRef = useRef([]);
   const [open, setOpen] = useState(false);
+  const [isFailDone, setIsFailDone] = useState(false);
   const [listPeoplesForInvite, setListPeoplesForInvite] = useState();
   const { data: allUsers } = useQuery(GET_USERS);
+
+  function close() {
+    closePopap();
+    setIsFailDone(false);
+  }
+
+  function todo() {
+    done('done', invitedRef.current);
+    if (invitedRef.current[0]) {
+      setIsFailDone(false);
+    } else {
+      setIsFailDone(true);
+    }
+  }
 
   const getSelectElements = () => {
     setOpen(true);
@@ -97,7 +130,7 @@ export const SelectPeople = withStyles(styles)((props) => {
 
   return (
     <div>
-      <DialogContent>
+      <DialogContent classes={{ root: dialogClasses.root }}>
         <FormControl style={{ width: '33vw' }}>
           <TextField
             label='Add a people'
@@ -107,6 +140,7 @@ export const SelectPeople = withStyles(styles)((props) => {
             id='mui-theme-provider-standard-input'
             ref={inputPeopleRef}
             onKeyUp={(event) => handleInput(event)}
+            helperText={isFailDone ? 'required' : ''}
           />
 
           <InputLabel
@@ -127,15 +161,8 @@ export const SelectPeople = withStyles(styles)((props) => {
             {listPeoplesForInvite}
           </Select>
           <DialogActions>
-            <Button color='secondary' onClick={done}>
-              Close
-            </Button>
-            <Button
-              color='primary'
-              onClick={() => done('done', invitedRef.current)}
-            >
-              Done
-            </Button>
+            <Button onClick={close}>Close</Button>
+            <Button onClick={todo}>Done</Button>
           </DialogActions>
         </FormControl>
       </DialogContent>

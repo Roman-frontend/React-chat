@@ -11,7 +11,7 @@ export default function EndActionButton(props) {
     changeMessageRef,
   } = props;
   const topInput = document
-    .querySelector('.conversation-input__input')
+    .querySelector('.conversation-input')
     .getBoundingClientRect().top;
   const topButtonClose = closeBtnReplyMsg ? topInput - 56 : topInput;
 

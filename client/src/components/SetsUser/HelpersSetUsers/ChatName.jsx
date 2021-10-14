@@ -19,11 +19,7 @@ export function CreateDirectMsgName({ name }) {
 }
 
 export function CreateChannelName({ isPrivate, name }) {
-  const nameChannel = isPrivate ? (
-    <p className='main-font'>&#128274;{name}</p>
-  ) : (
-    <p className='main-font'>{`#${name}`}</p>
-  );
+  const nameChannel = isPrivate ? <p>&#128274;{name}</p> : <p>{`#${name}`}</p>;
 
   return (
     <Grid container className='left-bar__title-name'>

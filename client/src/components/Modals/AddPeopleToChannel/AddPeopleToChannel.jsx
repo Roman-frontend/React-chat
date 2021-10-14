@@ -1,14 +1,14 @@
 import React, { useRef, useEffect } from 'react';
+import Modal from 'react-modal';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { withStyles } from '@material-ui/core/styles';
-import Modal from 'react-modal';
-import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
-import './add-people-to-channel.sass';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
+import './add-people-to-channel.sass';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({
@@ -18,9 +18,6 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToChannel = withStyles(styles)((props) => {
-  const { data: auth } = useQuery(AUTH);
-  const { data: allChannels } = useQuery(CHANNELS);
-  const { data: allUsers } = useQuery(GET_USERS);
   const {
     chatNameRef,
     modalAddPeopleIsOpen,
@@ -28,6 +25,9 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     doneInvite,
     classes,
   } = props;
+  const { data: auth } = useQuery(AUTH);
+  const { data: allChannels } = useQuery(CHANNELS);
+  const { data: allUsers } = useQuery(GET_USERS);
   const notInvitedRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
@@ -54,6 +54,10 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     }
   }, [allUsers, allChannels, auth, activeChannelId]);
 
+  const closePopap = () => {
+    setModalAddPeopleIsOpen(false);
+  };
+
   return (
     <>
       <Dialog
@@ -67,7 +71,11 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
         >
           Invite people to #{chatNameRef.current}
         </DialogTitle>
-        <SelectPeople notInvitedRef={notInvitedRef} done={doneInvite} />
+        <SelectPeople
+          closePopap={closePopap}
+          notInvitedRef={notInvitedRef}
+          done={doneInvite}
+        />
       </Dialog>
     </>
   );

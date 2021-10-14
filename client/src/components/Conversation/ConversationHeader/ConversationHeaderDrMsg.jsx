@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import PersonIcon from '@material-ui/icons/Person';
 import './ConversationHeader.sass';
-import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
@@ -53,7 +53,7 @@ export const ConversationHeaderDrMsg = (props) => {
       <Grid
         container
         spacing={1}
-        style={{ alignItems: 'center', height: '4.3rem' }}
+        style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
         justify='space-between'
       >
         <Grid item xs={9}>

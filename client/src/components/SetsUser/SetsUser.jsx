@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { Channels } from './Channels/Channels.jsx';
-import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import CustomizedSnackbars from '../Helpers/AlertAction.jsx';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import { colors } from '@material-ui/core';
 import { useStyles } from '../../pages/Chat/ChatStyles.jsx';
+import { Channels } from './Channels/Channels.jsx';
+import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
@@ -44,10 +43,7 @@ export default function SetsUser(props) {
   }, [allChannels, listDirectMessages, activeChannelId, activeDirectMessageId]);
 
   return (
-    <div
-      className='main-font left-block'
-      style={{ background: colors.blue[900] }}
-    >
+    <div className='left-block'>
       <div className={classes.toolbar}>
         <IconButton />
       </div>

@@ -1,5 +1,5 @@
 {
-  "_comment": "scripts => start => PORT=3001... - Міняє дефолтний localhost-порт",
+  "_comment": "scripts => start => PORT=3000... - Міняє дефолтний localhost-порт",
   "name": "client",
   "version": "0.1.0",
   "private": true,
@@ -8,8 +8,9 @@
     "@apollo/react-hooks": "^4.0.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^7.2.1",
     "@tippy.js/react": "^3.1.1",
     "apollo-boost": "^0.4.9",
@@ -21,7 +22,8 @@
     "i18next-http-backend": "^1.0.21",
     "materialize-css": "^1.0.0-rc.2",
     "nanoid": "^3.1.22",
-    "node-sass": "^4.14.1",
+    "node-gyp": "^8.2.0",
+    "node-sass": "^6.0.1",
     "notistack": "^1.0.9",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
@@ -31,16 +33,16 @@
     "react-redux": "^7.2.1",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "react-swipeable-views": "^0.13.9",
-    "recompose": "^0.30.0",
+    "recompose": "^0.17.0",
     "redux": "^4.0.5",
     "redux-devtools": "^3.7.0",
     "redux-thunk": "^2.3.0",
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -59,6 +61,5 @@
       "not dead",
       "not op_mini all"
     ]
-  },
-  "devDependencies": {}
+  }
 }

@@ -19,22 +19,9 @@ import {
   GET_DIRECT_MESSAGES,
 } from '../../components/SetsUser/SetsUserGraphQL/queryes';
 import { Loader } from '../../components/Helpers/Loader';
+import CustomThemeProvider from '../../components/Theme/CustomeThemeProvider';
 import { useStyles } from './ChatStyles.jsx';
-
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import { makeStyles } from '@material-ui/core/styles';
 import HeaderProfile from '../../components/Header/HeaderProfile/HeaderProfile';
 import DirectMessageRightBar from '../../components/SetsUser/DirectMessages/DirectMessageRightBar';
 import ChannelsRightBar from '../../components/SetsUser/Channels/ChannelsRightBar';
@@ -98,13 +85,13 @@ const useSecondStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Chat = () => {
+export const Chat = (props) => {
   const classes = useStyles();
   const secondClasses = useSecondStyles();
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const { loading: lUsers } = useQuery(GET_USERS);
-  const { loading: lChannels } = useQuery(CHANNELS);
-  const { loading: lDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { loading: lChannels, data: dChannels } = useQuery(CHANNELS);
+  const { loading: lDirectMessages, data: dDm } = useQuery(GET_DIRECT_MESSAGES);
   const [alertData, setAlertData] = useState({});
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
@@ -156,7 +143,7 @@ export const Chat = () => {
   }
 
   return (
-    <React.StrictMode>
+    <CustomThemeProvider>
       <div className={classes.root}>
         <Header
           leftBarClasses={classes}
@@ -190,13 +177,20 @@ export const Chat = () => {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Conversation
-            isOpenRightBarDrMsg={isOpenRightBarDrMsg}
-            setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
-            setIsOpenRightBarUser={setIsOpenRightBarUser}
-            isOpenRightBarChannels={isOpenRightBarChannels}
-            setIsOpenRightBarChannels={setIsOpenRightBarChannels}
-          />
+          {((dChannels &&
+            dChannels.userChannels &&
+            dChannels.userChannels.length > 0) ||
+            (dDm &&
+              dDm.directMessagesId &&
+              dDm.directMessagesId.length > 0)) && (
+            <Conversation
+              isOpenRightBarDrMsg={isOpenRightBarDrMsg}
+              setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
+              setIsOpenRightBarUser={setIsOpenRightBarUser}
+              isOpenRightBarChannels={isOpenRightBarChannels}
+              setIsOpenRightBarChannels={setIsOpenRightBarChannels}
+            />
+          )}
         </main>
         <Drawer
           className={secondClasses.drawer}
@@ -250,6 +244,6 @@ export const Chat = () => {
           />
         </Drawer>
       </div>
-    </React.StrictMode>
+    </CustomThemeProvider>
   );
 };

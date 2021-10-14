@@ -2,12 +2,12 @@ import React, { useMemo, memo } from 'react';
 import {
   ThemeProvider,
   makeStyles,
-  createMuiTheme,
+  createTheme,
 } from '@material-ui/core/styles';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import { gql, useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_MESSAGE,
@@ -16,8 +16,8 @@ import {
 } from '../ConversationGraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
 import { messageDate } from '../../Helpers/DateCreators';
-import './input-message.sass';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
+import './input-message.sass';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     color: '#115293',
   },
@@ -142,12 +142,10 @@ export const InputUpdateMessages = memo((props) => {
 
   function inputUpdateMessages(event) {
     event.preventDefault();
-    //const value = event.target.value;
     const value = inputRef.current.children[1].children[0].value;
-    console.log(value);
 
-    //event.ctrlKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи Ctrl
-    if (value.trim() !== '' && event.ctrlKey && event.key === 'Enter') {
+    //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
+    if (value.trim() !== '' && !event.shiftKey && event.key === 'Enter') {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
       else newMessage(value);
@@ -238,7 +236,6 @@ export const InputUpdateMessages = memo((props) => {
                 multiline={true}
                 rowsMax={4}
                 onKeyUp={(event) => inputUpdateMessages(event)}
-                //onChange={inputUpdateMessages}
               />
             </ThemeProvider>
           </form>

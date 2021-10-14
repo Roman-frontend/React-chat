@@ -1,16 +1,16 @@
 import React, { useRef, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/client';
-import { GET_USERS } from '../../../GraphQLApp/queryes';
-import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import './add-people-to-channel.sass';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import {
   reactiveVarName,
   reactiveVarId,
 } from '../../../GraphQLApp/reactiveVars';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
+import './add-people-to-channel.sass';
 
 const styles = (theme) => ({
   titleRoot: {
@@ -18,7 +18,7 @@ const styles = (theme) => ({
   },
 });
 
-export const CreateDirectMessage = withStyles(styles)((props) => {
+export const AddDirectMessage = withStyles(styles)((props) => {
   const { data: allUsers } = useQuery(GET_USERS);
   const { data: drMessages } = useQuery(GET_DIRECT_MESSAGES, {
     onCompleted(data) {
@@ -28,6 +28,10 @@ export const CreateDirectMessage = withStyles(styles)((props) => {
   const { done, classes, modalAddPeopleIsOpen, setModalAddPeopleIsOpen } =
     props;
   const notInvitedRef = useRef();
+
+  const closePopap = () => {
+    setModalAddPeopleIsOpen(false);
+  };
 
   useEffect(() => {
     if (allUsers && allUsers.users[0] && reactiveVarId()) {
@@ -65,7 +69,11 @@ export const CreateDirectMessage = withStyles(styles)((props) => {
         >
           Invite people to {reactiveVarName()}
         </DialogTitle>
-        <SelectPeople notInvitedRef={notInvitedRef} done={done} />
+        <SelectPeople
+          closePopap={closePopap}
+          notInvitedRef={notInvitedRef}
+          done={done}
+        />
       </Dialog>
     </>
   );

@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
-import {
-  CREATE_CHANNEL,
-  CHANNELS,
-} from '../../SetsUser/SetsUserGraphQL/queryes';
-import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
+import { CREATE_CHANNEL } from '../../SetsUser/SetsUserGraphQL/queryes';
+import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import './add-channel.sass';
-import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVars';
 
 const styles = (theme) => ({
   input: {
@@ -23,6 +19,25 @@ const styles = (theme) => ({
   },
 });
 
+const useStyles = makeStyles((theme) => ({
+  dialogPaper: {
+    width: '570px',
+    height: '460px',
+    margin: 0,
+  },
+}));
+
+const helperTextStyles = makeStyles((theme) => ({
+  root: {
+    margin: 4,
+  },
+  error: {
+    '&.MuiFormHelperText-root.Mui-error': {
+      color: theme.palette.common.black,
+    },
+  },
+}));
+
 export const AddChannel = withStyles(styles)((props) => {
   const {
     setAlertData,
@@ -30,9 +45,12 @@ export const AddChannel = withStyles(styles)((props) => {
     modalAddChannelIsOpen,
     classes,
   } = props;
+  const popapClasses = useStyles();
+  const helperTestClasses = helperTextStyles();
   const { data: auth } = useQuery(AUTH);
   const { data: allUsers } = useQuery(GET_USERS);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isFailDone, setIsFailDone] = useState(false);
   const notInvitedRef = useRef();
   const [form, setForm] = useState({
     name: '',
@@ -101,12 +119,20 @@ export const AddChannel = withStyles(styles)((props) => {
   };
 
   const doneCreate = (action, invited = []) => {
-    if (action === 'done') {
+    if (action === 'done' && form.name.trim() !== '') {
       const listInvited = invited[0] ? invited.concat(auth.id) : [auth.id];
       createChannel({
         variables: { ...form, admin: auth.id, members: listInvited },
       });
+      setIsFailDone(false);
+      setModalAddChannelIsOpen(false);
+    } else {
+      setIsFailDone(true);
     }
+  };
+
+  const closePopap = () => {
+    setIsFailDone(false);
     setModalAddChannelIsOpen(false);
   };
 
@@ -123,6 +149,8 @@ export const AddChannel = withStyles(styles)((props) => {
         open={modalAddChannelIsOpen}
         onClose={() => setModalAddChannelIsOpen(false)}
         aria-labelledby='form-dialog-title'
+        scroll='body'
+        classes={{ paper: popapClasses.dialogPaper }}
       >
         <DialogTitle
           id='form-dialog-title'
@@ -149,8 +177,13 @@ export const AddChannel = withStyles(styles)((props) => {
             label='Name'
             InputProps={{ className: classes.input }}
             name='name'
+            required={true}
+            helperText={isFailDone ? 'required' : ''}
+            FormHelperTextProps={{ classes: helperTestClasses }}
+            variant='outlined'
             value={form.name.value}
             onChange={changeHandler}
+            error
           />
 
           <TextField
@@ -161,8 +194,13 @@ export const AddChannel = withStyles(styles)((props) => {
             value={form.discription.value}
             onChange={changeHandler}
           />
+          <SelectPeople
+            isDialogChanged={true}
+            closePopap={closePopap}
+            notInvitedRef={notInvitedRef}
+            done={doneCreate}
+          />
         </DialogContent>
-        <SelectPeople notInvitedRef={notInvitedRef} done={doneCreate} />
       </Dialog>
     </div>
   );

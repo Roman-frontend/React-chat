@@ -20,7 +20,7 @@ import {
 } from './reactiveVars';
 
 //const httpLink = createHttpLink({ uri: '/graphql' });
-const httpLink = new HttpLink({ uri: 'http://localhost:3001/graphql' });
+const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)

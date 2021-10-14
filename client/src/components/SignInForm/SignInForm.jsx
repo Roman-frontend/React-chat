@@ -1,14 +1,12 @@
 import React from 'react';
+import { Field, ErrorMessage } from 'formik';
 import {
   ThemeProvider,
   makeStyles,
-  withStyles,
-  createMuiTheme,
+  createTheme,
 } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import { colors } from '@material-ui/core';
-import { Field, ErrorMessage } from 'formik';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: colors.lime[800],

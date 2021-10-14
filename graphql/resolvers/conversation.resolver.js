@@ -21,7 +21,7 @@ const resolvers = {
   }),
   Query: {
     messages: async (_, { chatId, chatType, userId }, context) => {
-      console.log('get messages with datas: ', chatId, chatType, userId);
+      //console.log('get messages with datas: ', chatId, chatType, userId);
       if (!context.isAuth) throw new Error('you must be logged in');
       if (chatType === 'DirectMessage') {
         const chatMessages = await DirectMessageChat.find({ chatId });

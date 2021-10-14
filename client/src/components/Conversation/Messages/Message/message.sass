@@ -1,17 +1,13 @@
 .container:hover 
-  background: #f7fcff
-  border: solid #8fd5ff 0.01rem;
-  border-radius: 0.3rem;
+  background: #fcfcfc
 
 .container 
   display: grid
-  background: #f7fbff
-  border: solid #f7fbff 0.01rem
   grid-template-columns: 2.8rem minmax(1rem, auto) 1fr
   grid-auto-rows: minmax(20px, auto)
   align-items: start
   grid-template-areas: "icon messager date" "icon message message"
-  margin: 1vh 2vw 1vh 0vw
+  margin: 1vh 2vw 1vh 3vw
 
   .container__message 
     padding: 0rem 1rem
@@ -45,19 +41,15 @@
     left: 1rem
 
 .container-reply:hover 
-  background: #f7fcff
-  border: solid #8fd5ff 0.01rem;
-  border-radius: 0.3rem;
+  background: #fcfcfc
 
 .container-reply 
   display: grid
-  border: solid #f7fbff 0.01rem
-  background: #f7fcff
   grid-template-columns: 3rem minmax(1rem, auto) 1fr
   grid-auto-rows: minmax(20px, auto)
   align-items: start
   grid-template-areas: "icon messager date" "icon reply reply"  ". message message"
-  margin: 1vh 2vw 1vh 0vw
+  margin: 1vh 2vw 1vh 3vw
   height: 5rem
 
   .container-reply__message 

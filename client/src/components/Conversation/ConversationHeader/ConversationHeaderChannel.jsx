@@ -62,9 +62,10 @@ export const ConversationHeaderChannel = (props) => {
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {
+      console.log(invited);
       addMemberToChannel({ variables: { invited, chatId: activeChannelId } });
+      setModalAddPeopleIsOpen(false);
     }
-    setModalAddPeopleIsOpen(false);
   }
 
   function openRightBarChannels() {
@@ -76,7 +77,7 @@ export const ConversationHeaderChannel = (props) => {
       <Grid
         container
         spacing={1}
-        style={{ alignItems: 'center', height: '4.3rem' }}
+        style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
         justify='space-between'
       >
         <Grid item xs={8}>

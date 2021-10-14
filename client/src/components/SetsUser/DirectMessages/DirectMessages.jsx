@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { gql, useQuery, useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
-import { colors } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import ChildCareIcon from '@material-ui/icons/ChildCare';
+import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import { useTranslation } from 'react-i18next';
-import { gql, useQuery, useMutation } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
-import { Link } from 'react-router-dom';
-import { CreateDirectMessage } from '../../Modals/CreateDirectMessage/CreateDirectMessage.jsx';
+import { AddDirectMessage } from '../../Modals/AddDirectMessage/AddDirectMessage.jsx';
 import { DirectMessage } from './DirectMessage';
 
 const useStyles = makeStyles((theme) => ({
@@ -82,12 +81,12 @@ export function DirectMessages(props) {
   });
 
   function doneInvite(action, invited) {
-    setModalAddPeopleIsOpen(false);
-
-    if (action === 'done' && invited) {
+    if (action === 'done' && invited && invited[0]) {
+      console.log(invited);
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });
+      setModalAddPeopleIsOpen(false);
     }
   }
 
@@ -95,13 +94,32 @@ export function DirectMessages(props) {
     <>
       <div>
         <List component='nav' className={classes.root}>
-          <ListItem button onClick={() => setOpen(!open)}>
-            <ListItemIcon>
-              <ChildCareIcon color='action' />
-            </ListItemIcon>
-            <ListItemText primary={t('description.dirrectMessageTitle')} />
-            {open ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
+          {isOpenLeftBar ? (
+            <ListItem
+              style={{ paddingLeft: 0 }}
+              button
+              onClick={() => setOpen(!open)}
+            >
+              <ListItemIcon style={{ justifyContent: 'center' }}>
+                <EmojiPeopleIcon color='action' />
+              </ListItemIcon>
+              <ListItemText
+                style={{ textAlign: 'center' }}
+                primary={t('description.dirrectMessageTitle')}
+              />
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+          ) : (
+            <ListItem
+              style={{ padding: 0, margin: 0, justifyContent: 'center' }}
+              button
+              onClick={() => setOpen(!open)}
+            >
+              <ListItemIcon style={{ padding: '0', justifyContent: 'center' }}>
+                <EmojiPeopleIcon color='action' />
+              </ListItemIcon>
+            </ListItem>
+          )}
           <Collapse in={open} timeout='auto' unmountOnExit>
             <List>
               {directMessages &&
@@ -117,24 +135,20 @@ export function DirectMessages(props) {
         </List>
       </div>
       <Button
-        variant='contained'
-        color='primary'
         size='small'
-        style={{ background: colors.indigo[500], width: '100%' }}
+        style={{
+          width: '100%',
+          padding: 0,
+        }}
         onClick={() => setModalAddPeopleIsOpen(true)}
       >
-        {isOpenLeftBar ? '+ Invite people' : '+'}
+        {isOpenLeftBar ? '+ new dm' : '+'}
       </Button>
-      <CreateDirectMessage
+      <AddDirectMessage
         done={doneInvite}
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
       />
-      <div className='user-sets__channel'>
-        <Link className='main-font' to={`/filterContacts`}>
-          Filter Contants
-        </Link>
-      </div>
     </>
   );
 }

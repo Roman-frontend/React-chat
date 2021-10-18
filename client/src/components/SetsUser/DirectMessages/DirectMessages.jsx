@@ -32,10 +32,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function DirectMessages(props) {
-  const { setAlertData, isOpenLeftBar } = props;
+  const {
+    setAlertData,
+    isOpenLeftBar,
+    isErrorInPopap,
+    setIsErrorInPopap,
+    modalAddDmIsOpen,
+    setModalAddDmIsOpen,
+  } = props;
   const { t } = useTranslation();
   const { data: auth } = useQuery(AUTH);
-  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const classes = useStyles();
   const [open, setOpen] = useState(true);
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
@@ -86,7 +92,9 @@ export function DirectMessages(props) {
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });
-      setModalAddPeopleIsOpen(false);
+      setModalAddDmIsOpen(false);
+    } else {
+      setIsErrorInPopap(true);
     }
   }
 
@@ -140,14 +148,15 @@ export function DirectMessages(props) {
           width: '100%',
           padding: 0,
         }}
-        onClick={() => setModalAddPeopleIsOpen(true)}
+        onClick={() => setModalAddDmIsOpen(true)}
       >
         {isOpenLeftBar ? '+ new dm' : '+'}
       </Button>
       <AddDirectMessage
         done={doneInvite}
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        modalAddDmIsOpen={modalAddDmIsOpen}
+        setModalAddDmIsOpen={setModalAddDmIsOpen}
+        isErrorInPopap={isErrorInPopap}
       />
     </>
   );

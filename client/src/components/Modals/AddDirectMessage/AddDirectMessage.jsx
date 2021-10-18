@@ -25,12 +25,17 @@ export const AddDirectMessage = withStyles(styles)((props) => {
       //console.log(data);
     },
   });
-  const { done, classes, modalAddPeopleIsOpen, setModalAddPeopleIsOpen } =
-    props;
+  const {
+    done,
+    classes,
+    modalAddDmIsOpen,
+    setModalAddDmIsOpen,
+    isErrorInPopap,
+  } = props;
   const notInvitedRef = useRef();
 
   const closePopap = () => {
-    setModalAddPeopleIsOpen(false);
+    setModalAddDmIsOpen(false);
   };
 
   useEffect(() => {
@@ -59,8 +64,8 @@ export const AddDirectMessage = withStyles(styles)((props) => {
   return (
     <>
       <Dialog
-        open={modalAddPeopleIsOpen}
-        onClose={() => setModalAddPeopleIsOpen(false)}
+        open={modalAddDmIsOpen}
+        onClose={() => setModalAddDmIsOpen(false)}
         aria-labelledby='form-dialog-title'
       >
         <DialogTitle
@@ -73,6 +78,7 @@ export const AddDirectMessage = withStyles(styles)((props) => {
           closePopap={closePopap}
           notInvitedRef={notInvitedRef}
           done={done}
+          isErrorInPopap={isErrorInPopap}
         />
       </Dialog>
     </>

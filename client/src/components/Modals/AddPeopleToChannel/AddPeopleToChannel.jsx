@@ -20,6 +20,7 @@ const styles = (theme) => ({
 export const AddPeopleToChannel = withStyles(styles)((props) => {
   const {
     chatNameRef,
+    isErrorInPopap,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
     doneInvite,
@@ -73,6 +74,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
         </DialogTitle>
         <SelectPeople
           closePopap={closePopap}
+          isErrorInPopap={isErrorInPopap}
           notInvitedRef={notInvitedRef}
           done={doneInvite}
         />

@@ -14,10 +14,16 @@ import {
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 
 export const ConversationHeaderChannel = (props) => {
-  const { isOpenRightBarChannels, setIsOpenRightBarChannels } = props;
+  const {
+    isErrorInPopap,
+    setIsErrorInPopap,
+    isOpenRightBarChannels,
+    setIsOpenRightBarChannels,
+    modalAddPeopleIsOpen,
+    setModalAddPeopleIsOpen,
+  } = props;
   const { data: channels } = useQuery(CHANNELS);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
-  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const chatNameRef = useRef('#general');
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
@@ -65,6 +71,8 @@ export const ConversationHeaderChannel = (props) => {
       console.log(invited);
       addMemberToChannel({ variables: { invited, chatId: activeChannelId } });
       setModalAddPeopleIsOpen(false);
+    } else {
+      setIsErrorInPopap(true);
     }
   }
 
@@ -128,6 +136,7 @@ export const ConversationHeaderChannel = (props) => {
         doneInvite={doneInvite}
         modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        isErrorInPopap={isErrorInPopap}
       />
     </div>
   );

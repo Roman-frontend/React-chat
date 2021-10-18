@@ -13,10 +13,14 @@ import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
 
 export default function Conversation(props) {
   const {
+    isErrorInPopap,
+    setIsErrorInPopap,
     isOpenRightBarDrMsg,
     setIsOpenRightBarDrMsg,
     isOpenRightBarChannels,
     setIsOpenRightBarChannels,
+    modalAddPeopleIsOpen,
+    setModalAddPeopleIsOpen,
   } = props;
   const { data: channels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
@@ -144,6 +148,10 @@ export default function Conversation(props) {
         <ConversationHeaderChannel
           isOpenRightBarChannels={isOpenRightBarChannels}
           setIsOpenRightBarChannels={setIsOpenRightBarChannels}
+          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+          isErrorInPopap={isErrorInPopap}
+          setIsErrorInPopap={setIsErrorInPopap}
         />
       ) : (
         <ConversationHeaderDrMsg

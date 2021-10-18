@@ -11,18 +11,20 @@ import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CREATE_CHANNEL } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import './add-channel.sass';
+import { red } from '@material-ui/core/colors';
 
 const styles = (theme) => ({
   input: {
-    height: '5vh',
+    height: '30px',
     width: '33vw',
+    color: '#0000b5',
   },
 });
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
-    width: '570px',
-    height: '460px',
+    width: '520px',
+    height: '470px',
     margin: 0,
   },
 }));
@@ -33,7 +35,7 @@ const helperTextStyles = makeStyles((theme) => ({
   },
   error: {
     '&.MuiFormHelperText-root.Mui-error': {
-      color: theme.palette.common.black,
+      color: red[500],
     },
   },
 }));
@@ -43,6 +45,8 @@ export const AddChannel = withStyles(styles)((props) => {
     setAlertData,
     setModalAddChannelIsOpen,
     modalAddChannelIsOpen,
+    isErrorInPopap,
+    setIsErrorInPopap,
     classes,
   } = props;
   const popapClasses = useStyles();
@@ -50,7 +54,6 @@ export const AddChannel = withStyles(styles)((props) => {
   const { data: auth } = useQuery(AUTH);
   const { data: allUsers } = useQuery(GET_USERS);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [isFailDone, setIsFailDone] = useState(false);
   const notInvitedRef = useRef();
   const [form, setForm] = useState({
     name: '',
@@ -124,15 +127,15 @@ export const AddChannel = withStyles(styles)((props) => {
       createChannel({
         variables: { ...form, admin: auth.id, members: listInvited },
       });
-      setIsFailDone(false);
+      setIsErrorInPopap(false);
       setModalAddChannelIsOpen(false);
     } else {
-      setIsFailDone(true);
+      setIsErrorInPopap(true);
     }
   };
 
   const closePopap = () => {
-    setIsFailDone(false);
+    setIsErrorInPopap(false);
     setModalAddChannelIsOpen(false);
   };
 
@@ -152,12 +155,7 @@ export const AddChannel = withStyles(styles)((props) => {
         scroll='body'
         classes={{ paper: popapClasses.dialogPaper }}
       >
-        <DialogTitle
-          id='form-dialog-title'
-          classes={{ root: classes.titleRoot }}
-        >
-          Create a channel
-        </DialogTitle>
+        <DialogTitle id='form-dialog-title'>Create a channel</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Channels are where your team communicates. They’re best when
@@ -171,6 +169,7 @@ export const AddChannel = withStyles(styles)((props) => {
               checked={isPrivate}
               onClick={changeIsPrivate}
               inputProps={{ 'aria-label': 'primary checkbox' }}
+              error
             />
           </div>
           <TextField
@@ -178,9 +177,8 @@ export const AddChannel = withStyles(styles)((props) => {
             InputProps={{ className: classes.input }}
             name='name'
             required={true}
-            helperText={isFailDone ? 'required' : ''}
+            helperText={isErrorInPopap ? 'required' : ''}
             FormHelperTextProps={{ classes: helperTestClasses }}
-            variant='outlined'
             value={form.name.value}
             onChange={changeHandler}
             error
@@ -189,15 +187,18 @@ export const AddChannel = withStyles(styles)((props) => {
           <TextField
             InputProps={{ className: classes.input }}
             label='Discription'
+            style={{ display: 'flex' }}
             id='mui-theme-provider-standard-input'
             name='discription'
             value={form.discription.value}
             onChange={changeHandler}
+            error
           />
           <SelectPeople
             isDialogChanged={true}
             closePopap={closePopap}
             notInvitedRef={notInvitedRef}
+            isErrorInPopap={isErrorInPopap}
             done={doneCreate}
           />
         </DialogContent>

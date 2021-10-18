@@ -30,11 +30,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function Channels(props) {
-  const { isOpenLeftBar, setAlertData } = props;
+  const {
+    isOpenLeftBar,
+    setAlertData,
+    modalAddChannelIsOpen,
+    setModalAddChannelIsOpen,
+    isErrorInPopap,
+    setIsErrorInPopap,
+  } = props;
   const classes = useStyles();
   const { t } = useTranslation();
   const { data: allChannels } = useQuery(CHANNELS);
-  const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
+  //const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [open, setOpen] = useState(true);
 
   return (
@@ -95,6 +102,8 @@ export function Channels(props) {
         modalAddChannelIsOpen={modalAddChannelIsOpen}
         setModalAddChannelIsOpen={setModalAddChannelIsOpen}
         setAlertData={props.setAlertData}
+        isErrorInPopap={isErrorInPopap}
+        setIsErrorInPopap={setIsErrorInPopap}
       />
     </>
   );

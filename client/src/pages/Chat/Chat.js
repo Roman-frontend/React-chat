@@ -93,10 +93,12 @@ export const Chat = (props) => {
   const { loading: lChannels, data: dChannels } = useQuery(CHANNELS);
   const { loading: lDirectMessages, data: dDm } = useQuery(GET_DIRECT_MESSAGES);
   const [alertData, setAlertData] = useState({});
+  const [isErrorInPopap, setIsErrorInPopap] = useState(false);
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
   const [isOpenRightBarDrMsg, setIsOpenRightBarDrMsg] = useState(false);
   const [isOpenRightBarChannels, setIsOpenRightBarChannels] = useState(false);
+  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
 
   useEffect(() => {
     wsSingleton.clientPromise
@@ -171,8 +173,11 @@ export const Chat = (props) => {
           <SetsUser
             alertData={alertData}
             setAlertData={setAlertData}
+            isErrorInPopap={isErrorInPopap}
+            setIsErrorInPopap={setIsErrorInPopap}
             isOpenLeftBar={isOpenLeftBar}
             setIsOpenLeftBar={setIsOpenLeftBar}
+            modalAddPeopleIsOpen={modalAddPeopleIsOpen}
           />
         </Drawer>
         <main className={classes.content}>
@@ -189,6 +194,10 @@ export const Chat = (props) => {
               setIsOpenRightBarUser={setIsOpenRightBarUser}
               isOpenRightBarChannels={isOpenRightBarChannels}
               setIsOpenRightBarChannels={setIsOpenRightBarChannels}
+              modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+              setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+              isErrorInPopap={isErrorInPopap}
+              setIsErrorInPopap={setIsErrorInPopap}
             />
           )}
         </main>

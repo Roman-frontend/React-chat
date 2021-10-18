@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,13 +11,29 @@ import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 import './user-sets.sass';
 
 export default function SetsUser(props) {
-  const { isOpenLeftBar, setIsOpenLeftBar, alertData, setAlertData } = props;
+  const {
+    isErrorInPopap,
+    setIsErrorInPopap,
+    isOpenLeftBar,
+    setIsOpenLeftBar,
+    alertData,
+    setAlertData,
+    modalAddPeopleIsOpen,
+  } = props;
   const classes = useStyles();
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
+  const [modalAddDmIsOpen, setModalAddDmIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!modalAddChannelIsOpen && !modalAddDmIsOpen && !modalAddPeopleIsOpen) {
+      setIsErrorInPopap(false);
+    }
+  }, [modalAddChannelIsOpen, modalAddDmIsOpen, modalAddPeopleIsOpen]);
 
   useEffect(() => {
     if (activeChannelId || activeDirectMessageId) {
@@ -48,11 +64,22 @@ export default function SetsUser(props) {
         <IconButton />
       </div>
       <Divider />
-      <Channels setAlertData={setAlertData} isOpenLeftBar={isOpenLeftBar} />
+      <Channels
+        setAlertData={setAlertData}
+        isOpenLeftBar={isOpenLeftBar}
+        modalAddChannelIsOpen={modalAddChannelIsOpen}
+        setModalAddChannelIsOpen={setModalAddChannelIsOpen}
+        isErrorInPopap={isErrorInPopap}
+        setIsErrorInPopap={setIsErrorInPopap}
+      />
       <DirectMessages
         setAlertData={setAlertData}
         isOpenLeftBar={isOpenLeftBar}
         setIsOpenLeftBar={setIsOpenLeftBar}
+        modalAddDmIsOpen={modalAddDmIsOpen}
+        setModalAddDmIsOpen={setModalAddDmIsOpen}
+        isErrorInPopap={isErrorInPopap}
+        setIsErrorInPopap={setIsErrorInPopap}
       />
       <CustomizedSnackbars alertData={alertData} setAlertData={setAlertData} />
     </div>

@@ -1,19 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import ReplyIcon from '@material-ui/icons/Reply';
-import EditIcon from '@material-ui/icons/Edit';
-import ForwardIcon from '@material-ui/icons/Forward';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Button from '@mui/material/Button';
+import ReplyIcon from '@mui/icons-material/Reply';
+import EditIcon from '@mui/icons-material/Edit';
+import ForwardIcon from '@mui/icons-material/Forward';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { AUTH } from '../../../../../GraphQLApp/queryes';
 import { REMOVE_MESSAGE } from '../../../ConversationGraphQL/queryes';
 import { useQuery, useMutation } from '@apollo/client';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(0),
-  },
-}));
 
 export const SetViewPopup = (props) => {
   const {
@@ -25,9 +18,10 @@ export const SetViewPopup = (props) => {
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   } = props;
-  const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
   const popupRef = useRef();
+
+  console.log(topPopupRelativeTopPage);
 
   const [removeMessage] = useMutation(REMOVE_MESSAGE, {
     update: (cache) => {
@@ -49,6 +43,7 @@ export const SetViewPopup = (props) => {
   }, []);
 
   function hidePopup(event) {
+    console.log('do hide');
     setPopupMessage(null);
     document.removeEventListener('click', hidePopup);
   }
@@ -82,7 +77,6 @@ export const SetViewPopup = (props) => {
         size='small'
         variant='contained'
         color='primary'
-        className={classes.button}
         startIcon={<ReplyIcon />}
         onClick={handleAnswer}
       >
@@ -92,7 +86,6 @@ export const SetViewPopup = (props) => {
         size='small'
         variant='contained'
         color='primary'
-        className={classes.button}
         startIcon={<EditIcon />}
         onClick={handleChange}
       >
@@ -102,7 +95,6 @@ export const SetViewPopup = (props) => {
         size='small'
         variant='contained'
         color='primary'
-        className={classes.button}
         startIcon={<ForwardIcon />}
       >
         FORWARD
@@ -111,7 +103,6 @@ export const SetViewPopup = (props) => {
         size='small'
         variant='contained'
         color='secondary'
-        className={classes.button}
         startIcon={<DeleteIcon />}
         onClick={handleDelete}
       >

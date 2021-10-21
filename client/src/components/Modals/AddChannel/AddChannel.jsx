@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import { useSnackbar } from 'notistack';
+import { makeStyles, withStyles } from '@mui/styles';
+import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CREATE_CHANNEL } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import './add-channel.sass';
-import { red } from '@material-ui/core/colors';
+import { blue, red } from '@mui/material/colors';
 
 const styles = (theme) => ({
   input: {
@@ -35,14 +36,13 @@ const helperTextStyles = makeStyles((theme) => ({
   },
   error: {
     '&.MuiFormHelperText-root.Mui-error': {
-      color: red[500],
+      color: blue[500],
     },
   },
 }));
 
 export const AddChannel = withStyles(styles)((props) => {
   const {
-    setAlertData,
     setModalAddChannelIsOpen,
     modalAddChannelIsOpen,
     isErrorInPopap,
@@ -53,6 +53,7 @@ export const AddChannel = withStyles(styles)((props) => {
   const helperTestClasses = helperTextStyles();
   const { data: auth } = useQuery(AUTH);
   const { data: allUsers } = useQuery(GET_USERS);
+  const { enqueueSnackbar } = useSnackbar();
   const [isPrivate, setIsPrivate] = useState(false);
   const notInvitedRef = useRef();
   const [form, setForm] = useState({
@@ -61,6 +62,7 @@ export const AddChannel = withStyles(styles)((props) => {
     isPrivate: false,
     members: [],
   });
+
   const [createChannel] = useMutation(CREATE_CHANNEL, {
     update(cache, { data: { channel } }) {
       cache.modify({
@@ -101,10 +103,11 @@ export const AddChannel = withStyles(styles)((props) => {
       });
       sessionStorage.setItem('storageData', toStorage);
       //reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
-      setAlertData(data.channel.create);
+      enqueueSnackbar('Channel created!', { variant: 'success' });
     },
     onError(error) {
       console.log(`Помилка при створенні каналу ${error}`);
+      enqueueSnackbar('Channel isn`t created!', { variant: 'error' });
     },
   });
 
@@ -174,25 +177,23 @@ export const AddChannel = withStyles(styles)((props) => {
           </div>
           <TextField
             label='Name'
-            InputProps={{ className: classes.input }}
+            inputprops={{ className: classes.input }}
             name='name'
             required={true}
             helperText={isErrorInPopap ? 'required' : ''}
             FormHelperTextProps={{ classes: helperTestClasses }}
             value={form.name.value}
             onChange={changeHandler}
-            error
           />
 
           <TextField
-            InputProps={{ className: classes.input }}
+            inputprops={{ className: classes.input }}
             label='Discription'
             style={{ display: 'flex' }}
             id='mui-theme-provider-standard-input'
             name='discription'
             value={form.discription.value}
             onChange={changeHandler}
-            error
           />
           <SelectPeople
             isDialogChanged={true}

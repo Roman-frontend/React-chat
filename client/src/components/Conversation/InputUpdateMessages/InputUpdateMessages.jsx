@@ -1,12 +1,12 @@
 import React, { useMemo, memo } from 'react';
-import {
-  ThemeProvider,
-  makeStyles,
-  createTheme,
-} from '@material-ui/core/styles';
-import BorderColorIcon from '@material-ui/icons/BorderColor';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Input from '@mui/material/Input';
+import Grid from '@mui/material/Grid';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   addPeoples: {
-    padding: theme.spacing(1),
+    //padding: theme.spacing(1),
     textAlign: 'bottom',
   },
 }));
@@ -72,6 +72,7 @@ export const InputUpdateMessages = memo((props) => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data: { message } }) => {
+      console.log(message);
       const cacheMsg = cache.readQuery({
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
@@ -142,14 +143,15 @@ export const InputUpdateMessages = memo((props) => {
 
   function inputUpdateMessages(event) {
     event.preventDefault();
-    const value = inputRef.current.children[1].children[0].value;
+    const value = inputRef.current.value;
+    console.log(value, event.target.value);
 
     //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
     if (value.trim() !== '' && !event.shiftKey && event.key === 'Enter') {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
       else newMessage(value);
-      inputRef.current.children[1].children[0].value = null;
+      inputRef.current.value = null;
     }
   }
 
@@ -179,7 +181,6 @@ export const InputUpdateMessages = memo((props) => {
           replyOn: null,
           text,
           senderId: auth.id,
-          __typename: 'Message',
         },
       },
     });
@@ -205,7 +206,6 @@ export const InputUpdateMessages = memo((props) => {
           replyOn: null,
           text: textMessage,
           senderId: auth.id,
-          __typename: 'Message',
         },
       },
     });
@@ -221,24 +221,17 @@ export const InputUpdateMessages = memo((props) => {
           />
         </Grid>
         <Grid item xs={11}>
-          <form
-            className={classes.root}
-            noValidate
-            autoComplete='off'
-            onSubmit={(event) => inputUpdateMessages(event)}
-          >
-            <ThemeProvider theme={theme}>
-              <TextField
-                style={{ width: '67vw' }}
-                label='Enter text'
-                id='mui-theme-provider-standard-input'
-                ref={inputRef}
-                multiline={true}
-                rowsMax={4}
-                onKeyUp={(event) => inputUpdateMessages(event)}
-              />
-            </ThemeProvider>
-          </form>
+          <TextField
+            //className={classes.root}
+            color='secondary'
+            id='standard-basic'
+            label='Enter text'
+            variant='standard'
+            inputRef={inputRef}
+            autoFocus={true}
+            onKeyUp={(event) => inputUpdateMessages(event)}
+            style={{ width: '-webkit-fill-available' }}
+          />
         </Grid>
       </Grid>
     </div>

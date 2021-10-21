@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
-import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import { makeStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
 import { Channel } from './Channel';
@@ -18,6 +18,7 @@ import {
   reactiveVarId,
   reactiveVarToken,
 } from '../../../GraphQLApp/reactiveVars';
+import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,14 +26,13 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
   },
   nested: {
-    paddingLeft: theme.spacing(4),
+    //paddingLeft: theme.spacing(4),
   },
 }));
 
 export function Channels(props) {
   const {
     isOpenLeftBar,
-    setAlertData,
     modalAddChannelIsOpen,
     setModalAddChannelIsOpen,
     isErrorInPopap,
@@ -41,7 +41,6 @@ export function Channels(props) {
   const classes = useStyles();
   const { t } = useTranslation();
   const { data: allChannels } = useQuery(CHANNELS);
-  //const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [open, setOpen] = useState(true);
 
   return (
@@ -50,6 +49,7 @@ export function Channels(props) {
         <List component='nav' className={classes.root}>
           {isOpenLeftBar ? (
             <ListItem
+              key={nanoid()}
               style={{ paddingLeft: 0 }}
               button
               onClick={() => setOpen(!open)}
@@ -65,6 +65,7 @@ export function Channels(props) {
             </ListItem>
           ) : (
             <ListItem
+              key={2}
               style={{ padding: 0, margin: 0, justifyContent: 'center' }}
               button
               onClick={() => setOpen(!open)}
@@ -78,11 +79,7 @@ export function Channels(props) {
             <List>
               {allChannels &&
                 allChannels.userChannels.map((channel) => (
-                  <Channel
-                    channel={channel}
-                    setAlertData={setAlertData}
-                    isOpenLeftBar={isOpenLeftBar}
-                  />
+                  <Channel channel={channel} key={nanoid()} />
                 ))}
             </List>
           </Collapse>
@@ -94,6 +91,7 @@ export function Channels(props) {
           width: '100%',
           padding: 0,
         }}
+        color='warning'
         onClick={() => setModalAddChannelIsOpen(true)}
       >
         {isOpenLeftBar ? '+ Add Channel' : '+'}
@@ -101,7 +99,6 @@ export function Channels(props) {
       <AddChannel
         modalAddChannelIsOpen={modalAddChannelIsOpen}
         setModalAddChannelIsOpen={setModalAddChannelIsOpen}
-        setAlertData={props.setAlertData}
         isErrorInPopap={isErrorInPopap}
         setIsErrorInPopap={setIsErrorInPopap}
       />

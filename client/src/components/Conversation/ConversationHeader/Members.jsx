@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import AvatarGroup from '@material-ui/lab/AvatarGroup';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
 import { StyledBadge } from './ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
@@ -33,7 +33,7 @@ export function Members(props) {
             <StyledBadge
               key={user.id}
               style={{ border: 0 }}
-              overlap='circle'
+              overlap='circular'
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant={usersOnline.includes(user.id) ? 'dot' : 'standard'}
             >

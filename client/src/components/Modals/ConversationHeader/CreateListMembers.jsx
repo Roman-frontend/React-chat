@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import PersonIcon from '@material-ui/icons/Person';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import PersonIcon from '@mui/icons-material/Person';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
 import { StyledBadge } from '../../Conversation/ConversationHeader/ConversationHeaderStyles';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
@@ -51,7 +51,7 @@ export function CreateListMembers(props) {
   function createAvatar(memberId) {
     return (
       <StyledBadge
-        overlap='circle'
+        overlap='circular'
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',

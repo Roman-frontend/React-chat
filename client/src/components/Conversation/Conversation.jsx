@@ -15,10 +15,6 @@ export default function Conversation(props) {
   const {
     isErrorInPopap,
     setIsErrorInPopap,
-    isOpenRightBarDrMsg,
-    setIsOpenRightBarDrMsg,
-    isOpenRightBarChannels,
-    setIsOpenRightBarChannels,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
   } = props;
@@ -32,12 +28,6 @@ export default function Conversation(props) {
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
-
-  useEffect(() => {
-    if (inputRef.current && inputRef.current.children[1].children[0]) {
-      inputRef.current.children[1].children[0].focus();
-    }
-  }, [inputRef, activeChannelId, activeDirectMessageId]);
 
   const checkPrivate = useCallback(() => {
     if (
@@ -143,25 +133,20 @@ export default function Conversation(props) {
   }, [closeBtnReplyMsg]);
 
   return (
-    <div className={closeBtnReplyMsg ? 'conversation-riply' : 'conversation'}>
+    <div>
       {activeChannelId ? (
         <ConversationHeaderChannel
-          isOpenRightBarChannels={isOpenRightBarChannels}
-          setIsOpenRightBarChannels={setIsOpenRightBarChannels}
           modalAddPeopleIsOpen={modalAddPeopleIsOpen}
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
           isErrorInPopap={isErrorInPopap}
           setIsErrorInPopap={setIsErrorInPopap}
         />
       ) : (
-        <ConversationHeaderDrMsg
-          isOpenRightBarDrMsg={isOpenRightBarDrMsg}
-          setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
-        />
+        <ConversationHeaderDrMsg />
       )}
       {fieldAnswerTo()}
       {contentMessages()}
-      <div className='conversation-input'>
+      <div>
         <InputUpdateMessages
           inputRef={inputRef}
           changeMessageRef={changeMessageRef}

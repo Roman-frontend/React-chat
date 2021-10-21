@@ -24,6 +24,8 @@ export default function MessageActionsPopup(props) {
     }
   }, [popupMessage]);
 
+  console.log(topPopupRelativeTopPage, popupMessage);
+
   if (topPopupRelativeTopPage) {
     return (
       <SetViewPopup

@@ -1,8 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import GroupIcon from '@material-ui/icons/Group';
-import IconButton from '@material-ui/core/IconButton';
+import { useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import GroupIcon from '@mui/icons-material/Group';
+import IconButton from '@mui/material/IconButton';
+import Drawer from '@mui/material/Drawer';
+import { Box } from '@mui/system';
 import { Members } from './Members';
 import { ConversationMembers } from '../../Modals/ConversationHeader/ConversationMembers';
 import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
@@ -12,18 +15,19 @@ import {
   ADD_MEMBER_CHANNEL,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
+import ChannelsRightBar from '../../SetsUser/Channels/ChannelsRightBar';
 
 export const ConversationHeaderChannel = (props) => {
   const {
     isErrorInPopap,
     setIsErrorInPopap,
-    isOpenRightBarChannels,
-    setIsOpenRightBarChannels,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
   } = props;
+  const theme = useTheme();
   const { data: channels } = useQuery(CHANNELS);
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
+  const [isOpenRightBarChannels, setIsOpenRightBarChannels] = useState(false);
   const chatNameRef = useRef('#general');
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
 
@@ -76,12 +80,19 @@ export const ConversationHeaderChannel = (props) => {
     }
   }
 
-  function openRightBarChannels() {
-    setIsOpenRightBarChannels(!isOpenRightBarChannels);
-  }
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setIsOpenRightBarChannels(open);
+  };
 
   return (
-    <div className='conversation__field-name'>
+    <div style={{ background: theme.palette.primary.light }}>
       <Grid
         container
         spacing={1}
@@ -114,7 +125,7 @@ export const ConversationHeaderChannel = (props) => {
             aria-label='account of current user'
             aria-haspopup='true'
             color='inherit'
-            onClick={openRightBarChannels}
+            onClick={toggleDrawer(true)}
           >
             <GroupIcon
               style={{
@@ -126,6 +137,24 @@ export const ConversationHeaderChannel = (props) => {
           </IconButton>
         </Grid>
       </Grid>
+      <div>
+        <React.Fragment>
+          <Drawer
+            anchor='right'
+            open={isOpenRightBarChannels}
+            onClose={toggleDrawer(false)}
+          >
+            <Box
+              sx={{ width: 250, margin: '56px 0px 0px 0px' }}
+              role='presentation'
+              onClick={toggleDrawer(false)}
+              onKeyDown={toggleDrawer(false)}
+            >
+              <ChannelsRightBar />
+            </Box>
+          </Drawer>
+        </React.Fragment>
+      </div>
       <ConversationMembers
         activeChannel={activeChannel}
         modalIsShowsMembers={modalIsShowsMembers}

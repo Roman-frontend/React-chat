@@ -1,223 +1,210 @@
 import React, { useState, useContext } from 'react';
 import clsx from 'clsx';
-import Tippy from '@tippy.js/react';
+import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import useStyles from './HeaderStyles.jsx';
-import AppBar from '@material-ui/core/AppBar';
-import { Grid } from '@material-ui/core';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import MenuIcon from '@material-ui/icons/Menu';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import Avatar from '@material-ui/core/Avatar';
-import MoreIcon from '@material-ui/icons/MoreVert';
+import MuiAppBar from '@mui/material/AppBar';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Badge from '@mui/material/Badge';
+import MenuIcon from '@mui/icons-material/Menu';
+import MailIcon from '@mui/icons-material/Mail';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import { Grid } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Stack from '@mui/material/Stack';
+import Drawer from '@mui/material/Drawer';
 import { useTranslation } from 'react-i18next';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import imageProfile from '../../images/Profile.jpg';
-import { Switch } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Typography from '@material-ui/core/Typography';
-import HeaderNotifications from './HeaderNotifications';
-import { CustomThemeContext } from '../Theme/CustomeThemeProvider';
+import HeaderProfile from './HeaderProfile/HeaderProfile.jsx';
+import { CustomThemeContext } from '../../App';
 
-const IOSSwitch = withStyles((theme) => ({
-  root: {
-    width: 42,
-    height: 26,
+const MaterialUISwitch = styled(Switch)(({ theme }) => ({
+  width: 62,
+  height: 34,
+  padding: 7,
+  '& .MuiSwitch-switchBase': {
+    margin: 1,
     padding: 0,
-    margin: theme.spacing(1),
-  },
-  switchBase: {
-    padding: 1,
-    '&$checked': {
-      transform: 'translateX(16px)',
-      color: theme.palette.common.white,
-      '& + $track': {
-        backgroundColor: '#f5f5f5',
+    transform: 'translateX(6px)',
+    '&.Mui-checked': {
+      color: '#fff',
+      transform: 'translateX(22px)',
+      '& .MuiSwitch-thumb:before': {
+        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+          '#fff'
+        )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
+      },
+      '& + .MuiSwitch-track': {
         opacity: 1,
-        border: 'none',
+        backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
       },
     },
-    '&$focusVisible $thumb': {
-      color: '#FFFFFF',
-      border: '6px solid #fff',
+  },
+  '& .MuiSwitch-thumb': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
+    width: 32,
+    height: 32,
+    '&:before': {
+      content: "''",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: 0,
+      top: 0,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+        '#fff'
+      )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
     },
   },
-  thumb: {
-    width: 24,
-    height: 24,
-  },
-  track: {
-    borderRadius: 26 / 2,
-    backgroundColor: theme.palette.grey[900],
+  '& .MuiSwitch-track': {
     opacity: 1,
-    transition: theme.transitions.create(['background-color', 'border']),
+    backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
+    borderRadius: 20 / 2,
   },
-  checked: {},
-  focusVisible: {},
-}))(({ classes, ...props }) => {
-  return (
-    <Switch
-      focusVisibleClassName={classes.focusVisible}
-      disableRipple
-      classes={{
-        root: classes.root,
-        switchBase: classes.switchBase,
-        thumb: classes.thumb,
-        track: classes.track,
-        checked: classes.checked,
-      }}
-      {...props}
-    />
-  );
-});
+}));
 
 export default function Header(props) {
-  const {
-    leftBarClasses,
-    isOpenLeftBar,
-    setIsOpenLeftBar,
-    isOpenRightBarUser,
-    setIsOpenRightBarUser,
-    setIsOpenRightBarDrMsg,
-    setIsOpenRightBarChannels,
-  } = props;
-  const classes = useStyles();
+  const { AppBar, isOpenLeftBar, setIsOpenLeftBar, setIsOpenRightBarDrMsg } =
+    props;
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const { t, i18n } = useTranslation();
+  const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
 
   const isDark = Boolean(currentTheme === 'dark');
+
+  console.log(currentTheme, setTheme);
 
   const changeLanguage = (language) => {
     i18n.changeLanguage(language);
   };
 
-  const handleProfileMenuOpen = (event) => {
-    setIsOpenRightBarDrMsg(false);
-    setIsOpenRightBarChannels(false);
-    setIsOpenRightBarUser(!isOpenRightBarUser);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
   const handleChangeSwitch = (event) => {
     const { checked } = event.target;
-    if (checked) {
+    if (!checked) {
       setTheme('dark');
     } else {
       setTheme('light');
     }
   };
 
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setIsOpenRightBarUser(open);
+  };
+
   return (
-    <div className={classes.rootHeader}>
-      <Grid container spacing={1} style={{ justifyContent: 'space-between' }}>
-        <AppBar
-          position='fixed'
-          style={{ height: '9vh' }}
-          className={clsx(leftBarClasses.appBar, {
-            [leftBarClasses.appBarShift]: isOpenLeftBar,
-          })}
-        >
-          <Toolbar variant='dense'>
+    <Grid container spacing={1} style={{ justifyContent: 'space-between' }}>
+      <AppBar color='primary' position='relative' open={isOpenLeftBar}>
+        <Toolbar>
+          <IconButton
+            color='inherit'
+            aria-label='isOpenLeftBar drawer'
+            onClick={() => setIsOpenLeftBar(!isOpenLeftBar)}
+            edge='start'
+          >
+            <MenuIcon />
+          </IconButton>
+          <Grid item xs={10}>
+            <Typography variant='h6' noWrap component='div'>
+              {t('description.part3')}
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <MaterialUISwitch
+              sx={{ m: 1 }}
+              checked={!isDark}
+              onChange={handleChangeSwitch}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <Tippy content={t('description.part2')}>
+              <Button color='inherit' onClick={() => changeLanguage('en')}>
+                EN
+              </Button>
+            </Tippy>
+          </Grid>
+          <Grid item xs={1}>
+            <Tippy content={t('description.part2')}>
+              <Button color='inherit' onClick={() => changeLanguage('ru')}>
+                RU
+              </Button>
+            </Tippy>
+          </Grid>
+          <Grid item xs={1}>
             <IconButton
-              edge='start'
-              className={classes.menuButton}
-              onClick={() => setIsOpenLeftBar(!isOpenLeftBar)}
+              size='large'
+              aria-label='show 4 new mails'
               color='inherit'
-              aria-label='open drawer'
             >
-              <MenuIcon />
+              <Badge badgeContent={4} color='error'>
+                <MailIcon />
+              </Badge>
             </IconButton>
-            <Grid item xs={12}>
-              <Typography className={classes.title} variant='h6' noWrap>
-                {t('description.part3')}
-              </Typography>
-            </Grid>
-
-            <Grid items xs={1}>
-              <FormControlLabel
-                control={
-                  <IOSSwitch
-                    checked={isDark}
-                    onChange={handleChangeSwitch}
-                    name='checkedA'
-                  />
-                }
-              />
-            </Grid>
-            <Grid items xs={2}>
-              <Tippy content={t('description.part2')}>
-                <Button onClick={() => changeLanguage('en')}>EN</Button>
-              </Tippy>
-              <Tippy content={t('description.part2')}>
-                <Button onClick={() => changeLanguage('ru')}>RU</Button>
-              </Tippy>
-            </Grid>
-            <Grid items xs={1}>
-              <div className={classes.grow} />
-              <div className={classes.sectionDesktop}>
-                <IconButton aria-label='show 4 new mails' color='inherit'>
-                  <Badge badgeContent={4} color='secondary'>
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton
-                  aria-label='show 17 new notifications'
-                  color='inherit'
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              size='large'
+              aria-label='show 17 new notifications'
+              color='inherit'
+            >
+              <Badge badgeContent={17} color='error'>
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              size='large'
+              edge='end'
+              aria-label='account of current user'
+              aria-controls={menuId}
+              aria-haspopup='true'
+              onClick={toggleDrawer(true)}
+              color='inherit'
+            >
+              <Avatar alt='Remy Sharp' src={imageProfile} />
+            </IconButton>
+          </Grid>
+          <div>
+            <React.Fragment>
+              <Drawer
+                anchor='right'
+                open={isOpenRightBarUser}
+                onClose={toggleDrawer(false)}
+              >
+                <Box
+                  sx={{ width: 250, margin: '56px 0px 0px 0px' }}
+                  role='presentation'
+                  onClick={toggleDrawer(false)}
+                  onKeyDown={toggleDrawer(false)}
                 >
-                  <Badge badgeContent={17} color='secondary'>
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-
-                <IconButton
-                  edge='end'
-                  aria-label='account of current user'
-                  aria-controls={menuId}
-                  aria-haspopup='true'
-                  onClick={handleProfileMenuOpen}
-                  color='inherit'
-                >
-                  <Avatar alt='Remy Sharp' src={imageProfile} />
-                </IconButton>
-              </div>
-            </Grid>
-            <Grid items xs={1}>
-              <div className={classes.sectionMobile}>
-                <IconButton
-                  aria-label='show more'
-                  aria-controls={mobileMenuId}
-                  aria-haspopup='true'
-                  onClick={handleMobileMenuOpen}
-                  color='inherit'
-                >
-                  <MoreIcon />
-                </IconButton>
-              </div>
-            </Grid>
-          </Toolbar>
-        </AppBar>
-
-        <HeaderNotifications
-          mobileMenuId={mobileMenuId}
-          mobileMoreAnchorEl={mobileMoreAnchorEl}
-          handleMobileMenuClose={handleMobileMenuClose}
-          handleProfileMenuOpen={handleProfileMenuOpen}
-        />
-      </Grid>
-    </div>
+                  <HeaderProfile />
+                </Box>
+              </Drawer>
+            </React.Fragment>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </Grid>
   );
 }

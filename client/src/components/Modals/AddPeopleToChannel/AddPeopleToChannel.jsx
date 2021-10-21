@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { withStyles } from '@mui/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';

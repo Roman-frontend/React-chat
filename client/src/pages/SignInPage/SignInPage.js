@@ -1,32 +1,25 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { colors } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+import { useSnackbar } from 'notistack';
+import clsx from 'clsx';
+import { makeStyles } from '@mui/styles';
+import { colors } from '@mui/material';
+import Button from '@mui/material/Button';
 import { LOGIN } from '../../components/../GraphQLApp/queryes';
 import { useAuth } from '../../hooks/auth.hook.js';
 import { SignInForm } from '../../components/SignInForm/SignInForm.jsx';
 import { AuthLoader } from '../../components/Helpers/Loader';
-import { useSnackbar } from 'notistack';
-
-//////
-import clsx from 'clsx';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import FilledInput from '@material-ui/core/FilledInput';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-/////
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const useStyles = makeStyles((theme) => ({
   rootInput: {
@@ -37,15 +30,12 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
   },
   margin: {
-    margin: theme.spacing(1),
+    //margin: theme.spacing(1),
   },
   textField: {
     width: '25ch',
   },
 
-  button: {
-    margin: theme.spacing(1, 2),
-  },
   colors: {
     red: colors.red,
   },
@@ -55,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SignInPage = ({ route }) => {
-  ////////////
+  const { enqueueSnackbar } = useSnackbar();
   const [valuess, setValuess] = useState({
     amount: '',
     password: '',
@@ -76,8 +66,6 @@ export const SignInPage = ({ route }) => {
     event.preventDefault();
   };
 
-  //////////////
-  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const { auth } = useAuth();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -91,11 +79,13 @@ export const SignInPage = ({ route }) => {
     //variables: { email: 'r@mail.ru', password: '11111111' },
     onError(error) {
       console.log(`Помилка авторизації ${error}`);
+      enqueueSnackbar('Fail login', { variant: 'error' });
     },
     onCompleted(data) {
       console.log(data);
       if (data.login.status === 'OK') {
         auth(data.login.record);
+        enqueueSnackbar('Successful login', { variant: 'success' });
       } else {
         enqueueSnackbar(data.login.error.message, { variant: 'error' });
       }
@@ -160,7 +150,7 @@ export const SignInPage = ({ route }) => {
                         id='standard-adornment-password'
                         type={valuess.showPassword ? 'text' : 'password'}
                         //value={values.password}
-                        InputProps={{ className: classes.input }}
+                        inputprops={{ className: classes.input }}
                         onChange={handleChange('password')}
                         endAdornment={
                           <InputAdornment position='end'>
@@ -192,7 +182,6 @@ export const SignInPage = ({ route }) => {
             size='small'
             variant='contained'
             color='primary'
-            className={classes.button}
             style={{ backgroundColor: colors.lime[700], width: '9vw' }}
             type='submit'
           >
@@ -200,7 +189,7 @@ export const SignInPage = ({ route }) => {
           </Button>
 
           <Link to={`/signUp`}>
-            <Button size='small' variant='contained' className={classes.button}>
+            <Button size='small' variant='contained'>
               Go to register
             </Button>
           </Link>

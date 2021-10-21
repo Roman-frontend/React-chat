@@ -1,14 +1,14 @@
 import React, { useRef, useMemo } from 'react';
 import Modal from 'react-modal';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Link from '@material-ui/core/Link';
+import { withStyles } from '@mui/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Link from '@mui/material/Link';
 import { CreateListMembers } from './CreateListMembers';
 Modal.setAppElement('#root');
 
@@ -18,16 +18,16 @@ const styles = (theme) => ({
     padding: 0,
     width: '22px',
     minWidth: 0,
-    margin: theme.spacing(1),
+    //margin: theme.spacing(1),
     float: 'right',
   },
   listRoot: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
+    //backgroundColor: theme.palette.background.paper,
   },
   inputRoot: { height: '6vh' },
-  addPeoples: { padding: theme.spacing(0, 3), margin: 0, fontSize: 20 },
+  //addPeoples: { padding: theme.spacing(0, 3), margin: 0, fontSize: 20 },
 });
 
 export const ConversationMembers = withStyles(styles)((props) => {
@@ -94,7 +94,7 @@ export const ConversationMembers = withStyles(styles)((props) => {
             autoFocus
             margin='dense'
             label='Search people'
-            InputProps={{ className: classes.inputRoot }}
+            inputprops={{ className: classes.inputRoot }}
             style={{ width: '26rem' }}
             ref={searchInputRef}
             onKeyUp={(event) => handleInput(event)}

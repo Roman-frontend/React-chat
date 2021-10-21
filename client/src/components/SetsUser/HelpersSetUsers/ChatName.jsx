@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid } from '@material-ui/core';
-import PersonIcon from '@material-ui/icons/Person';
+import { Grid } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 
 export function CreateDirectMsgName({ name }) {
   return (

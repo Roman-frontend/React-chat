@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Avatar from '@material-ui/core/Avatar';
-import PersonIcon from '@material-ui/icons/Person';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import { useTheme } from '@mui/material/styles';
 import imageProfile from '../../../../images/Profile.jpg';
 import { messageDate } from '../../../Helpers/DateCreators';
 import { useQuery } from '@apollo/client';
@@ -13,8 +13,7 @@ import './message.sass';
 export default function Message(props) {
   const { message, setPopupMessage } = props;
   const { text, createdAt, updatedAt, id, senderId, replyOn } = message;
-
-  console.log(text);
+  const theme = useTheme();
 
   const { data: users, loading } = useQuery(GET_USERS);
 

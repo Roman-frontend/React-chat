@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import Drawer from '@material-ui/core/Drawer';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar from '@mui/material/AppBar';
+import { styled, useTheme, alpha } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
 import {
   reactiveOnlineMembers,
   reactiveVarPrevAuth,
 } from '../../GraphQLApp/reactiveVars';
 import { GET_USERS } from '../../GraphQLApp/queryes';
-import './chat-page.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Header from '../../components/Header/Header.jsx';
 import Conversation from '../../components/Conversation/Conversation.jsx';
@@ -19,86 +20,74 @@ import {
   GET_DIRECT_MESSAGES,
 } from '../../components/SetsUser/SetsUserGraphQL/queryes';
 import { Loader } from '../../components/Helpers/Loader';
-import CustomThemeProvider from '../../components/Theme/CustomeThemeProvider';
-import { useStyles } from './ChatStyles.jsx';
-import { makeStyles } from '@material-ui/core/styles';
-import HeaderProfile from '../../components/Header/HeaderProfile/HeaderProfile';
-import DirectMessageRightBar from '../../components/SetsUser/DirectMessages/DirectMessageRightBar';
-import ChannelsRightBar from '../../components/SetsUser/Channels/ChannelsRightBar';
-
 const drawerWidth = 240;
 
-const useSecondStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: drawerWidth,
-  },
-  title: {
-    flexGrow: 1,
-  },
-  hide: {
-    display: 'none',
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-start',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginRight: -drawerWidth,
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: 0,
-  },
-}));
-
 export const Chat = (props) => {
-  const classes = useStyles();
-  const secondClasses = useSecondStyles();
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const { loading: lUsers } = useQuery(GET_USERS);
   const { loading: lChannels, data: dChannels } = useQuery(CHANNELS);
   const { loading: lDirectMessages, data: dDm } = useQuery(GET_DIRECT_MESSAGES);
-  const [alertData, setAlertData] = useState({});
   const [isErrorInPopap, setIsErrorInPopap] = useState(false);
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
-  const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
-  const [isOpenRightBarDrMsg, setIsOpenRightBarDrMsg] = useState(false);
-  const [isOpenRightBarChannels, setIsOpenRightBarChannels] = useState(false);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
+  const theme = useTheme();
+
+  const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'isOpenLeftBar',
+  })(({ theme, isOpenLeftBar }) => ({
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(isOpenLeftBar && {
+      marginLeft: drawerWidth,
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    }),
+  }));
+
+  const openedMixin = (theme) => ({
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: 'hidden',
+    overflowY: 'scroll',
+  });
+
+  const closedMixin = (theme) => ({
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+    overflowY: 'scroll',
+    width: `calc(${theme.spacing(7)} + 1px)`,
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(${theme.spacing(30)} + 1px)`,
+    },
+  });
+
+  const Drawer = styled(MuiDrawer, {
+    shouldForwardProp: (prop) => prop !== 'isOpenLeftBar',
+  })(({ theme, isOpenLeftBar }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(isOpenLeftBar && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!isOpenLeftBar && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }));
 
   useEffect(() => {
     wsSingleton.clientPromise
@@ -145,114 +134,47 @@ export const Chat = (props) => {
   }
 
   return (
-    <CustomThemeProvider>
-      <div className={classes.root}>
-        <Header
-          leftBarClasses={classes}
-          isOpenLeftBar={isOpenLeftBar}
-          setIsOpenLeftBar={setIsOpenLeftBar}
-          isOpenRightBarUser={isOpenRightBarUser}
-          setIsOpenRightBarUser={setIsOpenRightBarUser}
-          setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
-          setIsOpenRightBarChannels={setIsOpenRightBarChannels}
-        />
-        <Drawer
-          variant='permanent'
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: isOpenLeftBar,
-            [classes.drawerClose]: !isOpenLeftBar,
-          })}
-          classes={{
-            paper: clsx({
-              [classes.drawerOpen]: isOpenLeftBar,
-              [classes.drawerClose]: !isOpenLeftBar,
-            }),
-          }}
-        >
-          <Divider />
-          <SetsUser
-            alertData={alertData}
-            setAlertData={setAlertData}
-            isErrorInPopap={isErrorInPopap}
-            setIsErrorInPopap={setIsErrorInPopap}
+    <Box style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
+      <Grid container spacing={2}>
+        <CssBaseline />
+        <Grid item xs={12}>
+          <Header
+            AppBar={AppBar}
             isOpenLeftBar={isOpenLeftBar}
             setIsOpenLeftBar={setIsOpenLeftBar}
-            modalAddPeopleIsOpen={modalAddPeopleIsOpen}
           />
-        </Drawer>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          {((dChannels &&
-            dChannels.userChannels &&
-            dChannels.userChannels.length > 0) ||
-            (dDm &&
-              dDm.directMessagesId &&
-              dDm.directMessagesId.length > 0)) && (
-            <Conversation
-              isOpenRightBarDrMsg={isOpenRightBarDrMsg}
-              setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
-              setIsOpenRightBarUser={setIsOpenRightBarUser}
-              isOpenRightBarChannels={isOpenRightBarChannels}
-              setIsOpenRightBarChannels={setIsOpenRightBarChannels}
-              modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-              setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
-              isErrorInPopap={isErrorInPopap}
-              setIsErrorInPopap={setIsErrorInPopap}
-            />
-          )}
-        </main>
-        <Drawer
-          className={secondClasses.drawer}
-          variant='persistent'
-          anchor='right'
-          open={isOpenRightBarUser}
-          classes={{
-            paper: secondClasses.drawerPaper,
+        </Grid>
+        <SetsUser
+          isErrorInPopap={isErrorInPopap}
+          setIsErrorInPopap={setIsErrorInPopap}
+          isOpenLeftBar={isOpenLeftBar}
+          setIsOpenLeftBar={setIsOpenLeftBar}
+          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+        />
+        <Box
+          component='main'
+          sx={{ flexGrow: 1, p: 3 }}
+          style={{
+            padding: '20px 0px 0px 0px',
           }}
         >
-          <div className={secondClasses.drawerHeader}>
-            <IconButton />
-          </div>
-          <Divider />
-          <HeaderProfile />
-        </Drawer>
-        <Drawer
-          className={secondClasses.drawer}
-          variant='persistent'
-          anchor='right'
-          open={isOpenRightBarDrMsg}
-          classes={{
-            paper: secondClasses.drawerPaper,
-          }}
-        >
-          <div className={secondClasses.drawerHeader}>
-            <IconButton />
-          </div>
-          <Divider />
-          <DirectMessageRightBar
-            setAlertData={setAlertData}
-            setIsOpenRightBarDrMsg={setIsOpenRightBarDrMsg}
-          />
-        </Drawer>
-        <Drawer
-          className={secondClasses.drawer}
-          variant='persistent'
-          anchor='right'
-          open={isOpenRightBarChannels}
-          classes={{
-            paper: secondClasses.drawerPaper,
-          }}
-        >
-          <div className={secondClasses.drawerHeader}>
-            <IconButton />
-          </div>
-          <Divider />
-          <ChannelsRightBar
-            setAlertData={setAlertData}
-            setIsOpenRightBarChannels={setIsOpenRightBarChannels}
-          />
-        </Drawer>
-      </div>
-    </CustomThemeProvider>
+          <main>
+            {((dChannels &&
+              dChannels.userChannels &&
+              dChannels.userChannels.length > 0) ||
+              (dDm &&
+                dDm.directMessagesId &&
+                dDm.directMessagesId.length > 0)) && (
+              <Conversation
+                modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+                setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+                isErrorInPopap={isErrorInPopap}
+                setIsErrorInPopap={setIsErrorInPopap}
+              />
+            )}
+          </main>
+        </Box>
+      </Grid>
+    </Box>
   );
 };

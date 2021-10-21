@@ -1,21 +1,23 @@
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import PersonIcon from '@material-ui/icons/Person';
+import React, { useState } from 'react';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import PersonIcon from '@mui/icons-material/Person';
+import { Drawer, Box } from '@mui/material';
 import './ConversationHeader.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
+import DirectMessageRightBar from '../../SetsUser/DirectMessages/DirectMessageRightBar';
 
 export const ConversationHeaderDrMsg = (props) => {
-  const { isOpenRightBarDrMsg, setIsOpenRightBarDrMsg } = props;
   const { data: auth } = useQuery(AUTH);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const { data: allUsers } = useQuery(GET_USERS);
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const [isOpenRightBarDrMsg, setIsOpenRightBarDrMsg] = useState(false);
 
   function createName() {
     if (
@@ -44,9 +46,16 @@ export const ConversationHeaderDrMsg = (props) => {
     }
   }
 
-  function openRightBarDrMsg() {
-    setIsOpenRightBarDrMsg(!isOpenRightBarDrMsg);
-  }
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setIsOpenRightBarDrMsg(open);
+  };
 
   return (
     <div className='conversation__field-name'>
@@ -56,7 +65,7 @@ export const ConversationHeaderDrMsg = (props) => {
         style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
         justify='space-between'
       >
-        <Grid item xs={9}>
+        <Grid item xs={11}>
           {createName()}
         </Grid>
         <Grid item xs={1}>
@@ -65,7 +74,7 @@ export const ConversationHeaderDrMsg = (props) => {
             aria-label='account of current user'
             aria-haspopup='true'
             color='inherit'
-            onClick={openRightBarDrMsg}
+            onClick={toggleDrawer(true)}
           >
             <PersonIcon
               style={{
@@ -78,6 +87,24 @@ export const ConversationHeaderDrMsg = (props) => {
           </IconButton>
         </Grid>
       </Grid>
+      <div>
+        <React.Fragment>
+          <Drawer
+            anchor='right'
+            open={isOpenRightBarDrMsg}
+            onClose={toggleDrawer(false)}
+          >
+            <Box
+              sx={{ width: 250, margin: '56px 0px 0px 0px' }}
+              role='presentation'
+              onClick={toggleDrawer(false)}
+              onKeyDown={toggleDrawer(false)}
+            >
+              <DirectMessageRightBar />
+            </Box>
+          </Drawer>
+        </React.Fragment>
+      </div>
     </div>
   );
 };

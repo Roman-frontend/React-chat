@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import CustomizedSnackbars from '../Helpers/AlertAction.jsx';
+import Divider from '@mui/material/Divider';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import { useStyles } from '../../pages/Chat/ChatStyles.jsx';
 import { Channels } from './Channels/Channels.jsx';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 import './user-sets.sass';
@@ -16,11 +14,9 @@ export default function SetsUser(props) {
     setIsErrorInPopap,
     isOpenLeftBar,
     setIsOpenLeftBar,
-    alertData,
-    setAlertData,
     modalAddPeopleIsOpen,
   } = props;
-  const classes = useStyles();
+  const theme = useTheme();
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -59,13 +55,17 @@ export default function SetsUser(props) {
   }, [allChannels, listDirectMessages, activeChannelId, activeDirectMessageId]);
 
   return (
-    <div className='left-block'>
-      <div className={classes.toolbar}>
-        <IconButton />
-      </div>
+    <div
+      style={{
+        borderRight: 'solid 1px',
+        height: '90vh',
+        overflowY: 'scroll',
+        background: theme.palette.primary.light,
+        margin: '0px 15px',
+      }}
+    >
       <Divider />
       <Channels
-        setAlertData={setAlertData}
         isOpenLeftBar={isOpenLeftBar}
         modalAddChannelIsOpen={modalAddChannelIsOpen}
         setModalAddChannelIsOpen={setModalAddChannelIsOpen}
@@ -73,7 +73,6 @@ export default function SetsUser(props) {
         setIsErrorInPopap={setIsErrorInPopap}
       />
       <DirectMessages
-        setAlertData={setAlertData}
         isOpenLeftBar={isOpenLeftBar}
         setIsOpenLeftBar={setIsOpenLeftBar}
         modalAddDmIsOpen={modalAddDmIsOpen}
@@ -81,7 +80,6 @@ export default function SetsUser(props) {
         isErrorInPopap={isErrorInPopap}
         setIsErrorInPopap={setIsErrorInPopap}
       />
-      <CustomizedSnackbars alertData={alertData} setAlertData={setAlertData} />
     </div>
   );
 }

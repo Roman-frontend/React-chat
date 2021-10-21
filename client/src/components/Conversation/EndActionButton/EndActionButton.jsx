@@ -1,5 +1,5 @@
 import React from 'react';
-import CancelPresentationOutlinedIcon from '@material-ui/icons/CancelPresentationOutlined';
+import CancelPresentationOutlinedIcon from '@mui/icons-material/CancelPresentationOutlined';
 import './end-action-button.sass';
 
 export default function EndActionButton(props) {

@@ -1,17 +1,12 @@
 import React, { useMemo } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import Avatar from '@material-ui/core/Avatar';
-import MailIcon from '@material-ui/icons/Mail';
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import AssignmentIndSharpIcon from '@material-ui/icons/AssignmentIndSharp';
-import PersonIcon from '@material-ui/icons/Person';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteIcon from '@material-ui/icons/Delete';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import AssignmentIndSharpIcon from '@mui/icons-material/AssignmentIndSharp';
+import PersonIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import {
   GET_DIRECT_MESSAGES,
@@ -19,14 +14,15 @@ import {
 } from '../SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
+import { useSnackbar } from 'notistack';
 
 const DirectMessageRightBar = (props) => {
-  const { setAlertData, setIsOpenRightBarDrMsg } = props;
   const { data: auth } = useQuery(AUTH);
   const { data: users } = useQuery(GET_USERS);
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const { enqueueSnackbar } = useSnackbar();
 
   const activeDirectMessage = useMemo(() => {
     if (
@@ -66,21 +62,18 @@ const DirectMessageRightBar = (props) => {
     },
     onCompleted(data) {
       console.log(data);
-      setAlertData(data.directMessages.remove);
-      setIsOpenRightBarDrMsg(false);
+      enqueueSnackbar('Direct Message is a success removed!', {
+        variant: 'success',
+      });
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
+      enqueueSnackbar('Direct Message isn`t removed!', { variant: 'error' });
     },
   });
 
   return (
     <List>
-      <ListItem button onClick={() => setIsOpenRightBarDrMsg(false)}>
-        <ListItemIcon>
-          <ChevronRightIcon />
-        </ListItemIcon>
-      </ListItem>
       <ListItem button>
         <ListItemIcon>
           <PersonIcon

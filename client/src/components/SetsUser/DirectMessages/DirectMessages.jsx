@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import { useSnackbar } from 'notistack';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { AUTH } from '../../../GraphQLApp/queryes';
 import {
   CREATE_DIRECT_MESSAGE,
@@ -26,14 +26,10 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     maxWidth: 360,
   },
-  nested: {
-    paddingLeft: theme.spacing(4),
-  },
 }));
 
 export function DirectMessages(props) {
   const {
-    setAlertData,
     isOpenLeftBar,
     isErrorInPopap,
     setIsErrorInPopap,
@@ -45,6 +41,7 @@ export function DirectMessages(props) {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
   const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
     update(cache, { data: { directMessages } }) {
@@ -71,6 +68,7 @@ export function DirectMessages(props) {
     },
     onError(error) {
       console.log(`Помилка ${error}`);
+      enqueueSnackbar('Direct Message created!', { variant: 'error' });
     },
     onCompleted(data) {
       console.log(data);
@@ -82,7 +80,7 @@ export function DirectMessages(props) {
       });
       sessionStorage.setItem('storageData', toStorage);
       reactiveDirectMessages([...reactiveDirectMessages(), ...newDrMsgIds]);
-      setAlertData(data.directMessages.create);
+      enqueueSnackbar('Direct Message created!', { variant: 'success' });
     },
   });
 
@@ -132,11 +130,7 @@ export function DirectMessages(props) {
             <List>
               {directMessages &&
                 directMessages.directMessages.map((drMsg) => (
-                  <DirectMessage
-                    drMsg={drMsg}
-                    setAlertData={setAlertData}
-                    isOpenLeftBar={isOpenLeftBar}
-                  />
+                  <DirectMessage key={drMsg.id} drMsg={drMsg} />
                 ))}
             </List>
           </Collapse>
@@ -148,6 +142,7 @@ export function DirectMessages(props) {
           width: '100%',
           padding: 0,
         }}
+        color='warning'
         onClick={() => setModalAddDmIsOpen(true)}
       >
         {isOpenLeftBar ? '+ new dm' : '+'}

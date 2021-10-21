@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@mui/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const useAppStyles = makeStyles((theme) => ({
   root: { position: 'fixed', left: '50%', top: '50%' },
@@ -20,7 +20,7 @@ const useAuthStyles = makeStyles((theme) => ({
   root: {
     width: '34vw',
     '& > * + *': {
-      marginTop: theme.spacing(2),
+      //marginTop: theme.spacing(2),
     },
   },
 }));

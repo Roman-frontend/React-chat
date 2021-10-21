@@ -1,19 +1,32 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { useQuery } from '@apollo/client';
-import { withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import { Select } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { makeStyles } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
+import InputLabel from '@mui/material/InputLabel';
+import { Select as MUISelect } from '@mui/material';
+import { Button as MUIButton } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { makeStyles } from '@mui/styles';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
+import styled from '@emotion/styled';
 import './select-people.sass';
-import { red } from '@material-ui/core/colors';
+import { red } from '@mui/material/colors';
+import SelectSearch from 'react-select-search';
+import Select from 'react-dropdown-select';
 //коли відкриваю попап створення чату і нічого не заповняю, нажимаю done і воно просто закриває попап має показати шо є якісь обовязкові поля
+
+const StyledSelect = styled(Select)`
+  ${({ dropdownRenderer }) =>
+    dropdownRenderer &&
+    `
+		.react-dropdown-select-dropdown {
+			overflow: initial;
+		}
+	`}
+`;
 
 const styles = (theme) => ({
   input: {
@@ -59,7 +72,7 @@ const selectStyles = makeStyles((theme) => ({
     margin: 0,
   },
   selectEmpty: {
-    marginTop: theme.spacing(2),
+    //marginTop: theme.spacing(2),
   },
   menuPaper: {
     maxHeight: 190,
@@ -70,23 +83,25 @@ export const SelectPeople = withStyles(styles)((props) => {
   const {
     isDialogChanged,
     closePopap,
-    notInvitedRef,
     done,
     isErrorInPopap,
     classes,
+    notInvitedRef,
   } = props;
   const helperTestClasses = helperTextStyles();
   const selectClasses = selectStyles();
   const dialogClasses = isDialogChanged
     ? popapWithoutPadding()
     : popapWithPadding();
-  const [list, setList] = useState(notInvitedRef.current);
-  const inputPeopleRef = useRef();
-  const invitedRef = useRef([]);
-  const textRef = useRef();
+  const [list, setList] = useState(notInvitedRef);
+  //const inputPeopleRef = useRef();
+  //const invitedRef = useRef([]);
+  const [invited, setInvited] = useState([]);
   const [open, setOpen] = useState(false);
   const [isChoosedSeveral, setIsChosedSeveral] = useState(false);
   const { data: allUsers } = useQuery(GET_USERS);
+
+  const [selectValues, setSelectValues] = useState([]);
 
   useEffect(() => {
     if (open) {
@@ -99,7 +114,7 @@ export const SelectPeople = withStyles(styles)((props) => {
   }
 
   function todo() {
-    done('done', invitedRef.current);
+    done('done', invited /* invitedRef.current */);
   }
 
   const getSelectElements = () => {
@@ -123,18 +138,21 @@ export const SelectPeople = withStyles(styles)((props) => {
     });
   }
 
-  function addPeopleToInvited(selected) {
+  function addPeopleToInvited(selected, addMethod) {
+    addMethod(selected);
     console.log('todo', selected);
     const selectedIndex = list.indexOf(selected);
-    setList((prevList) => {
-      prevList.splice(selectedIndex, 1);
-      return prevList;
-    });
     if (allUsers && allUsers.users && allUsers.users[0]) {
       const electData = allUsers.users.filter(
         (user) => user.id === selected.id
       );
-      invitedRef.current = invitedRef.current.concat(electData[0].id);
+      setList((prevList) => {
+        prevList.splice(selectedIndex, 1);
+        return prevList;
+      });
+      console.log(selected);
+      setInvited((prev) => prev.concat(electData[0].id));
+      //invitedRef.current = invitedRef.current.concat(electData[0].id);
     }
   }
 
@@ -147,7 +165,8 @@ export const SelectPeople = withStyles(styles)((props) => {
     const choosed = notInvitedRef.current.filter((people) => {
       return people.email === event.target.value;
     });
-    const selectedIsInvited = invitedRef.current.includes(choosed[0]);
+    //const selectedIsInvited = invitedRef.current.includes(choosed[0]);
+    const selectedIsInvited = invited.includes(choosed[0]);
     if (event.key === 'Enter' && !selectedIsInvited) {
       if (choosed.length !== 1) {
         console.log(choosed, notInvitedRef.current);
@@ -157,65 +176,66 @@ export const SelectPeople = withStyles(styles)((props) => {
         addPeopleToInvited(choosed[0]);
       }
     }
-    textRef.current.focus();
   }
 
   function handleOpenSelect() {
     setOpen(true);
-    textRef.current.focus();
   }
+
+  const itemRenderer = ({ item, itemIndex, props, state, methods }) => (
+    <div
+      key={item.id}
+      onClick={() => addPeopleToInvited(item, methods.addItem)}
+    >
+      <div style={{ margin: '10px' }}>{item.email}</div>
+    </div>
+  );
 
   return (
     <div>
+      <div
+        style={{
+          minWidth: '400px',
+          minHeight: '195px',
+          maxHeight: '230px',
+          margin: '0 auto',
+        }}
+      >
+        <StyledSelect
+          placeholder='Select peoples'
+          color={'#0074D9'}
+          required={true}
+          autoFocus={true}
+          searchBy={'email'}
+          separator={true}
+          clearable={true}
+          searchable={true}
+          keepOpen={false}
+          dropdownHandle={true}
+          dropdownHeight={'300px'}
+          direction={'ltr'}
+          multi={true}
+          labelField={'email'}
+          valueField={'email'}
+          options={list}
+          dropdownGap={5}
+          keepSelectedInList={true}
+          onDropdownOpen={() => undefined}
+          onDropdownClose={() => undefined}
+          onClearAll={() => undefined}
+          onSelectAll={() => undefined}
+          onChange={(values) => setSelectValues(values)}
+          noDataLabel='No matches found'
+          closeOnSelect={false}
+          dropdownPosition={'bottom'}
+          itemRenderer={itemRenderer}
+        />
+      </div>
       <DialogContent classes={{ root: dialogClasses.root }}>
         <FormControl className={selectClasses.formControl}>
-          <TextField
-            InputProps={{ className: classes.input }}
-            label='Add a people'
-            id='mui-theme-provider-standard-input'
-            ref={inputPeopleRef}
-            onClick={(event) => {
-              event.stopPropagation();
-              event.preventDefault();
-            }}
-            onKeyUp={(event) => handleInput(event)}
-            helperText={
-              isErrorInPopap
-                ? 'required'
-                : isChoosedSeveral
-                ? 'Please choose one persone'
-                : ''
-            }
-            FormHelperTextProps={{ classes: helperTestClasses }}
-            required={true}
-            ref={textRef}
-            autoFocus={true}
-            error
-          />
-
-          <InputLabel
-            id='demo-controlled-open-select-label'
-            style={{ top: '8vh' }}
-          >
-            List peoples
-          </InputLabel>
-          <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
-            open={open}
-            onClose={() => setOpen(false)}
-            onOpen={handleOpenSelect}
-            classes={{ root: classes.selectRoot }}
-            className={classes.selectMenu}
-            value={list[0] ? list[0].email : ''}
-            MenuProps={{ classes: { paper: selectClasses.menuPaper } }}
-            error
-          >
-            {getSelectElements()}
-          </Select>
           <DialogActions>
-            <Button onClick={close}>Close</Button>
-            <Button onClick={todo}>Done</Button>
+            <MUIButton onClick={close}>Close</MUIButton>
+            <MUIButton onClick={todo}>Done</MUIButton>
           </DialogActions>
         </FormControl>
       </DialogContent>

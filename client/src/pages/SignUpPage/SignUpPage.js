@@ -1,9 +1,10 @@
 import React, { useState, useRef, memo } from 'react';
 import { gql, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import { colors } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
+import { useSnackbar } from 'notistack';
+import { makeStyles } from '@mui/styles';
+import { colors } from '@mui/material';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import { Link } from 'react-router-dom';
 import { useValidate } from '../../hooks/validate.hook.js';
 import {
@@ -19,7 +20,7 @@ import './auth-body.sass';
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    margin: theme.spacing(1, 2),
+    //margin: theme.spacing(1, 2),
   },
   colors: {
     red: colors.red,
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export const SignUpPage = memo((props) => {
   const { auth } = useAuth();
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [serverError, setServerError] = useState(undefined);
   const { errors, validate } = useValidate({
     name: validateName,
@@ -64,6 +66,7 @@ export const SignUpPage = memo((props) => {
     },
     onError(error) {
       console.log(`Некоректні дані при реєстрації ${error}`);
+      enqueueSnackbar('Failed registration!', { variant: 'error' });
     },
     onCompleted(data) {
       console.log('res data -- ', data);
@@ -72,6 +75,7 @@ export const SignUpPage = memo((props) => {
       }
 
       setServerError(data.register.error.message);
+      enqueueSnackbar('Success registration!', { variant: 'success' });
     },
   });
 

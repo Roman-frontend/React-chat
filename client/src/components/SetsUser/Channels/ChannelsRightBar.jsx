@@ -1,40 +1,22 @@
 import React, { useMemo } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import Avatar from '@material-ui/core/Avatar';
-import MailIcon from '@material-ui/icons/Mail';
-import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import AssignmentIndSharpIcon from '@material-ui/icons/AssignmentIndSharp';
-import PersonIcon from '@material-ui/icons/Person';
-import GroupIcon from '@material-ui/icons/Group';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
-import {
-  CHANNELS,
-  GET_DIRECT_MESSAGES,
-  REMOVE_DIRECT_MESSAGE,
-  REMOVE_CHANNEL,
-} from '../SetsUserGraphQL/queryes';
+import { useSnackbar } from 'notistack';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import AssignmentIndSharpIcon from '@mui/icons-material/AssignmentIndSharp';
+import PersonIcon from '@mui/icons-material/Person';
+import GroupIcon from '@mui/icons-material/Group';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { CHANNELS, REMOVE_CHANNEL } from '../SetsUserGraphQL/queryes';
 import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
-import { determineActiveChat } from '../../Helpers/determineActiveChat';
 
-const DirectMessageRightBar = (props) => {
-  const {
-    setAlertData,
-    setIsOpenRightBarDrMsg,
-    isOpenRightBarChannels,
-    setIsOpenRightBarChannels,
-  } = props;
-  const { data: auth } = useQuery(AUTH);
-  const { data: users } = useQuery(GET_USERS);
+const ChannelsRightBar = (props) => {
   const { data: channels } = useQuery(CHANNELS);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const userId = useReactiveVar(reactiveVarId);
+  const { enqueueSnackbar } = useSnackbar();
 
   const activeChannel = useMemo(() => {
     if (activeChannelId && channels && Array.isArray(channels.userChannels)) {
@@ -69,19 +51,17 @@ const DirectMessageRightBar = (props) => {
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
+      enqueueSnackbar('Direct Message isn`t removed!', { variant: 'error' });
     },
     onCompleted(data) {
-      setAlertData(data.channel.remove);
+      enqueueSnackbar('Channel is a success removed!', {
+        variant: 'success',
+      });
     },
   });
 
   return (
     <List>
-      <ListItem button onClick={() => setIsOpenRightBarChannels(false)}>
-        <ListItemIcon>
-          <ChevronRightIcon />
-        </ListItemIcon>
-      </ListItem>
       <ListItem button>
         <ListItemIcon>
           <GroupIcon
@@ -122,4 +102,4 @@ const DirectMessageRightBar = (props) => {
   );
 };
 
-export default React.memo(DirectMessageRightBar);
+export default React.memo(ChannelsRightBar);

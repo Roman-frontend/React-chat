@@ -32,7 +32,8 @@ export const Messages = memo((props) => {
   } = useQuery(GET_MESSAGES, {
     variables: { chatId, chatType, userId },
     onCompleted(data) {
-      if (data.messages) {
+      console.log(data);
+      if (data && data.messages) {
         renderMessages();
       }
     },
@@ -108,7 +109,14 @@ export const Messages = memo((props) => {
   }
 
   return (
-    <div className='messages'>
+    <div
+      style={{
+        overflowY: 'auto',
+        flexDirection: 'column-reverse',
+        display: 'flex',
+        height: '65vh',
+      }}
+    >
       {renderMessages()}
       <MessageActionsPopup {...props} />
     </div>

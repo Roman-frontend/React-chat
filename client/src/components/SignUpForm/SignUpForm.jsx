@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import { colors } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import TextField from '@mui/material/TextField';
+import { colors } from '@mui/material';
 import './auth-form.sass';
 
 const useStyles = makeStyles((theme) => ({
@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     background: colors.teal[50],
   },
   margin: {
-    margin: theme.spacing(1),
+    //margin: theme.spacing(1),
   },
   inputIsValidated: {
     color: colors.lime[900],

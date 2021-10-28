@@ -1,10 +1,12 @@
 import React, { useState, useRef, memo } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
+import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { colors } from '@mui/material';
+import { colors, Paper } from '@mui/material';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
+import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { useValidate } from '../../hooks/validate.hook.js';
 import {
@@ -18,18 +20,9 @@ import { REGISTER } from '../../components/../GraphQLApp/queryes';
 import { AuthLoader } from '../../components/Helpers/Loader.jsx';
 import './auth-body.sass';
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    //margin: theme.spacing(1, 2),
-  },
-  colors: {
-    red: colors.red,
-  },
-}));
-
 export const SignUpPage = memo((props) => {
+  const theme = useTheme();
   const { auth } = useAuth();
-  const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [serverError, setServerError] = useState(undefined);
   const { errors, validate } = useValidate({
@@ -95,9 +88,24 @@ export const SignUpPage = memo((props) => {
   };
 
   return (
-    <div className='auth-body'>
-      <div className='auth-form'>
-        <span className='auth-form__title'>Реєстрація</span>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper
+        sx={{
+          position: 'relative',
+          top: '15vh',
+          background: theme.palette.primary.dark,
+        }}
+      >
+        <span
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            fontSize: 25,
+            margin: '20px 0px 0px',
+          }}
+        >
+          Реєстрація
+        </span>
 
         <SignUpForm
           label='Name'
@@ -127,22 +135,31 @@ export const SignUpPage = memo((props) => {
           inputSignUpRef={ref.password}
         />
 
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          className={classes.button}
-          style={{ backgroundColor: colors.lime[700], width: '9vw' }}
-          onClick={handleSubmit}
-        >
-          Register
-        </Button>
-
-        <Link to={`/signIn`}>
-          <Button size='small' variant='contained' className={classes.button}>
-            Has account go to login
+        <Box style={{ display: 'flex' }}>
+          <Button
+            size='small'
+            variant='contained'
+            color='primary'
+            style={{
+              width: '9vw',
+              margin: '15px',
+            }}
+            onClick={handleSubmit}
+          >
+            Register
           </Button>
-        </Link>
+
+          <Link to={`/signIn`} style={{ textDecoration: 'none' }}>
+            <Button
+              size='small'
+              color='secondary'
+              variant='contained'
+              sx={{ margin: '15px' }}
+            >
+              Has account go to login
+            </Button>
+          </Link>
+        </Box>
 
         {loading && <AuthLoader />}
         <Snackbar
@@ -152,7 +169,7 @@ export const SignUpPage = memo((props) => {
           onClose={handleCloseSnackbar}
           message={serverError}
         />
-      </div>
+      </Paper>
     </div>
   );
 });

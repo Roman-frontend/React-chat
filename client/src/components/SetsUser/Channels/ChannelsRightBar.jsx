@@ -54,6 +54,7 @@ const ChannelsRightBar = (props) => {
       enqueueSnackbar('Direct Message isn`t removed!', { variant: 'error' });
     },
     onCompleted(data) {
+      activeChatId({});
       enqueueSnackbar('Channel is a success removed!', {
         variant: 'success',
       });

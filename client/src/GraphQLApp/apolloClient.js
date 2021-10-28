@@ -51,9 +51,7 @@ export const client = new ApolloClient({
       Query: {
         fields: {
           directMessagesId() {
-            return reactiveVarToken()
-              ? reactiveVarPrevAuth().directMessages
-              : null;
+            return reactiveVarToken() ? reactiveDirectMessages() : null;
           },
           channels() {
             return reactiveVarToken() ? reactiveVarChannels() : null;

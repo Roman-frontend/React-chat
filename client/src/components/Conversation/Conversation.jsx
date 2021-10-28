@@ -1,5 +1,12 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { wsSend } from '../../WebSocket/soket';
+import { useTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import ReplyIcon from '@mui/icons-material/Reply';
+import EditIcon from '@mui/icons-material/Edit';
+import ForwardIcon from '@mui/icons-material/Forward';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box } from '@mui/system';
 import { ConversationHeaderChannel } from './ConversationHeader/ConversationHeaderChannel.jsx';
 import { ConversationHeaderDrMsg } from './ConversationHeader/ConversationHeaderDrMsg.jsx';
 import { Messages } from './Messages/Messages.jsx';
@@ -7,9 +14,12 @@ import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.j
 import EndActionButton from './EndActionButton/EndActionButton.jsx';
 import imageError from '../../images/error.png';
 import './conversation.sass';
-import { useQuery, useReactiveVar } from '@apollo/client';
+import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
+import { REMOVE_MESSAGE } from './ConversationGraphQL/queryes';
+
+const stylesButton = { margin: 2 /* border: '1px solid rebeccapurple' */ };
 
 export default function Conversation(props) {
   const {
@@ -18,6 +28,7 @@ export default function Conversation(props) {
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
   } = props;
+  const theme = useTheme();
   const { data: channels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
@@ -28,6 +39,22 @@ export default function Conversation(props) {
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
+  const [openPopup, setOpenPopup] = useState(false);
+
+  const [removeMessage] = useMutation(REMOVE_MESSAGE, {
+    update: (cache) => {
+      cache.modify({
+        fields: {
+          messages({ DELETE }) {
+            return DELETE;
+          },
+        },
+      });
+    },
+    onError(error) {
+      console.log(`Помилка при видаленні повідомлення ${error}`);
+    },
+  });
 
   const checkPrivate = useCallback(() => {
     if (
@@ -69,6 +96,8 @@ export default function Conversation(props) {
     if (activeChannelId || activeDirectMessageId) {
       return (
         <Messages
+          openPopup={openPopup}
+          setOpenPopup={setOpenPopup}
           popupMessage={popupMessage}
           setPopupMessage={setPopupMessage}
           setCloseBtnChangeMsg={setCloseBtnChangeMsg}
@@ -127,26 +156,116 @@ export default function Conversation(props) {
   const fieldAnswerTo = useCallback(() => {
     if (closeBtnReplyMsg) {
       return (
-        <div className='conversation-riply__answer'>{closeBtnReplyMsg}</div>
+        <Box
+          sx={{ position: 'relative', background: 'red', margin: '0px 65px' }}
+        >
+          {closeBtnReplyMsg}
+          {buttonEndActive}
+        </Box>
       );
     }
   }, [closeBtnReplyMsg]);
 
+  const setHeader = useCallback(() => {
+    return activeChannelId ? (
+      <ConversationHeaderChannel
+        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        isErrorInPopap={isErrorInPopap}
+        setIsErrorInPopap={setIsErrorInPopap}
+      />
+    ) : (
+      <ConversationHeaderDrMsg />
+    );
+  }, [activeChannelId, activeDirectMessageId, modalAddPeopleIsOpen])();
+
+  const handleAnswer = () => {
+    setOpenPopup(null);
+    setCloseBtnReplyMsg(popupMessage.text);
+    inputRef.current.focus();
+    inputRef.current.value = '';
+  };
+
+  const handleChange = () => {
+    setCloseBtnChangeMsg(true);
+    setOpenPopup(null);
+    changeMessageRef.current = popupMessage;
+    inputRef.current.focus();
+    inputRef.current.value = popupMessage.text;
+  };
+
+  const handleDelete = () => {
+    setOpenPopup(null);
+    removeMessage({
+      variables: { id: popupMessage.id, chatType: popupMessage.chatType },
+    });
+  };
+
+  const handleCancel = () => {
+    setOpenPopup(null);
+  };
+
   return (
-    <div>
-      {activeChannelId ? (
-        <ConversationHeaderChannel
-          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
-          isErrorInPopap={isErrorInPopap}
-          setIsErrorInPopap={setIsErrorInPopap}
-        />
-      ) : (
-        <ConversationHeaderDrMsg />
-      )}
-      {fieldAnswerTo()}
+    <Box>
+      {setHeader}
       {contentMessages()}
-      <div>
+      {fieldAnswerTo()}
+      <Box
+        sx={{ background: theme.palette.primary.main }}
+        style={{ display: !openPopup && 'none' }}
+      >
+        <Button
+          sx={stylesButton}
+          size='small'
+          variant='contained'
+          color='primary'
+          startIcon={<ReplyIcon />}
+          onClick={handleAnswer}
+        >
+          ANSWER
+        </Button>
+        <Button
+          sx={stylesButton}
+          size='small'
+          variant='contained'
+          color='primary'
+          startIcon={<EditIcon />}
+          onClick={handleChange}
+        >
+          CHANGE
+        </Button>
+        <Button
+          sx={stylesButton}
+          size='small'
+          variant='contained'
+          color='primary'
+          startIcon={<ForwardIcon />}
+          onClick={() => setOpenPopup(null)}
+        >
+          FORWARD
+        </Button>
+        <Button
+          sx={stylesButton}
+          size='small'
+          variant='contained'
+          color='error'
+          startIcon={<DeleteIcon />}
+          onClick={handleDelete}
+        >
+          DELETE
+        </Button>
+        <Button
+          sx={stylesButton}
+          size='small'
+          variant='contained'
+          color='info'
+          startIcon={<DeleteIcon />}
+          onClick={handleCancel}
+        >
+          CANCEL
+        </Button>
+      </Box>
+      <Box style={{ display: openPopup && 'none' }}>
         <InputUpdateMessages
           inputRef={inputRef}
           changeMessageRef={changeMessageRef}
@@ -155,8 +274,7 @@ export default function Conversation(props) {
           closeBtnReplyMsg={closeBtnReplyMsg}
           setCloseBtnReplyMsg={setCloseBtnReplyMsg}
         />
-        {buttonEndActive}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

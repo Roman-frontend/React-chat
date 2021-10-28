@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -16,6 +17,7 @@ import {
 } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 import ChannelsRightBar from '../../SetsUser/Channels/ChannelsRightBar';
+import { Button } from '@mui/material';
 
 export const ConversationHeaderChannel = (props) => {
   const {
@@ -26,6 +28,7 @@ export const ConversationHeaderChannel = (props) => {
   } = props;
   const theme = useTheme();
   const { data: channels } = useQuery(CHANNELS);
+  const { enqueueSnackbar } = useSnackbar();
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [isOpenRightBarChannels, setIsOpenRightBarChannels] = useState(false);
   const chatNameRef = useRef('#general');
@@ -50,9 +53,11 @@ export const ConversationHeaderChannel = (props) => {
     },
     onCompleted(data) {
       //console.log('data   ', data);
+      enqueueSnackbar('User successfully added', { variant: 'success' });
     },
     onError(error) {
       console.log(`Помилка при додаванні учасника ${error}`);
+      enqueueSnackbar('User isn`t added', { variant: 'error' });
     },
   });
 
@@ -72,7 +77,6 @@ export const ConversationHeaderChannel = (props) => {
 
   function doneInvite(action, invited = []) {
     if (action === 'done' && invited[0]) {
-      console.log(invited);
       addMemberToChannel({ variables: { invited, chatId: activeChannelId } });
       setModalAddPeopleIsOpen(false);
     } else {
@@ -92,7 +96,7 @@ export const ConversationHeaderChannel = (props) => {
   };
 
   return (
-    <div style={{ background: theme.palette.primary.light }}>
+    <div style={{ background: theme.palette.primary.main }}>
       <Grid
         container
         spacing={1}
@@ -104,13 +108,14 @@ export const ConversationHeaderChannel = (props) => {
             ✩ {activeChannel ? activeChannel.name : '#general'}
           </b>
         </Grid>
-        <Grid item xs={2} style={{ alignSelf: 'center' }}>
+        <Grid
+          item
+          xs={2}
+          style={{ alignSelf: 'center', flexBasis: 'min-content' }}
+        >
           <Members
             activeChannel={activeChannel}
             setModalIsShowsMembers={setModalIsShowsMembers}
-            setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
-            isOpenRightBarChannels={isOpenRightBarChannels}
-            setIsOpenRightBarChannels={setIsOpenRightBarChannels}
           />
         </Grid>
         <Grid item xs={1} style={{ textAlign: 'center' }}>
@@ -141,6 +146,11 @@ export const ConversationHeaderChannel = (props) => {
         <React.Fragment>
           <Drawer
             anchor='right'
+            sx={{
+              '& .MuiDrawer-paperAnchorRight': {
+                background: theme.palette.primary.main,
+              },
+            }}
             open={isOpenRightBarChannels}
             onClose={toggleDrawer(false)}
           >
@@ -159,6 +169,11 @@ export const ConversationHeaderChannel = (props) => {
         activeChannel={activeChannel}
         modalIsShowsMembers={modalIsShowsMembers}
         setModalIsShowsMembers={setModalIsShowsMembers}
+        chatNameRef={chatNameRef}
+        doneInvite={doneInvite}
+        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        isErrorInPopap={isErrorInPopap}
       />
       <AddPeopleToChannel
         chatNameRef={chatNameRef}

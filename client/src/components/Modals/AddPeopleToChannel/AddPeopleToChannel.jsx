@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useQuery, useReactiveVar } from '@apollo/client';
+import { useTheme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -26,11 +27,14 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     doneInvite,
     classes,
   } = props;
+  const theme = useTheme();
   const { data: auth } = useQuery(AUTH);
   const { data: allChannels } = useQuery(CHANNELS);
   const { data: allUsers } = useQuery(GET_USERS);
   const notInvitedRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
+
+  console.log('Opened add member to channel');
 
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
@@ -59,9 +63,16 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     setModalAddPeopleIsOpen(false);
   };
 
+  console.log(modalAddPeopleIsOpen);
+
   return (
     <>
       <Dialog
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: theme.palette.primary.main,
+          },
+        }}
         open={modalAddPeopleIsOpen}
         onClose={() => setModalAddPeopleIsOpen(false)}
         aria-labelledby='form-dialog-title'
@@ -75,7 +86,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
         <SelectPeople
           closePopap={closePopap}
           isErrorInPopap={isErrorInPopap}
-          notInvitedRef={notInvitedRef}
+          notInvitedRef={notInvitedRef.current}
           done={doneInvite}
         />
       </Dialog>

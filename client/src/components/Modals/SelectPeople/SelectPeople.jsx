@@ -1,21 +1,15 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { withStyles } from '@mui/styles';
-import InputLabel from '@mui/material/InputLabel';
-import { Select as MUISelect } from '@mui/material';
-import { Button as MUIButton } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
+import { Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { makeStyles } from '@mui/styles';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
 import styled from '@emotion/styled';
 import './select-people.sass';
-import { red } from '@mui/material/colors';
-import SelectSearch from 'react-select-search';
 import Select from 'react-dropdown-select';
+import { useTheme } from '@mui/material/styles';
 //коли відкриваю попап створення чату і нічого не заповняю, нажимаю done і воно просто закриває попап має показати шо є якісь обовязкові поля
 
 const StyledSelect = styled(Select)`
@@ -27,21 +21,6 @@ const StyledSelect = styled(Select)`
 		}
 	`}
 `;
-
-const styles = (theme) => ({
-  input: {
-    height: '30px',
-    width: '33vw',
-    color: '#0000b5',
-  },
-  selectMenu: {
-    height: '35px',
-  },
-  selectRoot: {
-    display: 'table',
-    width: '31vw',
-  },
-});
 
 const popapWithoutPadding = makeStyles((theme) => ({
   root: {
@@ -55,31 +34,7 @@ const popapWithPadding = makeStyles((theme) => ({
   },
 }));
 
-const helperTextStyles = makeStyles((theme) => ({
-  root: {
-    margin: 4,
-  },
-  error: {
-    '&.MuiFormHelperText-root.Mui-error': {
-      color: red[500],
-    },
-  },
-}));
-
-const selectStyles = makeStyles((theme) => ({
-  formControl: {
-    minWidth: '120px',
-    margin: 0,
-  },
-  selectEmpty: {
-    //marginTop: theme.spacing(2),
-  },
-  menuPaper: {
-    maxHeight: 190,
-  },
-}));
-
-export const SelectPeople = withStyles(styles)((props) => {
+export const SelectPeople = (props) => {
   const {
     isDialogChanged,
     closePopap,
@@ -88,54 +43,18 @@ export const SelectPeople = withStyles(styles)((props) => {
     classes,
     notInvitedRef,
   } = props;
-  const helperTestClasses = helperTextStyles();
-  const selectClasses = selectStyles();
+  console.log(isDialogChanged, closePopap, done, notInvitedRef.current);
+  const theme = useTheme();
   const dialogClasses = isDialogChanged
     ? popapWithoutPadding()
     : popapWithPadding();
   const [list, setList] = useState(notInvitedRef);
-  //const inputPeopleRef = useRef();
-  //const invitedRef = useRef([]);
   const [invited, setInvited] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [isChoosedSeveral, setIsChosedSeveral] = useState(false);
+  const [minHeight, setMinHeight] = useState(120);
   const { data: allUsers } = useQuery(GET_USERS);
-
-  const [selectValues, setSelectValues] = useState([]);
-
-  useEffect(() => {
-    if (open) {
-      getSelectElements();
-    }
-  }, [open]);
-
-  function close() {
-    closePopap();
-  }
 
   function todo() {
     done('done', invited /* invitedRef.current */);
-  }
-
-  const getSelectElements = () => {
-    if (list) {
-      return createSelectElements(list);
-    }
-  };
-
-  function createSelectElements(peoplesForChoice) {
-    return peoplesForChoice.map((people) => {
-      return (
-        <MenuItem
-          key={people.id}
-          label={people.email}
-          value={people.email}
-          onClick={() => addPeopleToInvited(people)}
-        >
-          {people.email}
-        </MenuItem>
-      );
-    });
   }
 
   function addPeopleToInvited(selected, addMethod) {
@@ -156,32 +75,6 @@ export const SelectPeople = withStyles(styles)((props) => {
     }
   }
 
-  function handleInput(event) {
-    const regExp = new RegExp(`${event.target.value}`, 'gi');
-    const selected = notInvitedRef.current.filter(
-      (people) => people.email.match(regExp) && people
-    );
-    setList(selected);
-    const choosed = notInvitedRef.current.filter((people) => {
-      return people.email === event.target.value;
-    });
-    //const selectedIsInvited = invitedRef.current.includes(choosed[0]);
-    const selectedIsInvited = invited.includes(choosed[0]);
-    if (event.key === 'Enter' && !selectedIsInvited) {
-      if (choosed.length !== 1) {
-        console.log(choosed, notInvitedRef.current);
-        setIsChosedSeveral(true);
-      } else {
-        setIsChosedSeveral(false);
-        addPeopleToInvited(choosed[0]);
-      }
-    }
-  }
-
-  function handleOpenSelect() {
-    setOpen(true);
-  }
-
   const itemRenderer = ({ item, itemIndex, props, state, methods }) => (
     <div
       key={item.id}
@@ -191,54 +84,72 @@ export const SelectPeople = withStyles(styles)((props) => {
     </div>
   );
 
+  console.log(list);
+
   return (
-    <div>
-      <div
+    <div
+      style={{
+        minWidth: '400px',
+        minHeight,
+        maxHeight: '230px',
+        margin: '0 auto',
+        overflowY: 'hidden',
+      }}
+    >
+      <StyledSelect
+        placeholder='Select peoples'
+        required={true}
+        searchBy={'email'}
+        separator={true}
+        clearable={true}
+        searchable={true}
+        dropdownHandle={true}
+        dropdownHeight={'300px'}
+        direction={'ltr'}
+        multi={true}
+        labelField={'email'}
+        valueField={'email'}
+        options={list}
+        dropdownGap={5}
+        keepSelectedInList={true}
+        onDropdownOpen={() => setMinHeight(240)}
+        onDropdownClose={() => setMinHeight(120)}
+        onClearAll={() => undefined}
+        onSelectAll={() => undefined}
+        noDataLabel='No matches found'
+        closeOnSelect={false}
+        dropdownPosition={'bottom'}
+        itemRenderer={itemRenderer}
         style={{
-          minWidth: '400px',
-          minHeight: '195px',
-          maxHeight: '230px',
-          margin: '0 auto',
+          background: theme.palette.primary.light,
+          color: theme.palette.text.select,
         }}
+      />
+      <DialogContent
+        classes={{ root: dialogClasses.root }}
+        style={{ textAlign: 'right' }}
       >
-        <StyledSelect
-          placeholder='Select peoples'
-          color={'#0074D9'}
-          required={true}
-          autoFocus={true}
-          searchBy={'email'}
-          separator={true}
-          clearable={true}
-          searchable={true}
-          keepOpen={false}
-          dropdownHandle={true}
-          dropdownHeight={'300px'}
-          direction={'ltr'}
-          multi={true}
-          labelField={'email'}
-          valueField={'email'}
-          options={list}
-          dropdownGap={5}
-          keepSelectedInList={true}
-          onDropdownOpen={() => undefined}
-          onDropdownClose={() => undefined}
-          onClearAll={() => undefined}
-          onSelectAll={() => undefined}
-          onChange={(values) => setSelectValues(values)}
-          noDataLabel='No matches found'
-          closeOnSelect={false}
-          dropdownPosition={'bottom'}
-          itemRenderer={itemRenderer}
-        />
-      </div>
-      <DialogContent classes={{ root: dialogClasses.root }}>
-        <FormControl className={selectClasses.formControl}>
+        <FormControl>
           <DialogActions>
-            <MUIButton onClick={close}>Close</MUIButton>
-            <MUIButton onClick={todo}>Done</MUIButton>
+            <Button
+              size='small'
+              variant='contained'
+              color='error'
+              onClick={closePopap}
+            >
+              Close
+            </Button>
+            <Button
+              size='small'
+              variant='contained'
+              color='secondary'
+              onClick={todo}
+            >
+              Done
+            </Button>
           </DialogActions>
         </FormControl>
       </DialogContent>
     </div>
   );
-});
+};

@@ -9,12 +9,16 @@ const theme = createTheme({
     },
     mode: 'light',
     primary: {
-      light: '#f5f5f5',
-      main: '#c9c9c9',
-      dark: grey[900],
+      light: '#ffffff',
+      main: '#f5f5f5',
+      dark: '#c9c9c9', //#636363
       contrastText: '#0000b5',
     },
     secondary: {
+      main: '#000000', //lightGreen[400],
+      contrastText: '#FFFFFF',
+    },
+    input: {
       main: '#000000', //lightGreen[400],
       contrastText: '#FFFFFF',
     },
@@ -24,19 +28,21 @@ const theme = createTheme({
     },
     text: {
       primary: '#262626',
-      secondary: '#000000',
+      secondary: '#0000b5',
+      select: '#0000b5',
       disabled: grey[500],
     },
     action: {
       active: '#0000b5',
       hover: '#c9c9c9',
-      hoverOpacity: 0.1,
+      hoverOpacity: 0.5,
       selected: '#0000b5',
       focus: red[400],
       focusOpacity: grey[900],
-      activatedOpacity: blue[300],
+      activatedOpacity: 0.3,
     },
     tonalOffset: 0.1,
+    contrastThreshold: 8,
   },
   shape: {
     borderRadius: 7,

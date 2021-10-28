@@ -6,24 +6,10 @@ import TextField from '@mui/material/TextField';
 import { colors } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    background: colors.teal[50],
-  },
-  margin: {
-    //margin: theme.spacing(1),
-  },
-  input: {
-    color: '#5f0937',
+  label: {
+    margin: '0px 14px',
   },
 }));
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: colors.lime[800],
-    },
-  },
-});
 
 export function SignInForm(props) {
   const { label, type, name } = props;
@@ -36,16 +22,17 @@ export function SignInForm(props) {
           const { field, meta } = props;
           return (
             <>
-              <ThemeProvider theme={theme}>
+              <ThemeProvider>
                 <TextField
-                  className={(classes.margin, classes.root)}
                   style={{ width: '33.7vw', margin: '2vh 0vw' }}
+                  variant='standard'
+                  InputLabelProps={{
+                    classes: { standard: classes.label },
+                  }}
                   label={label}
+                  color='input'
                   //зупиняє анімацію
                   //InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    className: classes.input,
-                  }}
                   name={name}
                   type={type}
                   {...field}

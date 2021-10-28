@@ -11,7 +11,7 @@ export default function EndActionButton(props) {
     changeMessageRef,
   } = props;
   const topInput = document
-    .querySelector('.conversation-input')
+    .getElementById('mainInput')
     .getBoundingClientRect().top;
   const topButtonClose = closeBtnReplyMsg ? topInput - 56 : topInput;
 
@@ -19,13 +19,13 @@ export default function EndActionButton(props) {
     setCloseBtnReplyMsg(null);
     setCloseBtnChangeMsg(null);
     changeMessageRef.current = null;
-    inputRef.current.children[1].children[0].value = '';
+    inputRef.current.value = '';
   }
 
   return (
     <CancelPresentationOutlinedIcon
       className='conversation-input__end-action-button'
-      style={{ top: `${topButtonClose}px` }}
+      //style={{ top: `${topButtonClose}px` }}
       fontSize='large'
       type='checkbox'
       id='checkbox'

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
+import { useTheme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -15,6 +16,7 @@ export const DirectMessage = withStyles(styles)(
     const authId = useReactiveVar(reactiveVarId);
     const activeDirectMessageId =
       useReactiveVar(activeChatId).activeDirectMessageId;
+    const theme = useTheme();
 
     if (
       typeof drMsg === 'object' &&
@@ -27,6 +29,14 @@ export const DirectMessage = withStyles(styles)(
         <ListItem
           button
           key={key}
+          sx={{
+            '&:hover': {
+              opacity: [0.9, 0.8, 0.7],
+            },
+            '&:active': {
+              backgroundColor: theme.palette.action.selected,
+            },
+          }}
           onClick={() => activeChatId({ activeDirectMessageId: drMsg.id })}
           selected={activeDirectMessageId === drMsg.id && true}
         >

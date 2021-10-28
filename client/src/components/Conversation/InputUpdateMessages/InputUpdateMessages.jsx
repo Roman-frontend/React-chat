@@ -1,5 +1,5 @@
 import React, { useMemo, memo } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import TextField from '@mui/material/TextField';
@@ -53,6 +53,7 @@ export const InputUpdateMessages = memo((props) => {
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const theme = useTheme();
 
   const chatType = useMemo(() => {
     return activeDirectMessageId
@@ -211,11 +212,14 @@ export const InputUpdateMessages = memo((props) => {
     });
   }
 
+  console.log('input open');
+
   return (
     <div className={classes.root} id='mainInput'>
       <Grid container spacing={1}>
         <Grid item xs={1}>
           <BorderColorIcon
+            color='input'
             className={classes.addPeoples}
             style={{ fontSize: 40, top: '1rem' }}
           />
@@ -223,14 +227,19 @@ export const InputUpdateMessages = memo((props) => {
         <Grid item xs={11}>
           <TextField
             //className={classes.root}
-            color='secondary'
+            color='input'
             id='standard-basic'
             label='Enter text'
             variant='standard'
             inputRef={inputRef}
             autoFocus={true}
             onKeyUp={(event) => inputUpdateMessages(event)}
-            style={{ width: '-webkit-fill-available' }}
+            sx={{
+              width: '-webkit-fill-available',
+              '& .MuiInput-input': {
+                color: '#000000',
+              },
+            }}
           />
         </Grid>
       </Grid>

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar from '@mui/material/AppBar';
-import { styled, useTheme, alpha } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import { wsSend, wsSingleton } from '../../WebSocket/soket';
@@ -20,74 +18,55 @@ import {
   GET_DIRECT_MESSAGES,
 } from '../../components/SetsUser/SetsUserGraphQL/queryes';
 import { Loader } from '../../components/Helpers/Loader';
-const drawerWidth = 240;
+import { activeChatId } from '../../GraphQLApp/reactiveVars';
 
 export const Chat = (props) => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
+  const activeChat = useReactiveVar(activeChatId);
+  const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
+  const activeDirectMessageId =
+    useReactiveVar(activeChatId).activeDirectMessageId;
   const { loading: lUsers } = useQuery(GET_USERS);
   const { loading: lChannels, data: dChannels } = useQuery(CHANNELS);
   const { loading: lDirectMessages, data: dDm } = useQuery(GET_DIRECT_MESSAGES);
   const [isErrorInPopap, setIsErrorInPopap] = useState(false);
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const theme = useTheme();
 
-  const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'isOpenLeftBar',
-  })(({ theme, isOpenLeftBar }) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(isOpenLeftBar && {
-      marginLeft: drawerWidth,
-      transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
-  }));
+  useEffect(() => {
+    showConversation();
+  }, [activeChat, modalAddPeopleIsOpen]);
 
-  const openedMixin = (theme) => ({
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: 'hidden',
-    overflowY: 'scroll',
-  });
+  useEffect(() => {
+    if (
+      (dChannels &&
+        dChannels.userChannels &&
+        dChannels.userChannels.length > 0) ||
+      (dDm &&
+        dDm.directMessages &&
+        dDm.directMessages.length > 0 &&
+        (activeChannelId || activeDirectMessageId))
+    ) {
+      setShow(true);
+    } else {
+      setShow(false);
+    }
+  }, [activeChannelId, activeDirectMessageId, lChannels, lDirectMessages]);
 
-  const closedMixin = (theme) => ({
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    overflowY: 'scroll',
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up('sm')]: {
-      width: `calc(${theme.spacing(30)} + 1px)`,
-    },
-  });
-
-  const Drawer = styled(MuiDrawer, {
-    shouldForwardProp: (prop) => prop !== 'isOpenLeftBar',
-  })(({ theme, isOpenLeftBar }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(isOpenLeftBar && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!isOpenLeftBar && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-  }));
+  useEffect(() => {
+    if (
+      dChannels &&
+      dChannels.userChannels &&
+      dChannels.userChannels.length === 0 &&
+      dDm &&
+      dDm.directMessages &&
+      dDm.directMessages.length === 0
+    ) {
+      setShow(false);
+    }
+  }, [dChannels, dDm]);
 
   useEffect(() => {
     wsSingleton.clientPromise
@@ -129,9 +108,24 @@ export const Chat = (props) => {
     }
   }, []);
 
-  if (lUsers || lChannels || lDirectMessages) {
+  const showConversation = () => {
+    if (show) {
+      return (
+        <Conversation
+          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+          isErrorInPopap={isErrorInPopap}
+          setIsErrorInPopap={setIsErrorInPopap}
+        />
+      );
+    }
+  };
+
+  if (lUsers && lChannels && lDirectMessages) {
     return <Loader />;
   }
+
+  console.log(show);
 
   return (
     <Box style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
@@ -139,7 +133,6 @@ export const Chat = (props) => {
         <CssBaseline />
         <Grid item xs={12}>
           <Header
-            AppBar={AppBar}
             isOpenLeftBar={isOpenLeftBar}
             setIsOpenLeftBar={setIsOpenLeftBar}
           />
@@ -151,28 +144,8 @@ export const Chat = (props) => {
           setIsOpenLeftBar={setIsOpenLeftBar}
           modalAddPeopleIsOpen={modalAddPeopleIsOpen}
         />
-        <Box
-          component='main'
-          sx={{ flexGrow: 1, p: 3 }}
-          style={{
-            padding: '20px 0px 0px 0px',
-          }}
-        >
-          <main>
-            {((dChannels &&
-              dChannels.userChannels &&
-              dChannels.userChannels.length > 0) ||
-              (dDm &&
-                dDm.directMessagesId &&
-                dDm.directMessagesId.length > 0)) && (
-              <Conversation
-                modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-                setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
-                isErrorInPopap={isErrorInPopap}
-                setIsErrorInPopap={setIsErrorInPopap}
-              />
-            )}
-          </main>
+        <Box component='main' sx={{ flexGrow: 1, p: '20px 0px 0px 0px' }}>
+          <main>{showConversation()}</main>
         </Box>
       </Grid>
     </Box>

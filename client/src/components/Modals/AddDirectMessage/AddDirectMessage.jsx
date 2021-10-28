@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useQuery } from '@apollo/client';
+import { useTheme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -40,6 +41,7 @@ export const AddDirectMessage = withStyles(styles)((props) => {
     isErrorInPopap,
   } = props;
   const notInvitedRef = useRef();
+  const theme = useTheme();
 
   const closePopap = () => {
     setModalAddDmIsOpen(false);
@@ -96,7 +98,11 @@ export const AddDirectMessage = withStyles(styles)((props) => {
       <Dialog
         open={modalAddDmIsOpen}
         onClose={() => setModalAddDmIsOpen(false)}
-        aria-labelledby='form-dialog-title'
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: theme.palette.primary.main,
+          },
+        }}
       >
         <DialogTitle
           id='form-dialog-title'

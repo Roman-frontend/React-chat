@@ -11,7 +11,7 @@ import { GET_USERS } from '../../../GraphQLApp/queryes';
 import { reactiveOnlineMembers } from '../../../GraphQLApp/reactiveVars';
 
 export function CreateListMembers(props) {
-  const { activeChannel, classes } = props;
+  const { activeChannel, search, classes } = props;
   const [members, setMembers] = useState();
   const { data: allUsers } = useQuery(GET_USERS);
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
@@ -20,12 +20,12 @@ export function CreateListMembers(props) {
     if (allUsers && Array.isArray(allUsers.users) && activeChannel) {
       createListMembers();
     }
-  }, [usersOnline, activeChannel, allUsers]);
+  }, [usersOnline, activeChannel, allUsers, search]);
 
   const createListMembers = () => {
     const listMembers = getMembersActiveChannel();
     const readyList = (
-      <List dense className={classes.root}>
+      <List dense>
         {listMembers.map(({ id, email }) => {
           return (
             <ListItem key={id} button>
@@ -40,9 +40,12 @@ export function CreateListMembers(props) {
   };
 
   function getMembersActiveChannel() {
+    const regExp = new RegExp(`${search}`, 'gi');
     if (activeChannel && allUsers && Array.isArray(allUsers.users)) {
       return allUsers.users.filter((user) => {
-        return activeChannel.members.includes(user.id);
+        return (
+          activeChannel.members.includes(user.id) && user.email.match(regExp)
+        );
       });
     }
     return [];

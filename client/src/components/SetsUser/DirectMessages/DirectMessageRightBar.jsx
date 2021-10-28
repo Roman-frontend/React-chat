@@ -65,6 +65,7 @@ const DirectMessageRightBar = (props) => {
       enqueueSnackbar('Direct Message is a success removed!', {
         variant: 'success',
       });
+      activeChatId({});
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);

@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import clsx from 'clsx';
+import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
-import { colors } from '@mui/material';
+import { colors, Paper } from '@mui/material';
 import Button from '@mui/material/Button';
 import { LOGIN } from '../../components/../GraphQLApp/queryes';
 import { useAuth } from '../../hooks/auth.hook.js';
@@ -18,8 +19,10 @@ import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
-import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Visibility from '@mui/icons-material/Visibility';
+import { Box } from '@mui/system';
 
 const useStyles = makeStyles((theme) => ({
   rootInput: {
@@ -46,19 +49,26 @@ const useStyles = makeStyles((theme) => ({
 
 export const SignInPage = ({ route }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const theme = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState(null);
   const [valuess, setValuess] = useState({
-    amount: '',
     password: '',
-    weight: '',
-    weightRange: '',
     showPassword: false,
   });
-
   const handleChange = (prop) => (event) => {
-    setValuess({ ...valuess, [prop]: event.target.value });
+    setPassword(event.target.value);
   };
 
   const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const prevHandleChange = (prop) => (event) => {
+    setValuess({ ...valuess, [prop]: event.target.value });
+  };
+
+  const prevHandleClickShowPassword = () => {
     setValuess({ ...valuess, showPassword: !valuess.showPassword });
   };
 
@@ -118,84 +128,103 @@ export const SignInPage = ({ route }) => {
   };
 
   return (
-    <div className='auth-body'>
-      <Formik
-        initialValues={{ email: '', password: '' }}
-        //validationSchema={validationSchema}
-        onSubmit={onSubmit}
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper
+        sx={{
+          position: 'relative',
+          top: '15vh',
+          background: theme.palette.primary.dark,
+        }}
       >
-        <Form className='auth-form'>
-          <span className='auth-form__title'>Авторизація</span>
-
-          <SignInForm label='Email' name='email' type='email' />
-          <>
-            <Field name='password'>
-              {(props) => {
-                return (
-                  <>
-                    <FormControl
-                      className={clsx(
-                        classes.margin,
-                        classes.textField,
-                        classes.rootInput
-                      )}
-                      name='password'
-                      style={{ width: '33.7vw', margin: '2vh 0vh' }}
-                      id='password'
-                    >
-                      <InputLabel htmlFor='standard-adornment-password'>
-                        Password
-                      </InputLabel>
-                      <Input
-                        id='standard-adornment-password'
-                        type={valuess.showPassword ? 'text' : 'password'}
-                        //value={values.password}
-                        inputprops={{ className: classes.input }}
-                        onChange={handleChange('password')}
-                        endAdornment={
-                          <InputAdornment position='end'>
-                            <IconButton
-                              aria-label='toggle password visibility'
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                            >
-                              {valuess.showPassword ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                    </FormControl>
-                  </>
-                );
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          //validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          <Form>
+            <span
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: 25,
+                margin: '20px 0px 0px',
               }}
-            </Field>
-          </>
-          <ErrorMessage
-            name='password'
-            render={(msg) => <div className='auth-form__error'>{msg}</div>}
-          />
-          <Button
-            size='small'
-            variant='contained'
-            color='primary'
-            style={{ backgroundColor: colors.lime[700], width: '9vw' }}
-            type='submit'
-          >
-            Enter
-          </Button>
+            >
+              Авторизація
+            </span>
 
-          <Link to={`/signUp`}>
-            <Button size='small' variant='contained'>
-              Go to register
-            </Button>
-          </Link>
-          {loading && <AuthLoader />}
-        </Form>
-      </Formik>
+            <SignInForm label='Email' name='email' type='email' />
+            <>
+              <Field name='password'>
+                {(props) => {
+                  return (
+                    <>
+                      <FormControl
+                        name='password'
+                        style={{ width: '33.7vw' }}
+                        id='password'
+                        color='input'
+                      >
+                        <InputLabel>Password</InputLabel>
+                        <Input
+                          type={valuess.showPassword ? 'text' : 'password'}
+                          //value={values.password}
+                          onChange={prevHandleChange('password')}
+                          endAdornment={
+                            <InputAdornment position='end'>
+                              <IconButton
+                                aria-label='toggle password visibility'
+                                onClick={prevHandleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                              >
+                                {valuess.showPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                        />
+                      </FormControl>
+                    </>
+                  );
+                }}
+              </Field>
+            </>
+            <ErrorMessage
+              name='password'
+              render={(msg) => <div className='auth-form__error'>{msg}</div>}
+            />
+            <Box style={{ display: 'flex' }}>
+              <Button
+                size='small'
+                variant='contained'
+                color='primary'
+                style={{
+                  width: '9vw',
+                  margin: '15px',
+                }}
+                type='submit'
+              >
+                Enter
+              </Button>
+
+              <Link to={`/signUp`} style={{ textDecoration: 'none' }}>
+                <Button
+                  size='small'
+                  color='secondary'
+                  variant='contained'
+                  sx={{ margin: '15px' }}
+                >
+                  Go to register
+                </Button>
+              </Link>
+            </Box>
+            {loading && <AuthLoader />}
+          </Form>
+        </Formik>
+      </Paper>
     </div>
   );
 };

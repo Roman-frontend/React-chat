@@ -12,21 +12,20 @@ import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CREATE_CHANNEL } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import './add-channel.sass';
-import { blue, red } from '@mui/material/colors';
-
-const styles = (theme) => ({
-  input: {
-    height: '30px',
-    width: '33vw',
-    color: '#0000b5',
-  },
-});
+import { blue } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
+import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVars';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
-    width: '520px',
-    height: '470px',
+    minWidth: '520px',
+    minHeight: '425px',
     margin: 0,
+  },
+  input: {
+    height: '30px',
+    width: '220px',
+    color: '#0000b5',
   },
 }));
 
@@ -41,13 +40,12 @@ const helperTextStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AddChannel = withStyles(styles)((props) => {
+export const AddChannel = (props) => {
   const {
     setModalAddChannelIsOpen,
     modalAddChannelIsOpen,
     isErrorInPopap,
     setIsErrorInPopap,
-    classes,
   } = props;
   const popapClasses = useStyles();
   const helperTestClasses = helperTextStyles();
@@ -62,6 +60,7 @@ export const AddChannel = withStyles(styles)((props) => {
     isPrivate: false,
     members: [],
   });
+  const theme = useTheme();
 
   const [createChannel] = useMutation(CREATE_CHANNEL, {
     update(cache, { data: { channel } }) {
@@ -102,7 +101,7 @@ export const AddChannel = withStyles(styles)((props) => {
         channels: [...storage.channels, data.channel.create.id],
       });
       sessionStorage.setItem('storageData', toStorage);
-      //reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
+      reactiveVarChannels([...reactiveVarChannels(), data.channel.create.id]);
       enqueueSnackbar('Channel created!', { variant: 'success' });
     },
     onError(error) {
@@ -121,6 +120,7 @@ export const AddChannel = withStyles(styles)((props) => {
   }, [allUsers]);
 
   const changeHandler = (event) => {
+    console.log(event.target.name, event.target.value);
     setForm({ ...form, [event.target.name]: event.target.value });
   };
 
@@ -154,13 +154,17 @@ export const AddChannel = withStyles(styles)((props) => {
       <Dialog
         open={modalAddChannelIsOpen}
         onClose={() => setModalAddChannelIsOpen(false)}
-        aria-labelledby='form-dialog-title'
         scroll='body'
         classes={{ paper: popapClasses.dialogPaper }}
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: theme.palette.primary.main,
+          },
+        }}
       >
-        <DialogTitle id='form-dialog-title'>Create a channel</DialogTitle>
+        <DialogTitle>Create a channel</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText color='inherit'>
             Channels are where your team communicates. They’re best when
             organized around a topic — #marketing, for example.
           </DialogContentText>
@@ -168,29 +172,30 @@ export const AddChannel = withStyles(styles)((props) => {
           <div className='set-channel-forms' id='add-private-channel'>
             <label className='set-channel-forms__label'>Private</label>
             <Checkbox
-              style={{ width: '22px' }}
+              color='error'
               checked={isPrivate}
               onClick={changeIsPrivate}
-              inputProps={{ 'aria-label': 'primary checkbox' }}
-              error
             />
           </div>
           <TextField
+            variant='standard'
             label='Name'
-            inputprops={{ className: classes.input }}
+            color='secondary'
+            classes={{ root: popapClasses.input }}
             name='name'
             required={true}
             helperText={isErrorInPopap ? 'required' : ''}
             FormHelperTextProps={{ classes: helperTestClasses }}
-            value={form.name.value}
+            value={form.name}
             onChange={changeHandler}
           />
 
           <TextField
-            inputprops={{ className: classes.input }}
+            variant='standard'
+            color='secondary'
+            //classes={{ root: popapClasses.input }}
             label='Discription'
-            style={{ display: 'flex' }}
-            id='mui-theme-provider-standard-input'
+            sx={{ display: 'flex', margin: '27px 0px 20px' }}
             name='discription'
             value={form.discription.value}
             onChange={changeHandler}
@@ -198,7 +203,7 @@ export const AddChannel = withStyles(styles)((props) => {
           <SelectPeople
             isDialogChanged={true}
             closePopap={closePopap}
-            notInvitedRef={notInvitedRef}
+            notInvitedRef={notInvitedRef.current}
             isErrorInPopap={isErrorInPopap}
             done={doneCreate}
           />
@@ -206,4 +211,4 @@ export const AddChannel = withStyles(styles)((props) => {
       </Dialog>
     </div>
   );
-});
+};

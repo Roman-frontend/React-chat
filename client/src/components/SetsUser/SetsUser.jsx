@@ -32,6 +32,7 @@ export default function SetsUser(props) {
   }, [modalAddChannelIsOpen, modalAddDmIsOpen, modalAddPeopleIsOpen]);
 
   useEffect(() => {
+    console.log(activeChannelId, activeDirectMessageId);
     if (activeChannelId || activeDirectMessageId) {
       return;
     }
@@ -60,7 +61,7 @@ export default function SetsUser(props) {
         borderRight: 'solid 1px',
         height: '90vh',
         overflowY: 'scroll',
-        background: theme.palette.primary.light,
+        background: theme.palette.primary.main,
         margin: '0px 15px',
       }}
     >

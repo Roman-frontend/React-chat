@@ -1,43 +1,29 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Modal from 'react-modal';
-import { withStyles } from '@mui/styles';
-import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Link from '@mui/material/Link';
+import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
 import { CreateListMembers } from './CreateListMembers';
 Modal.setAppElement('#root');
 
-const styles = (theme) => ({
-  root: { flexGrow: 1, overflow: 'hidden' },
-  buttonRoot: {
-    padding: 0,
-    width: '22px',
-    minWidth: 0,
-    //margin: theme.spacing(1),
-    float: 'right',
-  },
-  listRoot: {
-    width: '100%',
-    maxWidth: 360,
-    //backgroundColor: theme.palette.background.paper,
-  },
-  inputRoot: { height: '6vh' },
-  //addPeoples: { padding: theme.spacing(0, 3), margin: 0, fontSize: 20 },
-});
-
-export const ConversationMembers = withStyles(styles)((props) => {
+export const ConversationMembers = (props) => {
   const {
     activeChannel,
     modalIsShowsMembers,
     setModalIsShowsMembers,
-    classes,
+    chatNameRef,
+    doneInvite,
+    modalAddPeopleIsOpen,
+    setModalAddPeopleIsOpen,
+    isErrorInPopap,
   } = props;
-  const searchInputRef = useRef();
+  const theme = useTheme();
+  const [search, setSearch] = useState('[A-Z]');
 
   const title = useMemo(() => {
     const quantityMembers = activeChannel ? activeChannel.members.length : 1;
@@ -50,58 +36,57 @@ export const ConversationMembers = withStyles(styles)((props) => {
   }, [activeChannel]);
 
   function handleInput(event) {
-    const regExp = new RegExp(`${searchInputRef.current.value}`);
+    setSearch(event.target.value);
   }
 
   return (
     <div className='set-channel'>
       <Dialog
+        sx={{
+          position: 'absolute',
+          top: '18vh',
+          maxHeight: '400px',
+          '& .MuiDialog-paper': {
+            backgroundColor: theme.palette.primary.main,
+          },
+        }}
         open={modalIsShowsMembers}
         onClose={() => setModalIsShowsMembers(false)}
         aria-labelledby='form-dialog-title'
       >
-        <div className={classes.root}>
-          <Grid container spacing={1} style={{ alignItems: 'center' }}>
-            <Grid item xs={10}>
-              <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
-            </Grid>
-            <Grid item xs={2}>
-              <Button
-                variant='contained'
-                color='secondary'
-                className={classes.buttonRoot}
-                onClick={() => setModalIsShowsMembers(false)}
-              >
-                X
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
-        <Box>
-          <Link
-            className={classes.addPeoples}
-            component='button'
-            variant='body2'
-            onClick={() => {
-              console.info("I'm a button.");
-            }}
+        <Box style={{ textAlign: 'center' }}>
+          <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
+        </Box>
+        <Box style={{ textAlign: 'center' }}>
+          <Button
+            color='warning'
+            variant='text'
+            onClick={() => setModalAddPeopleIsOpen(true)}
           >
             Add people
-          </Link>
+          </Button>
         </Box>
-        <DialogContent>
+        <Box>
           <TextField
             autoFocus
-            margin='dense'
+            color='secondary'
+            variant='standard'
             label='Search people'
-            inputprops={{ className: classes.inputRoot }}
-            style={{ width: '26rem' }}
-            ref={searchInputRef}
-            onKeyUp={(event) => handleInput(event)}
+            style={{ minWidth: '350px', margin: '0px 25px' }}
+            onChange={(event) => handleInput(event)}
           />
-          <CreateListMembers activeChannel={activeChannel} classes={classes} />
+        </Box>
+        <DialogContent>
+          <CreateListMembers activeChannel={activeChannel} search={search} />
         </DialogContent>
       </Dialog>
+      <AddPeopleToChannel
+        chatNameRef={chatNameRef}
+        doneInvite={doneInvite}
+        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
+        isErrorInPopap={isErrorInPopap}
+      />
     </div>
   );
-});
+};

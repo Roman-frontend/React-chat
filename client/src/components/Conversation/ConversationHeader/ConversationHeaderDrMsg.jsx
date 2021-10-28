@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import PersonIcon from '@mui/icons-material/Person';
@@ -12,6 +13,7 @@ import { determineActiveChat } from '../../Helpers/determineActiveChat';
 import DirectMessageRightBar from '../../SetsUser/DirectMessages/DirectMessageRightBar';
 
 export const ConversationHeaderDrMsg = (props) => {
+  const theme = useTheme();
   const { data: auth } = useQuery(AUTH);
   const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
   const { data: allUsers } = useQuery(GET_USERS);
@@ -58,17 +60,17 @@ export const ConversationHeaderDrMsg = (props) => {
   };
 
   return (
-    <div className='conversation__field-name'>
+    <div style={{ background: theme.palette.primary.main }}>
       <Grid
         container
         spacing={1}
         style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
         justify='space-between'
       >
-        <Grid item xs={11}>
+        <Grid item xs={10}>
           {createName()}
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={2}>
           <IconButton
             edge='end'
             aria-label='account of current user'
@@ -90,12 +92,20 @@ export const ConversationHeaderDrMsg = (props) => {
       <div>
         <React.Fragment>
           <Drawer
+            sx={{
+              '& .MuiDrawer-paperAnchorRight': {
+                background: theme.palette.primary.main,
+              },
+            }}
             anchor='right'
             open={isOpenRightBarDrMsg}
             onClose={toggleDrawer(false)}
           >
             <Box
-              sx={{ width: 250, margin: '56px 0px 0px 0px' }}
+              sx={{
+                width: 250,
+                margin: '56px 0px 0px 0px',
+              }}
               role='presentation'
               onClick={toggleDrawer(false)}
               onKeyDown={toggleDrawer(false)}

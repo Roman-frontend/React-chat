@@ -1,11 +1,10 @@
 import React, { useState, useContext } from 'react';
-import clsx from 'clsx';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import useStyles from './HeaderStyles.jsx';
-import MuiAppBar from '@mui/material/AppBar';
+import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -13,19 +12,32 @@ import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import MoreIcon from '@mui/icons-material/MoreVert';
 import { Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
 import imageProfile from '../../images/Profile.jpg';
 import HeaderProfile from './HeaderProfile/HeaderProfile.jsx';
 import { CustomThemeContext } from '../../App';
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'isOpenLeftBar',
+})(({ theme, isOpenLeftBar }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(isOpenLeftBar && {
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -75,12 +87,10 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const { AppBar, isOpenLeftBar, setIsOpenLeftBar, setIsOpenRightBarDrMsg } =
-    props;
+  const theme = useTheme();
+  const { isOpenLeftBar, setIsOpenLeftBar } = props;
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const menuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
   const { t, i18n } = useTranslation();
   const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
 
@@ -114,11 +124,19 @@ export default function Header(props) {
 
   return (
     <Grid container spacing={1} style={{ justifyContent: 'space-between' }}>
-      <AppBar color='primary' position='relative' open={isOpenLeftBar}>
+      <AppBar
+        color='primary'
+        sx={{
+          '& .MuiAppBar-colorPrimary': {
+            color: theme.palette.primary.dark,
+          },
+          background: theme.palette.primary.dark,
+        }}
+        position='relative'
+        open={isOpenLeftBar}
+      >
         <Toolbar>
           <IconButton
-            color='inherit'
-            aria-label='isOpenLeftBar drawer'
             onClick={() => setIsOpenLeftBar(!isOpenLeftBar)}
             edge='start'
           >
@@ -180,7 +198,6 @@ export default function Header(props) {
               aria-controls={menuId}
               aria-haspopup='true'
               onClick={toggleDrawer(true)}
-              color='inherit'
             >
               <Avatar alt='Remy Sharp' src={imageProfile} />
             </IconButton>
@@ -189,6 +206,11 @@ export default function Header(props) {
             <React.Fragment>
               <Drawer
                 anchor='right'
+                sx={{
+                  '& .MuiDrawer-paperAnchorRight': {
+                    background: theme.palette.primary.main,
+                  },
+                }}
                 open={isOpenRightBarUser}
                 onClose={toggleDrawer(false)}
               >
@@ -198,7 +220,7 @@ export default function Header(props) {
                   onClick={toggleDrawer(false)}
                   onKeyDown={toggleDrawer(false)}
                 >
-                  <HeaderProfile />
+                  <HeaderProfile setTheme={setTheme} />
                 </Box>
               </Drawer>
             </React.Fragment>

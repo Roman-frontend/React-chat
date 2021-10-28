@@ -5,17 +5,14 @@ import { colors } from '@mui/material';
 import './auth-form.sass';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    background: colors.teal[50],
-  },
-  margin: {
-    //margin: theme.spacing(1),
-  },
   inputIsValidated: {
     color: colors.lime[900],
   },
   inputIsNotValidated: {
     color: colors.red[900],
+  },
+  label: {
+    margin: '0px 14px',
   },
 }));
 
@@ -30,15 +27,18 @@ export function SignUpForm(props) {
   return (
     <div>
       <TextField
-        className={(classes.margin, classes.root)}
-        style={{ width: '33.7vw', margin: '2vh 0vw' }}
+        style={{ width: '33.7vw' }}
         label={label}
         name={name}
         type={type}
+        InputLabelProps={{
+          classes: { standard: classes.label },
+        }}
         id='mui-theme-provider-standard-input'
         ref={inputSignUpRef}
         error={isError}
         size='small'
+        variant='standard'
       />
       <p className={isError ? 'auth-form__error' : null}>{fieldError}</p>
     </div>

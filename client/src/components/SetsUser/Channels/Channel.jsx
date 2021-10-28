@@ -17,6 +17,11 @@ export const Channel = withStyles(styles)((props) => {
       <ListItem
         button
         key={key}
+        sx={{
+          '& .Mui-selected': {
+            backgroundColor: 'red',
+          },
+        }}
         onClick={() => activeChatId({ activeChannelId: channel.id })}
         selected={activeChannelId === channel.id && true}
       >

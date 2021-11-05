@@ -8,7 +8,7 @@ const theme = createTheme({
     },
     type: 'dark', //'light',
     primary: {
-      light: yellow[100], //'#272738',
+      light: '#737373', //'#272738',
       main: '#272738', //grey[900],
       dark: '#090912', //'#272738', //yellow[100],
       contrastText: yellow[100],
@@ -24,8 +24,8 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     input: {
-      main: '#000000', //lightGreen[400],
-      contrastText: '#000000',
+      main: '#ffffff', //lightGreen[400],
+      contrastText: '#ffffff',
     },
     text: {
       primary: '#ffffff',

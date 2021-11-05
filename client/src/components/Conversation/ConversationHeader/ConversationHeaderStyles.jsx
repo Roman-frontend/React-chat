@@ -1,11 +1,11 @@
-import { withStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
 
-export const StyledBadge = withStyles((theme) => ({
-  badge: {
+export const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
     backgroundColor: '#44b700',
     color: '#44b700',
-    //boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     '&::after': {
       position: 'absolute',
       top: 0,
@@ -13,9 +13,8 @@ export const StyledBadge = withStyles((theme) => ({
       width: '100%',
       height: '100%',
       borderRadius: '50%',
-      animation: '$ripple 1.2s infinite ease-in-out',
-      //Створює анімацію
-      //border: '1px solid currentColor',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
       content: '""',
     },
   },
@@ -29,4 +28,4 @@ export const StyledBadge = withStyles((theme) => ({
       opacity: 0,
     },
   },
-}))(Badge);
+}));

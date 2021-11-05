@@ -86,13 +86,12 @@ export const SignInPage = ({ route }) => {
     skip: stopLogin,
     variables: { email: loginData.email, password: loginData.password },
 
-    //variables: { email: 'r@mail.ru', password: '11111111' },
+    //variables: { email: 'test@mail.ru', password: '11111111' },
     onError(error) {
       console.log(`Помилка авторизації ${error}`);
       enqueueSnackbar('Fail login', { variant: 'error' });
     },
     onCompleted(data) {
-      console.log(data);
       if (data.login.status === 'OK') {
         auth(data.login.record);
         enqueueSnackbar('Successful login', { variant: 'success' });
@@ -111,7 +110,6 @@ export const SignInPage = ({ route }) => {
   });
 
   const onSubmit = (values, { resetForm }) => {
-    console.log(values);
     try {
       setLoginData({ email: values.email, password: valuess.password });
       resetForm({
@@ -221,7 +219,7 @@ export const SignInPage = ({ route }) => {
                 </Button>
               </Link>
             </Box>
-            {loading && <AuthLoader />}
+            {loading ? <AuthLoader /> : null}
           </Form>
         </Formik>
       </Paper>

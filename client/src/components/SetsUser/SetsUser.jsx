@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+import React, { useRef, useEffect, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
+import { useTheme } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
 import { Channels } from './Channels/Channels.jsx';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
-import './user-sets.sass';
+
+const styles = {
+  leftBar: {
+    borderRight: 'solid 1px',
+    height: 500,
+    margin: '10px 0px',
+    overflowY: 'scroll',
+  },
+};
 
 export default function SetsUser(props) {
   const {
@@ -24,6 +32,7 @@ export default function SetsUser(props) {
     useReactiveVar(activeChatId).activeDirectMessageId;
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [modalAddDmIsOpen, setModalAddDmIsOpen] = useState(false);
+  const prevActiveChatIdRef = useRef();
 
   useEffect(() => {
     if (!modalAddChannelIsOpen && !modalAddDmIsOpen && !modalAddPeopleIsOpen) {
@@ -32,39 +41,58 @@ export default function SetsUser(props) {
   }, [modalAddChannelIsOpen, modalAddDmIsOpen, modalAddPeopleIsOpen]);
 
   useEffect(() => {
-    console.log(activeChannelId, activeDirectMessageId);
-    if (activeChannelId || activeDirectMessageId) {
-      return;
+    if (!activeChannelId && !activeDirectMessageId) {
+      if (
+        allChannels &&
+        Array.isArray(allChannels.userChannels) &&
+        allChannels.userChannels[0] &&
+        allChannels.userChannels[0].id &&
+        (allChannels.userChannels[0].id !== prevActiveChatIdRef.current ||
+          (allChannels.userChannels[1] && allChannels.userChannels[1].id))
+      ) {
+        if (allChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
+          activeChatId({
+            activeChannelId: allChannels.userChannels[0].id,
+          });
+        } else {
+          activeChatId({
+            activeChannelId: allChannels.userChannels[1].id,
+          });
+        }
+      } else if (
+        listDirectMessages &&
+        Array.isArray(listDirectMessages.directMessages) &&
+        listDirectMessages.directMessages[0] &&
+        listDirectMessages.directMessages[0].id &&
+        (listDirectMessages.directMessages[0].id !==
+          prevActiveChatIdRef.current ||
+          (listDirectMessages.directMessages[1] &&
+            listDirectMessages.directMessages[1].id))
+      ) {
+        if (
+          listDirectMessages.directMessages[0].id !==
+          prevActiveChatIdRef.current
+        ) {
+          activeChatId({
+            activeDirectMessageId: listDirectMessages.directMessages[0].id,
+          });
+        } else {
+          activeChatId({
+            activeDirectMessageId: listDirectMessages.directMessages[1].id,
+          });
+        }
+      }
     }
-    if (
-      allChannels &&
-      Array.isArray(allChannels.userChannels) &&
-      allChannels.userChannels[0] &&
-      allChannels.userChannels[0].id
-    ) {
-      activeChatId({ activeChannelId: allChannels.userChannels[0].id });
-    } else if (
-      listDirectMessages &&
-      Array.isArray(listDirectMessages.directMessages) &&
-      listDirectMessages.directMessages[0] &&
-      listDirectMessages.directMessages[0].id
-    ) {
-      activeChatId({
-        activeDirectMessageId: listDirectMessages.directMessages[0].id,
-      });
-    }
+
+    prevActiveChatIdRef.current = activeChatId().activeChannelId
+      ? activeChatId().activeChannelId
+      : activeChatId().activeDirectMessageId
+      ? activeChatId().activeDirectMessageId
+      : null;
   }, [allChannels, listDirectMessages, activeChannelId, activeDirectMessageId]);
 
   return (
-    <div
-      style={{
-        borderRight: 'solid 1px',
-        height: '90vh',
-        overflowY: 'scroll',
-        background: theme.palette.primary.main,
-        margin: '0px 15px',
-      }}
-    >
+    <div style={styles.leftBar}>
       <Divider />
       <Channels
         isOpenLeftBar={isOpenLeftBar}

@@ -3,7 +3,6 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
-import './messages.sass';
 import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
 import { Loader } from '../../Helpers/Loader';
 
@@ -32,10 +31,12 @@ export const Messages = memo((props) => {
   } = useQuery(GET_MESSAGES, {
     variables: { chatId, chatType, userId },
     onCompleted(data) {
-      console.log(data);
       if (data && data.messages) {
         renderMessages();
       }
+    },
+    onError(data) {
+      console.log('error __', data);
     },
   });
 
@@ -47,8 +48,9 @@ export const Messages = memo((props) => {
         if (parsedRes && parsedRes.text) {
           const oldMsg = client.readQuery({
             query: GET_MESSAGES,
-            variables: { chatId, chatType },
+            variables: { chatId, chatType, userId },
           });
+          console.log(oldMsg, chatId, chatType, userId);
           const chatMessages =
             oldMsg && oldMsg.messages && oldMsg.messages.chatMessages
               ? oldMsg.messages.chatMessages
@@ -78,7 +80,7 @@ export const Messages = memo((props) => {
   };
 
   const callback = (id, phase, actualTime, baseTime, startTime, commitTime) => {
-    console.log(`${id}'s ${phase} phase:`);
+    //console.log(`${id}'s ${phase} phase:`);
   };
 
   const renderMessages = () => {
@@ -96,7 +98,6 @@ export const Messages = memo((props) => {
             <Message
               key={message.id}
               message={message}
-              setPopupMessage={props.setPopupMessage}
               openPopup={openPopup}
               setOpenPopup={setOpenPopup}
               {...props}
@@ -105,22 +106,12 @@ export const Messages = memo((props) => {
         );
       });
     }
+    return null;
   };
 
   if (loading) {
     return <Loader />;
   }
 
-  return (
-    <div
-      style={{
-        overflowY: 'auto',
-        flexDirection: 'column-reverse',
-        display: 'flex',
-        height: '65vh',
-      }}
-    >
-      {renderMessages()}
-    </div>
-  );
+  return renderMessages();
 });

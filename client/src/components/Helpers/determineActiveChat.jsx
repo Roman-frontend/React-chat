@@ -3,9 +3,8 @@ export function determineActiveChat(directMessage, users, authId) {
     return users.find((user) => {
       return user.id === directMessage.members[1];
     }).name;
-  } else {
-    return users.find((user) => {
-      return user.id === directMessage.members[0];
-    }).name;
   }
+  return users.find((user) => {
+    return user.id === directMessage.members[0];
+  }).name;
 }

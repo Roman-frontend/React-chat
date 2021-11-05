@@ -15,6 +15,8 @@ server.on('connection', (ws) => {
     const parseData = JSON.parse(data);
     const { meta } = parseData;
 
+    console.log('webSocket');
+
     if (meta === 'join') {
       const { userRooms, userId } = parseData;
       join(userRooms, userId, ws, uuid); // User has joined
@@ -91,7 +93,7 @@ function getRoomOnline(userRooms) {
       });
     }
   });
-  console.log('arrOfOnlineUsersId --->', arrOfOnlineUsersId);
+  //console.log('arrOfOnlineUsersId --->', arrOfOnlineUsersId);
   return arrOfOnlineUsersId;
 }
 
@@ -105,7 +107,7 @@ function informMembersNewOnline(userRooms, members) {
         const memberId = Object.keys(member)[0];
 
         if (!responsed.includes(memberId)) {
-          console.log('send info aboute online');
+          //console.log('send info aboute online');
           Object.values(member)[0].send(
             JSON.stringify({ message: 'online', members })
           );

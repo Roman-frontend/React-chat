@@ -9,7 +9,6 @@ import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
-import './add-people-to-channel.sass';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({
@@ -33,8 +32,6 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   const { data: allUsers } = useQuery(GET_USERS);
   const notInvitedRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-
-  console.log('Opened add member to channel');
 
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
@@ -62,8 +59,6 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   const closePopap = () => {
     setModalAddPeopleIsOpen(false);
   };
-
-  console.log(modalAddPeopleIsOpen);
 
   return (
     <>

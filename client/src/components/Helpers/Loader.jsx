@@ -1,37 +1,23 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+import { Box } from '@mui/system';
 import CircularProgress from '@mui/material/CircularProgress';
 import LinearProgress from '@mui/material/LinearProgress';
 
-const useAppStyles = makeStyles((theme) => ({
-  root: { position: 'fixed', left: '50%', top: '50%' },
-}));
-
 export const Loader = () => {
-  const classes = useAppStyles();
+  const stylesAppLoader = { position: 'fixed', left: '50%', top: '50%' };
+
   return (
-    <div className={classes.root}>
+    <Box sx={stylesAppLoader}>
       <CircularProgress color='secondary' />
-    </div>
+    </Box>
   );
 };
 
-const useAuthStyles = makeStyles((theme) => ({
-  root: {
-    width: '34vw',
-    '& > * + *': {
-      //marginTop: theme.spacing(2),
-    },
-  },
-}));
-
 export function AuthLoader() {
-  const classes = useAuthStyles();
-
   return (
-    <div className={classes.root}>
+    <Box>
       <LinearProgress />
       <LinearProgress color='secondary' />
-    </div>
+    </Box>
   );
 }

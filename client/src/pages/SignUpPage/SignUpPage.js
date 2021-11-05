@@ -2,10 +2,8 @@ import React, { useState, useRef, memo } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTheme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
-import { colors, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { useValidate } from '../../hooks/validate.hook.js';
@@ -24,7 +22,6 @@ export const SignUpPage = memo((props) => {
   const theme = useTheme();
   const { auth } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const [serverError, setServerError] = useState(undefined);
   const { errors, validate } = useValidate({
     name: validateName,
     email: validateEmail,
@@ -62,12 +59,10 @@ export const SignUpPage = memo((props) => {
       enqueueSnackbar('Failed registration!', { variant: 'error' });
     },
     onCompleted(data) {
-      console.log('res data -- ', data);
       if (data.register.status === 'OK') {
         auth(data.register.record);
       }
 
-      setServerError(data.register.error.message);
       enqueueSnackbar('Success registration!', { variant: 'success' });
     },
   });
@@ -81,10 +76,6 @@ export const SignUpPage = memo((props) => {
     ref.password.current.children[1].children[0].value = '';
     validate(formData);
     register({ variables: { ...formData } });
-  };
-
-  const handleCloseSnackbar = () => {
-    setServerError(undefined);
   };
 
   return (
@@ -110,7 +101,6 @@ export const SignUpPage = memo((props) => {
         <SignUpForm
           label='Name'
           placeholder='Введите имя'
-          id='name'
           name='name'
           fieldError={errors.name}
           type='name'
@@ -119,7 +109,6 @@ export const SignUpPage = memo((props) => {
         <SignUpForm
           label='Email'
           placeholder='Введите email'
-          id='email'
           name='email'
           fieldError={errors.email}
           type='email'
@@ -128,7 +117,6 @@ export const SignUpPage = memo((props) => {
         <SignUpForm
           label='Password'
           placeholder='Введите пароль'
-          id='password'
           name='password'
           fieldError={errors.password}
           type='password'
@@ -161,14 +149,7 @@ export const SignUpPage = memo((props) => {
           </Link>
         </Box>
 
-        {loading && <AuthLoader />}
-        <Snackbar
-          autoHideDuration={5000}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          open={serverError}
-          onClose={handleCloseSnackbar}
-          message={serverError}
-        />
+        {loading ? <AuthLoader /> : null}
       </Paper>
     </div>
   );

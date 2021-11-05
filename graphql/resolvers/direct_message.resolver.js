@@ -46,7 +46,6 @@ const resolvers = {
 
   Query: {
     directMessages: async (_, { id }, context) => {
-      console.log('get direct messages -- ');
       if (!context.isAuth) throw new Error('you must be logged in');
       let allFinded = [];
       //Можна створити валідатор який перевіряє чи це юзер має доступ до цих повідомлень ждя цього сюди треба передати ід юзера, знайти його модель в ДБ і через інклудес перевірити і якщо перевірку проходить то тоді продовжити.

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { StyledBadge } from './ConversationHeaderStyles';
-import { useQuery, useReactiveVar } from '@apollo/client';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import {
@@ -59,5 +59,5 @@ export function Members(props) {
     );
   }
 
-  return iconMembers;
+  return iconMembers !== [] ? iconMembers : null;
 }

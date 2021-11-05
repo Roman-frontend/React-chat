@@ -12,7 +12,7 @@ import { reactiveOnlineMembers } from '../../../GraphQLApp/reactiveVars';
 
 export function CreateListMembers(props) {
   const { activeChannel, search, classes } = props;
-  const [members, setMembers] = useState();
+  const [members, setMembers] = useState(null);
   const { data: allUsers } = useQuery(GET_USERS);
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
 

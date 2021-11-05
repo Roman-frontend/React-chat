@@ -1,11 +1,8 @@
 import React, { useMemo, memo } from 'react';
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import { createTheme, useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Input from '@mui/material/Input';
 import Grid from '@mui/material/Grid';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH } from '../../../GraphQLApp/queryes';
@@ -17,7 +14,6 @@ import {
 import { wsSend } from '../../../WebSocket/soket';
 import { messageDate } from '../../Helpers/DateCreators';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
-import './input-message.sass';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,6 +43,7 @@ export const InputUpdateMessages = memo((props) => {
     closeBtnReplyMsg,
     setCloseBtnReplyMsg,
     inputRef,
+    popupMessage,
   } = props;
   const classes = useStyles();
   const { data: auth } = useQuery(AUTH);
@@ -72,8 +69,7 @@ export const InputUpdateMessages = memo((props) => {
   }, [activeChannelId, activeDirectMessageId]);
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
-    update: (cache, { data: { message } }) => {
-      console.log(message);
+    update: (cache, { data }) => {
       const cacheMsg = cache.readQuery({
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
@@ -82,14 +78,14 @@ export const InputUpdateMessages = memo((props) => {
         cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
           ? cacheMsg.messages.chatMessages
           : [];
-      if (cacheMsg && message) {
-        console.log(message);
+      if (cacheMsg && (data.message || data.message)) {
+        const msg = data.message.create;
         cache.modify({
           fields: {
             messages() {
               return {
                 ...cacheMsg.messages,
-                chatMessages: [...chatMessages, message.create],
+                chatMessages: [...chatMessages, msg],
               };
             },
           },
@@ -145,7 +141,6 @@ export const InputUpdateMessages = memo((props) => {
   function inputUpdateMessages(event) {
     event.preventDefault();
     const value = inputRef.current.value;
-    console.log(value, event.target.value);
 
     //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
     if (value.trim() !== '' && !event.shiftKey && event.key === 'Enter') {
@@ -157,7 +152,11 @@ export const InputUpdateMessages = memo((props) => {
   }
 
   async function changeMessageText(text) {
-    const newMsg = { id: changeMessageRef.current.id, text, chatType };
+    const newMsg = {
+      id: changeMessageRef.current.id,
+      text,
+      chatType,
+    };
     changeMessage({ variables: { input: newMsg } });
     changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
@@ -168,20 +167,22 @@ export const InputUpdateMessages = memo((props) => {
       chatId,
       chatType,
       senderId: auth.id,
-      replyOn: closeBtnReplyMsg,
+      replyOn: popupMessage.text,
       text,
     };
     createMessage({
       variables: replyMsg,
       optimisticResponse: {
-        createMessage: {
-          chatId,
-          chatType,
-          createdAt: messageDate(),
-          id: messageDate(),
-          replyOn: null,
-          text,
-          senderId: auth.id,
+        message: {
+          create: {
+            chatId,
+            chatType,
+            createdAt: messageDate(),
+            id: messageDate(),
+            replyOn: null,
+            text,
+            senderId: auth.id,
+          },
         },
       },
     });
@@ -199,20 +200,20 @@ export const InputUpdateMessages = memo((props) => {
     createMessage({
       variables: newMsg,
       optimisticResponse: {
-        createMessage: {
-          chatId,
-          chatType,
-          createdAt: messageDate(),
-          id: messageDate(),
-          replyOn: null,
-          text: textMessage,
-          senderId: auth.id,
+        message: {
+          create: {
+            chatId,
+            chatType,
+            createdAt: messageDate(),
+            id: messageDate(),
+            replyOn: null,
+            text: textMessage,
+            senderId: auth.id,
+          },
         },
       },
     });
   }
-
-  console.log('input open');
 
   return (
     <div className={classes.root} id='mainInput'>
@@ -228,17 +229,14 @@ export const InputUpdateMessages = memo((props) => {
           <TextField
             //className={classes.root}
             color='input'
-            id='standard-basic'
             label='Enter text'
             variant='standard'
             inputRef={inputRef}
             autoFocus={true}
             onKeyUp={(event) => inputUpdateMessages(event)}
             sx={{
+              paddingRight: '6vw',
               width: '-webkit-fill-available',
-              '& .MuiInput-input': {
-                color: '#000000',
-              },
             }}
           />
         </Grid>

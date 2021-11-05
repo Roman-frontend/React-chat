@@ -10,7 +10,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import GroupIcon from '@mui/icons-material/Group';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CHANNELS, REMOVE_CHANNEL } from '../SetsUserGraphQL/queryes';
-import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
+import {
+  activeChatId,
+  reactiveVarId,
+} from '../../../GraphQLApp/reactiveVars.js';
 
 const ChannelsRightBar = (props) => {
   const { data: channels } = useQuery(CHANNELS);
@@ -51,15 +54,38 @@ const ChannelsRightBar = (props) => {
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
-      enqueueSnackbar('Direct Message isn`t removed!', { variant: 'error' });
+      enqueueSnackbar('Channel isn`t removed!', { variant: 'error' });
     },
     onCompleted(data) {
-      activeChatId({});
+      console.log(data);
       enqueueSnackbar('Channel is a success removed!', {
         variant: 'success',
       });
+      activeChatId({});
     },
   });
+
+  function remove() {
+    let name = 'Leave channel';
+
+    if (activeChannel && activeChannel.admin === userId) {
+      name = 'Remove channel';
+    }
+
+    return (
+      <ListItem button>
+        <ListItemIcon>
+          <DeleteIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={name}
+          onClick={() =>
+            removeChannel({ variables: { channelId: activeChannelId, userId } })
+          }
+        />
+      </ListItem>
+    );
+  }
 
   return (
     <List>
@@ -88,17 +114,7 @@ const ChannelsRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary='My Acount' />
       </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <DeleteIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary='Remove channel'
-          onClick={() =>
-            removeChannel({ variables: { channelId: activeChannelId, userId } })
-          }
-        />
-      </ListItem>
+      {remove()}
     </List>
   );
 };

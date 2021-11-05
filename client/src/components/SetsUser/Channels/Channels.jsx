@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useReactiveVar } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -14,19 +14,12 @@ import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { AddChannel } from '../../Modals/AddChannel/AddChannel';
 import { Channel } from './Channel';
-import {
-  reactiveVarId,
-  reactiveVarToken,
-} from '../../../GraphQLApp/reactiveVars';
 import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     maxWidth: 360,
-  },
-  nested: {
-    //paddingLeft: theme.spacing(4),
   },
 }));
 
@@ -65,7 +58,7 @@ export function Channels(props) {
             </ListItem>
           ) : (
             <ListItem
-              key={2}
+              key={nanoid()}
               style={{ padding: 0, margin: 0, justifyContent: 'center' }}
               button
               onClick={() => setOpen(!open)}
@@ -75,14 +68,23 @@ export function Channels(props) {
               </ListItemIcon>
             </ListItem>
           )}
-          <Collapse in={open} timeout='auto' unmountOnExit>
-            <List>
-              {allChannels &&
-                allChannels.userChannels.map((channel) => (
-                  <Channel channel={channel} key={nanoid()} />
-                ))}
-            </List>
-          </Collapse>
+          {allChannels ? (
+            <Collapse in={open} timeout='auto' unmountOnExit>
+              <List>
+                {allChannels.userChannels.map((channel) =>
+                  channel ? (
+                    <React.Fragment key={channel.id}>
+                      <Channel
+                        channel={channel}
+                        key={channel.id}
+                        isOpenLeftBar={isOpenLeftBar}
+                      />
+                    </React.Fragment>
+                  ) : null
+                )}
+              </List>
+            </Collapse>
+          ) : null}
         </List>
       </div>
       <Button

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
+import styled from '@emotion/styled';
 import { Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { makeStyles } from '@mui/styles';
-import { GET_USERS } from '../../../GraphQLApp/queryes';
-import styled from '@emotion/styled';
-import './select-people.sass';
 import Select from 'react-dropdown-select';
 import { useTheme } from '@mui/material/styles';
+import { GET_USERS } from '../../../GraphQLApp/queryes';
 //коли відкриваю попап створення чату і нічого не заповняю, нажимаю done і воно просто закриває попап має показати шо є якісь обовязкові поля
 
 const StyledSelect = styled(Select)`
@@ -22,36 +20,27 @@ const StyledSelect = styled(Select)`
 	`}
 `;
 
-const popapWithoutPadding = makeStyles((theme) => ({
-  root: {
-    padding: 0,
-  },
-}));
-
-const popapWithPadding = makeStyles((theme) => ({
-  root: {
-    padding: '8px 24px',
-  },
-}));
-
 export const SelectPeople = (props) => {
-  const {
-    isDialogChanged,
-    closePopap,
-    done,
-    isErrorInPopap,
-    classes,
-    notInvitedRef,
-  } = props;
-  console.log(isDialogChanged, closePopap, done, notInvitedRef.current);
+  const { isDialogChanged, closePopap, done, isErrorInPopap, notInvitedRef } =
+    props;
   const theme = useTheme();
-  const dialogClasses = isDialogChanged
-    ? popapWithoutPadding()
-    : popapWithPadding();
   const [list, setList] = useState(notInvitedRef);
   const [invited, setInvited] = useState([]);
   const [minHeight, setMinHeight] = useState(120);
   const { data: allUsers } = useQuery(GET_USERS);
+
+  const styles = {
+    root: {
+      minWidth: '400px',
+      minHeight,
+      maxHeight: '300px',
+      margin: '0 auto',
+      overflowY: 'hidden',
+    },
+    dialogContent: {
+      padding: isDialogChanged ? '8px 24px' : 0,
+    },
+  };
 
   function todo() {
     done('done', invited /* invitedRef.current */);
@@ -59,7 +48,6 @@ export const SelectPeople = (props) => {
 
   function addPeopleToInvited(selected, addMethod) {
     addMethod(selected);
-    console.log('todo', selected);
     const selectedIndex = list.indexOf(selected);
     if (allUsers && allUsers.users && allUsers.users[0]) {
       const electData = allUsers.users.filter(
@@ -69,7 +57,6 @@ export const SelectPeople = (props) => {
         prevList.splice(selectedIndex, 1);
         return prevList;
       });
-      console.log(selected);
       setInvited((prev) => prev.concat(electData[0].id));
       //invitedRef.current = invitedRef.current.concat(electData[0].id);
     }
@@ -84,18 +71,8 @@ export const SelectPeople = (props) => {
     </div>
   );
 
-  console.log(list);
-
   return (
-    <div
-      style={{
-        minWidth: '400px',
-        minHeight,
-        maxHeight: '230px',
-        margin: '0 auto',
-        overflowY: 'hidden',
-      }}
-    >
+    <div style={styles.root}>
       <StyledSelect
         placeholder='Select peoples'
         required={true}
@@ -104,7 +81,7 @@ export const SelectPeople = (props) => {
         clearable={true}
         searchable={true}
         dropdownHandle={true}
-        dropdownHeight={'300px'}
+        dropdownHeight={'120px'}
         direction={'ltr'}
         multi={true}
         labelField={'email'}
@@ -125,9 +102,12 @@ export const SelectPeople = (props) => {
           color: theme.palette.text.select,
         }}
       />
+      {isErrorInPopap ? (
+        <p style={{ fontSize: 12, paddingLeft: 8, marginTop: 6 }}>required</p>
+      ) : null}
       <DialogContent
-        classes={{ root: dialogClasses.root }}
-        style={{ textAlign: 'right' }}
+        classes={{ root: styles.dialogContent }}
+        style={{ position: 'absolute', bottom: 0 }}
       >
         <FormControl>
           <DialogActions>

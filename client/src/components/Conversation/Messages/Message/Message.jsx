@@ -55,11 +55,28 @@ export default function Message(props) {
             style={{ fontSize: 50 }}
           />
         </Box>
-        <p className={`${classMessage}__messager`}>{senderName}</p>
-        <p className={`${classMessage}__date`}>
-          {messageDate(updatedAt || createdAt)}
+        <p
+          style={{ color: theme.palette.primary.contrastText }}
+          className={`${classMessage}__messager`}
+        >
+          {senderName}
         </p>
-        <p className={`${classMessage}__message`}>{text}</p>
+        <p className={`${classMessage}__date`}>{messageDate(createdAt)}</p>
+        <p
+          style={{
+            display: updatedAt !== createdAt ? 'block' : 'none',
+            fontSize: 11,
+          }}
+          className={`${classMessage}__info`}
+        >
+          {`Edited ${messageDate(updatedAt || createdAt)}`}
+        </p>
+        <p
+          style={{ maxWidth: 'fit-content' }}
+          className={`${classMessage}__message`}
+        >
+          {text}
+        </p>
         {replyMessage}
       </Box>
     </Box>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -10,14 +11,12 @@ import { Box } from '@mui/system';
 import { Members } from './Members';
 import { ConversationMembers } from '../../Modals/ConversationHeader/ConversationMembers';
 import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
-import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import {
   CHANNELS,
   ADD_MEMBER_CHANNEL,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
 import ChannelsRightBar from '../../SetsUser/Channels/ChannelsRightBar';
-import { Button } from '@mui/material';
 
 export const ConversationHeaderChannel = (props) => {
   const {
@@ -89,7 +88,7 @@ export const ConversationHeaderChannel = (props) => {
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return null;
     }
 
     setIsOpenRightBarChannels(open);
@@ -100,31 +99,44 @@ export const ConversationHeaderChannel = (props) => {
       <Grid
         container
         spacing={1}
-        style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
+        style={{ alignItems: 'center', height: '4.3rem' }}
         justify='space-between'
       >
-        <Grid item xs={8}>
+        <Grid item xs={6} style={{ margin: '0vw 2vw', padding: 0 }}>
           <b className='conversation__name'>
             ✩ {activeChannel ? activeChannel.name : '#general'}
           </b>
         </Grid>
         <Grid
           item
-          xs={2}
-          style={{ alignSelf: 'center', flexBasis: 'min-content' }}
+          xs={3}
+          style={{
+            alignSelf: 'center',
+            flexBasis: 'min-content',
+            margin: '0px 8px',
+          }}
         >
           <Members
             activeChannel={activeChannel}
             setModalIsShowsMembers={setModalIsShowsMembers}
           />
         </Grid>
-        <Grid item xs={1} style={{ textAlign: 'center' }}>
+        <Grid item xs={1} style={{ textAlign: 'center', margin: '0px 8px' }}>
           <GroupAddIcon
             style={{ fontSize: 50, cursor: 'pointer' }}
             onClick={() => setModalAddPeopleIsOpen(true)}
           />
         </Grid>
-        <Grid item xs={1} style={{ alignSelf: 'center', cursor: 'pointer' }}>
+        <Grid
+          item
+          xs={1}
+          style={{
+            alignSelf: 'center',
+            cursor: 'pointer',
+            padding: 0,
+            margin: '0px 8px',
+          }}
+        >
           <IconButton
             edge='end'
             aria-label='account of current user'

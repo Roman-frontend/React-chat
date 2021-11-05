@@ -8,12 +8,12 @@ import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
 import { nanoid } from 'nanoid';
 
 export const routes = [
-  {
+  /* {
     path: '/filterContacts',
     private: true,
     exact: true,
     component: FilterContacts,
-  },
+  }, */
   {
     path: '/signIn',
     exact: true,

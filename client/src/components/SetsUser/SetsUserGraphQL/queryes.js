@@ -84,9 +84,10 @@ export const APP = gql`
 `;
 
 export const CHANNELS = gql`
-  query userChannels($channelsId: [ID]) {
+  query userChannels($channelsId: [ID], $userId: ID!) {
     channels @client @export(as: "channelsId")
-    userChannels(channelsId: $channelsId) {
+    id @client @export(as: "userId")
+    userChannels(channelsId: $channelsId, userId: $userId) {
       id
       name
       admin

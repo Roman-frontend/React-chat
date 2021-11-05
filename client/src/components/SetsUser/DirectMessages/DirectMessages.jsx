@@ -20,6 +20,7 @@ import {
 import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
 import { AddDirectMessage } from '../../Modals/AddDirectMessage/AddDirectMessage.jsx';
 import { DirectMessage } from './DirectMessage';
+import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +72,6 @@ export function DirectMessages(props) {
       enqueueSnackbar('Direct Message created!', { variant: 'error' });
     },
     onCompleted(data) {
-      console.log(data);
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       const newDrMsgIds = data.directMessages.create.record.map(({ id }) => id);
       const toStorage = JSON.stringify({
@@ -86,7 +86,6 @@ export function DirectMessages(props) {
 
   function doneInvite(action, invited) {
     if (action === 'done' && invited && invited[0]) {
-      console.log(invited);
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });
@@ -103,6 +102,7 @@ export function DirectMessages(props) {
           {isOpenLeftBar ? (
             <ListItem
               style={{ paddingLeft: 0 }}
+              key={nanoid()}
               button
               onClick={() => setOpen(!open)}
             >
@@ -118,6 +118,7 @@ export function DirectMessages(props) {
           ) : (
             <ListItem
               style={{ padding: 0, margin: 0, justifyContent: 'center' }}
+              key={nanoid()}
               button
               onClick={() => setOpen(!open)}
             >
@@ -126,14 +127,20 @@ export function DirectMessages(props) {
               </ListItemIcon>
             </ListItem>
           )}
-          <Collapse in={open} timeout='auto' unmountOnExit>
-            <List>
-              {directMessages &&
-                directMessages.directMessages.map((drMsg) => (
-                  <DirectMessage key={drMsg.id} drMsg={drMsg} />
+          {directMessages ? (
+            <Collapse in={open} timeout='auto' unmountOnExit>
+              <List>
+                {directMessages.directMessages.map((drMsg) => (
+                  <React.Fragment key={drMsg.id}>
+                    <DirectMessage
+                      drMsg={drMsg}
+                      isOpenLeftBar={isOpenLeftBar}
+                    />
+                  </React.Fragment>
                 ))}
-            </List>
-          </Collapse>
+              </List>
+            </Collapse>
+          ) : null}
         </List>
       </div>
       <Button

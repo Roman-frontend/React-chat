@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import PersonIcon from '@mui/icons-material/Person';
 import { Drawer, Box } from '@mui/material';
-import './ConversationHeader.sass';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
@@ -44,8 +43,8 @@ export const ConversationHeaderDrMsg = (props) => {
         );
         return <b className='conversation__name'>✩ {name}</b>;
       }
-      return '#general';
     }
+    return <b className='conversation__name'>✩ #general</b>;
   }
 
   const toggleDrawer = (open) => (event) => {
@@ -53,7 +52,7 @@ export const ConversationHeaderDrMsg = (props) => {
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
-      return;
+      return null;
     }
 
     setIsOpenRightBarDrMsg(open);
@@ -64,10 +63,10 @@ export const ConversationHeaderDrMsg = (props) => {
       <Grid
         container
         spacing={1}
-        style={{ alignItems: 'center', height: '4.3rem', padding: '0vh 1vw' }}
+        style={{ alignItems: 'center', height: '4.3rem' }}
         justify='space-between'
       >
-        <Grid item xs={10}>
+        <Grid item xs={9} style={{ margin: '0vw 2vw', padding: 0 }}>
           {createName()}
         </Grid>
         <Grid item xs={2}>

@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
-import { makeStyles, withStyles } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+import { blue } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CREATE_CHANNEL } from '../../SetsUser/SetsUserGraphQL/queryes';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
-import './add-channel.sass';
-import { blue } from '@mui/material/colors';
-import { useTheme } from '@mui/material/styles';
 import { reactiveVarChannels } from '../../../GraphQLApp/reactiveVars';
 
 const useStyles = makeStyles((theme) => ({
@@ -120,7 +119,6 @@ export const AddChannel = (props) => {
   }, [allUsers]);
 
   const changeHandler = (event) => {
-    console.log(event.target.name, event.target.value);
     setForm({ ...form, [event.target.name]: event.target.value });
   };
 

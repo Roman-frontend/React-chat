@@ -1,11 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  memo,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { useTheme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
@@ -18,7 +11,6 @@ import {
   reactiveVarId,
 } from '../../../GraphQLApp/reactiveVars';
 import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
-import './add-people-to-channel.sass';
 
 const styles = (theme) => ({
   titleRoot: {
@@ -28,11 +20,7 @@ const styles = (theme) => ({
 
 export const AddDirectMessage = withStyles(styles)((props) => {
   const { data: allUsers } = useQuery(GET_USERS);
-  const { data: drMessages } = useQuery(GET_DIRECT_MESSAGES, {
-    onCompleted(data) {
-      //console.log(data);
-    },
-  });
+  const { data: drMessages } = useQuery(GET_DIRECT_MESSAGES);
   const {
     done,
     classes,
@@ -40,37 +28,13 @@ export const AddDirectMessage = withStyles(styles)((props) => {
     setModalAddDmIsOpen,
     isErrorInPopap,
   } = props;
-  const notInvitedRef = useRef();
   const theme = useTheme();
 
   const closePopap = () => {
     setModalAddDmIsOpen(false);
   };
 
-  useEffect(() => {
-    if (allUsers && allUsers.users[0] && reactiveVarId()) {
-      let allNotInvited = allUsers.users.filter(
-        (user) => user.id !== reactiveVarId()
-      );
-      if (
-        drMessages &&
-        drMessages.directMessages &&
-        drMessages.directMessages[0]
-      ) {
-        drMessages.directMessages.forEach((directMessage) => {
-          directMessage.members.forEach((memberId) => {
-            allNotInvited = allNotInvited.filter(
-              (user) => user.id !== memberId
-            );
-          });
-        });
-      }
-      notInvitedRef.current = allNotInvited;
-      //notInvitedRef.current = allUsers.users;
-    }
-  }, [allUsers, drMessages, reactiveVarId()]);
-
-  const i = useMemo(() => {
+  const listNotInvited = useMemo(() => {
     if (allUsers && allUsers.users[0] && reactiveVarId()) {
       let allNotInvited = allUsers.users.filter(
         (user) => user.id !== reactiveVarId()
@@ -89,7 +53,7 @@ export const AddDirectMessage = withStyles(styles)((props) => {
         });
       }
       return allNotInvited;
-      //notInvitedRef.current = allUsers.users;
+      //return allUsers.users;
     }
   }, [allUsers, drMessages, reactiveVarId()]);
 
@@ -112,7 +76,7 @@ export const AddDirectMessage = withStyles(styles)((props) => {
         </DialogTitle>
         <SelectPeople
           closePopap={closePopap}
-          notInvitedRef={i}
+          notInvitedRef={listNotInvited}
           done={done}
           isErrorInPopap={isErrorInPopap}
         />

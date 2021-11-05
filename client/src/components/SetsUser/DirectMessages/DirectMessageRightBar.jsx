@@ -100,16 +100,16 @@ const DirectMessageRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary='My Acount' />
       </ListItem>
-      <ListItem button>
+      <ListItem
+        button
+        onClick={() =>
+          removeDirectMessage({ variables: { id: activeDirectMessageId } })
+        }
+      >
         <ListItemIcon>
           <DeleteIcon />
         </ListItemIcon>
-        <ListItemText
-          primary='Remove chat'
-          onClick={() =>
-            removeDirectMessage({ variables: { id: activeDirectMessageId } })
-          }
-        />
+        <ListItemText primary='Remove chat' />
       </ListItem>
     </List>
   );

@@ -139,7 +139,6 @@ const resolvers = {
 
   Mutation: {
     register: async (_, args) => {
-      console.log('registration');
       try {
         await schema.validate(args, { abortEarly: false });
       } catch (err) {
@@ -156,7 +155,6 @@ const resolvers = {
 
       const emailIsBasy = await User.findOne({ email });
       if (emailIsBasy) {
-        console.log('incorect register datas');
         return {
           status: 403,
           query: {},

@@ -4,14 +4,19 @@ const ChannelMessage = require('../../models/ChannelMessage');
 
 const resolvers = {
   Query: {
-    userChannels: async (_, { channelsId }, context) => {
-      console.log('get channel ', channelsId);
+    userChannels: async (_, { channelsId, userId }, context) => {
       if (!context.isAuth) throw new Error('you must be logged in');
       if (channelsId) {
         let userChannels = [];
         for (let id of channelsId) {
           const findChannel = await Channel.findById(id);
-          userChannels = userChannels.concat(findChannel);
+          if (findChannel) {
+            const userIsMember = findChannel.members.includes(userId);
+            console.log(findChannel, userId, userIsMember);
+            if (userIsMember) {
+              userChannels = userChannels.concat(findChannel);
+            }
+          }
         }
         return userChannels;
       }
@@ -80,6 +85,7 @@ const resolvers = {
         { channels: filteredChannels },
         { useFindAndModify: false, new: true }
       );
+
       return {
         recordId: channelId,
         status: 200,

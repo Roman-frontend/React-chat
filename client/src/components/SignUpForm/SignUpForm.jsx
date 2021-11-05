@@ -17,12 +17,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function SignUpForm(props) {
-  const { label, type, id, name, fieldError = true, inputSignUpRef } = props;
+  const { label, type, name, fieldError = true, inputSignUpRef } = props;
   const classes = useStyles();
   const isError =
     fieldError === undefined || fieldError === true ? false : true;
-
-  console.log(inputSignUpRef);
 
   return (
     <div>
@@ -34,7 +32,6 @@ export function SignUpForm(props) {
         InputLabelProps={{
           classes: { standard: classes.label },
         }}
-        id='mui-theme-provider-standard-input'
         ref={inputSignUpRef}
         error={isError}
         size='small'

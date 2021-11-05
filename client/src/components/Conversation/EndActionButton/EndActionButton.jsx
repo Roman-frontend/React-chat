@@ -1,6 +1,5 @@
 import React from 'react';
-import CancelPresentationOutlinedIcon from '@mui/icons-material/CancelPresentationOutlined';
-import './end-action-button.sass';
+import { Button } from '@mui/material';
 
 export default function EndActionButton(props) {
   const {
@@ -23,15 +22,18 @@ export default function EndActionButton(props) {
   }
 
   return (
-    <CancelPresentationOutlinedIcon
-      className='conversation-input__end-action-button'
-      //style={{ top: `${topButtonClose}px` }}
+    <Button
+      //className='conversation-input__end-action-button'
+      size='small'
+      style={{ color: 'black' }}
       fontSize='large'
       type='checkbox'
       id='checkbox'
       name='checkbox'
       onClick={hideButtonExit}
       inputprops={{ 'aria-label': 'primary checkbox' }}
-    />
+    >
+      X
+    </Button>
   );
 }

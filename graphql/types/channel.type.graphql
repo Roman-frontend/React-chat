@@ -27,7 +27,7 @@ type RemoveChannelPayload {
 }
 
 type Query {
-  userChannels(channelsId: [ID]): [UserChannelsPayload]!
+  userChannels(channelsId: [ID], userId: ID!): [UserChannelsPayload]!
 }
 
 type Mutation {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Profiler, memo } from 'react';
+import React, { useState, useMemo, Profiler, memo, useCallback } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
@@ -83,7 +83,10 @@ export const Messages = memo((props) => {
     //console.log(`${id}'s ${phase} phase:`);
   };
 
-  const renderMessages = () => {
+  console.log('messages');
+
+  const renderMessages = useCallback(() => {
+    console.log('renderMessages');
     if (
       messages &&
       messages.messages &&
@@ -107,7 +110,7 @@ export const Messages = memo((props) => {
       });
     }
     return null;
-  };
+  }, [messages]);
 
   if (loading) {
     return <Loader />;

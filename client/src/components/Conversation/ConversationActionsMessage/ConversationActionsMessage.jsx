@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { REMOVE_MESSAGE } from '../ConversationGraphQL/queryes';
 import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
 
-const stylesButton = { margin: 2 /* border: '1px solid rebeccapurple' */ };
+const stylesButton = { margin: 1 /* border: '1px solid rebeccapurple' */ };
 
 export function ConversationActionsMessage(props) {
   const {
@@ -75,7 +75,7 @@ export function ConversationActionsMessage(props) {
 
   return (
     <Box
-      sx={{ background: theme.palette.primary.main }}
+      sx={{ background: theme.palette.primary.main, maxWidth: 'fit-content' }}
       style={{ display: !openPopup && 'none' }}
     >
       <Button

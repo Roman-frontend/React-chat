@@ -1,13 +1,13 @@
 .container 
   display: grid
-  grid-template-columns: 2.8rem minmax(1rem, auto) 1fr 100px
+  grid-template-columns: 2.8rem minmax(1rem, auto) 1fr 150px
   grid-auto-rows: minmax(20px, auto)
   align-items: start
   grid-template-areas: "icon messager date info" "icon message message message"
-  margin: 1vh 2vw 1vh 3vw
+  margin: 8px 50px
 
   .container__message 
-    padding: 0rem 1rem
+    padding: 0px 20px
     word-break: break-all
     white-space: pre-wrap
     grid-area: message
@@ -26,8 +26,6 @@
     align-self: start
 
   .container__icon 
-    background: cadetblue
-    border-radius: 0.31rem
     height: 100%
     top: -0.1rem
     grid-area: icon
@@ -43,14 +41,15 @@
 
 .container-reply 
   display: grid
-  grid-template-columns: 2.8rem minmax(1rem, auto) 1fr 100px
+  grid-template-columns: 2.8rem minmax(1rem, auto) 1fr 150px
   grid-auto-rows: minmax(20px, auto)
   align-items: start
   grid-template-areas: "icon messager date info" "icon reply reply reply"  ". message message message"
-  margin: 1vh 2vw 1vh 3vw
+  margin: 8px 50px
 
   .container-reply__message 
     word-break: break-all
+    padding: 0px 20px
     grid-area: message
     left: 1rem
     margin: 0 
@@ -67,8 +66,6 @@
     font-size: 0.8rem
 
   .container-reply__icon 
-    background: cadetblue
-    border-radius: 0.31rem
     height: 100%
     top: -0.1rem
     grid-area: icon
@@ -76,8 +73,9 @@
   .container-reply__reply 
     border-left: inset #0000b5
     padding-left: 8px
-    margin: 0px
+    margin: 17px 8px 4px 17px
     grid-area: reply
+    line-height: 0
     left: 1rem
 
   .container-reply__info 

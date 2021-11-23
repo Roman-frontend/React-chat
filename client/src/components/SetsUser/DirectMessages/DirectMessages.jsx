@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
+import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { makeStyles } from '@mui/styles';
 import List from '@mui/material/List';
@@ -37,11 +38,12 @@ export function DirectMessages(props) {
     modalAddDmIsOpen,
     setModalAddDmIsOpen,
   } = props;
+  const theme = useTheme();
   const { t } = useTranslation();
   const { data: auth } = useQuery(AUTH);
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const { enqueueSnackbar } = useSnackbar();
 
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
@@ -101,7 +103,7 @@ export function DirectMessages(props) {
         <List component='nav' className={classes.root}>
           {isOpenLeftBar ? (
             <ListItem
-              style={{ paddingLeft: 0 }}
+              sx={{ paddingLeft: 0 }}
               key={nanoid()}
               button
               onClick={() => setOpen(!open)}
@@ -127,10 +129,10 @@ export function DirectMessages(props) {
               </ListItemIcon>
             </ListItem>
           )}
-          {directMessages ? (
+          {dDms?.directMessages?.length ? (
             <Collapse in={open} timeout='auto' unmountOnExit>
               <List>
-                {directMessages.directMessages.map((drMsg) => (
+                {dDms.directMessages.map((drMsg) => (
                   <React.Fragment key={drMsg.id}>
                     <DirectMessage
                       drMsg={drMsg}
@@ -145,14 +147,15 @@ export function DirectMessages(props) {
       </div>
       <Button
         size='small'
-        style={{
+        sx={{
           width: '100%',
           padding: 0,
+          '&:hover': { color: theme.palette.leftBarItem.light },
         }}
         color='warning'
         onClick={() => setModalAddDmIsOpen(true)}
       >
-        {isOpenLeftBar ? '+ new dm' : '+'}
+        {isOpenLeftBar ? `+ ${t('description.addDm')}` : '+'}
       </Button>
       <AddDirectMessage
         done={doneInvite}

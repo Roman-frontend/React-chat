@@ -5,7 +5,6 @@ import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
-import clsx from 'clsx';
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { colors, Paper } from '@mui/material';
@@ -20,49 +19,17 @@ import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Visibility from '@mui/icons-material/Visibility';
 import { Box } from '@mui/system';
-
-const useStyles = makeStyles((theme) => ({
-  rootInput: {
-    background: colors.teal[50],
-  },
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  margin: {
-    //margin: theme.spacing(1),
-  },
-  textField: {
-    width: '25ch',
-  },
-
-  colors: {
-    red: colors.red,
-  },
-  input: {
-    color: '#5f0937',
-  },
-}));
 
 export const SignInPage = ({ route }) => {
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState(null);
   const [valuess, setValuess] = useState({
     password: '',
     showPassword: false,
   });
-  const handleChange = (prop) => (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
 
   const prevHandleChange = (prop) => (event) => {
     setValuess({ ...valuess, [prop]: event.target.value });
@@ -76,7 +43,6 @@ export const SignInPage = ({ route }) => {
     event.preventDefault();
   };
 
-  const classes = useStyles();
   const { auth } = useAuth();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [stopLogin, setStopLogin] = useState(true);
@@ -101,14 +67,6 @@ export const SignInPage = ({ route }) => {
     },
   });
 
-  const validationSchema = Yup.object({
-    email: Yup.string().email('Invalid email format').required('Required!'),
-    password: Yup.string()
-      .min(2, 'Too Short!')
-      .max(15, 'Too Long')
-      .required('Required'),
-  });
-
   const onSubmit = (values, { resetForm }) => {
     try {
       setLoginData({ email: values.email, password: valuess.password });
@@ -119,6 +77,7 @@ export const SignInPage = ({ route }) => {
         },
       });
       setStopLogin(false);
+      console.log('onSubmit');
       refetch();
     } catch (e) {
       console.error('Помилочка : ', e);
@@ -134,11 +93,7 @@ export const SignInPage = ({ route }) => {
           background: theme.palette.primary.dark,
         }}
       >
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          //validationSchema={validationSchema}
-          onSubmit={onSubmit}
-        >
+        <Formik initialValues={{ email: '', password: '' }} onSubmit={onSubmit}>
           <Form>
             <span
               style={{
@@ -151,7 +106,12 @@ export const SignInPage = ({ route }) => {
               Авторизація
             </span>
 
-            <SignInForm label='Email' name='email' type='email' />
+            <SignInForm
+              label='Email'
+              name='email'
+              type='email'
+              autoFocus={true}
+            />
             <>
               <Field name='password'>
                 {(props) => {

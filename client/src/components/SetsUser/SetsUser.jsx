@@ -25,8 +25,8 @@ export default function SetsUser(props) {
     modalAddPeopleIsOpen,
   } = props;
   const theme = useTheme();
-  const { data: allChannels } = useQuery(CHANNELS);
-  const { data: listDirectMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { data: dChannels } = useQuery(CHANNELS);
+  const { data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
@@ -43,42 +43,33 @@ export default function SetsUser(props) {
   useEffect(() => {
     if (!activeChannelId && !activeDirectMessageId) {
       if (
-        allChannels &&
-        Array.isArray(allChannels.userChannels) &&
-        allChannels.userChannels[0] &&
-        allChannels.userChannels[0].id &&
-        (allChannels.userChannels[0].id !== prevActiveChatIdRef.current ||
-          (allChannels.userChannels[1] && allChannels.userChannels[1].id))
+        dChannels?.userChannels?.length &&
+        dChannels.userChannels[0].id &&
+        (dChannels.userChannels[0].id !== prevActiveChatIdRef.current ||
+          (dChannels.userChannels[1] && dChannels.userChannels[1].id))
       ) {
-        if (allChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
+        if (dChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
-            activeChannelId: allChannels.userChannels[0].id,
+            activeChannelId: dChannels.userChannels[0].id,
           });
         } else {
           activeChatId({
-            activeChannelId: allChannels.userChannels[1].id,
+            activeChannelId: dChannels.userChannels[1].id,
           });
         }
       } else if (
-        listDirectMessages &&
-        Array.isArray(listDirectMessages.directMessages) &&
-        listDirectMessages.directMessages[0] &&
-        listDirectMessages.directMessages[0].id &&
-        (listDirectMessages.directMessages[0].id !==
-          prevActiveChatIdRef.current ||
-          (listDirectMessages.directMessages[1] &&
-            listDirectMessages.directMessages[1].id))
+        dDms?.directMessages?.length &&
+        dDms.directMessages[0].id &&
+        (dDms.directMessages[0].id !== prevActiveChatIdRef.current ||
+          (dDms.directMessages[1] && dDms.directMessages[1].id))
       ) {
-        if (
-          listDirectMessages.directMessages[0].id !==
-          prevActiveChatIdRef.current
-        ) {
+        if (dDms.directMessages[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
-            activeDirectMessageId: listDirectMessages.directMessages[0].id,
+            activeDirectMessageId: dDms.directMessages[0].id,
           });
         } else {
           activeChatId({
-            activeDirectMessageId: listDirectMessages.directMessages[1].id,
+            activeDirectMessageId: dDms.directMessages[1].id,
           });
         }
       }
@@ -89,7 +80,7 @@ export default function SetsUser(props) {
       : activeChatId().activeDirectMessageId
       ? activeChatId().activeDirectMessageId
       : null;
-  }, [allChannels, listDirectMessages, activeChannelId, activeDirectMessageId]);
+  }, [dChannels, dDms, activeChannelId, activeDirectMessageId]);
 
   return (
     <div style={styles.leftBar}>

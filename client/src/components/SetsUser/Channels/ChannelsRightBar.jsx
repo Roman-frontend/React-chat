@@ -16,18 +16,18 @@ import {
 } from '../../../GraphQLApp/reactiveVars.js';
 
 const ChannelsRightBar = (props) => {
-  const { data: channels } = useQuery(CHANNELS);
+  const { data: dChannels } = useQuery(CHANNELS);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const userId = useReactiveVar(reactiveVarId);
   const { enqueueSnackbar } = useSnackbar();
 
   const activeChannel = useMemo(() => {
-    if (activeChannelId && channels && Array.isArray(channels.userChannels)) {
-      return channels.userChannels.find(
+    if (activeChannelId && dChannels?.userChannels?.length) {
+      return dChannels.userChannels.find(
         (channel) => channel !== null && channel.id === activeChannelId
       );
     }
-  }, [activeChannelId, channels]);
+  }, [activeChannelId, dChannels]);
 
   const [removeChannel] = useMutation(REMOVE_CHANNEL, {
     update: (cache, { data: { channel } }) => {
@@ -39,13 +39,6 @@ const ChannelsRightBar = (props) => {
                 channel.remove.recordId !== readField('id', channelRef)
             );
           },
-          /* messages(existingMessagesRef, { readField }) {
-            console.log(existingMessagesRef);
-            //return DELETE;
-            return existingMessagesRef.filter(
-              (messageRef) => channel.remove.id !== readField('id', messageRef)
-            );
-          }, */
           messages({ DELETE }) {
             return DELETE;
           },
@@ -101,18 +94,6 @@ const ChannelsRightBar = (props) => {
         <ListItemText
           primary={activeChannel ? activeChannel.name : '#general'}
         />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <PersonIcon />
-        </ListItemIcon>
-        <ListItemText primary='Profile' />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIndSharpIcon />
-        </ListItemIcon>
-        <ListItemText primary='My Acount' />
       </ListItem>
       {remove()}
     </List>

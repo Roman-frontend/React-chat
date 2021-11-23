@@ -1,5 +1,5 @@
 import React, { useMemo, memo } from 'react';
-import { createTheme, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import TextField from '@mui/material/TextField';
@@ -12,7 +12,6 @@ import {
   GET_MESSAGES,
 } from '../ConversationGraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
-import { messageDate } from '../../Helpers/DateCreators';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,17 +22,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '3rem',
     textAlign: 'right',
   },
-  addPeoples: {
-    //padding: theme.spacing(1),
-    textAlign: 'bottom',
-  },
 }));
-
-const theme = createTheme({
-  palette: {
-    color: '#115293',
-  },
-});
 
 export const InputUpdateMessages = memo((props) => {
   const {
@@ -61,11 +50,7 @@ export const InputUpdateMessages = memo((props) => {
   }, [activeChannelId, activeDirectMessageId]);
 
   const chatId = useMemo(() => {
-    return activeDirectMessageId
-      ? activeDirectMessageId
-      : activeChannelId
-      ? activeChannelId
-      : null;
+    return activeDirectMessageId || activeChannelId || null;
   }, [activeChannelId, activeDirectMessageId]);
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
@@ -74,27 +59,23 @@ export const InputUpdateMessages = memo((props) => {
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
       });
-      const chatMessages =
-        cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
-          ? cacheMsg.messages.chatMessages
-          : [];
-      if (cacheMsg && (data.message || data.message)) {
-        const msg = data.message.create;
-        cache.modify({
-          fields: {
-            messages() {
-              return {
-                ...cacheMsg.messages,
-                chatMessages: [...chatMessages, msg],
-              };
+      if (cacheMsg && data?.message) {
+        const chatMessages = cacheMsg?.messages?.chatMessages || [];
+        const newMsg = data.message.create;
+
+        cache.writeQuery({
+          query: GET_MESSAGES,
+          data: {
+            messages: {
+              ...cacheMsg.messages,
+              chatMessages: [...chatMessages, newMsg],
             },
           },
         });
       }
     },
     onCompleted(data) {
-      const createdMessage = data.message.create;
-      sendMessageToWS(createdMessage);
+      sendMessageToWS(data.message.create);
     },
   });
 
@@ -104,19 +85,14 @@ export const InputUpdateMessages = memo((props) => {
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
       });
-      const chatMessages =
-        cacheMsg && cacheMsg.messages && cacheMsg.messages.chatMessages
-          ? cacheMsg.messages.chatMessages
-          : [];
-      if (cacheMsg && message) {
-        const changeMessages = chatMessages.map((msg) => {
+      if (cacheMsg && message?.change) {
+        const cacheMessages = cacheMsg?.messages?.chatMessages || [];
+        const chatMessages = cacheMessages.map((msg) => {
           return msg.id === message.change.id ? message.change : msg;
         });
         cache.writeQuery({
           query: GET_MESSAGES,
-          data: {
-            messages: { ...cacheMsg.messages, chatMessages: changeMessages },
-          },
+          data: { messages: { ...cacheMsg.messages, chatMessages } },
         });
       }
     },
@@ -124,8 +100,7 @@ export const InputUpdateMessages = memo((props) => {
       console.log(`Помилка ${error}`);
     },
     onCompleted(data) {
-      const changedMessage = data.message.change;
-      sendMessageToWS(changedMessage);
+      sendMessageToWS(data.message.change);
     },
   });
 
@@ -152,12 +127,11 @@ export const InputUpdateMessages = memo((props) => {
   }
 
   async function changeMessageText(text) {
-    const newMsg = {
-      id: changeMessageRef.current.id,
-      text,
-      chatType,
-    };
-    changeMessage({ variables: { input: newMsg } });
+    const newMsg = { id: popupMessage.id, text, chatType };
+    changeMessage({
+      variables: { input: newMsg },
+      optimisticResponse: { message: { change: { ...popupMessage, text } } },
+    });
     changeMessageRef.current = null;
     setCloseBtnChangeMsg(null);
   }
@@ -177,11 +151,13 @@ export const InputUpdateMessages = memo((props) => {
           create: {
             chatId,
             chatType,
-            createdAt: messageDate(),
-            id: messageDate(),
-            replyOn: null,
+            createdAt: Date.now(),
+            id: Date.now(),
+            replyOn: popupMessage.text,
             text,
+            updatedAt: '',
             senderId: auth.id,
+            __typename: 'MessagePayload',
           },
         },
       },
@@ -189,14 +165,8 @@ export const InputUpdateMessages = memo((props) => {
     setCloseBtnReplyMsg(null);
   };
 
-  function newMessage(textMessage) {
-    const newMsg = {
-      chatId,
-      chatType,
-      senderId: auth.id,
-      text: textMessage,
-    };
-
+  function newMessage(text) {
+    const newMsg = { chatId, chatType, senderId: auth.id, text };
     createMessage({
       variables: newMsg,
       optimisticResponse: {
@@ -204,11 +174,13 @@ export const InputUpdateMessages = memo((props) => {
           create: {
             chatId,
             chatType,
-            createdAt: messageDate(),
-            id: messageDate(),
+            createdAt: Date.now(),
+            id: Date.now(),
             replyOn: null,
             text: textMessage,
+            updatedAt: '',
             senderId: auth.id,
+            __typename: 'MessagePayload',
           },
         },
       },
@@ -221,13 +193,11 @@ export const InputUpdateMessages = memo((props) => {
         <Grid item xs={1}>
           <BorderColorIcon
             color='input'
-            className={classes.addPeoples}
-            style={{ fontSize: 40, top: '1rem' }}
+            style={{ fontSize: 40, top: '1rem', textAlign: 'bottom' }}
           />
         </Grid>
         <Grid item xs={11}>
           <TextField
-            //className={classes.root}
             color='input'
             label='Enter text'
             variant='standard'

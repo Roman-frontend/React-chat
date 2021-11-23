@@ -27,9 +27,14 @@ const theme = createTheme({
       main: '#ffffff', //lightGreen[400],
       contrastText: '#ffffff',
     },
+    leftBarItem: {
+      light: '#ffffff',
+      main: '#ffffff',
+      contrastText: '#000000',
+    },
     text: {
-      primary: '#ffffff',
-      secondary: '#ffffff',
+      primary: '#FFFFFF',
+      secondary: '#FFFFFF',
       select: '#090912',
       disabled: grey[100],
     },

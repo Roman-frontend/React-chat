@@ -24,14 +24,19 @@ export const DirectMessage = memo((props) => {
     users &&
     Array.isArray(users.users)
   ) {
+    //console.log(activeDirectMessageId, drMsg.id);
     const name = determineActiveChat(drMsg, users.users, authId);
     return (
       <ListItem
         button
         key={key}
         sx={{
-          '&:hover': {
-            opacity: [0.9, 0.8, 0.7],
+          '&.Mui-selected': {
+            background: theme.palette.action.active,
+            color: theme.palette.leftBarItem.contrastText,
+            '&:hover': {
+              background: theme.palette.action.active,
+            },
           },
           textAlign: 'center',
         }}

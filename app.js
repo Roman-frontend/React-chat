@@ -13,7 +13,11 @@ require('./Soket/soket');
     typeDefs,
     resolvers,
     context: ({ req }) => {
-      if (req.body.operationName !== 'login' || 'register') {
+      console.log(req.body.operationName);
+      if (
+        req.body.operationName !== 'Login' &&
+        req.body.operationName !== 'Register'
+      ) {
         return verifyToken(req.headers.authorization);
       }
     },

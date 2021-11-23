@@ -11,7 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { CustomThemeContext } from '../../../App';
 import { AUTH } from '../../../GraphQLApp/queryes';
-import imageProfile from '../../../images/Profile.jpg';
+import imageProfile from '../../../images/User-Icon.png';
 
 const HeaderProfile = (props) => {
   const { setTheme } = useContext(CustomThemeContext);
@@ -33,18 +33,6 @@ const HeaderProfile = (props) => {
           <Avatar alt='Remy Sharp' src={imageProfile} style={{ size: '5px' }} />
         </ListItemIcon>
         <ListItemText primary={auth && auth.name ? auth.name : '#general'} />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <PersonIcon />
-        </ListItemIcon>
-        <ListItemText primary='Profile' />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIndSharpIcon />
-        </ListItemIcon>
-        <ListItemText primary='My Acount' />
       </ListItem>
       <ListItem button onClick={handleLogout}>
         <ListItemIcon>

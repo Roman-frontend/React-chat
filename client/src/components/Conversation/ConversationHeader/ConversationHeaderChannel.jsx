@@ -26,7 +26,7 @@ export const ConversationHeaderChannel = (props) => {
     setModalAddPeopleIsOpen,
   } = props;
   const theme = useTheme();
-  const { data: channels } = useQuery(CHANNELS);
+  const { data: dChannels } = useQuery(CHANNELS);
   const { enqueueSnackbar } = useSnackbar();
   const [modalIsShowsMembers, setModalIsShowsMembers] = useState(false);
   const [isOpenRightBarChannels, setIsOpenRightBarChannels] = useState(false);
@@ -35,8 +35,8 @@ export const ConversationHeaderChannel = (props) => {
 
   const [addMemberToChannel] = useMutation(ADD_MEMBER_CHANNEL, {
     update: (cache, { data: { channel } }) => {
-      if (channels && Array.isArray(channels.userChannels)) {
-        const channelsWithChannelHasMember = channels.userChannels.map(
+      if (dChannels?.userChannels?.length) {
+        const channelsWithChannelHasMember = dChannels.userChannels.map(
           (userChannel) => {
             if (userChannel && userChannel.id === channel.addMember.id) {
               return { ...userChannel, members: channel.addMember.members };
@@ -46,7 +46,7 @@ export const ConversationHeaderChannel = (props) => {
         );
         cache.writeQuery({
           query: CHANNELS,
-          data: { ...channels, userChannels: channelsWithChannelHasMember },
+          data: { ...dChannels, userChannels: channelsWithChannelHasMember },
         });
       }
     },
@@ -61,12 +61,12 @@ export const ConversationHeaderChannel = (props) => {
   });
 
   const activeChannel = useMemo(() => {
-    if (activeChannelId && channels && Array.isArray(channels.userChannels)) {
-      return channels.userChannels.find(
+    if (activeChannelId && dChannels?.userChannels?.length) {
+      return dChannels.userChannels.find(
         (channel) => channel !== null && channel.id === activeChannelId
       );
     }
-  }, [activeChannelId, channels]);
+  }, [activeChannelId, dChannels]);
 
   useEffect(() => {
     if (activeChannel) {
@@ -102,10 +102,35 @@ export const ConversationHeaderChannel = (props) => {
         style={{ alignItems: 'center', height: '4.3rem' }}
         justify='space-between'
       >
-        <Grid item xs={6} style={{ margin: '0vw 2vw', padding: 0 }}>
-          <b className='conversation__name'>
-            ✩ {activeChannel ? activeChannel.name : '#general'}
-          </b>
+        <Grid
+          item
+          xs={7}
+          style={{
+            height: 'inherit',
+            padding: '0vw 1.5vw',
+            margin: '0vw 0.5vw',
+            cursor: 'pointer',
+          }}
+          sx={{
+            '&:hover': {
+              color: theme.palette.action.active,
+              background: theme.palette.action.hover,
+            },
+          }}
+          onClick={toggleDrawer(true)}
+        >
+          <p
+            className='conversation__name'
+            style={{ fontWeight: 'bold', marginTop: '1.5rem' }}
+          >
+            ✩ {activeChannel ? activeChannel.name : ''}
+          </p>
+        </Grid>
+        <Grid item xs={1} style={{ textAlign: 'center', margin: '0px 8px' }}>
+          <GroupAddIcon
+            style={{ fontSize: 50, cursor: 'pointer' }}
+            onClick={() => setModalAddPeopleIsOpen(true)}
+          />
         </Grid>
         <Grid
           item
@@ -120,38 +145,6 @@ export const ConversationHeaderChannel = (props) => {
             activeChannel={activeChannel}
             setModalIsShowsMembers={setModalIsShowsMembers}
           />
-        </Grid>
-        <Grid item xs={1} style={{ textAlign: 'center', margin: '0px 8px' }}>
-          <GroupAddIcon
-            style={{ fontSize: 50, cursor: 'pointer' }}
-            onClick={() => setModalAddPeopleIsOpen(true)}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={1}
-          style={{
-            alignSelf: 'center',
-            cursor: 'pointer',
-            padding: 0,
-            margin: '0px 8px',
-          }}
-        >
-          <IconButton
-            edge='end'
-            aria-label='account of current user'
-            aria-haspopup='true'
-            color='inherit'
-            onClick={toggleDrawer(true)}
-          >
-            <GroupIcon
-              style={{
-                background: 'cadetblue',
-                borderRadius: '50%',
-                fontSize: 40,
-              }}
-            />
-          </IconButton>
         </Grid>
       </Grid>
       <div>

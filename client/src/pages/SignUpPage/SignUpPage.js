@@ -102,6 +102,7 @@ export const SignUpPage = memo((props) => {
           label='Name'
           placeholder='Введите имя'
           name='name'
+          autoFocus={true}
           fieldError={errors.name}
           type='name'
           inputSignUpRef={ref.name}

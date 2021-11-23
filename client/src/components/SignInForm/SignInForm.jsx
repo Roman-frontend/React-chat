@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function SignInForm(props) {
-  const { label, type, name } = props;
+  const { label, type, name, autoFocus } = props;
   const classes = useStyles();
 
   return (
@@ -30,6 +30,7 @@ export function SignInForm(props) {
                 color='input'
                 //зупиняє анімацію
                 //InputLabelProps={{ shrink: true }}
+                autoFocus={autoFocus}
                 name={name}
                 type={type}
                 {...field}

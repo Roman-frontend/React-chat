@@ -16,6 +16,7 @@ export default function setStylesChat(theme) {
     },
     header: { paddingLeft: 8 },
     conversation: {
+      height: 520,
       flexGrow: 1,
       p: '20px 0px 0px 0px',
       backgroundColor: theme.palette.primary.light,

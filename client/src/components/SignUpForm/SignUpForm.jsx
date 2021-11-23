@@ -17,7 +17,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function SignUpForm(props) {
-  const { label, type, name, fieldError = true, inputSignUpRef } = props;
+  const {
+    label,
+    type,
+    name,
+    fieldError = true,
+    inputSignUpRef,
+    autoFocus = false,
+  } = props;
   const classes = useStyles();
   const isError =
     fieldError === undefined || fieldError === true ? false : true;
@@ -32,6 +39,7 @@ export function SignUpForm(props) {
         InputLabelProps={{
           classes: { standard: classes.label },
         }}
+        autoFocus={autoFocus}
         ref={inputSignUpRef}
         error={isError}
         size='small'

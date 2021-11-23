@@ -28,7 +28,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   } = props;
   const theme = useTheme();
   const { data: auth } = useQuery(AUTH);
-  const { data: allChannels } = useQuery(CHANNELS);
+  const { data: dChannels } = useQuery(CHANNELS);
   const { data: allUsers } = useQuery(GET_USERS);
   const notInvitedRef = useRef();
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -36,12 +36,8 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
   useEffect(() => {
     if (allUsers && allUsers.users && auth && auth.id) {
       let allNotInvited = allUsers.users.filter((user) => user.id !== auth.id);
-      if (
-        activeChannelId &&
-        allChannels &&
-        Array.isArray(allChannels.userChannels)
-      ) {
-        allChannels.userChannels.forEach((channel) => {
+      if (activeChannelId && dChannels?.userChannels?.length) {
+        dChannels.userChannels.forEach((channel) => {
           if (channel && channel.id === activeChannelId) {
             channel.members.forEach((memberId) => {
               allNotInvited = allNotInvited.filter((user) => {
@@ -54,7 +50,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
       notInvitedRef.current = allNotInvited;
       //notInvitedRef.current = allUsers.users;
     }
-  }, [allUsers, allChannels, auth, activeChannelId]);
+  }, [allUsers, dChannels, auth, activeChannelId]);
 
   const closePopap = () => {
     setModalAddPeopleIsOpen(false);

@@ -22,13 +22,18 @@ const theme = createTheme({
       main: '#000000', //lightGreen[400],
       contrastText: '#FFFFFF',
     },
+    leftBarItem: {
+      light: '#ffffff',
+      main: '#000000',
+      contrastText: '#ffffff',
+    },
     error: {
       main: '#ff0000',
       contrastText: red[100],
     },
     text: {
-      primary: '#262626',
-      secondary: '#0000b5',
+      primary: '#000000',
+      secondary: '#000000',
       select: '#0000b5',
       disabled: grey[500],
     },
@@ -57,6 +62,17 @@ const theme = createTheme({
     MuiButton: {
       label: {
         color: '#f1f1f1',
+      },
+    },
+  }, */
+
+  /* components: {
+    MuiListItem: {
+      styleOverrides: {
+        selected: {
+          backgroundColor: 'red',
+          color: 'black',
+        },
       },
     },
   }, */

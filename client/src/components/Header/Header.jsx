@@ -2,15 +2,14 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { useTheme } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Badge from '@mui/material/Badge';
 import MenuIcon from '@mui/icons-material/Menu';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
@@ -18,7 +17,18 @@ import Button from '@mui/material/Button';
 import HeaderProfile from './HeaderProfile/HeaderProfile.jsx';
 import { AppBar, MaterialUISwitch } from './HeaderStyles.jsx';
 import { CustomThemeContext } from '../../App';
-import imageProfile from '../../images/Profile.jpg';
+import imageProfile from '../../images/User-Icon.png';
+
+const BootstrapTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.black,
+  },
+}));
 
 export default function Header(props) {
   const theme = useTheme();
@@ -27,11 +37,13 @@ export default function Header(props) {
   const menuId = 'primary-search-account-menu';
   const { t, i18n } = useTranslation();
   const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
+  const [language, setLanguage] = useState('en');
 
   const isDark = Boolean(currentTheme === 'dark');
 
   const changeLanguage = (language) => {
     i18n.changeLanguage(language);
+    setLanguage(language);
   };
 
   const handleChangeSwitch = (event) => {
@@ -74,12 +86,12 @@ export default function Header(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Grid item xs={10}>
+          <Grid item xs={9}>
             <Typography variant='h6' noWrap component='div'>
-              {t('description.part3')}
+              {t('description.header')}
             </Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2}>
             <MaterialUISwitch
               sx={{ m: 1 }}
               checked={!isDark}
@@ -87,40 +99,50 @@ export default function Header(props) {
             />
           </Grid>
           <Grid item xs={1}>
-            <Tippy content={t('description.part2')}>
-              <Button color='inherit' onClick={() => changeLanguage('en')}>
+            <BootstrapTooltip
+              title={
+                language === 'en'
+                  ? t('description.infoLanguage')
+                  : t('description.changeEnLanguage')
+              }
+              TransitionComponent={Zoom}
+              placement='bottom'
+            >
+              <Button
+                style={{
+                  background: language === 'en' && theme.palette.primary.main,
+                  border: language === 'en' && 'solid 2px',
+                  padding: 0,
+                }}
+                color='inherit'
+                onClick={() => changeLanguage('en')}
+              >
                 EN
               </Button>
-            </Tippy>
+            </BootstrapTooltip>
           </Grid>
           <Grid item xs={1}>
-            <Tippy content={t('description.part2')}>
-              <Button color='inherit' onClick={() => changeLanguage('ru')}>
+            <BootstrapTooltip
+              title={
+                language === 'ru'
+                  ? t('description.infoLanguage')
+                  : t('description.changeRuLanguage')
+              }
+              TransitionComponent={Zoom}
+              placement='bottom'
+            >
+              <Button
+                style={{
+                  background: language === 'ru' && theme.palette.primary.main,
+                  border: language === 'ru' && 'solid 2px',
+                  padding: 0,
+                }}
+                color='inherit'
+                onClick={() => changeLanguage('ru')}
+              >
                 RU
               </Button>
-            </Tippy>
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              size='large'
-              aria-label='show 4 new mails'
-              color='inherit'
-            >
-              <Badge badgeContent={4} color='error'>
-                <MailIcon />
-              </Badge>
-            </IconButton>
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              size='large'
-              aria-label='show 17 new notifications'
-              color='inherit'
-            >
-              <Badge badgeContent={17} color='error'>
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            </BootstrapTooltip>
           </Grid>
           <Grid item xs={1}>
             <IconButton

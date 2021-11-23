@@ -54,7 +54,7 @@ export const APP = gql`
 `;
 
 export const REGISTER = gql`
-  mutation registerMutation(
+  mutation Register(
     $name: AuthName!
     $email: Email!
     $password: AuthPassword!

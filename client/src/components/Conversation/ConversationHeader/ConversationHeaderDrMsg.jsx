@@ -23,12 +23,8 @@ export const ConversationHeaderDrMsg = (props) => {
   function createName() {
     if (
       activeDirectMessageId &&
-      listDirectMessages &&
-      Array.isArray(listDirectMessages.directMessages) &&
-      listDirectMessages.directMessages[0] &&
-      allUsers &&
-      Array.isArray(allUsers.users) &&
-      allUsers.users[0]
+      listDirectMessages?.directMessages?.length &&
+      allUsers?.users?.length
     ) {
       const activeDirectMessage = listDirectMessages.directMessages.find(
         (directMessage) => {
@@ -44,7 +40,7 @@ export const ConversationHeaderDrMsg = (props) => {
         return <b className='conversation__name'>✩ {name}</b>;
       }
     }
-    return <b className='conversation__name'>✩ #general</b>;
+    return null;
   }
 
   const toggleDrawer = (open) => (event) => {
@@ -63,30 +59,22 @@ export const ConversationHeaderDrMsg = (props) => {
       <Grid
         container
         spacing={1}
-        style={{ alignItems: 'center', height: '4.3rem' }}
+        style={{
+          alignItems: 'center',
+          height: '4.3rem',
+          cursor: 'pointer',
+          padding: '0vh 2vw',
+        }}
+        sx={{
+          '&:hover': {
+            color: theme.palette.action.active,
+            background: theme.palette.action.hover,
+          },
+        }}
         justify='space-between'
+        onClick={toggleDrawer(true)}
       >
-        <Grid item xs={9} style={{ margin: '0vw 2vw', padding: 0 }}>
-          {createName()}
-        </Grid>
-        <Grid item xs={2}>
-          <IconButton
-            edge='end'
-            aria-label='account of current user'
-            aria-haspopup='true'
-            color='inherit'
-            onClick={toggleDrawer(true)}
-          >
-            <PersonIcon
-              style={{
-                background: 'cadetblue',
-                borderRadius: '50%',
-                fontSize: 40,
-                cursor: 'pointer',
-              }}
-            />
-          </IconButton>
-        </Grid>
+        {createName()}
       </Grid>
       <div>
         <React.Fragment>

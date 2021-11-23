@@ -42,6 +42,7 @@ export const CREATE_MESSAGE = gql`
         chatId
         chatType
         createdAt
+        updatedAt
       }
     }
   }

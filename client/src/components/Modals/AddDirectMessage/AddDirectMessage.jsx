@@ -19,8 +19,8 @@ const styles = (theme) => ({
 });
 
 export const AddDirectMessage = withStyles(styles)((props) => {
-  const { data: allUsers } = useQuery(GET_USERS);
-  const { data: drMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { data: dUsers } = useQuery(GET_USERS);
+  const { data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const {
     done,
     classes,
@@ -35,16 +35,12 @@ export const AddDirectMessage = withStyles(styles)((props) => {
   };
 
   const listNotInvited = useMemo(() => {
-    if (allUsers && allUsers.users[0] && reactiveVarId()) {
-      let allNotInvited = allUsers.users.filter(
+    if (dUsers?.users?.length && reactiveVarId()) {
+      let allNotInvited = dUsers.users.filter(
         (user) => user.id !== reactiveVarId()
       );
-      if (
-        drMessages &&
-        drMessages.directMessages &&
-        drMessages.directMessages[0]
-      ) {
-        drMessages.directMessages.forEach((directMessage) => {
+      if (dDms?.directMessages?.length) {
+        dDms.directMessages.forEach((directMessage) => {
           directMessage.members.forEach((memberId) => {
             allNotInvited = allNotInvited.filter(
               (user) => user.id !== memberId
@@ -53,9 +49,9 @@ export const AddDirectMessage = withStyles(styles)((props) => {
         });
       }
       return allNotInvited;
-      //return allUsers.users;
+      //return dUsers.users;
     }
-  }, [allUsers, drMessages, reactiveVarId()]);
+  }, [dUsers, dDms, reactiveVarId()]);
 
   return (
     <>

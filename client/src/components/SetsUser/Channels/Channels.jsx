@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
+import { useTheme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -31,8 +32,9 @@ export function Channels(props) {
     isErrorInPopap,
     setIsErrorInPopap,
   } = props;
-  const classes = useStyles();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const classes = useStyles();
   const { data: allChannels } = useQuery(CHANNELS);
   const [open, setOpen] = useState(true);
 
@@ -89,14 +91,15 @@ export function Channels(props) {
       </div>
       <Button
         size='small'
-        style={{
+        sx={{
           width: '100%',
           padding: 0,
+          '&:hover': { color: theme.palette.leftBarItem.light },
         }}
         color='warning'
         onClick={() => setModalAddChannelIsOpen(true)}
       >
-        {isOpenLeftBar ? '+ Add Channel' : '+'}
+        {isOpenLeftBar ? `+ ${t('description.addChannel')}` : '+'}
       </Button>
       <AddChannel
         modalAddChannelIsOpen={modalAddChannelIsOpen}

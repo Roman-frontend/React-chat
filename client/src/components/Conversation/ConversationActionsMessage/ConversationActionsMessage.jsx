@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { nanoid } from 'nanoid';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/system';
@@ -27,10 +28,19 @@ export function ConversationActionsMessage(props) {
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const [focusRootInput, setFocusRootInput] = useState(false);
 
   useEffect(() => {
     setOpenPopup(null);
+    setCloseBtnReplyMsg(null);
+    setCloseBtnChangeMsg(null);
   }, [activeChannelId, activeDirectMessageId]);
+
+  useEffect(() => {
+    if (focusRootInput) {
+      inputRef.current.focus();
+    }
+  }, [focusRootInput]);
 
   const [removeMessage] = useMutation(REMOVE_MESSAGE, {
     update: (cache) => {
@@ -50,7 +60,7 @@ export function ConversationActionsMessage(props) {
   const handleAnswer = () => {
     setOpenPopup(null);
     setCloseBtnReplyMsg(true);
-    inputRef.current.focus();
+    setFocusRootInput(nanoid());
     inputRef.current.value = '';
   };
 
@@ -58,7 +68,8 @@ export function ConversationActionsMessage(props) {
     setCloseBtnChangeMsg(true);
     setOpenPopup(null);
     changeMessageRef.current = popupMessage;
-    inputRef.current.focus();
+    console.log(inputRef);
+    setFocusRootInput(nanoid());
     inputRef.current.value = popupMessage.text;
   };
 
@@ -75,7 +86,10 @@ export function ConversationActionsMessage(props) {
 
   return (
     <Box
-      sx={{ background: theme.palette.primary.main, maxWidth: 'fit-content' }}
+      sx={{
+        background: theme.palette.primary.main,
+        maxWidth: 'initial',
+      }}
       style={{ display: !openPopup && 'none' }}
     >
       <Button
@@ -127,7 +141,6 @@ export function ConversationActionsMessage(props) {
         size='small'
         variant='contained'
         color='info'
-        startIcon={<DeleteIcon />}
         onClick={handleCancel}
       >
         CANCEL

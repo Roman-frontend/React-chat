@@ -9,6 +9,7 @@ type CreateMessagePayload {
   senderId: ID
   text: String
   createdAt: String
+  updatedAt: String
   replyOn: String
   chatType: ChatType
   chatId: ID

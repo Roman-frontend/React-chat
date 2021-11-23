@@ -19,22 +19,18 @@ import { useSnackbar } from 'notistack';
 const DirectMessageRightBar = (props) => {
   const { data: auth } = useQuery(AUTH);
   const { data: users } = useQuery(GET_USERS);
-  const { data: directMessages } = useQuery(GET_DIRECT_MESSAGES);
+  const { data: dDm } = useQuery(GET_DIRECT_MESSAGES);
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
   const { enqueueSnackbar } = useSnackbar();
 
   const activeDirectMessage = useMemo(() => {
-    if (
-      activeDirectMessageId &&
-      directMessages &&
-      Array.isArray(directMessages.directMessages)
-    ) {
-      return directMessages.directMessages.find(
+    if (activeDirectMessageId && dDm?.directMessages?.length) {
+      return dDm.directMessages.find(
         (drMsg) => drMsg !== null && drMsg.id === activeDirectMessageId
       );
     }
-  }, [activeDirectMessageId, directMessages]);
+  }, [activeDirectMessageId, dDm]);
 
   const name = useMemo(() => {
     if (activeDirectMessage) {
@@ -87,18 +83,6 @@ const DirectMessageRightBar = (props) => {
           />
         </ListItemIcon>
         <ListItemText primary={name} />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <PersonIcon />
-        </ListItemIcon>
-        <ListItemText primary='Profile' />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIndSharpIcon />
-        </ListItemIcon>
-        <ListItemText primary='My Acount' />
       </ListItem>
       <ListItem
         button

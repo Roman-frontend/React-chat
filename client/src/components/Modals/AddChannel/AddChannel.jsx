@@ -24,18 +24,13 @@ const useStyles = makeStyles((theme) => ({
   input: {
     height: '30px',
     width: '220px',
-    color: '#0000b5',
   },
 }));
 
 const helperTextStyles = makeStyles((theme) => ({
   root: {
     margin: 4,
-  },
-  error: {
-    '&.MuiFormHelperText-root.Mui-error': {
-      color: blue[500],
-    },
+    color: 'red',
   },
 }));
 
@@ -83,16 +78,6 @@ export const AddChannel = (props) => {
         },
       });
     },
-    /* update: (proxy, { data: { channel } }) => {
-      const ready = proxy.readQuery({
-        query: CHANNELS,
-        variables: { channelsId: reactiveVarChannels() },
-      });
-      proxy.writeQuery({
-        query: CHANNELS,
-        data: { userChannels: [...ready.userChannels, channel.create] },
-      });
-    }, */
     onCompleted(data) {
       const storage = JSON.parse(sessionStorage.getItem('storageData'));
       const toStorage = JSON.stringify({
@@ -170,7 +155,7 @@ export const AddChannel = (props) => {
           <div className='set-channel-forms' id='add-private-channel'>
             <label className='set-channel-forms__label'>Private</label>
             <Checkbox
-              color='error'
+              color='warning'
               checked={isPrivate}
               onClick={changeIsPrivate}
             />
@@ -180,6 +165,7 @@ export const AddChannel = (props) => {
             label='Name'
             color='secondary'
             classes={{ root: popapClasses.input }}
+            sx={{ color: 'white' }}
             name='name'
             required={true}
             helperText={isErrorInPopap ? 'required' : ''}
@@ -191,7 +177,6 @@ export const AddChannel = (props) => {
           <TextField
             variant='standard'
             color='secondary'
-            //classes={{ root: popapClasses.input }}
             label='Discription'
             sx={{ display: 'flex', margin: '27px 0px 20px' }}
             name='discription'

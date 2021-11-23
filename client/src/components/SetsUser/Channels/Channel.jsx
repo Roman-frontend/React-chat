@@ -1,6 +1,5 @@
 import React from 'react';
 import { useReactiveVar } from '@apollo/client';
-import { nanoid } from 'nanoid';
 import { withStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
 import ListItem from '@mui/material/ListItem';
@@ -20,8 +19,12 @@ export const Channel = withStyles(styles)((props) => {
         button
         key={key}
         sx={{
-          '& .Mui-selected': {
-            backgroundColor: 'red',
+          '&.Mui-selected': {
+            background: theme.palette.action.active,
+            color: theme.palette.leftBarItem.contrastText,
+            '&:hover': {
+              background: theme.palette.action.active,
+            },
           },
         }}
         onClick={() => activeChatId({ activeChannelId: channel.id })}

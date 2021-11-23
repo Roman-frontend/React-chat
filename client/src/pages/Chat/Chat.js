@@ -26,7 +26,7 @@ import { Loader } from '../../components/Helpers/Loader';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
 import setStylesChat from './styles.js';
 
-export const Chat = (props) => {
+export const Chat = () => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const activeChat = useReactiveVar(activeChatId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -34,7 +34,7 @@ export const Chat = (props) => {
     useReactiveVar(activeChatId).activeDirectMessageId;
   const { loading: lUsers } = useQuery(GET_USERS);
   const { loading: lChannels, data: dChannels } = useQuery(CHANNELS);
-  const { loading: lDirectMessages, data: dDm } = useQuery(GET_DIRECT_MESSAGES);
+  const { loading: lDms, data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const [isErrorInPopap, setIsErrorInPopap] = useState(false);
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
@@ -52,32 +52,20 @@ export const Chat = (props) => {
 
   useEffect(() => {
     if (
-      (dChannels &&
-        dChannels.userChannels &&
-        dChannels.userChannels.length > 0) ||
-      (dDm &&
-        dDm.directMessages &&
-        dDm.directMessages.length > 0 &&
-        (activeChannelId || activeDirectMessageId))
+      (dChannels?.userChannels?.length || dDms?.directMessages?.length) &&
+      (activeChannelId || activeDirectMessageId)
     ) {
       setShow(true);
     } else {
       setShow(false);
     }
-  }, [activeChannelId, activeDirectMessageId, lChannels, lDirectMessages]);
+  }, [activeChannelId, activeDirectMessageId, lChannels, lDms]);
 
   useEffect(() => {
-    if (
-      dChannels &&
-      dChannels.userChannels &&
-      dChannels.userChannels.length === 0 &&
-      dDm &&
-      dDm.directMessages &&
-      dDm.directMessages.length === 0
-    ) {
+    if (!(dChannels?.userChannels?.length || dDms?.directMessages?.length)) {
       setShow(false);
     }
-  }, [dChannels, dDm]);
+  }, [dChannels, dDms]);
 
   useEffect(() => {
     const storage = JSON.parse(sessionStorage.getItem('storageData'));
@@ -102,7 +90,7 @@ export const Chat = (props) => {
     return null;
   };
 
-  if (lUsers && lChannels && lDirectMessages) {
+  if (lUsers && lChannels && lDms) {
     return <Loader />;
   }
 

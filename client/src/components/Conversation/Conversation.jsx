@@ -20,7 +20,7 @@ export default function Conversation(props) {
     setModalAddPeopleIsOpen,
   } = props;
   const theme = useTheme();
-  const { data: channels } = useQuery(CHANNELS);
+  const { data: dChannels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
@@ -33,13 +33,8 @@ export default function Conversation(props) {
   const [openPopup, setOpenPopup] = useState(false);
 
   const checkPrivate = useCallback(() => {
-    if (
-      channels &&
-      Array.isArray(channels.userChannels) &&
-      channels.userChannels[0] &&
-      activeChannelId
-    ) {
-      const activeChannelIsPrivate = channels.userChannels.find(
+    if (dChannels?.userChannels?.length && activeChannelId) {
+      const activeChannelIsPrivate = dChannels.userChannels.find(
         (channel) =>
           channel !== null &&
           channel.id === activeChannelId &&
@@ -50,7 +45,7 @@ export default function Conversation(props) {
         : true;
     }
     return true;
-  }, [channels, activeChannelId, userId]);
+  }, [dChannels, activeChannelId, userId]);
 
   const contentMessages = () => {
     const hasNotAccesToChat = checkPrivate();
@@ -112,7 +107,7 @@ export default function Conversation(props) {
           overflowY: 'auto',
           flexDirection: 'column-reverse',
           display: 'flex',
-          height: closeBtnReplyMsg || closeBtnChangeMsg ? '57vh' : '61vh',
+          height: closeBtnReplyMsg || closeBtnChangeMsg ? 360 : 385,
         }}
       >
         {contentMessages()}

@@ -7,11 +7,11 @@ import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
 import { Loader } from '../../Helpers/Loader';
 
 export const Messages = memo((props) => {
+  const { openPopup, setOpenPopup } = props;
   const userId = useReactiveVar(reactiveVarId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
-  const [openPopup, setOpenPopup] = useState(false);
   const chatType = useMemo(() => {
     return activeDirectMessageId
       ? 'DirectMessage'
@@ -83,10 +83,7 @@ export const Messages = memo((props) => {
     //console.log(`${id}'s ${phase} phase:`);
   };
 
-  console.log('messages');
-
   const renderMessages = useCallback(() => {
-    console.log('renderMessages');
     if (
       messages &&
       messages.messages &&
@@ -110,7 +107,7 @@ export const Messages = memo((props) => {
       });
     }
     return null;
-  }, [messages]);
+  }, [messages, openPopup]);
 
   if (loading) {
     return <Loader />;

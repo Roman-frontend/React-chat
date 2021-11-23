@@ -65,6 +65,7 @@ export const SelectPeople = (props) => {
   const itemRenderer = ({ item, itemIndex, props, state, methods }) => (
     <div
       key={item.id}
+      style={{ background: theme.palette.primary.main }}
       onClick={() => addPeopleToInvited(item, methods.addItem)}
     >
       <div style={{ margin: '10px' }}>{item.email}</div>
@@ -97,13 +98,19 @@ export const SelectPeople = (props) => {
         closeOnSelect={false}
         dropdownPosition={'bottom'}
         itemRenderer={itemRenderer}
-        style={{
-          background: theme.palette.primary.light,
-          color: theme.palette.text.select,
-        }}
       />
       {isErrorInPopap ? (
-        <p style={{ fontSize: 12, paddingLeft: 8, marginTop: 6 }}>required</p>
+        <p
+          style={{
+            fontSize: 12,
+            paddingLeft: 4,
+            marginTop: 6,
+            color: 'red',
+            fontWeight: 600,
+          }}
+        >
+          required
+        </p>
       ) : null}
       <DialogContent
         classes={{ root: styles.dialogContent }}
@@ -125,7 +132,7 @@ export const SelectPeople = (props) => {
               color='secondary'
               onClick={todo}
             >
-              Done
+              Add
             </Button>
           </DialogActions>
         </FormControl>

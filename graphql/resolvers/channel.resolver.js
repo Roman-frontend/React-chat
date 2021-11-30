@@ -12,7 +12,6 @@ const resolvers = {
           const findChannel = await Channel.findById(id);
           if (findChannel) {
             const userIsMember = findChannel.members.includes(userId);
-            console.log(findChannel, userId, userIsMember);
             if (userIsMember) {
               userChannels = userChannels.concat(findChannel);
             }

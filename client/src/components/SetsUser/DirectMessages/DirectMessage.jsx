@@ -1,22 +1,79 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { useTheme } from '@mui/material/styles';
-import { withStyles } from '@mui/styles';
 import ListItem from '@mui/material/ListItem';
+import Badge from '@mui/material/Badge';
 import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import { styles } from '../HelpersSetUsers/SetUsersStyles.jsx';
-import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
+import {
+  activeChatId,
+  reactiveVarId,
+  reactiveOnlineMembers,
+} from '../../../GraphQLApp/reactiveVars';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
+import { GET_MESSAGES } from '../../Conversation/ConversationGraphQL/queryes';
 import { determineActiveChat } from '../../Helpers/determineActiveChat';
+import { StyledBadgeWraper } from '../../Helpers/StyledBadge';
 
 export const DirectMessage = memo((props) => {
-  const { drMsg, key, isOpenLeftBar } = props;
+  const { drMsg, key, isOpenLeftBar, dataForBadgeInformNewMsg, setChatsHasNewMsgs } =
+    props;
+  const [stopLogin, setStopLogin] = useState(true);
   const { data: users } = useQuery(GET_USERS);
+  const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const authId = useReactiveVar(reactiveVarId);
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const { refetch } = useQuery(GET_MESSAGES, {
+    skip: stopLogin,
+    variables: { chatId: drMsg.id, chatType: 'DirectMessage', userId: authId },
+    onError(data) {
+      console.log('error of get messages', data);
+    },
+  });
   const theme = useTheme();
+
+  function drawItem(name) {
+    const friendId =
+      drMsg.members[0] === authId ? drMsg.members[1] : drMsg.members[0];
+    const friendIsOnline = usersOnline.includes(friendId);
+    const variantDot = friendIsOnline ? 'dot' : 'standard';
+    const thisDmHasNewMsgs = dataForBadgeInformNewMsg.find((dm) => dm.id === drMsg.id);
+    const numNewMsgs = thisDmHasNewMsgs ? thisDmHasNewMsgs.num : 0;
+
+    return (
+      <>
+        <StyledBadgeWraper variant={variantDot} name={name} />
+        {isOpenLeftBar && (
+          <Badge badgeContent={numNewMsgs} color='error'>
+            <ListItemText
+              primary={name}
+              style={{ margin: '0px 4px 0px 15px' }}
+            />
+          </Badge>
+        )}
+      </>
+    );
+  }
+
+  function handleClick() {
+    activeChatId({ activeDirectMessageId: drMsg.id });
+    if (dataForBadgeInformNewMsg[0]) {
+      const thisDmHasNewMsgs = dataForBadgeInformNewMsg.find((dm) => dm.id === drMsg.id);
+      if (thisDmHasNewMsgs) {
+        setStopLogin(false);
+        refetch({
+          chatId: drMsg.id,
+          chatType: 'DirectMessage',
+          userId: authId,
+        });
+        const filteredChatHasNewMsgs = dataForBadgeInformNewMsg.filter(
+          (dm) => dm.id !== drMsg.id
+        );
+        setChatsHasNewMsgs(filteredChatHasNewMsgs);
+        setStopLogin(true);
+      }
+    }
+  }
 
   if (
     typeof drMsg === 'object' &&
@@ -24,7 +81,6 @@ export const DirectMessage = memo((props) => {
     users &&
     Array.isArray(users.users)
   ) {
-    //console.log(activeDirectMessageId, drMsg.id);
     const name = determineActiveChat(drMsg, users.users, authId);
     return (
       <ListItem
@@ -40,21 +96,10 @@ export const DirectMessage = memo((props) => {
           },
           textAlign: 'center',
         }}
-        onClick={() => activeChatId({ activeDirectMessageId: drMsg.id })}
+        onClick={handleClick}
         selected={activeDirectMessageId === drMsg.id && true}
       >
-        {isOpenLeftBar ? (
-          <>
-            <Avatar alt={name} size='small'>
-              {name[0]}
-            </Avatar>
-            <ListItemText primary={name} />
-          </>
-        ) : (
-          <Avatar alt={name} size='small'>
-            {name[0]}
-          </Avatar>
-        )}
+        {drawItem(name)}
       </ListItem>
     );
   }

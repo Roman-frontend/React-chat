@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Select from 'react-dropdown-select';
 import { useTheme } from '@mui/material/styles';
 import { GET_USERS } from '../../../GraphQLApp/queryes';
+import {
+  activeChatId,
+  reactiveOnlineMembers,
+} from '../../../GraphQLApp/reactiveVars';
+import { StyledBadgeWraper } from '../../Helpers/StyledBadge';
 //коли відкриваю попап створення чату і нічого не заповняю, нажимаю done і воно просто закриває попап має показати шо є якісь обовязкові поля
 
 const StyledSelect = styled(Select)`
@@ -28,6 +34,7 @@ export const SelectPeople = (props) => {
   const [invited, setInvited] = useState([]);
   const [minHeight, setMinHeight] = useState(120);
   const { data: allUsers } = useQuery(GET_USERS);
+  const usersOnline = useReactiveVar(reactiveOnlineMembers);
 
   const styles = {
     root: {
@@ -63,13 +70,23 @@ export const SelectPeople = (props) => {
   }
 
   const itemRenderer = ({ item, itemIndex, props, state, methods }) => (
-    <div
+    <Box
       key={item.id}
-      style={{ background: theme.palette.primary.main }}
+      sx={{
+        background: theme.palette.primary.main,
+        '&:hover': { background: theme.palette.primary.dark },
+      }}
       onClick={() => addPeopleToInvited(item, methods.addItem)}
     >
-      <div style={{ margin: '10px' }}>{item.email}</div>
-    </div>
+      <div style={{ margin: '10px' }}>
+        <StyledBadgeWraper
+          variant={usersOnline.includes(item.id) ? 'dot' : 'standard'}
+          styleBadge={{ margin: '0px 10px 0px 0px' }}
+          name={item.email}
+        />
+        {item.email}
+      </div>
+    </Box>
   );
 
   return (

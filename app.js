@@ -13,7 +13,6 @@ require('./Soket/soket');
     typeDefs,
     resolvers,
     context: ({ req }) => {
-      console.log(req.body.operationName);
       if (
         req.body.operationName !== 'Login' &&
         req.body.operationName !== 'Register'

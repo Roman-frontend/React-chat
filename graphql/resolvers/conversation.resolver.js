@@ -21,12 +21,9 @@ const resolvers = {
   }),
   Query: {
     messages: async (_, { chatId, chatType, userId }, context) => {
-      console.log('get messages with datas: ', chatId, chatType, userId);
       if (!context.isAuth) throw new Error('you must be logged in');
-      console.log('chatId``````````', chatId);
       if (chatType === 'DirectMessage') {
         const chatMessages = await DirectMessageChat.find({ chatId });
-        console.log('direct messages chatMessages______', chatMessages);
         return { id: chatId, chatMessages };
       } else if (chatType === 'Channel') {
         const isNotMember = await checkAccesToChannel(chatId, userId);
@@ -34,7 +31,6 @@ const resolvers = {
           return;
         }
         const chatMessages = await ChannelMessage.find({ chatId });
-        console.log('channel chatMessages______', chatMessages);
         return { id: chatId, chatMessages };
       }
     },
@@ -53,7 +49,6 @@ const resolvers = {
       } else if (chat.chatType === 'DirectMessage') {
         newMessage = await DirectMessageChat.create(data);
       }
-      console.log('newMessage +++++', newMessage);
       return newMessage;
     },
     change: async (_, { input }, context) => {

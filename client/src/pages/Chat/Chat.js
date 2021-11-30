@@ -39,6 +39,7 @@ export const Chat = () => {
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [dataForBadgeInformNewMsg, setChatsHasNewMsgs] = useState([]);
   const [styles, setStyles] = useState({});
   const theme = useTheme();
 
@@ -83,6 +84,8 @@ export const Chat = () => {
           setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
           isErrorInPopap={isErrorInPopap}
           setIsErrorInPopap={setIsErrorInPopap}
+          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
+          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
       );
     }
@@ -110,6 +113,8 @@ export const Chat = () => {
           isOpenLeftBar={isOpenLeftBar}
           setIsOpenLeftBar={setIsOpenLeftBar}
           modalAddPeopleIsOpen={modalAddPeopleIsOpen}
+          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
+          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
         <Box component='main' sx={styles.conversation}>
           <main>{showConversation()}</main>

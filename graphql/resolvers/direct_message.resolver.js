@@ -125,7 +125,6 @@ const resolvers = {
       };
     },
     remove: async (_, { id }, context) => {
-      console.log('remove direct message');
       if (!context.isAuth) {
         return {
           status: 401,
@@ -163,8 +162,10 @@ const resolvers = {
         (err) => infoError(err)
       );
       await DirectMessageChat.deleteMany({ chatId: id });
+      console.log('removed dm: ', removed);
       return {
         recordId: id,
+        record: { id, members: removed.members },
         status: 200,
         query: {},
         error: {

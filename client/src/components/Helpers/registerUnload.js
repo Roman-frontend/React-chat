@@ -28,6 +28,7 @@ export function registerEnterPage() {
 }
 
 export function registerOnlineUser(usersOnline) {
+  console.log('registerOnlineUser');
   return wsSingleton.clientPromise
     .then((wsClient) => {
       wsClient.addEventListener('message', (response) => {
@@ -44,6 +45,7 @@ export function registerOnlineUser(usersOnline) {
 }
 
 export function registerUnloadPage(msg, onunloadFunc) {
+  console.log('registerUnloadPage');
   let alreadPrompted = false,
     timeoutID = 0,
     reset = function () {
@@ -73,6 +75,7 @@ export function registerUnloadPage(msg, onunloadFunc) {
 }
 
 export function registerOfflineUser() {
+  console.log('registerOfflineUser');
   const storageData = JSON.parse(sessionStorage.getItem('storageData'));
   if (storageData && storageData.channels[0]) {
     const allUserChats = storageData.channels.concat(

@@ -7,6 +7,7 @@ export default function setStylesChat(theme) {
       height: '100vh',
       lineHeight: 'normal',
       background: '#dfe0f7',
+      minWidth: 890,
     },
     workSpace: {
       minWidth: 550,

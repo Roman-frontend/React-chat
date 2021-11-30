@@ -51,7 +51,6 @@ export const ConversationHeaderChannel = (props) => {
       }
     },
     onCompleted(data) {
-      //console.log('data   ', data);
       enqueueSnackbar('User successfully added', { variant: 'success' });
     },
     onError(error) {

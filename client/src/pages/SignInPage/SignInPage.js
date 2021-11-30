@@ -77,7 +77,6 @@ export const SignInPage = ({ route }) => {
         },
       });
       setStopLogin(false);
-      console.log('onSubmit');
       refetch();
     } catch (e) {
       console.error('Помилочка : ', e);

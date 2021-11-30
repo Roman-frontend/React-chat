@@ -12,6 +12,7 @@ type UserDirectMessagesPayload {
 
 type RemoveDirectMessagePayload {
   recordId: ID
+  record: DirectMessage
   status: StatusEnum
   query: Query
   error: ErrorInterface

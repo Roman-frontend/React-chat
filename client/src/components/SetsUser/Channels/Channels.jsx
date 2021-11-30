@@ -78,7 +78,6 @@ export function Channels(props) {
                     <React.Fragment key={channel.id}>
                       <Channel
                         channel={channel}
-                        key={channel.id}
                         isOpenLeftBar={isOpenLeftBar}
                       />
                     </React.Fragment>

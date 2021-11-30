@@ -4,16 +4,9 @@ import { SignInPage } from './pages/SignInPage/SignInPage.js';
 import { Chat } from './pages/Chat/Chat.js';
 import { PrivateRoute } from './components/Helpers/PrivateRoute';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute';
-import { FilterContacts } from './pages/FilterContacts/FilterContacts.jsx';
 import { nanoid } from 'nanoid';
 
 export const routes = [
-  /* {
-    path: '/filterContacts',
-    private: true,
-    exact: true,
-    component: FilterContacts,
-  }, */
   {
     path: '/signIn',
     exact: true,

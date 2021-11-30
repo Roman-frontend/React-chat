@@ -23,6 +23,8 @@ export default function SetsUser(props) {
     isOpenLeftBar,
     setIsOpenLeftBar,
     modalAddPeopleIsOpen,
+    dataForBadgeInformNewMsg,
+    setChatsHasNewMsgs,
   } = props;
   const theme = useTheme();
   const { data: dChannels } = useQuery(CHANNELS);
@@ -99,6 +101,8 @@ export default function SetsUser(props) {
         setModalAddDmIsOpen={setModalAddDmIsOpen}
         isErrorInPopap={isErrorInPopap}
         setIsErrorInPopap={setIsErrorInPopap}
+        dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
+        setChatsHasNewMsgs={setChatsHasNewMsgs}
       />
     </div>
   );

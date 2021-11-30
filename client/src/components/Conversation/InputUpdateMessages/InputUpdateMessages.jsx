@@ -177,7 +177,7 @@ export const InputUpdateMessages = memo((props) => {
             createdAt: Date.now(),
             id: Date.now(),
             replyOn: null,
-            text: textMessage,
+            text,
             updatedAt: '',
             senderId: auth.id,
             __typename: 'MessagePayload',

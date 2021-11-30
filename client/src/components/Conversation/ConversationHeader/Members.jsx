@@ -9,6 +9,7 @@ import {
   activeChatId,
   reactiveOnlineMembers,
 } from '../../../GraphQLApp/reactiveVars';
+import { StyledBadgeWraper } from '../../Helpers/StyledBadge';
 
 export function Members(props) {
   const { activeChannel, setModalIsShowsMembers } = props;
@@ -29,16 +30,13 @@ export function Members(props) {
     activeChannel.members.forEach((memberId) => {
       users.users.forEach((user) => {
         if (user.id === memberId && usersOnline) {
+          const variantDot = usersOnline.includes(user.id) ? 'dot' : 'standard';
           avatars = avatars.concat(
-            <StyledBadge
+            <StyledBadgeWraper
+              variant={variantDot}
               key={user.id}
-              style={{ border: 0 }}
-              overlap='circular'
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              variant={usersOnline.includes(user.id) ? 'dot' : 'standard'}
-            >
-              <Avatar alt={user.name}>{user.name[0]}</Avatar>
-            </StyledBadge>
+              name={user.name}
+            />
           );
         }
       });

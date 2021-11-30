@@ -12,8 +12,6 @@ const CustomThemeProvider = (props) => {
   // eslint-disable-next-line react/prop-types
   const { children } = props;
 
-  console.log(children);
-
   // Read current theme from localStorage or maybe from an api
   const currentTheme = localStorage.getItem('appTheme') || 'light';
 

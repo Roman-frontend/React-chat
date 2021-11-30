@@ -18,6 +18,8 @@ export default function Conversation(props) {
     setIsErrorInPopap,
     modalAddPeopleIsOpen,
     setModalAddPeopleIsOpen,
+    dataForBadgeInformNewMsg,
+    setChatsHasNewMsgs,
   } = props;
   const theme = useTheme();
   const { data: dChannels } = useQuery(CHANNELS);
@@ -64,6 +66,8 @@ export default function Conversation(props) {
           setCloseBtnReplyMsg={setCloseBtnReplyMsg}
           inputRef={inputRef}
           changeMessageRef={changeMessageRef}
+          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
+          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
       );
     }

@@ -68,7 +68,6 @@ export function ConversationActionsMessage(props) {
     setCloseBtnChangeMsg(true);
     setOpenPopup(null);
     changeMessageRef.current = popupMessage;
-    console.log(inputRef);
     setFocusRootInput(nanoid());
     inputRef.current.value = popupMessage.text;
   };

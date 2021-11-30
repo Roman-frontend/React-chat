@@ -27,9 +27,8 @@ export const CREATE_DIRECT_MESSAGE = gql`
         }
         error {
           message
-          __typename # <--- Client will receive error type name
+          __typename
           ... on ValidatorError {
-            # <--- Request additional fields according to error type
             path
             value
           }
@@ -51,6 +50,10 @@ export const REMOVE_DIRECT_MESSAGE = gql`
     directMessages {
       remove(id: $id) {
         recordId
+        record {
+          id
+          members
+        }
         status
         error {
           message

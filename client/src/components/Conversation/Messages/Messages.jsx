@@ -3,15 +3,28 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { wsSingleton } from '../../../WebSocket/soket';
 import Message from './Message/Message.jsx';
 import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
-import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
+import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
+import {
+  reactiveVarId,
+  activeChatId,
+  reactiveDirectMessages,
+  reactiveVarChannels,
+} from '../../../GraphQLApp/reactiveVars';
 import { Loader } from '../../Helpers/Loader';
 
 export const Messages = memo((props) => {
-  const { openPopup, setOpenPopup } = props;
+  const {
+    openPopup,
+    setOpenPopup,
+    dataForBadgeInformNewMsg,
+    setChatsHasNewMsgs,
+  } = props;
   const userId = useReactiveVar(reactiveVarId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
+  const userDmIds = useReactiveVar(reactiveDirectMessages);
+  const { refetch } = useQuery(GET_DIRECT_MESSAGES);
   const chatType = useMemo(() => {
     return activeDirectMessageId
       ? 'DirectMessage'
@@ -45,7 +58,8 @@ export const Messages = memo((props) => {
     .then((wsClient) => {
       wsClient.onmessage = (response) => {
         const parsedRes = JSON.parse(response.data);
-        if (parsedRes && parsedRes.text) {
+        console.log(parsedRes);
+        if (parsedRes && parsedRes.text && parsedRes.chatId === chatId) {
           const oldMsg = client.readQuery({
             query: GET_MESSAGES,
             variables: { chatId, chatType, userId },
@@ -64,6 +78,46 @@ export const Messages = memo((props) => {
               },
             },
           });
+        }
+
+        if (parsedRes && parsedRes.text && parsedRes.chatId !== chatId) {
+          let isFirstNewMsgInChat;
+          if (dataForBadgeInformNewMsg[0]) {
+            isFirstNewMsgInChat = dataForBadgeInformNewMsg.find(
+              (chat) => chat.id === parsedRes.chatId
+            );
+          }
+          console.log(isFirstNewMsgInChat);
+          const num = isFirstNewMsgInChat ? isFirstNewMsgInChat.num + 1 : 1;
+          const newChatHasNewMsgs = { id: parsedRes.chatId, num };
+          const filteredChats = dataForBadgeInformNewMsg.filter(
+            (chat) => chat.id !== parsedRes.chatId
+          );
+          setChatsHasNewMsgs((prev) => [...filteredChats, newChatHasNewMsgs]);
+        }
+
+        if (parsedRes?.message && parsedRes.message === 'added dm') {
+          const storage = JSON.parse(sessionStorage.getItem('storageData'));
+          const toStorage = JSON.stringify({
+            ...storage,
+            directMessages: [...storage.directMessages, parsedRes.id],
+          });
+          sessionStorage.setItem('storageData', toStorage);
+          reactiveDirectMessages([...userDmIds, parsedRes.id]);
+          refetch();
+        }
+        if (parsedRes?.message && parsedRes.message === 'removed dm') {
+          const storage = JSON.parse(sessionStorage.getItem('storageData'));
+          const newDrMsgIds = storage.directMessages.filter(
+            (dmId) => dmId !== parsedRes.id
+          );
+          const toStorage = JSON.stringify({
+            ...storage,
+            directMessages: newDrMsgIds,
+          });
+          sessionStorage.setItem('storageData', toStorage);
+          reactiveDirectMessages(newDrMsgIds);
+          refetch();
         }
       };
     })

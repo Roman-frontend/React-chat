@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -18,9 +18,13 @@ import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { reactiveDirectMessages } from '../../../GraphQLApp/reactiveVars';
+import {
+  reactiveDirectMessages,
+  reactiveVarId,
+} from '../../../GraphQLApp/reactiveVars';
 import { AddDirectMessage } from '../../Modals/AddDirectMessage/AddDirectMessage.jsx';
 import { DirectMessage } from './DirectMessage';
+import { wsSend } from '../../../WebSocket/soket';
 import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +41,8 @@ export function DirectMessages(props) {
     setIsErrorInPopap,
     modalAddDmIsOpen,
     setModalAddDmIsOpen,
+    dataForBadgeInformNewMsg,
+    setChatsHasNewMsgs,
   } = props;
   const theme = useTheme();
   const { t } = useTranslation();
@@ -45,6 +51,7 @@ export function DirectMessages(props) {
   const [open, setOpen] = useState(true);
   const { data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const { enqueueSnackbar } = useSnackbar();
+  const userId = useReactiveVar(reactiveVarId);
 
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
     update(cache, { data: { directMessages } }) {
@@ -83,6 +90,13 @@ export function DirectMessages(props) {
       sessionStorage.setItem('storageData', toStorage);
       reactiveDirectMessages([...reactiveDirectMessages(), ...newDrMsgIds]);
       enqueueSnackbar('Direct Message created!', { variant: 'success' });
+      const dms = data.directMessages.create.record;
+      dms.forEach((dm) => {
+        const invitedId = dm.members.find((memberId) => {
+          return memberId !== userId;
+        });
+        wsSend({ meta: 'addedDm', userId, dmId: dm.id, invitedId });
+      });
     },
   });
 
@@ -137,6 +151,8 @@ export function DirectMessages(props) {
                     <DirectMessage
                       drMsg={drMsg}
                       isOpenLeftBar={isOpenLeftBar}
+                      dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
+                      setChatsHasNewMsgs={setChatsHasNewMsgs}
                     />
                   </React.Fragment>
                 ))}

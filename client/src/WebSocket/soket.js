@@ -3,7 +3,6 @@ class Ws extends Object {
     return new Promise((resolve, reject) => {
       let wsClient = new WebSocket('ws://localhost:8080');
       wsClient.onopen = () => {
-        //console.log('connected');
         resolve(wsClient);
       };
       wsClient.onerror = (error) => {
@@ -23,7 +22,6 @@ export function wsSend(data) {
   wsSingleton.clientPromise
     .then((wsClient) => {
       wsClient.send(JSON.stringify(data));
-      //console.log('sended');
     })
     .catch((error) => console.log(error));
 }

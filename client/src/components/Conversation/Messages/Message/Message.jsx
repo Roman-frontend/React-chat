@@ -60,6 +60,7 @@ const Message = memo(
     return (
       <Box
         sx={{
+          cursor: 'pointer',
           position: 'relative',
           '&:hover': {
             backgroundColor: openPopup !== id && theme.palette.primary.main,

@@ -1,15 +1,13 @@
 import React from 'react';
 import { useReactiveVar } from '@apollo/client';
-import { withStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
-import { styles } from '../HelpersSetUsers/SetUsersStyles.jsx';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 
-export const Channel = withStyles(styles)((props) => {
-  const { channel, key, isOpenLeftBar } = props;
+export const Channel = (props) => {
+  const { channel, isOpenLeftBar } = props;
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const theme = useTheme();
 
@@ -17,7 +15,6 @@ export const Channel = withStyles(styles)((props) => {
     return (
       <ListItem
         button
-        key={key}
         sx={{
           '&.Mui-selected': {
             background: theme.palette.action.active,
@@ -30,23 +27,19 @@ export const Channel = withStyles(styles)((props) => {
         onClick={() => activeChatId({ activeChannelId: channel.id })}
         selected={activeChannelId === channel.id && true}
       >
-        {isOpenLeftBar ? (
-          <>
-            <Avatar alt={channel.name} size='small'>
-              {channel.name[0]}
-            </Avatar>
+        <>
+          <Avatar alt={channel.name} size='small'>
+            {channel.name[0]}
+          </Avatar>
+          {isOpenLeftBar && (
             <ListItemText
               primary={channel.name}
               style={{ textAlign: 'center' }}
             />
-          </>
-        ) : (
-          <Avatar alt={channel.name} size='small'>
-            {channel.name[0]}
-          </Avatar>
-        )}
+          )}
+        </>
       </ListItem>
     );
   }
   return null;
-});
+};

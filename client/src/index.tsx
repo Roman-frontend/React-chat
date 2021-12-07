@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { ApolloProvider, useReactiveVar } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import './i18n';
-import App from './App.js';
+import App from './App';
 import { client } from './GraphQLApp/apolloClient';
 import ErrorBoundary from './components/Helpers/ErrorBoundare';
 import { SnackbarProvider } from 'notistack';

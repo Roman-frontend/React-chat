@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, ReactNode, ComponentType } from 'react';
 import SignUpPage from './pages/SignUpPage/SignUpPage.js';
 import { SignInPage } from './pages/SignInPage/SignInPage.js';
 import { Chat } from './pages/Chat/Chat.js';
@@ -6,7 +6,18 @@ import { PrivateRoute } from './components/Helpers/PrivateRoute';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute';
 import { nanoid } from 'nanoid';
 
-export const routes = [
+type Props = any;
+
+//type ReturnedRoute = ({ ...route }: Route) => any;
+
+interface Route {
+  path: string;
+  exact?: boolean;
+  private?: boolean;
+  component: ComponentType<Props>;
+}
+
+export const routes: Route[] = [
   {
     path: '/signIn',
     exact: true,
@@ -29,8 +40,8 @@ export const routes = [
   },
 ];
 
-export function routesCreater() {
-  return routes.map((route) => {
+export function routesCreater(): JSX.Element[] {
+  return routes.map((route: Route) => {
     if (route.private) {
       return <PrivateRoute key={nanoid()} {...route} />;
     }

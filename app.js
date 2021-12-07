@@ -33,7 +33,7 @@ require('./Soket/soket');
       useUnifiedTopology: true,
       useCreateIndex: true,
     });
-    await new Promise((resolve) => app.listen({ port: 5000 }, resolve));
+    await new Promise((resolve) => app.listen({ port: 5001 }, resolve));
   } catch (e) {
     console.log('Чтото пошло не так ', e.message);
     process.exit(1);

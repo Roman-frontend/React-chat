@@ -25,6 +25,7 @@ const Message = memo(
     const { data: users, loading } = useQuery(GET_USERS);
 
     const senderName = useMemo(() => {
+      console.log(users, senderId);
       return users.users.find((user) => {
         return user.id === senderId;
       }).name;

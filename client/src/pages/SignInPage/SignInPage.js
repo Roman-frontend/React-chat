@@ -22,7 +22,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 import { Box } from '@mui/system';
 
-export const SignInPage = ({ route }) => {
+export const SignInPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);

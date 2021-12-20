@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
@@ -9,9 +9,9 @@ import {
   reactiveVarPrevAuth,
 } from '../../GraphQLApp/reactiveVars';
 import { GET_USERS } from '../../GraphQLApp/queryes';
-import Header from '../../components/Header/Header.jsx';
-import Conversation from '../../components/Conversation/Conversation.jsx';
-import SetsUser from '../../components/SetsUser/SetsUser.jsx';
+import Header from '../../components/Header/Header';
+import Conversation from '../../components/Conversation/Conversation';
+import SetsUser from '../../components/SetsUser/SetsUser';
 import {
   registerEnterPage,
   registerOnlineUser,
@@ -24,7 +24,19 @@ import {
 } from '../../components/SetsUser/SetsUserGraphQL/queryes';
 import { Loader } from '../../components/Helpers/Loader';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import setStylesChat from './styles.js';
+import setStylesChat from './styles';
+
+interface IStyles {
+  root?: React.CSSProperties;
+  workSpace?: React.CSSProperties;
+  header?: React.CSSProperties;
+  conversation?: React.CSSProperties;
+}
+
+interface IBadge {
+  id: string;
+  num: number;
+}
 
 export const Chat = () => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
@@ -39,8 +51,10 @@ export const Chat = () => {
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
   const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const [show, setShow] = useState(false);
-  const [dataForBadgeInformNewMsg, setChatsHasNewMsgs] = useState([]);
-  const [styles, setStyles] = useState({});
+  const [dataForBadgeInformNewMsg, setChatsHasNewMsgs] = useState<
+    [] | IBadge[]
+  >([]);
+  const [styles, setStyles] = useState<IStyles>({});
   const theme = useTheme();
 
   useEffect(() => {
@@ -69,8 +83,11 @@ export const Chat = () => {
   }, [dChannels, dDms]);
 
   useEffect(() => {
-    const storage = JSON.parse(sessionStorage.getItem('storageData'));
-    if (storage) reactiveVarPrevAuth(storage);
+    const storage = sessionStorage.getItem('storageData');
+    if (storage) {
+      const parsedStorage = JSON.parse(storage);
+      reactiveVarPrevAuth(parsedStorage);
+    }
     registerOnlineUser(usersOnline);
     registerEnterPage();
     return registerUnloadPage('Leaving page', registerOfflineUser);

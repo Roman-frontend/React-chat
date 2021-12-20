@@ -1,9 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { useTheme, styled } from '@mui/material/styles';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,56 +14,67 @@ import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import HeaderProfile from './HeaderProfile/HeaderProfile.jsx';
-import { AppBar, MaterialUISwitch } from './HeaderStyles.jsx';
+import { MaterialUISwitch } from './HeaderStyles';
+import AppBar from '@mui/material/AppBar';
 import { CustomThemeContext } from '../../App';
 import imageProfile from '../../images/User-Icon.png';
 
-const BootstrapTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} arrow classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.common.black,
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.black,
-  },
-}));
+interface IProps {
+  isOpenLeftBar: boolean;
+  setIsOpenLeftBar: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-export default function Header(props) {
+export default function Header(props: IProps) {
   const theme = useTheme();
   const { isOpenLeftBar, setIsOpenLeftBar } = props;
   const { currentTheme, setTheme } = useContext(CustomThemeContext);
   const menuId = 'primary-search-account-menu';
   const { t, i18n } = useTranslation();
   const [isOpenRightBarUser, setIsOpenRightBarUser] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const tooltipEn = useMemo(() => {
+    return i18n.language === 'en'
+      ? t('description.infoLanguage')
+      : t('description.changeEnLanguage');
+  }, [i18n.language]);
+  const tooltipRu = useMemo(() => {
+    return i18n.language === 'ru'
+      ? t('description.infoLanguage')
+      : t('description.changeRuLanguage');
+  }, [i18n.language]);
 
   const isDark = Boolean(currentTheme === 'dark');
 
-  const changeLanguage = (language) => {
+  const changeLanguage = (language: string): void => {
     i18n.changeLanguage(language);
-    setLanguage(language);
+    //setLanguage(language);
   };
 
-  const handleChangeSwitch = (event) => {
+  const handleChangeSwitch = (event: { target: { checked: boolean } }) => {
+    console.log(event);
+
     const { checked } = event.target;
-    if (!checked) {
+    if (
+      !checked &&
+      setTheme &&
+      {}.toString.call(setTheme) === '[object Function]'
+    ) {
       setTheme('dark');
-    } else {
+    } else if (setTheme && {}.toString.call(setTheme) === '[object Function]') {
       setTheme('light');
     }
   };
 
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return null;
-    }
+  const toggleDrawer =
+    (open: boolean) => (event: { type: string; key: string }) => {
+      if (
+        event.type === 'keydown' &&
+        (event.key === 'Tab' || event.key === 'Shift')
+      ) {
+        return null;
+      }
 
-    setIsOpenRightBarUser(open);
-  };
+      setIsOpenRightBarUser(open);
+    };
 
   return (
     <Grid container spacing={1} style={{ justifyContent: 'space-between' }}>
@@ -77,7 +87,6 @@ export default function Header(props) {
           background: theme.palette.primary.dark,
         }}
         position='relative'
-        open={isOpenLeftBar}
       >
         <Toolbar>
           <IconButton
@@ -99,19 +108,18 @@ export default function Header(props) {
             />
           </Grid>
           <Grid item xs={1}>
-            <BootstrapTooltip
-              title={
-                language === 'en'
-                  ? t('description.infoLanguage')
-                  : t('description.changeEnLanguage')
-              }
+            <Tooltip
+              title={tooltipEn}
               TransitionComponent={Zoom}
               placement='bottom'
             >
               <Button
                 style={{
-                  background: language === 'en' && theme.palette.primary.main,
-                  border: language === 'en' && 'solid 2px',
+                  background:
+                    i18n.language === 'en'
+                      ? theme.palette.primary.main
+                      : 'none',
+                  border: i18n.language === 'en' ? 'solid 2px' : 'none',
                   padding: 0,
                 }}
                 color='inherit'
@@ -119,22 +127,21 @@ export default function Header(props) {
               >
                 EN
               </Button>
-            </BootstrapTooltip>
+            </Tooltip>
           </Grid>
           <Grid item xs={1}>
-            <BootstrapTooltip
-              title={
-                language === 'ru'
-                  ? t('description.infoLanguage')
-                  : t('description.changeRuLanguage')
-              }
+            <Tooltip
+              title={tooltipRu}
               TransitionComponent={Zoom}
               placement='bottom'
             >
               <Button
                 style={{
-                  background: language === 'ru' && theme.palette.primary.main,
-                  border: language === 'ru' && 'solid 2px',
+                  background:
+                    i18n.language === 'ru'
+                      ? theme.palette.primary.main
+                      : 'none',
+                  border: i18n.language === 'ru' ? 'solid 2px' : 'none',
                   padding: 0,
                 }}
                 color='inherit'
@@ -142,7 +149,7 @@ export default function Header(props) {
               >
                 RU
               </Button>
-            </BootstrapTooltip>
+            </Tooltip>
           </Grid>
           <Grid item xs={1}>
             <IconButton
@@ -151,7 +158,7 @@ export default function Header(props) {
               aria-label='account of current user'
               aria-controls={menuId}
               aria-haspopup='true'
-              onClick={toggleDrawer(true)}
+              onClick={() => toggleDrawer(true)}
             >
               <Avatar alt='Remy Sharp' src={imageProfile} />
             </IconButton>
@@ -171,7 +178,7 @@ export default function Header(props) {
                 <Box
                   sx={{ width: 250, margin: '56px 0px 0px 0px' }}
                   role='presentation'
-                  onClick={toggleDrawer(false)}
+                  onClick={() => toggleDrawer(false)}
                   onKeyDown={toggleDrawer(false)}
                 >
                   <HeaderProfile />

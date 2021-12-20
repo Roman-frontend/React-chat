@@ -15,7 +15,7 @@ import {
   CHANNELS,
   ADD_MEMBER_CHANNEL,
 } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
+import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 import ChannelsRightBar from '../../SetsUser/Channels/ChannelsRightBar';
 
 export const ConversationHeaderChannel = (props) => {

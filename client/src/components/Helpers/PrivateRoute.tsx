@@ -23,8 +23,7 @@ interface IStorage {
 
 type StorageJSON = null | string;
 
-export const PrivateRoute = (props: IRoute) => {
-  const { component: Component, ...rest } = props;
+export const PrivateRoute = ({ component: Component, ...rest }: IRoute) => {
   const JSONSessionStorage: StorageJSON = sessionStorage.getItem('storageData');
   let sessionStorageData: IStorage | null;
   if (JSONSessionStorage) {
@@ -33,7 +32,7 @@ export const PrivateRoute = (props: IRoute) => {
   const reactiveToken = useReactiveVar(reactiveVarToken);
 
   function assignRouteToApply(routeProps: any) {
-    if (reactiveToken || (sessionStorageData && sessionStorageData.token)) {
+    if (reactiveToken || sessionStorageData?.token) {
       return <Component {...routeProps} />;
     } else {
       return <Redirect to='/signIn' />;

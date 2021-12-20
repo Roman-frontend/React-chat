@@ -7,16 +7,28 @@ import { activeChatId } from '../../GraphQLApp/reactiveVars';
 import { Channels } from './Channels/Channels.jsx';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 
-const styles = {
-  leftBar: {
-    borderRight: 'solid 1px',
-    height: 500,
-    margin: '10px 0px',
-    overflowY: 'scroll',
-  },
-};
+interface IBadge {
+  id: string;
+  num: number;
+}
 
-export default function SetsUser(props) {
+interface IProps {
+  isOpenLeftBar: boolean;
+  setIsOpenLeftBar: React.Dispatch<React.SetStateAction<boolean>>;
+  isErrorInPopap: boolean;
+  setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
+  modalAddPeopleIsOpen: boolean;
+  setChatsHasNewMsgs:
+    | React.Dispatch<React.SetStateAction<IBadge[]>>
+    | React.Dispatch<React.SetStateAction<never[]>>;
+  dataForBadgeInformNewMsg: IBadge[] | [];
+}
+
+interface IStyles {
+  leftBar: React.CSSProperties;
+}
+
+export default function SetsUser(props: IProps) {
   const {
     isErrorInPopap,
     setIsErrorInPopap,
@@ -36,6 +48,16 @@ export default function SetsUser(props) {
   const [modalAddDmIsOpen, setModalAddDmIsOpen] = useState(false);
   const prevActiveChatIdRef = useRef();
 
+  const styles: IStyles = {
+    leftBar: {
+      borderRight: 'solid 1px',
+      height: 500,
+      minWidth: isOpenLeftBar ? 260 : 0,
+      margin: '10px 0px',
+      overflowY: 'scroll',
+    },
+  };
+
   useEffect(() => {
     if (!modalAddChannelIsOpen && !modalAddDmIsOpen && !modalAddPeopleIsOpen) {
       setIsErrorInPopap(false);
@@ -53,10 +75,12 @@ export default function SetsUser(props) {
         if (dChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeChannelId: dChannels.userChannels[0].id,
+            activeDirectMessageId: undefined,
           });
         } else {
           activeChatId({
             activeChannelId: dChannels.userChannels[1].id,
+            activeDirectMessageId: undefined,
           });
         }
       } else if (
@@ -68,20 +92,24 @@ export default function SetsUser(props) {
         if (dDms.directMessages[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[0].id,
+            activeChannelId: undefined,
           });
         } else {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[1].id,
+            activeChannelId: undefined,
           });
         }
       }
     }
 
-    prevActiveChatIdRef.current = activeChatId().activeChannelId
-      ? activeChatId().activeChannelId
-      : activeChatId().activeDirectMessageId
-      ? activeChatId().activeDirectMessageId
-      : null;
+    if (prevActiveChatIdRef?.current) {
+      prevActiveChatIdRef.current = activeChatId().activeChannelId
+        ? activeChatId().activeChannelId
+        : activeChatId().activeDirectMessageId
+        ? activeChatId().activeDirectMessageId
+        : undefined;
+    }
   }, [dChannels, dDms, activeChannelId, activeDirectMessageId]);
 
   return (

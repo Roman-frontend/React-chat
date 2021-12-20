@@ -3,16 +3,52 @@ import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { ConversationHeaderChannel } from './ConversationHeader/ConversationHeaderChannel.jsx';
 import { ConversationHeaderDrMsg } from './ConversationHeader/ConversationHeaderDrMsg.jsx';
-import { Messages } from './Messages/Messages.jsx';
-import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages.jsx';
-import { ConversationInputHeader } from './ConversationInputHeader/ConversationInputHeader.jsx';
+import { Messages } from './Messages/Messages';
+import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages';
+import { ConversationInputHeader } from './ConversationInputHeader/ConversationInputHeader';
 import { ConversationActionsMessage } from './ConversationActionsMessage/ConversationActionsMessage.jsx';
 import imageError from '../../images/error.png';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
 import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
 
-export default function Conversation(props) {
+interface IBadge {
+  id: string;
+  num: number;
+}
+
+interface IProps {
+  isErrorInPopap: boolean;
+  setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
+  modalAddPeopleIsOpen: boolean;
+  setModalAddPeopleIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  dataForBadgeInformNewMsg: IBadge[] | [];
+  setChatsHasNewMsgs: React.Dispatch<React.SetStateAction<IBadge[]>>;
+}
+
+interface IChannel {
+  id: string;
+  name: string;
+  admin: string;
+  description: string;
+  members: string[];
+  isPrivate: boolean;
+}
+
+interface IMessage {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+  replyOn: string;
+  chatType: string;
+  chatId: string;
+}
+
+type IChangeMessageRef = null | IMessage;
+
+export default function Conversation(props: IProps) {
   const {
     isErrorInPopap,
     setIsErrorInPopap,
@@ -23,21 +59,21 @@ export default function Conversation(props) {
   } = props;
   const theme = useTheme();
   const { data: dChannels } = useQuery(CHANNELS);
-  const [popupMessage, setPopupMessage] = useState(null);
-  const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(null);
-  const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(null);
-  const inputRef = useRef();
-  const changeMessageRef = useRef();
+  const [popupMessage, setPopupMessage] = useState<null | IMessage>(null);
+  const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(false);
+  const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const changeMessageRef = useRef<IChangeMessageRef>(null);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
-  const [openPopup, setOpenPopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState('');
 
   const checkPrivate = useCallback(() => {
     if (dChannels?.userChannels?.length && activeChannelId) {
       const activeChannelIsPrivate = dChannels.userChannels.find(
-        (channel) =>
+        (channel: IChannel) =>
           channel !== null &&
           channel.id === activeChannelId &&
           channel.isPrivate
@@ -126,7 +162,7 @@ export default function Conversation(props) {
         changeMessageRef={changeMessageRef}
         popupMessage={popupMessage}
       />
-      <Box style={{ display: openPopup && 'none' }}>
+      <Box style={{ display: openPopup ? 'none' : 'block' }}>
         <InputUpdateMessages
           popupMessage={popupMessage}
           inputRef={inputRef}

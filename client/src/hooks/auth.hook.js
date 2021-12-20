@@ -36,12 +36,12 @@ export const useAuth = () => {
       wsSend({ userRooms, userId, meta: 'leave' });
     }
     sessionStorage.clear();
-    reactiveVarToken(null);
-    reactiveVarName(null);
-    reactiveVarEmail(null);
-    reactiveVarId(null);
-    reactiveVarChannels(null);
-    reactiveDirectMessages(null);
+    reactiveVarToken('');
+    reactiveVarName('');
+    reactiveVarEmail('');
+    reactiveVarId('');
+    reactiveVarChannels([]);
+    reactiveDirectMessages([]);
     reactiveVarPrevAuth({});
     activeChatId({});
     reactiveOnlineMembers([]);

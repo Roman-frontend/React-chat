@@ -1,7 +1,7 @@
 import React, { Component, ReactNode, ComponentType } from 'react';
 import SignUpPage from './pages/SignUpPage/SignUpPage.js';
 import { SignInPage } from './pages/SignInPage/SignInPage.js';
-import { Chat } from './pages/Chat/Chat.js';
+import { Chat } from './pages/Chat/Chat';
 import { PrivateRoute } from './components/Helpers/PrivateRoute';
 import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute';
 import { nanoid } from 'nanoid';

@@ -16,12 +16,12 @@ export default class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, er: null };
   }
 
-  static getDerivedStateFromError(): State {
+  static getDerivedStateFromError(_: Error): State {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
-  componentDidCatch(error: any, errorInfo: ErrorInfo): void {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ er: `error: ${error}, errorInfo: ${errorInfo}` });
     // You can also log the error to an error reporting service
     console.log(error, errorInfo);

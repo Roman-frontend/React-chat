@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
 import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars.js';
+import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 Modal.setAppElement('#root');
 
 const styles = (theme) => ({

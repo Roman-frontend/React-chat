@@ -14,6 +14,34 @@ import {
 import { wsSend } from '../../../WebSocket/soket';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 
+interface IMessage {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+  replyOn: string;
+  chatType: string;
+  chatId: string;
+}
+
+interface IProps {
+  changeMessageRef: null | React.MutableRefObject<IMessage | null>;
+  closeBtnChangeMsg: boolean;
+  setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
+  closeBtnReplyMsg: boolean;
+  setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  popupMessage: null | IMessage;
+}
+
+interface ICacheMessage {
+  messages: {
+    id: string;
+    chatMessages: IMessage[] | [];
+  };
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -24,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const InputUpdateMessages = memo((props) => {
+export const InputUpdateMessages = memo((props: IProps) => {
   const {
     changeMessageRef,
     closeBtnChangeMsg,
@@ -55,7 +83,7 @@ export const InputUpdateMessages = memo((props) => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data }) => {
-      const cacheMsg = cache.readQuery({
+      const cacheMsg: ICacheMessage | null = cache.readQuery({
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
       });
@@ -81,12 +109,13 @@ export const InputUpdateMessages = memo((props) => {
 
   const [changeMessage] = useMutation(CHANGE_MESSAGE, {
     update: (cache, { data: { message } }) => {
-      const cacheMsg = cache.readQuery({
+      const cacheMsg: ICacheMessage | null = cache.readQuery({
         query: GET_MESSAGES,
         variables: { chatId, chatType, userId: auth.id },
       });
       if (cacheMsg && message?.change) {
-        const cacheMessages = cacheMsg?.messages?.chatMessages || [];
+        const cacheMessages: IMessage[] | [] =
+          cacheMsg?.messages?.chatMessages || [];
         const chatMessages = cacheMessages.map((msg) => {
           return msg.id === message.change.id ? message.change : msg;
         });
@@ -104,7 +133,7 @@ export const InputUpdateMessages = memo((props) => {
     },
   });
 
-  function sendMessageToWS(data) {
+  function sendMessageToWS(data: IMessage) {
     wsSend({
       meta: 'sendMessage',
       action: 'change',
@@ -113,35 +142,35 @@ export const InputUpdateMessages = memo((props) => {
     });
   }
 
-  function inputUpdateMessages(event) {
+  function inputUpdateMessages(event: React.KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    const value = inputRef.current.value;
+    const value = inputRef?.current?.value || '';
 
     //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
     if (value.trim() !== '' && !event.shiftKey && event.key === 'Enter') {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
       else newMessage(value);
-      inputRef.current.value = null;
+      if (inputRef?.current?.value) inputRef.current.value = '';
     }
   }
 
-  async function changeMessageText(text) {
-    const newMsg = { id: popupMessage.id, text, chatType };
+  async function changeMessageText(text: string) {
+    const newMsg = { id: popupMessage?.id || '', text, chatType };
     changeMessage({
       variables: { input: newMsg },
       optimisticResponse: { message: { change: { ...popupMessage, text } } },
     });
-    changeMessageRef.current = null;
-    setCloseBtnChangeMsg(null);
+    if (changeMessageRef?.current) changeMessageRef.current = null;
+    setCloseBtnChangeMsg(false);
   }
 
-  const messageInReply = (text) => {
+  const messageInReply = (text: string) => {
     const replyMsg = {
       chatId,
       chatType,
       senderId: auth.id,
-      replyOn: popupMessage.text,
+      replyOn: popupMessage?.text || '',
       text,
     };
     createMessage({
@@ -153,7 +182,7 @@ export const InputUpdateMessages = memo((props) => {
             chatType,
             createdAt: Date.now(),
             id: Date.now(),
-            replyOn: popupMessage.text,
+            replyOn: popupMessage?.text || '',
             text,
             updatedAt: '',
             senderId: auth.id,
@@ -162,10 +191,10 @@ export const InputUpdateMessages = memo((props) => {
         },
       },
     });
-    setCloseBtnReplyMsg(null);
+    setCloseBtnReplyMsg(false);
   };
 
-  function newMessage(text) {
+  function newMessage(text: string) {
     const newMsg = { chatId, chatType, senderId: auth.id, text };
     createMessage({
       variables: newMsg,
@@ -192,18 +221,20 @@ export const InputUpdateMessages = memo((props) => {
       <Grid container spacing={1}>
         <Grid item xs={1}>
           <BorderColorIcon
-            color='input'
-            style={{ fontSize: 40, top: '1rem', textAlign: 'bottom' }}
+            //color='input'
+            style={{ fontSize: 40, top: '1rem', textAlign: 'center' }}
           />
         </Grid>
         <Grid item xs={11}>
           <TextField
-            color='input'
+            //color='input'
             label='Enter text'
             variant='standard'
             inputRef={inputRef}
             autoFocus={true}
-            onKeyUp={(event) => inputUpdateMessages(event)}
+            onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) =>
+              inputUpdateMessages(event)
+            }
             sx={{
               paddingRight: '6vw',
               width: '-webkit-fill-available',

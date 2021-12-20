@@ -31,9 +31,9 @@ export function ConversationActionsMessage(props) {
   const [focusRootInput, setFocusRootInput] = useState(false);
 
   useEffect(() => {
-    setOpenPopup(null);
-    setCloseBtnReplyMsg(null);
-    setCloseBtnChangeMsg(null);
+    setOpenPopup('');
+    setCloseBtnReplyMsg(false);
+    setCloseBtnChangeMsg(false);
   }, [activeChannelId, activeDirectMessageId]);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export function ConversationActionsMessage(props) {
   });
 
   const handleAnswer = () => {
-    setOpenPopup(null);
+    setOpenPopup('');
     setCloseBtnReplyMsg(true);
     setFocusRootInput(nanoid());
     inputRef.current.value = '';
@@ -66,21 +66,21 @@ export function ConversationActionsMessage(props) {
 
   const handleChange = () => {
     setCloseBtnChangeMsg(true);
-    setOpenPopup(null);
+    setOpenPopup('');
     changeMessageRef.current = popupMessage;
     setFocusRootInput(nanoid());
     inputRef.current.value = popupMessage.text;
   };
 
   const handleDelete = () => {
-    setOpenPopup(null);
+    setOpenPopup('');
     removeMessage({
       variables: { id: popupMessage.id, chatType: popupMessage.chatType },
     });
   };
 
   const handleCancel = () => {
-    setOpenPopup(null);
+    setOpenPopup('');
   };
 
   return (
@@ -119,7 +119,7 @@ export function ConversationActionsMessage(props) {
         variant='contained'
         color='primary'
         startIcon={<ForwardIcon />}
-        onClick={() => setOpenPopup(null)}
+        onClick={() => setOpenPopup('')}
       >
         FORWARD
       </Button>

@@ -1,4 +1,13 @@
-export default function setStylesChat(theme) {
+interface ITheme {
+  palette: {
+    primary: {
+      main: string;
+      light: string;
+    };
+  };
+}
+
+export default function setStylesChat(theme: ITheme) {
   return {
     root: {
       display: 'flex',

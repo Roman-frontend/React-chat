@@ -30,7 +30,8 @@ const resolvers = {
         if (isNotMember) {
           return;
         }
-        const chatMessages = await ChannelMessage.find({ chatId });
+        let chatMessages = await ChannelMessage.find({ chatId });
+        if (!chatMessages) chatMessages = [];
         return { id: chatId, chatMessages };
       }
     },

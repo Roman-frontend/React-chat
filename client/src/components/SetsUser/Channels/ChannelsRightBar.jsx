@@ -10,10 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import GroupIcon from '@mui/icons-material/Group';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CHANNELS, REMOVE_CHANNEL } from '../SetsUserGraphQL/queryes';
-import {
-  activeChatId,
-  reactiveVarId,
-} from '../../../GraphQLApp/reactiveVars.js';
+import { activeChatId, reactiveVarId } from '../../../GraphQLApp/reactiveVars';
 
 const ChannelsRightBar = (props) => {
   const { data: dChannels } = useQuery(CHANNELS);

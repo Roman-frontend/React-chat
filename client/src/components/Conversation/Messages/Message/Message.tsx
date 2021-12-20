@@ -1,7 +1,6 @@
 import React, { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
-import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import imageProfile from '../../../../images/User-Icon.png';
@@ -9,6 +8,37 @@ import { messageDate } from '../../../Helpers/DateCreators';
 import { GET_USERS } from '../../../../GraphQLApp/queryes';
 import { Loader } from '../../../Helpers/Loader';
 import './message.sass';
+
+interface IMessage {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+  replyOn: string;
+  chatType: string;
+  chatId: string;
+}
+
+type TMessage = null | IMessage;
+
+interface IProps {
+  message: IMessage;
+  openPopup: string;
+  setOpenPopup: React.Dispatch<React.SetStateAction<string>>;
+  setPopupMessage: React.Dispatch<React.SetStateAction<TMessage>>;
+  setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
+  setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  channels: string[];
+  directMessages: string[];
+}
 
 const Message = memo(
   ({
@@ -18,15 +48,23 @@ const Message = memo(
     setPopupMessage,
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
-  }) => {
+  }: IProps) => {
     const { text, createdAt, updatedAt, id, senderId, replyOn } = message;
     const { t } = useTranslation();
     const theme = useTheme();
     const { data: users, loading } = useQuery(GET_USERS);
 
+    const style: { root: React.CSSProperties } = {
+      root: {
+        cursor: 'pointer',
+        position: 'relative',
+        backgroundColor: openPopup === id ? theme.palette.primary.dark : 'none',
+      },
+    };
+
     const senderName = useMemo(() => {
       console.log(users, senderId);
-      return users.users.find((user) => {
+      return users.users.find((user: IUser) => {
         return user.id === senderId;
       }).name;
     }, [users]);
@@ -48,27 +86,16 @@ const Message = memo(
     ) : null;
 
     const handleClick = () => {
-      setOpenPopup((prev) => {
-        return prev === id ? null : id;
-      });
-      setCloseBtnChangeMsg(null);
-      setCloseBtnReplyMsg(null);
+      setOpenPopup((prevState: string) => (prevState === id ? '' : id));
+      setCloseBtnChangeMsg(false);
+      setCloseBtnReplyMsg(false);
       setPopupMessage(message);
     };
 
     if (loading) return <Loader />;
 
     return (
-      <Box
-        sx={{
-          cursor: 'pointer',
-          position: 'relative',
-          '&:hover': {
-            backgroundColor: openPopup !== id && theme.palette.primary.main,
-          },
-          backgroundColor: openPopup === id && theme.palette.primary.dark,
-        }}
-      >
+      <Box style={style.root}>
         <Box className={classMessage} id={id} onClick={handleClick}>
           <img
             src={imageProfile}
@@ -85,7 +112,9 @@ const Message = memo(
           >
             {senderName}
           </p>
-          <p className={`${classMessage}__date`}>{messageDate(createdAt)}</p>
+          <p className={`${classMessage}__date`}>
+            {messageDate(parseInt(createdAt))}
+          </p>
           <p
             style={{
               display: updatedAt && updatedAt !== createdAt ? 'block' : 'none',
@@ -94,7 +123,7 @@ const Message = memo(
             className={`${classMessage}__info`}
           >
             {`${t('description.editedMessage')}: ${messageDate(
-              updatedAt || createdAt
+              parseInt(updatedAt) || parseInt(createdAt)
             )}`}
           </p>
           <p
@@ -109,9 +138,5 @@ const Message = memo(
     );
   }
 );
-
-Message.propTypes = {
-  message: PropTypes.object,
-};
 
 export default Message;

@@ -12,19 +12,9 @@ interface IRoute {
   component: ComponentType<Props>;
 }
 
-interface IStorage {
-  id: string;
-  name: string;
-  email: string;
-  channels: string[] | [];
-  directMessages: string[] | [];
-  token: string;
-}
-
 type StorageJSON = null | string;
 
-export const PubliсOnlyRoute = (props: IRoute) => {
-  const { component: Component, ...rest } = props;
+export const PubliсOnlyRoute = ({ component: Component, ...rest }: IRoute) => {
   const sessionStorageDataJSON: StorageJSON =
     sessionStorage.getItem('storageData');
   const token = useReactiveVar(reactiveVarToken);

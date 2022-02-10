@@ -46,7 +46,6 @@ export default function Header(props: IProps) {
 
   const changeLanguage = (language: string): void => {
     i18n.changeLanguage(language);
-    //setLanguage(language);
   };
 
   const handleChangeSwitch = (event: { target: { checked: boolean } }) => {
@@ -63,18 +62,6 @@ export default function Header(props: IProps) {
       setTheme('light');
     }
   };
-
-  const toggleDrawer =
-    (open: boolean) => (event: { type: string; key: string }) => {
-      if (
-        event.type === 'keydown' &&
-        (event.key === 'Tab' || event.key === 'Shift')
-      ) {
-        return null;
-      }
-
-      setIsOpenRightBarUser(open);
-    };
 
   return (
     <Grid container spacing={1} style={{ justifyContent: 'space-between' }}>
@@ -158,7 +145,7 @@ export default function Header(props: IProps) {
               aria-label='account of current user'
               aria-controls={menuId}
               aria-haspopup='true'
-              onClick={() => toggleDrawer(true)}
+              onClick={() => setIsOpenRightBarUser(true)}
             >
               <Avatar alt='Remy Sharp' src={imageProfile} />
             </IconButton>
@@ -173,13 +160,11 @@ export default function Header(props: IProps) {
                   },
                 }}
                 open={isOpenRightBarUser}
-                onClose={toggleDrawer(false)}
+                onClose={() => setIsOpenRightBarUser(false)}
               >
                 <Box
                   sx={{ width: 250, margin: '56px 0px 0px 0px' }}
                   role='presentation'
-                  onClick={() => toggleDrawer(false)}
-                  onKeyDown={toggleDrawer(false)}
                 >
                   <HeaderProfile />
                 </Box>

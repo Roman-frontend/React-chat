@@ -113,6 +113,12 @@ const DirectMessageRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary='Remove chat' />
       </ListItem>
+      <ListItem button onClick={() => console.log('Click call')}>
+        <ListItemIcon>
+          <DeleteIcon />
+        </ListItemIcon>
+        <ListItemText primary='Call' />
+      </ListItem>
     </List>
   );
 };

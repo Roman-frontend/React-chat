@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
 import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import { Channels } from './Channels/Channels.jsx';
+import { Channels } from './Channels/Channels';
 import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
 
 interface IBadge {
@@ -46,7 +46,7 @@ export default function SetsUser(props: IProps) {
     useReactiveVar(activeChatId).activeDirectMessageId;
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [modalAddDmIsOpen, setModalAddDmIsOpen] = useState(false);
-  const prevActiveChatIdRef = useRef();
+  const prevActiveChatIdRef = useRef('');
 
   const styles: IStyles = {
     leftBar: {
@@ -75,12 +75,12 @@ export default function SetsUser(props: IProps) {
         if (dChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeChannelId: dChannels.userChannels[0].id,
-            activeDirectMessageId: undefined,
+            activeDirectMessageId: '',
           });
         } else {
           activeChatId({
             activeChannelId: dChannels.userChannels[1].id,
-            activeDirectMessageId: undefined,
+            activeDirectMessageId: '',
           });
         }
       } else if (
@@ -92,12 +92,12 @@ export default function SetsUser(props: IProps) {
         if (dDms.directMessages[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[0].id,
-            activeChannelId: undefined,
+            activeChannelId: '',
           });
         } else {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[1].id,
-            activeChannelId: undefined,
+            activeChannelId: '',
           });
         }
       }
@@ -108,7 +108,7 @@ export default function SetsUser(props: IProps) {
         ? activeChatId().activeChannelId
         : activeChatId().activeDirectMessageId
         ? activeChatId().activeDirectMessageId
-        : undefined;
+        : '';
     }
   }, [dChannels, dDms, activeChannelId, activeDirectMessageId]);
 

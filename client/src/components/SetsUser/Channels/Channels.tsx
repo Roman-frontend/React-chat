@@ -17,14 +17,39 @@ import { AddChannel } from '../../Modals/AddChannel/AddChannel';
 import { Channel } from './Channel';
 import { nanoid } from 'nanoid';
 
-const useStyles = makeStyles((theme) => ({
+interface IProps {
+  isOpenLeftBar: boolean;
+  modalAddChannelIsOpen: boolean;
+  setModalAddChannelIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isErrorInPopap: boolean;
+  setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface IChannel {
+  id: string;
+  name: string;
+  admin: string;
+  description?: string;
+  members: string[] | [];
+  isPrivate: boolean;
+}
+
+type TTheme = {
+  palette: {
+    leftBarItem: {
+      light: string;
+    };
+  };
+};
+
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
     maxWidth: 360,
   },
 }));
 
-export function Channels(props) {
+export function Channels(props: IProps) {
   const {
     isOpenLeftBar,
     modalAddChannelIsOpen,
@@ -33,7 +58,7 @@ export function Channels(props) {
     setIsErrorInPopap,
   } = props;
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme: TTheme = useTheme();
   const classes = useStyles();
   const { data: allChannels } = useQuery(CHANNELS);
   const [open, setOpen] = useState(true);
@@ -73,7 +98,7 @@ export function Channels(props) {
           {allChannels ? (
             <Collapse in={open} timeout='auto' unmountOnExit>
               <List>
-                {allChannels.userChannels.map((channel) =>
+                {allChannels.userChannels.map((channel: IChannel) =>
                   channel ? (
                     <React.Fragment key={channel.id}>
                       <Channel

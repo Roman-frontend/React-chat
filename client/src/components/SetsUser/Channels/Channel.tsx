@@ -6,12 +6,41 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { activeChatId } from '../../../GraphQLApp/reactiveVars';
 
-export const Channel = (props) => {
+interface IChannel {
+  id: string;
+  name: string;
+  admin: string;
+  description?: string;
+  members: string[] | [];
+  isPrivate: boolean;
+}
+
+interface IProps {
+  isOpenLeftBar: boolean;
+  channel: IChannel;
+}
+
+type TTheme = {
+  palette: {
+    leftBarItem: {
+      contrastText: string;
+    };
+    action: {
+      active: string;
+    };
+  };
+};
+
+export const Channel = (props: IProps) => {
   const { channel, isOpenLeftBar } = props;
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
-  const theme = useTheme();
+  const theme: TTheme = useTheme();
 
-  if (typeof channel === 'object' && channel !== null) {
+  if (
+    typeof channel === 'object' &&
+    channel?.id &&
+    theme?.palette?.leftBarItem?.contrastText
+  ) {
     return (
       <ListItem
         button
@@ -24,13 +53,16 @@ export const Channel = (props) => {
             },
           },
         }}
-        onClick={() => activeChatId({ activeChannelId: channel.id })}
+        onClick={() =>
+          activeChatId({
+            activeChannelId: channel.id,
+            activeDirectMessageId: '',
+          })
+        }
         selected={activeChannelId === channel.id && true}
       >
         <>
-          <Avatar alt={channel.name} size='small'>
-            {channel.name[0]}
-          </Avatar>
+          <Avatar alt={channel.name}>{channel.name[0]}</Avatar>
           {isOpenLeftBar && (
             <ListItemText
               primary={channel.name}

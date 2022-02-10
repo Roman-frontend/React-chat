@@ -42,8 +42,8 @@ export const reactiveVarChannels =
     ? makeVar<string[] | []>(parsedStorage.channels)
     : makeVar<string[] | []>([]);
 export const activeChatId = makeVar({
-  activeChannelId: undefined,
-  activeDirectMessageId: undefined,
+  activeChannelId: '',
+  activeDirectMessageId: '',
 });
 export const reactiveOnlineMembers = makeVar<string[] | []>([]);
 export const reactiveVarPrevAuth = makeVar<object>({});

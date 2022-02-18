@@ -116,12 +116,6 @@ const DirectMessageRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary='Remove chat' />
       </ListItem>
-      <ListItem button onClick={() => navigate(`/room/${v4()}`)}>
-        <ListItemIcon>
-          <DeleteIcon />
-        </ListItemIcon>
-        <ListItemText primary='Call' />
-      </ListItem>
     </List>
   );
 };

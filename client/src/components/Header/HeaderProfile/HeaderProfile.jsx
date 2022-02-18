@@ -6,8 +6,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import AssignmentIndSharpIcon from '@mui/icons-material/AssignmentIndSharp';
-import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../../../hooks/auth.hook.js';
 import { CustomThemeContext } from '../../../App';
 import { AUTH } from '../../../GraphQLApp/queryes';
@@ -36,6 +34,12 @@ const HeaderProfile = (props) => {
           <Avatar alt='Remy Sharp' src={imageProfile} style={{ size: '5px' }} />
         </ListItemIcon>
         <ListItemText primary={auth && auth.name ? auth.name : '#general'} />
+      </ListItem>
+      <ListItem button onClick={() => navigate(`/video`)}>
+        <ListItemIcon>
+          <MeetingRoomIcon />
+        </ListItemIcon>
+        <ListItemText primary='Enter to call-rooms' />
       </ListItem>
       <ListItem button onClick={handleLogout}>
         <ListItemIcon>

@@ -1,6 +1,6 @@
 import React, { useState, createContext } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Routes } from 'react-router-dom';
 import { routesCreater } from './routes';
 //import CustomThemeProvider from './components/Theme/CustomeThemeProvider';
 import getTheme from './components/Theme/base';
@@ -45,7 +45,7 @@ export default function App() {
       <SnackbarProvider maxSnack={3}>
         <CustomThemeContext.Provider value={contextValue}>
           <ThemeProvider theme={theme}>
-            <Switch>{routesCreater()}</Switch>
+            <Routes>{routesCreater()}</Routes>
           </ThemeProvider>
         </CustomThemeContext.Provider>
       </SnackbarProvider>

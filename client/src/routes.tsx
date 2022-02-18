@@ -1,50 +1,41 @@
-import React, { Component, ReactNode, ComponentType } from 'react';
+import { Route, RouteObject } from 'react-router-dom';
+import { RequireAuth } from './components/Helpers/RequireAuth.jsx';
 import SignUpPage from './pages/SignUpPage/SignUpPage.js';
 import { SignInPage } from './pages/SignInPage/SignInPage.js';
 import { Chat } from './pages/Chat/Chat';
-import { PrivateRoute } from './components/Helpers/PrivateRoute';
-import { PubliсOnlyRoute } from './components/Helpers/PubliсOnlyRoute';
+import MainVideoCall from './pages/MainVideoRoom/MainVideoCall.jsx';
+import Room from './pages/Room/index.js';
 import { nanoid } from 'nanoid';
 
-type Props = any;
-
-//type ReturnedRoute = ({ ...route }: Route) => any;
-
-interface Route {
-  path: string;
-  exact?: boolean;
-  private?: boolean;
-  component: ComponentType<Props>;
-}
-
-export const routes: Route[] = [
+export const routes: RouteObject[] = [
   {
     path: '/signIn',
-    exact: true,
-    component: SignInPage,
+    element: <SignInPage />,
   },
   {
     path: '/signUp',
-    exact: true,
-    component: SignUpPage,
+    element: <SignUpPage />,
   },
   {
     path: '/chat',
-    exact: true,
-    private: true,
-    component: Chat,
+    element: <Chat />,
+  },
+  {
+    path: '/video',
+    element: <MainVideoCall />,
+  },
+  {
+    path: '/room/:id',
+    element: <Room />,
   },
   {
     path: '/',
-    component: SignInPage,
+    element: <RequireAuth redirectTo='/chat' children={<SignInPage />} />,
   },
 ];
 
 export function routesCreater(): JSX.Element[] {
-  return routes.map((route: Route) => {
-    if (route.private) {
-      return <PrivateRoute key={nanoid()} {...route} />;
-    }
-    return <PubliсOnlyRoute key={nanoid()} {...route} />;
+  return routes.map((route: RouteObject) => {
+    return <Route {...route} key={nanoid()} />;
   });
 }

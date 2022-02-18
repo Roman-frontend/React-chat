@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import { v4 } from 'uuid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -22,6 +24,7 @@ import { determineActiveChat } from '../../Helpers/determineActiveChat';
 import { useSnackbar } from 'notistack';
 
 const DirectMessageRightBar = (props) => {
+  const navigate = useNavigate();
   const { data: auth } = useQuery(AUTH);
   const { data: users } = useQuery(GET_USERS);
   const { data: dDm } = useQuery(GET_DIRECT_MESSAGES);
@@ -113,7 +116,7 @@ const DirectMessageRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary='Remove chat' />
       </ListItem>
-      <ListItem button onClick={() => console.log('Click call')}>
+      <ListItem button onClick={() => navigate(`/room/${v4()}`)}>
         <ListItemIcon>
           <DeleteIcon />
         </ListItemIcon>

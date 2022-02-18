@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTheme } from '@mui/material/styles';
@@ -25,6 +25,7 @@ import { Box } from '@mui/system';
 export const SignInPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [valuess, setValuess] = useState({
     password: '',
@@ -61,6 +62,7 @@ export const SignInPage = () => {
       if (data.login.status === 'OK') {
         auth(data.login.record);
         enqueueSnackbar('Successful login', { variant: 'success' });
+        navigate('/chat');
       } else {
         enqueueSnackbar(data.login.error.message, { variant: 'error' });
       }

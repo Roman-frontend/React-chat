@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { v4 } from 'uuid';
@@ -10,6 +10,7 @@ import AssignmentIndSharpIcon from '@mui/icons-material/AssignmentIndSharp';
 import PersonIcon from '@mui/icons-material/Person';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
+import { SEND_TO_GMAIL } from '../SetsUserGraphQL/queryes';
 import { wsSend } from '../../../WebSocket/soket';
 import {
   GET_DIRECT_MESSAGES,
@@ -32,6 +33,24 @@ const DirectMessageRightBar = (props) => {
     useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
   const { enqueueSnackbar } = useSnackbar();
+  const [stopSendGmail, setStopSendGmail] = useState(true);
+
+  const mailOptions = {
+    subject: 'Мій тестовий лист з React-Chat',
+    text: 'Текст листа з React-Chat',
+  };
+
+  const { refetch } = useQuery(SEND_TO_GMAIL, {
+    //Вимкнути автоматичний відправку
+    skip: stopSendGmail,
+
+    onError(error) {
+      console.log(`Помилка відправки повідомлення на gmail ${error}`);
+    },
+    onCompleted(data) {
+      console.log('Resolve after send to gmail...', data);
+    },
+  });
 
   const activeDirectMessage = useMemo(() => {
     if (activeDirectMessageId && dDm?.directMessages?.length) {
@@ -90,6 +109,13 @@ const DirectMessageRightBar = (props) => {
     },
   });
 
+  function gmailHandler() {
+    console.log('gmailHandler...');
+    setStopSendGmail((prev) => !prev);
+    refetch({ ...mailOptions });
+    setStopSendGmail((prev) => !prev);
+  }
+
   return (
     <List>
       <ListItem button>
@@ -115,6 +141,9 @@ const DirectMessageRightBar = (props) => {
           <DeleteIcon />
         </ListItemIcon>
         <ListItemText primary='Remove chat' />
+      </ListItem>
+      <ListItem button onClick={gmailHandler}>
+        <ListItemText primary='Send to Gmail' />
       </ListItem>
     </List>
   );

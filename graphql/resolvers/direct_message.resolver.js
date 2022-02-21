@@ -1,4 +1,6 @@
 const { GraphQLEnumType } = require('graphql');
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 const User = require('../../models/User');
 const DirectMessage = require('../../models/DirectMessage');
 const DirectMessageChat = require('../../models/DirectMessageChat');
@@ -56,6 +58,37 @@ const resolvers = {
         }
       }
       return allFinded;
+    },
+    sendToGmail: (_, { from, to, subject, text }, context) => {
+      console.log('sendToGmail...', from, to, subject, text);
+      const mailOptions = { from, to, subject, text };
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
+        },
+      });
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+          console.log('Fail send...', error);
+          // return {
+          //   status: 500,
+          //   message: `Message fail sended to gmail... ${error}`,
+          // };
+        } else {
+          console.log('Email sent...');
+          // return {
+          //   status: 200,
+          //   message: `Message sended to gmail...`,
+          // };
+        }
+      });
+
+      return {
+        status: 200,
+        message: `Message sended to gmail...`,
+      };
     },
   },
 

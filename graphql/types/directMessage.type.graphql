@@ -10,6 +10,11 @@ type UserDirectMessagesPayload {
   members: [ID]
 }
 
+type GmailRes {
+  status: Int
+  message: String
+}
+
 type RemoveDirectMessagePayload {
   recordId: ID
   record: DirectMessage
@@ -92,6 +97,12 @@ type CreateDirectMessagePayload {
 
 type Query {
   directMessages(id: [ID]): [UserDirectMessagesPayload]!
+  sendToGmail(
+    from: String!
+    to: String!
+    subject: String
+    text: String
+  ): GmailRes!
 }
 
 type Mutation {

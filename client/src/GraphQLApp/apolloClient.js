@@ -95,6 +95,9 @@ export const client = new ApolloClient({
             }
             return null;
           },
+          emailTo() {
+            return 'romalicevich@gmail.com';
+          },
         },
       },
     },

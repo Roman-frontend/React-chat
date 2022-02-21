@@ -165,3 +165,19 @@ export const REMOVE_CHANNEL = gql`
     }
   }
 `;
+
+export const SEND_TO_GMAIL = gql`
+  query sendToGmail(
+    $from: String!
+    $to: String!
+    $subject: String
+    $text: String
+  ) {
+    email @client @export(as: "from")
+    emailTo @client @export(as: "to")
+    sendToGmail(from: $from, to: $to, subject: $subject, text: $text) {
+      status
+      message
+    }
+  }
+`;

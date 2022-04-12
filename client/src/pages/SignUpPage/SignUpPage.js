@@ -1,24 +1,25 @@
-import React, { useState, useRef, memo } from 'react';
-import { gql, useMutation } from '@apollo/client';
-import { useSnackbar } from 'notistack';
-import { useTheme } from '@mui/material/styles';
-import { Paper } from '@mui/material';
-import Button from '@mui/material/Button';
-import { Box } from '@mui/system';
-import { Link } from 'react-router-dom';
-import { useValidate } from '../../hooks/validate.hook.js';
+import React, { useRef, memo } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { useSnackbar } from "notistack";
+import { useTheme } from "@mui/material/styles";
+import { Paper } from "@mui/material";
+import Button from "@mui/material/Button";
+import { Box } from "@mui/system";
+import { Link, useNavigate } from "react-router-dom";
+import { useValidate } from "../../hooks/validate.hook.js";
 import {
   validateName,
   validateEmail,
   validatePassword,
-} from '../../components/Helpers/validateMethods.jsx';
-import { useAuth } from '../../hooks/auth.hook.js';
-import { SignUpForm } from '../../components/SignUpForm/SignUpForm.jsx';
-import { REGISTER } from '../../components/../GraphQLApp/queryes';
-import { AuthLoader } from '../../components/Helpers/Loader.jsx';
-import './auth-body.sass';
+} from "../../components/Helpers/validateMethods.jsx";
+import { useAuth } from "../../hooks/auth.hook.js";
+import { SignUpForm } from "../../components/SignUpForm/SignUpForm.jsx";
+import { REGISTER } from "../../components/../GraphQLApp/queryes";
+import { AuthLoader } from "../../components/Helpers/Loader.jsx";
+import "./auth-body.sass";
 
-export const SignUpPage = memo((props) => {
+export const SignUpPage = memo(() => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const { auth } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -56,14 +57,15 @@ export const SignUpPage = memo((props) => {
     },
     onError(error) {
       console.log(`Некоректні дані при реєстрації ${error}`);
-      enqueueSnackbar('Failed registration!', { variant: 'error' });
+      enqueueSnackbar("Failed registration!", { variant: "error" });
     },
     onCompleted(data) {
-      if (data.register.status === 'OK') {
+      if (data.register.status === "OK") {
+        console.log("register record...", data.register.record);
         auth(data.register.record);
       }
 
-      enqueueSnackbar('Success registration!', { variant: 'success' });
+      enqueueSnackbar("Success registration!", { variant: "success" });
     },
   });
 
@@ -73,77 +75,79 @@ export const SignUpPage = memo((props) => {
       email: ref.email.current.children[1].children[0].value,
       password: String(ref.password.current.children[1].children[0].value),
     };
-    ref.password.current.children[1].children[0].value = '';
+    ref.password.current.children[1].children[0].value = "";
     validate(formData);
+    console.log("formData... ", formData, event);
     register({ variables: { ...formData } });
+    navigate("/chat");
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div style={{ display: "flex", justifyContent: "center" }}>
       <Paper
         sx={{
-          position: 'relative',
-          top: '15vh',
+          position: "relative",
+          top: "15vh",
           background: theme.palette.primary.dark,
         }}
       >
         <span
           style={{
-            display: 'flex',
-            justifyContent: 'center',
+            display: "flex",
+            justifyContent: "center",
             fontSize: 25,
-            margin: '20px 0px 0px',
+            margin: "20px 0px 0px",
           }}
         >
           Реєстрація
         </span>
 
         <SignUpForm
-          label='Name'
-          placeholder='Введите имя'
-          name='name'
+          label="Name"
+          placeholder="Введите имя"
+          name="name"
           autoFocus={true}
           fieldError={errors.name}
-          type='name'
+          type="name"
           inputSignUpRef={ref.name}
         />
         <SignUpForm
-          label='Email'
-          placeholder='Введите email'
-          name='email'
+          label="Email"
+          placeholder="Введите email"
+          name="email"
           fieldError={errors.email}
-          type='email'
+          type="email"
           inputSignUpRef={ref.email}
         />
         <SignUpForm
-          label='Password'
-          placeholder='Введите пароль'
-          name='password'
+          label="Password"
+          placeholder="Введите пароль"
+          name="password"
           fieldError={errors.password}
-          type='password'
+          type="password"
           inputSignUpRef={ref.password}
         />
 
-        <Box style={{ display: 'flex' }}>
+        <Box style={{ display: "flex" }}>
           <Button
-            size='small'
-            variant='contained'
-            color='primary'
+            size="small"
+            variant="contained"
+            color="primary"
             style={{
-              width: '9vw',
-              margin: '15px',
+              width: "9vw",
+              margin: "15px",
             }}
             onClick={handleSubmit}
           >
             Register
           </Button>
 
-          <Link to={`/signIn`} style={{ textDecoration: 'none' }}>
+          <Link to={`/signIn`} style={{ textDecoration: "none" }}>
             <Button
-              size='small'
-              color='secondary'
-              variant='contained'
-              sx={{ margin: '15px' }}
+              size="small"
+              color="secondary"
+              variant="contained"
+              sx={{ margin: "15px" }}
             >
               Has account go to login
             </Button>

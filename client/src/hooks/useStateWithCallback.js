@@ -5,6 +5,7 @@ const useStateWithCallback = (initialState) => {
   const [state, setState] = useState(initialState); //Тут setState на пряму ми не чіпаємо
   const cbRef = useRef(null);
 
+  //useCallback з [] як залежність дозволяє не перезагружати функцію після повторному рендерингу хуку
   const updateState = useCallback((newState, cb) => {
     //Експортимо updateState що приймає новий стейт і колбек
     cbRef.current = cb; //колбек зберігає в реф

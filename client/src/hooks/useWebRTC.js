@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import freeice from 'freeice';
 import useStateWithCallback from './useStateWithCallback';
 import socket from '../socket.io';
@@ -13,8 +13,10 @@ export default function useWebRTC(roomID) {
   const addNewClient = useCallback(
     //це updateClients з умовою що в нас користувача не повинно бути в списку clients, тобто якщо він у нас вже під'єднаний то ми вдруге його приєднати вже не можемо.
     (newClient, cb) => {
-      //Приймає нового клієнта і колбек
+      //Приймає нового клієнта і колбек. Якщо newClient це функція то list в цій функції це буде state з хука useStateWithCallback
       updateClients((list) => {
+        console.log('newClient... ', newClient, 'clients... ', clients);
+        //Якщо state з хуку useStateWithCallback не містить newClient то буде викликано цей if, якщо ж містить то просто повернено state і оскільки state в useStateWithCallback не змінився то useEffect в хуку useStateWithCallback не буде викликано а значить і cb(другий параметр в updateClients) теж не буде викликано при цьому він залишиться як значення cbRef.current
         if (!list.includes(newClient)) {
           //Перевіряємо що якщо в списку клієнтів немає newClient то тоді викликатимо updateClients і передавати далі по цепочці колбек
           return [...list, newClient];
@@ -90,7 +92,14 @@ export default function useWebRTC(roomID) {
         }
       };
 
+      console.log('localMediaStream... ', localMediaStream);
       localMediaStream.current.getTracks().forEach((track) => {
+        console.log('track...', track);
+        //Експеремент...
+        // if (track.kind === 'video') {
+        //   track.enabled = !track.enabled;
+        // }
+
         //Получаємо треки які зараз ідуть, тобто які зараз транслюються тобто і аудіо і відео і додати їх до нашого peerConnections
         peerConnections.current[peerID].addTrack(
           //Замість addTrack можна було би використати метод addStream(як я поняв), в який ми могли би відразу прокинути localMediaStream.current, але він не кросбраузерний і на мобільних пристроях він не підтримується тому треба робити так.
@@ -187,13 +196,14 @@ export default function useWebRTC(roomID) {
   }, []);
 
   useEffect(() => {
-    //Тут відбувається підключення до кімнати
+    //Тут відбувається підключення до кімнати. Тобто це буде виконуватись при підключені даного клієнта до кімнати
     async function startCapture() {
       //Робимо захват екрану
       localMediaStream.current = await navigator.mediaDevices.getUserMedia({
         //Слідкуємо за нашим localMediaStream і запишемо туда navigator.mediaDevices.getUserMedia - тобто так ми захопимо медіа контент
-        audio: true, //Вказуємо що необхідно захоплювати звук
+        audio: true, //Вказуємо що необхідно захоплювати звук, якщо false то не буде приймати звук
         video: {
+          //Можна цьому методу просто задати false так: video: false - і тоді відео не запитуватиме
           //Так вказуємо що треба захорпити відео
           width: 1280, //Так вказуємо формат відео в даному випадку 1280х720
           height: 720,
@@ -204,6 +214,10 @@ export default function useWebRTC(roomID) {
         // Якщо захват екрану відбувся успішно то викличеться ця функція. Тут описано що буде відбуватися коли ми додали нового клієнта в LOCAL_VIDEO (в локал відео) - він відрендериться в нас і всередині рендера ми його запишемо в список наших peerMediaElements з ключем LOCAL_VIDEO
         const localVideoElement = peerMediaElements.current[LOCAL_VIDEO]; //Дістаємо дані з об'єкту peerMediaElements зі свойства LOCAL_VIDEO
 
+        console.log(
+          'localMediaStream при підключенні до кімнати... ',
+          localMediaStream
+        );
         if (localVideoElement) {
           //Якщо localVideoElement містить якісь дані то це вже буде html тег відео до якого ми отримуємо доступ через реф
           localVideoElement.volume = 0; //присвоюємо 0 щоб ми самі себе не чули.

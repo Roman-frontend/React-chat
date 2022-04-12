@@ -21,7 +21,7 @@ export const routes: RouteObject[] = [
     element: <Chat />,
   },
   {
-    path: '/video',
+    path: '/rooms',
     element: <MainVideoCall />,
   },
   {

@@ -1,4 +1,6 @@
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
+import { Box } from '@mui/system';
 import useWebRTC, { LOCAL_VIDEO } from '../../hooks/useWebRTC';
 
 //Як усе це працює? Коли користувач заходить на сторінку Room => у нього викликається useParams, ми отримуємо roomId => передаємо його в хук useWebRTC => там useWebRTC захоплює екран через navigator.mediaDevices.getUserMedia => і починає транслювати його на екран через addNewClient(LOCAL_VIDEO... (тобто через цю функцію в нас додається новий клієнт) => на це у нас реагує return цього компоненту (index з папки Room) => всередині useWebRTC ми на localVideoElement видправляємо наш сигнал з localMediaStream прописавши localVideoElement.srcObject = localMediaStream.current; - щоб ми бачили самі себе.
@@ -45,33 +47,84 @@ export default function Room() {
   const { id: roomID } = useParams();
   const { clients, provideMediaRef } = useWebRTC(roomID);
   const videoLayout = layout(clients.length);
+  const [muted, setMuted] = useState(false);
+  const [stopVideo, setStopVideo] = useState(true);
+
+  const createVideoWindows = () => {
+    return clients.map((clientID, index) => {
+      return (
+        <Box key={clientID} style={videoLayout[index]} id={clientID}>
+          <video // html tag
+            //controls - Додає панель управління до відео
+            controls
+            // loop - Повторює відтворення відео безкінечну кількість разів
+            loop={false}
+            //poster - силка на зображення яке буде показано до запуску відео
+            poster={'https://pixabay.com/images/id-87928/'}
+            //preload - використовується для завантаження відео разом із завантаженням сторінки
+            preload='auto'
+            width='100%'
+            height='100%'
+            ref={(instance) => {
+              provideMediaRef(clientID, instance);
+            }}
+            // autoPlay - значення цього свойства вказує чи запускати відео після завантаження сторінки
+            autoPlay={stopVideo} //Щоб відео автоматично запускалось
+            playsInline //Щоб відео автоматично запускалось на кількох мобільних пристроях
+            // muted - просто виключає аудіо а не мікрофон.
+            muted={clientID === LOCAL_VIDEO || muted} //Так вказуємо що якщо ми самі себе бачимо то ми не хочемо себе чути.
+          />
+        </Box>
+      );
+    });
+  };
+
+  useEffect(() => {
+    console.log('useEffect...');
+    createVideoWindows();
+  }, [stopVideo, muted]);
 
   return (
-    <div
+    <Box
       style={{
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
         height: '100vh',
+        margin: 0,
       }}
     >
-      {clients.map((clientID, index) => {
-        return (
-          <div key={clientID} style={videoLayout[index]} id={clientID}>
-            <video // html tag
-              width='100%'
-              height='100%'
-              ref={(instance) => {
-                provideMediaRef(clientID, instance);
-              }}
-              autoPlay //Щоб відео автоматично запускалось
-              playsInline //Щоб відео автоматично запускалось на кількох мобільних пристроях
-              muted={clientID === LOCAL_VIDEO} //Так вказуємо що якщо ми самі себе бачимо то ми не хочемо себе чути.
-            />
-          </div>
-        );
-      })}
-    </div>
+      <Box
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          height: '90vh',
+        }}
+      >
+        {createVideoWindows()}
+      </Box>
+      <Box
+        style={{
+          position: 'fixed',
+          height: '10vh',
+          width: '100%',
+          bottom: 0,
+          background: 'gray',
+        }}
+      >
+        <button
+          style={{ background: muted ? 'red' : 'green' }}
+          onClick={() => setMuted(!muted)}
+        >
+          Mute
+        </button>
+        <button
+          style={{ background: stopVideo ? 'red' : 'green' }}
+          onClick={() => setStopVideo(!stopVideo)}
+        >
+          Video
+        </button>
+      </Box>
+    </Box>
   );
 }

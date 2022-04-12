@@ -1,14 +1,12 @@
-const User = require('../../models/User');
+const User = require("../../models/User");
+const AppService = require("../../Service/AppService");
 
 const resolvers = {
   Query: {
-    users: (_, { id }, context) => {
-      if (!context.isAuth) throw new Error('you must be logged in');
-      if (id) {
-        return User.findById(id);
-      } else {
-        return User.find({});
-      }
+    users: (_, args, context) => {
+      if (!context.isAuth) throw new Error("you must be logged in");
+      const fined = AppService.getUsers(args);
+      return fined;
     },
   },
 };

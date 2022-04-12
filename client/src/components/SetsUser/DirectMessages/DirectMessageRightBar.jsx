@@ -1,28 +1,28 @@
-import React, { useState, useMemo } from 'react';
-import { useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
-import { v4 } from 'uuid';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import AssignmentIndSharpIcon from '@mui/icons-material/AssignmentIndSharp';
-import PersonIcon from '@mui/icons-material/Person';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
-import { SEND_TO_GMAIL } from '../SetsUserGraphQL/queryes';
-import { wsSend } from '../../../WebSocket/soket';
+import React, { useState, useMemo } from "react";
+import { useQuery, useMutation, useReactiveVar } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import AssignmentIndSharpIcon from "@mui/icons-material/AssignmentIndSharp";
+import PersonIcon from "@mui/icons-material/Person";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { AUTH, GET_USERS } from "../../../GraphQLApp/queryes";
+import { SEND_TO_GMAIL } from "../SetsUserGraphQL/queryes";
+import { wsSend } from "../../../WebSocket/soket";
 import {
   GET_DIRECT_MESSAGES,
   REMOVE_DIRECT_MESSAGE,
-} from '../SetsUserGraphQL/queryes';
+} from "../SetsUserGraphQL/queryes";
 import {
   activeChatId,
   reactiveVarId,
   reactiveDirectMessages,
-} from '../../../GraphQLApp/reactiveVars';
-import { determineActiveChat } from '../../Helpers/determineActiveChat';
-import { useSnackbar } from 'notistack';
+} from "../../../GraphQLApp/reactiveVars";
+import { determineActiveChat } from "../../Helpers/determineActiveChat";
+import { useSnackbar } from "notistack";
 
 const DirectMessageRightBar = (props) => {
   const navigate = useNavigate();
@@ -36,8 +36,8 @@ const DirectMessageRightBar = (props) => {
   const [stopSendGmail, setStopSendGmail] = useState(true);
 
   const mailOptions = {
-    subject: 'Мій тестовий лист з React-Chat',
-    text: 'Текст листа з React-Chat',
+    subject: "Мій тестовий лист з React-Chat",
+    text: "Текст листа з React-Chat",
   };
 
   const { refetch } = useQuery(SEND_TO_GMAIL, {
@@ -48,7 +48,7 @@ const DirectMessageRightBar = (props) => {
       console.log(`Помилка відправки повідомлення на gmail ${error}`);
     },
     onCompleted(data) {
-      console.log('Resolve after send to gmail...', data);
+      console.log("Resolve after send to gmail...", data);
     },
   });
 
@@ -64,7 +64,7 @@ const DirectMessageRightBar = (props) => {
     if (activeDirectMessage) {
       return determineActiveChat(activeDirectMessage, users.users, auth.id);
     }
-    return '#generall';
+    return "#generall";
   }, [activeDirectMessage]);
 
   const [removeDirectMessage] = useMutation(REMOVE_DIRECT_MESSAGE, {
@@ -75,7 +75,7 @@ const DirectMessageRightBar = (props) => {
             return existingDirectMessagesRefs.filter(
               (directMessageRef) =>
                 directMessages.remove.recordId !==
-                readField('id', directMessageRef)
+                readField("id", directMessageRef)
             );
           },
           messages({ DELETE }) {
@@ -87,7 +87,7 @@ const DirectMessageRightBar = (props) => {
     onCompleted(data) {
       const removedDm = data.directMessages.remove.record;
       const removedUserId = removedDm.members.find((id) => id !== userId);
-      const storage = JSON.parse(sessionStorage.getItem('storageData'));
+      const storage = JSON.parse(sessionStorage.getItem("storageData"));
       const newDrMsgIds = storage.directMessages.filter(
         (dmId) => dmId !== removedDm.id
       );
@@ -95,25 +95,24 @@ const DirectMessageRightBar = (props) => {
         ...storage,
         directMessages: newDrMsgIds,
       });
-      enqueueSnackbar('Direct Message is a success removed!', {
-        variant: 'success',
+      enqueueSnackbar("Direct Message is a success removed!", {
+        variant: "success",
       });
       activeChatId({});
-      sessionStorage.setItem('storageData', toStorage);
+      sessionStorage.setItem("storageData", toStorage);
       reactiveDirectMessages(newDrMsgIds);
-      wsSend({ meta: 'removedDm', userId, dmId: removedDm.id, removedUserId });
+      wsSend({ meta: "removedDm", userId, dmId: removedDm.id, removedUserId });
     },
     onError(error) {
       console.log(`Помилка при видаленні повідомлення ${error}`);
-      enqueueSnackbar('Direct Message isn`t removed!', { variant: 'error' });
+      enqueueSnackbar("Direct Message isn`t removed!", { variant: "error" });
     },
   });
 
   function gmailHandler() {
-    console.log('gmailHandler...');
-    setStopSendGmail((prev) => !prev);
+    setStopSendGmail(() => false);
     refetch({ ...mailOptions });
-    setStopSendGmail((prev) => !prev);
+    setStopSendGmail(() => true);
   }
 
   return (
@@ -122,10 +121,10 @@ const DirectMessageRightBar = (props) => {
         <ListItemIcon>
           <PersonIcon
             style={{
-              background: 'cadetblue',
-              borderRadius: '50%',
+              background: "cadetblue",
+              borderRadius: "50%",
               fontSize: 40,
-              cursor: 'pointer',
+              cursor: "pointer",
             }}
           />
         </ListItemIcon>
@@ -140,10 +139,10 @@ const DirectMessageRightBar = (props) => {
         <ListItemIcon>
           <DeleteIcon />
         </ListItemIcon>
-        <ListItemText primary='Remove chat' />
+        <ListItemText primary="Remove chat" />
       </ListItem>
       <ListItem button onClick={gmailHandler}>
-        <ListItemText primary='Send to Gmail' />
+        <ListItemText primary="Send to Gmail" />
       </ListItem>
     </List>
   );

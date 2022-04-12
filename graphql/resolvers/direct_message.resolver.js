@@ -1,10 +1,6 @@
-const { GraphQLEnumType } = require('graphql');
-require('dotenv').config();
-const nodemailer = require('nodemailer');
-const User = require('../../models/User');
-const DirectMessage = require('../../models/DirectMessage');
-const DirectMessageChat = require('../../models/DirectMessageChat');
-const { infoError } = require('../helpers');
+const { GraphQLEnumType } = require("graphql");
+require("dotenv").config();
+const DMService = require("../../Service/DMService");
 
 const resolvers = {
   StatusEnum: {
@@ -23,23 +19,23 @@ const resolvers = {
   ErrorInterface: {
     __resolveType(obj, context, info) {
       if (obj.code === 401) {
-        return 'AuthError';
+        return "AuthError";
       }
 
       if (obj.code === 500) {
-        return 'ValidatorError';
+        return "ValidatorError";
       }
 
       if (obj.code === 200) {
-        return 'ValidatorError';
+        return "ValidatorError";
       }
 
       if (obj.code === 400) {
-        return 'ValidatorError';
+        return "ValidatorError";
       }
 
       if (obj.code === 403) {
-        return 'ValidatorError';
+        return "ValidatorError";
       }
 
       return null;
@@ -47,48 +43,19 @@ const resolvers = {
   },
 
   Query: {
-    directMessages: async (_, { id }, context) => {
-      if (!context.isAuth) throw new Error('you must be logged in');
-      let allFinded = [];
-      //Можна створити валідатор який перевіряє чи це юзер має доступ до цих повідомлень ждя цього сюди треба передати ід юзера, знайти його модель в ДБ і через інклудес перевірити і якщо перевірку проходить то тоді продовжити.
-      for (let directMessageId of id) {
-        const finded = await DirectMessage.findById(directMessageId);
-        if (finded) {
-          allFinded.push(finded);
-        }
-      }
-      return allFinded;
+    directMessages: async (_, args, context) => {
+      if (!context.isAuth) throw new Error("you must be logged in");
+      const { status, directMessages } = await DMService.getDirectMessages(
+        args
+      );
+      if (status === 200) return directMessages;
     },
-    sendToGmail: (_, { from, to, subject, text }, context) => {
-      console.log('sendToGmail...', from, to, subject, text);
-      const mailOptions = { from, to, subject, text };
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD,
-        },
-      });
-      transporter.sendMail(mailOptions, (error) => {
-        if (error) {
-          console.log('Fail send...', error);
-          // return {
-          //   status: 500,
-          //   message: `Message fail sended to gmail... ${error}`,
-          // };
-        } else {
-          console.log('Email sent...');
-          // return {
-          //   status: 200,
-          //   message: `Message sended to gmail...`,
-          // };
-        }
-      });
+    sendToGmail: (_, args, context) => {
+      if (!context.isAuth) throw new Error("you must be logged in");
 
-      return {
-        status: 200,
-        message: `Message sended to gmail...`,
-      };
+      const { status, message } = DMService.sendToGmail(args);
+      if (status === 200) return { status, message };
+      if (status === 500) return { status, message };
     },
   },
 
@@ -97,115 +64,52 @@ const resolvers = {
   },
 
   DirectMessagesMutations: {
-    create: async (_, { inviter, invited }, context) => {
+    create: async (_, args, context) => {
       if (!context.isAuth) {
         return {
           status: 401,
           query: {},
           error: {
-            message: 'you must be logged in',
-            value: 'unauthorized',
+            message: "you must be logged in",
+            value: "unauthorized",
             code: 401,
           },
         };
       }
-      let allNew = [];
-      let alreadyInviteds = [];
-      for (let invitedId of invited) {
-        const sortedMembers = [inviter, invitedId].sort();
-        const userHasChat = await DirectMessage.exists({
-          members: sortedMembers,
-        });
-        if (userHasChat || inviter === invitedId) {
-          const alreadyInvited = await User.findById(invitedId);
-          alreadyInviteds.push(alreadyInvited.email);
-          continue;
-        }
-        const dbInviter = await User.findById(inviter);
-        const dbInvited = await User.findById(invitedId);
-        const newDrMsg = await DirectMessage.create({ members: sortedMembers });
 
-        dbInviter.directMessages.push(newDrMsg.id);
-        await dbInviter.save();
+      const { status, directMessagesId, directMessages, message } =
+        await DMService.createDM(args);
+      const statusValue =
+        status === 420 ? "ALL_INVITED" : status === 419 ? "SOME_INVITED" : "OK";
 
-        dbInvited.directMessages.push(newDrMsg.id);
-        await dbInvited.save();
-
-        allNew = allNew.concat(newDrMsg);
-      }
-      const errorMessage = alreadyInviteds[1]
-        ? `Users ${alreadyInviteds.join(', ')} already invited`
-        : alreadyInviteds[0]
-        ? `User ${alreadyInviteds.join(', ')} already invited`
-        : 'This is a success invite!';
-      const allNewId = allNew.map((drMsg) => drMsg.id);
-      const status =
-        alreadyInviteds.length === invited.length
-          ? 420
-          : alreadyInviteds[0]
-          ? 419
-          : 200;
       return {
-        recordId: allNewId,
-        record: allNew,
+        recordId: directMessagesId,
+        record: directMessages,
         status,
         query: {},
-        error: {
-          message: errorMessage,
-          value: 'validation error',
-          code: 500,
-        },
+        error: { message, value: statusValue, code: 200 },
       };
     },
-    remove: async (_, { id }, context) => {
+    remove: async (_, args, context) => {
       if (!context.isAuth) {
         return {
           status: 401,
           query: {},
           error: {
-            message: 'you must be logged in',
-            value: 'unauthorized',
+            message: "you must be logged in",
+            value: "unauthorized",
             code: 401,
           },
         };
       }
-      const removed = await DirectMessage.findByIdAndRemove(
-        { _id: id },
-        { useFindAndModify: false, new: true }
-      );
-      const inviter = await User.findById(removed.members[0]);
-      const updaterInvited = inviter.directMessages.filter(
-        (drMsg) => drMsg != id
-      );
-      await User.findOneAndUpdate(
-        { _id: removed.members[0] },
-        { directMessages: updaterInvited },
-        { useFindAndModify: false, new: true },
-        (err) => infoError(err)
-      );
 
-      const invited = await User.findById(removed.members[1]);
-      const updatedInvited = invited.directMessages.filter(
-        (drMsg) => drMsg != id
-      );
-      await User.findOneAndUpdate(
-        { _id: removed.members[1] },
-        { directMessages: updatedInvited },
-        { useFindAndModify: false, new: true },
-        (err) => infoError(err)
-      );
-      await DirectMessageChat.deleteMany({ chatId: id });
-      console.log('removed dm: ', removed);
+      const { status, id, members } = await DMService.removeDM(args);
       return {
         recordId: id,
-        record: { id, members: removed.members },
-        status: 200,
+        record: { id, members },
+        status,
         query: {},
-        error: {
-          message: 'Succes remove',
-          value: 'validation error',
-          code: 500,
-        },
+        error: { message: "Succes remove", value: "Success", code: 200 },
       };
     },
   },

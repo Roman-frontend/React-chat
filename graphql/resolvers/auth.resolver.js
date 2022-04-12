@@ -1,28 +1,11 @@
-const bcrypt = require('bcryptjs');
-const User = require('../../models/User.js');
-const jwt = require('jsonwebtoken');
-const yup = require('yup');
-const config = require('config');
-const {
-  nameNotLongEnough,
-  emailNotLongEnough,
-  invalidEmail,
-  passwordNotLongEnough,
-} = require('../../common/errors');
-const { formatYupError } = require('../helpers');
-const { GraphQLScalarType, Kind, GraphQLError } = require('graphql');
+const { GraphQLScalarType, Kind, GraphQLError } = require("graphql");
+const AuthService = require("../../Service/AuthService.js");
 //const { Kind } = require('graphql/language');
-
-const schema = yup.object().shape({
-  name: yup.string().min(3, nameNotLongEnough).max(255),
-  email: yup.string().min(3, emailNotLongEnough).max(255).email(invalidEmail),
-  password: yup.string().min(3, passwordNotLongEnough).max(255),
-});
 
 const resolvers = {
   Email: new GraphQLScalarType({
-    name: 'Email',
-    description: 'A string which represents a email for auth',
+    name: "Email",
+    description: "A string which represents a email for auth",
     //--- ОПРЕДЕЛЯЕМ КАК ТИП ПРИНИМАТЬ ОТ КЛИЕНТА ---
     // Чтобы принять значение от клиента, провалидировать его и преобразовать
     // в нужный тип/объект для работы на сервере вам нужно определить две функции: parseValue, parseLiteral
@@ -50,8 +33,8 @@ const resolvers = {
     },
   }),
   AuthName: new GraphQLScalarType({
-    name: 'AuthName',
-    description: 'A string which represents a name for auth',
+    name: "AuthName",
+    description: "A string which represents a name for auth",
     parseValue(value) {
       const regExp = /^([A-Za-z0-9]){3,15}$/gi;
       if (value.match(regExp)) return value;
@@ -66,8 +49,8 @@ const resolvers = {
     },
   }),
   AuthPassword: new GraphQLScalarType({
-    name: 'AuthPassword',
-    description: 'A string which represents a password for auth',
+    name: "AuthPassword",
+    description: "A string which represents a password for auth",
     parseValue(value) {
       if (value.length >= 8 && value.length <= 15) return value;
 
@@ -82,41 +65,44 @@ const resolvers = {
   }),
   Query: {
     login: async (_, args) => {
-      try {
-        await schema.validate(args, { abortEarly: false });
-      } catch {
-        return formatYupError(err);
+      const { status, error, user, token } = await AuthService.getUser(args);
+
+      if (status === 400) {
+        return {
+          status: 400,
+          query: {},
+          error: {
+            message: `Помилочка : ${error}`,
+            value: "BAD_REQUEST",
+            code: 400,
+          },
+        };
       }
-      const { email, password } = args;
-      const user = await User.findOne({ email });
-      if (!user) {
+
+      if (status === 401) {
         return {
           status: 401,
           query: {},
           error: {
             message: `email or password is not correct`,
-            value: 'unauthorized',
+            value: "unauthorized",
             code: 401,
           },
         };
       }
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
+
+      if (status === 500) {
         return {
           status: 500,
           query: {},
           error: {
             message: `email or password is not correct`,
-            value: 'Internal Error',
+            value: "Internal Error",
             code: 500,
           },
         };
       }
-      const token = jwt.sign(
-        { userId: user.id },
-        config.get('jwtSecret')
-        //{ expiresIn: '1h'}
-      );
+
       return {
         record: {
           id: user.id,
@@ -128,71 +114,48 @@ const resolvers = {
         },
         status: 200,
         query: {},
-        error: {
-          message: `email or password is not correct`,
-          value: 'unauthorized',
-          code: 401,
-        },
       };
     },
   },
 
   Mutation: {
     register: async (_, args) => {
-      try {
-        await schema.validate(args, { abortEarly: false });
-      } catch (err) {
+      const { status, error, user, token } = await AuthService.registerUser(
+        args
+      );
+      const { id, name, email, channels, directMessages } = user;
+
+      if (status === 400) {
         return {
           status: 400,
           query: {},
           error: {
-            message: `Помилочка : ${formatYupError(err)}`,
-            value: 'BAD_REQUEST',
+            message: `Помилочка : ${error}`,
+            value: "BAD_REQUEST",
           },
         };
       }
-      const { name, email, password } = args;
-
-      const emailIsBasy = await User.findOne({ email });
-      if (emailIsBasy) {
+      if (status === 403) {
         return {
           status: 403,
           query: {},
           error: {
             message: `incorrect data entered`,
-            value: 'FORBIDDEN',
+            value: "FORBIDDEN",
             code: 403,
           },
         };
       }
-      const hashPassword = await bcrypt.hash(password, 12);
-      const newUser = await User.create({
-        name,
-        email,
-        password: hashPassword,
-      });
-      //const newUser = await User.findOne({ email: 'r@mail.ru' });
-      const token = jwt.sign(
-        { userId: newUser.id },
-        config.get('jwtSecret')
-        //{ expiresIn: '1h'}
-      );
+
       return {
-        recordId: newUser.id,
-        record: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          channels: newUser.channels,
-          directMessages: newUser.directMessages,
-          token,
-        },
+        recordId: id,
+        record: { id, name, email, channels, directMessages, token },
         status: 200,
         query: {},
         error: {
-          message: 'Succes register',
-          value: 'unauthorized',
-          code: 401,
+          message: "Succes register",
+          value: "OK",
+          code: 200,
         },
       };
     },

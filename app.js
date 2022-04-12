@@ -72,6 +72,7 @@ const PORT = process.env.PORT || 5001;
       shareRoomsInfo();
 
       socket.on(ACTIONS.JOIN, (config) => {
+        console.log('config... ', config);
         const { room: roomID } = config;
         const { rooms: joinedRooms } = socket;
 

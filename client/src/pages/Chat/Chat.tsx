@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
+import { memo, useCallback, useEffect, useState } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
 import {
   reactiveOnlineMembers,
   reactiveVarPrevAuth,
-} from '../../GraphQLApp/reactiveVars';
-import { GET_USERS } from '../../GraphQLApp/queryes';
-import Header from '../../components/Header/Header';
-import Conversation from '../../components/Conversation/Conversation';
-import SetsUser from '../../components/SetsUser/SetsUser';
+} from "../../GraphQLApp/reactiveVars";
+import { GET_USERS } from "../../GraphQLApp/queryes";
+import Header from "../../components/Header/Header";
+import Conversation from "../../components/Conversation/Conversation";
+import SetsUser from "../../components/SetsUser/SetsUser";
 import {
   registerEnterPage,
   registerOnlineUser,
   registerUnloadPage,
   registerOfflineUser,
-} from '../../components/Helpers/registerUnload';
+} from "../../components/Helpers/registerUnload";
 import {
   CHANNELS,
   GET_DIRECT_MESSAGES,
-} from '../../components/SetsUser/SetsUserGraphQL/queryes';
-import { Loader } from '../../components/Helpers/Loader';
-import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import setStylesChat from './styles';
+} from "../../components/SetsUser/SetsUserGraphQL/queryes";
+import { Loader } from "../../components/Helpers/Loader";
+import { activeChatId } from "../../GraphQLApp/reactiveVars";
+import setStylesChat from "./styles";
 
 interface IStyles {
   root?: React.CSSProperties;
@@ -38,7 +38,7 @@ interface IBadge {
   num: number;
 }
 
-export const Chat = () => {
+export const Chat = memo(() => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const activeChat = useReactiveVar(activeChatId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -83,17 +83,17 @@ export const Chat = () => {
   }, [dChannels, dDms]);
 
   useEffect(() => {
-    const storage = sessionStorage.getItem('storageData');
+    const storage = sessionStorage.getItem("storageData");
     if (storage) {
       const parsedStorage = JSON.parse(storage);
       reactiveVarPrevAuth(parsedStorage);
     }
     registerOnlineUser(usersOnline);
     registerEnterPage();
-    return registerUnloadPage('Leaving page', registerOfflineUser);
+    return registerUnloadPage("Leaving page", registerOfflineUser);
   }, []);
 
-  const showConversation = () => {
+  const showConversation = useCallback(() => {
     if (show) {
       return (
         <Conversation
@@ -108,14 +108,14 @@ export const Chat = () => {
     }
 
     return null;
-  };
+  }, [show]);
 
   if (lUsers && lChannels && lDms) {
     return <Loader />;
   }
 
   return (
-    <Box style={styles.root}>
+    <Box data-testid="chat" style={styles.root}>
       <Grid container spacing={2} style={styles.workSpace}>
         <CssBaseline />
         <Grid item xs={12} style={styles.header}>
@@ -133,10 +133,10 @@ export const Chat = () => {
           dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
           setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
-        <Box component='main' sx={styles.conversation}>
+        <Box component="main" sx={styles.conversation}>
           <main>{showConversation()}</main>
         </Box>
       </Grid>
     </Box>
   );
-};
+});

@@ -1,15 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import Modal from 'react-modal';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { AddPeopleToChannel } from '../../Modals/AddPeopleToChannel/AddPeopleToChannel';
-import { CreateListMembers } from './CreateListMembers';
-Modal.setAppElement('#root');
+import React, { useMemo, useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { AddPeopleToChannel } from "../../Modals/AddPeopleToChannel/AddPeopleToChannel";
+import { CreateListMembers } from "./CreateListMembers";
 
 export const ConversationMembers = (props) => {
   const {
@@ -23,11 +21,11 @@ export const ConversationMembers = (props) => {
     isErrorInPopap,
   } = props;
   const theme = useTheme();
-  const [search, setSearch] = useState('[A-Z]');
+  const [search, setSearch] = useState("[A-Z]");
 
   const title = useMemo(() => {
     const quantityMembers = activeChannel ? activeChannel.members.length : 1;
-    const channelName = activeChannel ? `#${activeChannel.name}` : '#general';
+    const channelName = activeChannel ? `#${activeChannel.name}` : "#general";
     return (
       <p style={{ margin: 0 }}>
         {`${quantityMembers} members in ${channelName}`}
@@ -40,27 +38,27 @@ export const ConversationMembers = (props) => {
   }
 
   return (
-    <div className='set-channel'>
+    <div className="set-channel">
       <Dialog
         sx={{
-          position: 'absolute',
-          top: '18vh',
-          maxHeight: '400px',
-          '& .MuiDialog-paper': {
+          position: "absolute",
+          top: "18vh",
+          maxHeight: "400px",
+          "& .MuiDialog-paper": {
             backgroundColor: theme.palette.primary.main,
           },
         }}
         open={modalIsShowsMembers}
         onClose={() => setModalIsShowsMembers(false)}
-        aria-labelledby='form-dialog-title'
+        aria-labelledby="form-dialog-title"
       >
-        <Box style={{ textAlign: 'center' }}>
-          <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
+        <Box style={{ textAlign: "center" }}>
+          <DialogTitle id="form-dialog-title">{title}</DialogTitle>
         </Box>
-        <Box style={{ textAlign: 'center' }}>
+        <Box style={{ textAlign: "center" }}>
           <Button
-            color='warning'
-            variant='text'
+            color="warning"
+            variant="text"
             onClick={() => setModalAddPeopleIsOpen(true)}
           >
             Add people
@@ -69,10 +67,10 @@ export const ConversationMembers = (props) => {
         <Box>
           <TextField
             autoFocus
-            color='secondary'
-            variant='standard'
-            label='Search people'
-            style={{ minWidth: '350px', margin: '0px 25px' }}
+            color="secondary"
+            variant="standard"
+            label="Search people"
+            style={{ minWidth: "350px", margin: "0px 25px" }}
             onChange={(event) => handleInput(event)}
           />
         </Box>

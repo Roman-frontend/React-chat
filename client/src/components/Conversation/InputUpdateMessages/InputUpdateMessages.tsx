@@ -1,18 +1,17 @@
-import React, { useMemo, memo } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH } from '../../../GraphQLApp/queryes';
+import React, { useMemo, memo, useState, useEffect } from "react";
+import { makeStyles } from "@mui/styles";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { AUTH } from "../../../GraphQLApp/queryes";
 import {
   CREATE_MESSAGE,
   CHANGE_MESSAGE,
   GET_MESSAGES,
-} from '../ConversationGraphQL/queryes';
-import { wsSend } from '../../../WebSocket/soket';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars';
+} from "../ConversationGraphQL/queryes";
+import { wsSend } from "../../../WebSocket/soket";
+import { activeChatId } from "../../../GraphQLApp/reactiveVars";
 
 interface IMessage {
   id: string;
@@ -26,6 +25,7 @@ interface IMessage {
 }
 
 interface IProps {
+  testData: string;
   changeMessageRef: null | React.MutableRefObject<IMessage | null>;
   closeBtnChangeMsg: boolean;
   setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,16 +44,17 @@ interface ICacheMessage {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     flexGrow: 1,
-    fontSize: '3rem',
-    textAlign: 'right',
+    fontSize: "3rem",
+    textAlign: "right",
   },
 }));
 
 export const InputUpdateMessages = memo((props: IProps) => {
   const {
+    testData,
     changeMessageRef,
     closeBtnChangeMsg,
     setCloseBtnChangeMsg,
@@ -67,13 +68,13 @@ export const InputUpdateMessages = memo((props: IProps) => {
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
-  const theme = useTheme();
+  const [inputText, setInputText] = useState<string>("");
 
   const chatType = useMemo(() => {
     return activeDirectMessageId
-      ? 'DirectMessage'
+      ? "DirectMessage"
       : activeChannelId
-      ? 'Channel'
+      ? "Channel"
       : null;
   }, [activeChannelId, activeDirectMessageId]);
 
@@ -81,12 +82,28 @@ export const InputUpdateMessages = memo((props: IProps) => {
     return activeDirectMessageId || activeChannelId || null;
   }, [activeChannelId, activeDirectMessageId]);
 
+  const { loading, data: messages } = useQuery(GET_MESSAGES, {
+    variables: {
+      chatId: chatId || "6288671cb24f6a89e861b98d",
+      chatType: chatType || "DirectMessage",
+      userId: auth?.id || "6288661c22cf8e8950762e14",
+    },
+    onError(data) {
+      console.log("error __", data);
+    },
+  });
+
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data }) => {
       const cacheMsg: ICacheMessage | null = cache.readQuery({
         query: GET_MESSAGES,
-        variables: { chatId, chatType, userId: auth.id },
+        variables: {
+          chatId: chatId || "6288671cb24f6a89e861b98d",
+          chatType: chatType || "DirectMessage",
+          userId: auth?.id || "6288661c22cf8e8950762e14",
+        },
       });
+      // console.log(cacheMsg);
       if (cacheMsg && data?.message) {
         const chatMessages = cacheMsg?.messages?.chatMessages || [];
         const newMsg = data.message.create;
@@ -103,6 +120,8 @@ export const InputUpdateMessages = memo((props: IProps) => {
       }
     },
     onCompleted(data) {
+      console.log("data", data);
+      setInputText("bla la la");
       sendMessageToWS(data.message.create);
     },
   });
@@ -135,8 +154,8 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   function sendMessageToWS(data: IMessage) {
     wsSend({
-      meta: 'sendMessage',
-      action: 'change',
+      meta: "sendMessage",
+      action: "change",
       room: data.chatId,
       message: data,
     });
@@ -144,19 +163,20 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   function inputUpdateMessages(event: React.KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    const value = inputRef?.current?.value || '';
+    const value = inputRef?.current?.value || "";
 
     //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
-    if (value.trim() !== '' && !event.shiftKey && event.key === 'Enter') {
+    console.log("value", value, value.trim(), !event.shiftKey, event.key);
+    if (value.trim() !== "" && !event.shiftKey && event.key === "Enter") {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
       else newMessage(value);
-      if (inputRef?.current?.value) inputRef.current.value = '';
+      if (inputRef?.current?.value) inputRef.current.value = "";
     }
   }
 
   async function changeMessageText(text: string) {
-    const newMsg = { id: popupMessage?.id || '', text, chatType };
+    const newMsg = { id: popupMessage?.id || "", text, chatType };
     changeMessage({
       variables: { input: newMsg },
       optimisticResponse: { message: { change: { ...popupMessage, text } } },
@@ -169,8 +189,8 @@ export const InputUpdateMessages = memo((props: IProps) => {
     const replyMsg = {
       chatId,
       chatType,
-      senderId: auth.id,
-      replyOn: popupMessage?.text || '',
+      senderId: auth?.id || "6288661c22cf8e8950762e14",
+      replyOn: popupMessage?.text || "",
       text,
     };
     createMessage({
@@ -182,11 +202,11 @@ export const InputUpdateMessages = memo((props: IProps) => {
             chatType,
             createdAt: Date.now(),
             id: Date.now(),
-            replyOn: popupMessage?.text || '',
+            replyOn: popupMessage?.text || "",
             text,
-            updatedAt: '',
-            senderId: auth.id,
-            __typename: 'MessagePayload',
+            updatedAt: "",
+            senderId: auth?.id || "6288661c22cf8e8950762e14",
+            __typename: "MessagePayload",
           },
         },
       },
@@ -195,7 +215,13 @@ export const InputUpdateMessages = memo((props: IProps) => {
   };
 
   function newMessage(text: string) {
-    const newMsg = { chatId, chatType, senderId: auth.id, text };
+    const newMsg = {
+      chatId,
+      chatType,
+      senderId: auth?.id || "6288661c22cf8e8950762e14",
+      text,
+    };
+    console.log("newMsg");
     createMessage({
       variables: newMsg,
       optimisticResponse: {
@@ -207,37 +233,54 @@ export const InputUpdateMessages = memo((props: IProps) => {
             id: Date.now(),
             replyOn: null,
             text,
-            updatedAt: '',
-            senderId: auth.id,
-            __typename: 'MessagePayload',
+            updatedAt: "",
+            senderId: auth?.id || "6288661c22cf8e8950762e14",
+            __typename: "MessagePayload",
           },
         },
       },
     });
   }
 
+  if (loading) {
+    return (
+      <>
+        <p>loading</p>
+      </>
+    );
+  }
+
+  function changeInput(event: any) {
+    if (inputRef?.current?.value) inputRef.current.value = event.target.value;
+    setInputText(event.target.value);
+  }
+
   return (
-    <div className={classes.root} id='mainInput'>
+    <div className={classes.root} id="mainInput">
+      <p>{messages.messages.chatMessages[0].text}</p>
       <Grid container spacing={1}>
         <Grid item xs={1}>
           <BorderColorIcon
             //color='input'
-            style={{ fontSize: 40, top: '1rem', textAlign: 'center' }}
+            style={{ fontSize: 40, top: "1rem", textAlign: "center" }}
           />
         </Grid>
         <Grid item xs={11}>
           <TextField
+            inputProps={{ "data-testid": "on-key-up-main-input" }}
             //color='input'
-            label='Enter text'
-            variant='standard'
+            value={inputText}
+            label="Enter text"
+            variant="standard"
             inputRef={inputRef}
             autoFocus={true}
+            onChange={(event) => changeInput(event)}
             onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) =>
               inputUpdateMessages(event)
             }
             sx={{
-              paddingRight: '6vw',
-              width: '-webkit-fill-available',
+              paddingRight: "6vw",
+              width: "-webkit-fill-available",
             }}
           />
         </Grid>

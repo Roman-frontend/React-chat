@@ -1,26 +1,29 @@
-import { wsSend, wsSingleton } from '../../WebSocket/soket';
-import { reactiveOnlineMembers } from '../../GraphQLApp/reactiveVars';
+import { wsSend, wsSingleton } from "../../WebSocket/soket";
+import { reactiveOnlineMembers } from "../../GraphQLApp/reactiveVars";
 
 function online() {
   wsSingleton.clientPromise
-    .then((wsClient) => console.log('ONLINE'))
+    .then((wsClient) => console.log("ONLINE"))
     .catch((error) => console.log(error));
-  const storage = JSON.parse(sessionStorage.getItem('storageData'));
+  const storage = JSON.parse(sessionStorage.getItem("storageData"));
   if (storage && storage.channels && storage.directMessages) {
     const allUserChats = storage.channels.concat(storage.directMessages);
-    wsSend({ userRooms: allUserChats, meta: 'join', userId: storage.id });
+    wsSend({ userRooms: allUserChats, meta: "join", userId: storage.id });
   }
 }
 
 export function registerEnterPage() {
   //console.info(performance.navigation.type);
-  console.log('registerEnterPage');
-  if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+  console.log("registerEnterPage");
+  if (
+    performance?.navigation?.type &&
+    performance.navigation.type == performance.navigation.TYPE_RELOAD
+  ) {
     online();
     //console.info('This page is reloaded');
   } else if (window.performance) {
     //check for Navigation Timing API support
-    console.info('window.performance works fine on this browser');
+    console.info("window.performance works fine on this browser");
     online();
   } else {
     //console.info('This page is not reloaded');
@@ -28,13 +31,13 @@ export function registerEnterPage() {
 }
 
 export function registerOnlineUser(usersOnline) {
-  console.log('registerOnlineUser');
+  console.log("registerOnlineUser");
   return wsSingleton.clientPromise
     .then((wsClient) => {
-      wsClient.addEventListener('message', (response) => {
+      wsClient.addEventListener("message", (response) => {
         const parsedRes = JSON.parse(response.data);
         if (
-          parsedRes.message === 'online' &&
+          parsedRes.message === "online" &&
           JSON.stringify(usersOnline) !== JSON.stringify(parsedRes.members)
         ) {
           reactiveOnlineMembers(parsedRes.members);
@@ -45,7 +48,7 @@ export function registerOnlineUser(usersOnline) {
 }
 
 export function registerUnloadPage(msg, onunloadFunc) {
-  console.log('registerUnloadPage');
+  console.log("registerUnloadPage");
   let alreadPrompted = false,
     timeoutID = 0,
     reset = function () {
@@ -75,8 +78,8 @@ export function registerUnloadPage(msg, onunloadFunc) {
 }
 
 export function registerOfflineUser() {
-  console.log('registerOfflineUser');
-  const storageData = JSON.parse(sessionStorage.getItem('storageData'));
+  console.log("registerOfflineUser");
+  const storageData = JSON.parse(sessionStorage.getItem("storageData"));
   if (storageData && storageData.channels[0]) {
     const allUserChats = storageData.channels.concat(
       storageData.directMessages
@@ -84,8 +87,8 @@ export function registerOfflineUser() {
     wsSend({
       userRooms: allUserChats,
       userId: storageData.id,
-      meta: 'leave',
-      path: 'Conversation',
+      meta: "leave",
+      path: "Conversation",
     });
   }
 }

@@ -1,20 +1,20 @@
-import React, { useMemo } from 'react';
-import { useQuery } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import { withStyles } from '@mui/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import { GET_USERS } from '../../../GraphQLApp/queryes';
-import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
+import React, { useMemo } from "react";
+import { useQuery } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import { withStyles } from "@mui/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import { GET_USERS } from "../../../GraphQLApp/queryes";
+import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
 import {
   reactiveVarName,
   reactiveVarId,
-} from '../../../GraphQLApp/reactiveVars';
-import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
+} from "../../../GraphQLApp/reactiveVars";
+import { GET_DIRECT_MESSAGES } from "../../SetsUser/SetsUserGraphQL/queryes";
 
 const styles = (theme) => ({
   titleRoot: {
-    padding: '24px 16px 0px 16px',
+    padding: "24px 16px 0px 16px",
   },
 });
 
@@ -56,16 +56,17 @@ export const AddDirectMessage = withStyles(styles)((props) => {
   return (
     <>
       <Dialog
+        data-testid="add-dm-modal"
         open={modalAddDmIsOpen}
         onClose={() => setModalAddDmIsOpen(false)}
         sx={{
-          '& .MuiDialog-paper': {
+          "& .MuiDialog-paper": {
             backgroundColor: theme.palette.primary.main,
           },
         }}
       >
         <DialogTitle
-          id='form-dialog-title'
+          id="form-dialog-title"
           classes={{ root: classes.titleRoot }}
         >
           Invite people to {reactiveVarName()}

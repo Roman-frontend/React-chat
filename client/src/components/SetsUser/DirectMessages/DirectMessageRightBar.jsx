@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useReactiveVar } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
 import { v4 } from "uuid";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -25,7 +24,6 @@ import { determineActiveChat } from "../../Helpers/determineActiveChat";
 import { useSnackbar } from "notistack";
 
 const DirectMessageRightBar = (props) => {
-  const navigate = useNavigate();
   const { data: auth } = useQuery(AUTH);
   const { data: users } = useQuery(GET_USERS);
   const { data: dDm } = useQuery(GET_DIRECT_MESSAGES);
@@ -116,7 +114,15 @@ const DirectMessageRightBar = (props) => {
   }
 
   return (
-    <List>
+    <List data-testid="dm-right-bar">
+      <input type="button" />
+      <button
+        onClick={() => {
+          console.log("clicked...");
+        }}
+      >
+        aa
+      </button>
       <ListItem button>
         <ListItemIcon>
           <PersonIcon

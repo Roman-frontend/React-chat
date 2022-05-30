@@ -1,8 +1,8 @@
-import React from 'react';
-import { makeStyles } from '@mui/styles';
-import TextField from '@mui/material/TextField';
-import { colors } from '@mui/material';
-import './auth-form.sass';
+import React from "react";
+import { makeStyles } from "@mui/styles";
+import TextField from "@mui/material/TextField";
+import { colors } from "@mui/material";
+import "./auth-form.sass";
 
 const useStyles = makeStyles((theme) => ({
   inputIsValidated: {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     color: colors.red[900],
   },
   label: {
-    margin: '0px 14px',
+    margin: "0px 8px",
   },
 }));
 
@@ -30,9 +30,9 @@ export function SignUpForm(props) {
     fieldError === undefined || fieldError === true ? false : true;
 
   return (
-    <div>
+    <>
       <TextField
-        style={{ width: '33.7vw' }}
+        style={{ width: "33.7vw", margin: "0vh 1vw" }}
         label={label}
         name={name}
         type={type}
@@ -42,10 +42,10 @@ export function SignUpForm(props) {
         autoFocus={autoFocus}
         ref={inputSignUpRef}
         error={isError}
-        size='small'
-        variant='standard'
+        size="small"
+        variant="standard"
       />
-      <p className={isError ? 'auth-form__error' : null}>{fieldError}</p>
-    </div>
+      <p className={isError ? "auth-form__error" : null}>{fieldError}</p>
+    </>
   );
 }

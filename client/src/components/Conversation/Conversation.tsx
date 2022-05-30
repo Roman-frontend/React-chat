@@ -1,16 +1,16 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Box } from '@mui/system';
-import { ConversationHeaderChannel } from './ConversationHeader/ConversationHeaderChannel.jsx';
-import { ConversationHeaderDrMsg } from './ConversationHeader/ConversationHeaderDrMsg.jsx';
-import { Messages } from './Messages/Messages';
-import { InputUpdateMessages } from './InputUpdateMessages/InputUpdateMessages';
-import { ConversationInputHeader } from './ConversationInputHeader/ConversationInputHeader';
-import { ConversationActionsMessage } from './ConversationActionsMessage/ConversationActionsMessage.jsx';
-import imageError from '../../images/error.png';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { CHANNELS } from '../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId, reactiveVarId } from '../../GraphQLApp/reactiveVars';
+import React, { useState, useRef, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/system";
+import { ConversationHeaderChannel } from "./ConversationHeader/ConversationHeaderChannel.jsx";
+import { ConversationHeaderDrMsg } from "./ConversationHeader/ConversationHeaderDrMsg.jsx";
+import { Messages } from "./Messages/Messages";
+import { InputUpdateMessages } from "./InputUpdateMessages/InputUpdateMessages";
+import { ConversationInputHeader } from "./ConversationInputHeader/ConversationInputHeader";
+import { ConversationActionsMessage } from "./ConversationActionsMessage/ConversationActionsMessage.jsx";
+import imageError from "../../images/error.png";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { CHANNELS } from "../SetsUser/SetsUserGraphQL/queryes";
+import { activeChatId, reactiveVarId } from "../../GraphQLApp/reactiveVars";
 
 interface IBadge {
   id: string;
@@ -68,7 +68,7 @@ export default function Conversation(props: IProps) {
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
   const userId = useReactiveVar(reactiveVarId);
-  const [openPopup, setOpenPopup] = useState('');
+  const [openPopup, setOpenPopup] = useState("");
 
   const checkPrivate = useCallback(() => {
     if (dChannels?.userChannels?.length && activeChannelId) {
@@ -140,13 +140,13 @@ export default function Conversation(props: IProps) {
   }, [activeChannelId, activeDirectMessageId, modalAddPeopleIsOpen]);
 
   return (
-    <Box>
+    <Box data-testid="conversation-main-block">
       {setHeader()}
       <Box
         style={{
-          overflowY: 'auto',
-          flexDirection: 'column-reverse',
-          display: 'flex',
+          overflowY: "auto",
+          flexDirection: "column-reverse",
+          display: "flex",
           height: closeBtnReplyMsg || closeBtnChangeMsg ? 360 : 385,
         }}
       >
@@ -162,8 +162,9 @@ export default function Conversation(props: IProps) {
         changeMessageRef={changeMessageRef}
         popupMessage={popupMessage}
       />
-      <Box style={{ display: openPopup ? 'none' : 'block' }}>
+      <Box style={{ display: openPopup ? "none" : "block" }}>
         <InputUpdateMessages
+          testData="client"
           popupMessage={popupMessage}
           inputRef={inputRef}
           changeMessageRef={changeMessageRef}

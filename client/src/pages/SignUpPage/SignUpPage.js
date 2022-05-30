@@ -11,11 +11,12 @@ import {
   validateName,
   validateEmail,
   validatePassword,
-} from "../../components/Helpers/validateMethods.jsx";
+} from "../../components/Helpers/validateMethods/validateMethods.jsx";
 import { useAuth } from "../../hooks/auth.hook.js";
 import { SignUpForm } from "../../components/SignUpForm/SignUpForm.jsx";
 import { REGISTER } from "../../components/../GraphQLApp/queryes";
 import { AuthLoader } from "../../components/Helpers/Loader.jsx";
+import MuiLink from "@mui/material/Link";
 import "./auth-body.sass";
 
 export const SignUpPage = memo(() => {
@@ -61,29 +62,34 @@ export const SignUpPage = memo(() => {
     },
     onCompleted(data) {
       if (data.register.status === "OK") {
-        console.log("register record...", data.register.record);
         auth(data.register.record);
+        navigate("/chat");
+        enqueueSnackbar(data.register.error.message, { variant: "success" });
+      } else {
+        console.log("register record...", data);
+        enqueueSnackbar(data.register.error.message, { variant: "error" });
       }
-
-      enqueueSnackbar("Success registration!", { variant: "success" });
     },
   });
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async () => {
     const formData = {
       name: ref.name.current.children[1].children[0].value,
       email: ref.email.current.children[1].children[0].value,
       password: String(ref.password.current.children[1].children[0].value),
     };
     ref.password.current.children[1].children[0].value = "";
-    validate(formData);
-    console.log("formData... ", formData, event);
-    register({ variables: { ...formData } });
-    navigate("/chat");
+    const isValidForm = validate(formData);
+    if (isValidForm) {
+      register({ variables: { ...formData } });
+    }
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      data-testid="sign-up"
+      style={{ display: "flex", justifyContent: "center" }}
+    >
       <Paper
         sx={{
           position: "relative",
@@ -128,13 +134,13 @@ export const SignUpPage = memo(() => {
           inputSignUpRef={ref.password}
         />
 
-        <Box style={{ display: "flex" }}>
+        <Box style={{ display: "flex", justifyContent: "space-evenly" }}>
           <Button
             size="small"
             variant="contained"
             color="primary"
             style={{
-              width: "9vw",
+              width: "13vw",
               margin: "15px",
             }}
             onClick={handleSubmit}
@@ -142,15 +148,16 @@ export const SignUpPage = memo(() => {
             Register
           </Button>
 
-          <Link to={`/signIn`} style={{ textDecoration: "none" }}>
-            <Button
-              size="small"
-              color="secondary"
-              variant="contained"
-              sx={{ margin: "15px" }}
-            >
-              Has account go to login
-            </Button>
+          <Link
+            data-testid="link-to-login"
+            to={`/signIn`}
+            style={{
+              textDecoration: "none",
+              alignSelf: "center",
+              color: theme.palette.primary.contrastText,
+            }}
+          >
+            Are you is registered?
           </Link>
         </Box>
 

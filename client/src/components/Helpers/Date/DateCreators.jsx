@@ -9,7 +9,7 @@ export const messageDate = (date = Date.now()) => {
     rowDate.getSeconds() > 9
       ? rowDate.getSeconds()
       : `0${rowDate.getSeconds()}`;
-  let result = '';
-  result += hour + ':' + minute + ':' + second;
+  let result = "";
+  result += hour + ":" + minute + ":" + second;
   return result;
 };

@@ -1,91 +1,127 @@
-import React, { useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import React, { useEffect, useState } from "react";
 //https://github.com/jquense/yup  - Силка на додаткові методи yup
-import * as Yup from "yup";
+import { useFormik } from "formik";
+import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { useSnackbar } from "notistack";
+import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
-import { colors, Paper } from "@mui/material";
+import {
+  FormHelperText,
+  Paper,
+  InputLabel,
+  FormControl,
+  Input,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import { LOGIN } from "../../components/../GraphQLApp/queryes";
 import { useAuth } from "../../hooks/auth.hook.js";
-import { SignInForm } from "../../components/SignInForm/SignInForm.jsx";
 import { AuthLoader } from "../../components/Helpers/Loader";
 import IconButton from "@mui/material/IconButton";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { Box } from "@mui/system";
+import TextField from "@mui/material/TextField";
+
+const useStyles = makeStyles((theme) => ({
+  label: {
+    margin: "0px 8px",
+  },
+}));
+
+const validationSchema = yup.object({
+  email: yup
+    .string("Enter your email")
+    .email("Enter a valid email")
+    .required("Email is required"),
+  password: yup
+    .string("Enter your password")
+    .min(8, "Password should be of minimum 8 characters length")
+    .required("Password is required"),
+});
+
+export const handleMouseDownPassword = (event) => {
+  event.preventDefault();
+};
 
 export const SignInPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
+  const classes = useStyles();
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [valuess, setValuess] = useState({
-    password: "",
-    showPassword: false,
-  });
-
-  const prevHandleChange = (prop) => (event) => {
-    setValuess({ ...valuess, [prop]: event.target.value });
-  };
-
-  const prevHandleClickShowPassword = () => {
-    setValuess({ ...valuess, showPassword: !valuess.showPassword });
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
   const { auth } = useAuth();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [stopLogin, setStopLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "j@gmail.com",
+      password: "11111111",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values, { resetForm }) => {
+      try {
+        setLoginData({ email: values.email, password: values.password });
+        resetForm({
+          values: {
+            email: values.email,
+            password: "",
+          },
+        });
+      } catch (e) {
+        console.error("Помилочка : ", e);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (loginData.email && loginData.password) {
+      refetch();
+    }
+  }, [loginData]);
 
   const { loading, refetch } = useQuery(LOGIN, {
     //Вимкнути автоматичний логін
-    skip: stopLogin,
+    skip: true,
     variables: { email: loginData.email, password: loginData.password },
 
-    //variables: { email: 'test@mail.ru', password: '11111111' },
+    //variables: { email: 'r@gmail.com', password: '11111111' },
     onError(error) {
-      console.log(`Помилка авторизації ${error}`);
+      console.log(
+        `Помилка авторизації request: ${
+          (loginData.email,
+          {
+            email: loginData.email,
+            password: loginData.password,
+          })
+        } отримано помилку: ${error}`
+      );
       enqueueSnackbar("Fail login", { variant: "error" });
     },
     onCompleted(data) {
       if (data.login.status === "OK") {
+        // console.log("res login... ", data);
         auth(data.login.record);
         enqueueSnackbar("Successful login", { variant: "success" });
         navigate("/chat");
       } else {
+        console.log("error ", data.login.error.message);
         enqueueSnackbar(data.login.error.message, { variant: "error" });
       }
     },
   });
 
-  const onSubmit = (values, { resetForm }) => {
-    try {
-      setLoginData({ email: values.email, password: valuess.password });
-      resetForm({
-        values: {
-          email: values.email,
-          password: "",
-        },
-      });
-      setStopLogin(false);
-      refetch();
-    } catch (e) {
-      console.error("Помилочка : ", e);
-    }
+  const prevHandleClickShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      data-testid="sign-in"
+      style={{ display: "flex", justifyContent: "center" }}
+    >
       <Paper
         sx={{
           position: "relative",
@@ -93,95 +129,115 @@ export const SignInPage = () => {
           background: theme.palette.primary.dark,
         }}
       >
-        <Formik initialValues={{ email: "", password: "" }} onSubmit={onSubmit}>
-          <Form>
-            <span
+        <span
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: 25,
+            margin: "20px 0px 0px",
+          }}
+        >
+          Авторизація
+        </span>
+        <form
+          onSubmit={formik.handleSubmit}
+          // Дозволяє запускати formik.handleSubmit натиском Enter над формою
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     formik.handleSubmit();
+          //   }
+          // }}
+        >
+          <Box>
+            <TextField
+              id="email"
+              name="email"
+              label="Email"
+              style={{ width: "33.7vw", margin: "2vh 1vw" }}
+              variant="standard"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              color="input"
+              //зупиняє анімацію
+              //InputLabelProps={{ shrink: true }}
+              autoFocus={true}
+              InputLabelProps={{
+                classes: { standard: classes.label },
+              }}
+            />
+          </Box>
+          <Box>
+            <FormControl
+              style={{ width: "33.7vw", margin: "2vh 0vw" }}
+              color="input"
+              name="password"
+              error={formik.touched.password && Boolean(formik.errors.password)}
+            >
+              <InputLabel label="Password" style={{ margin: "0px 8px" }}>
+                Password
+              </InputLabel>
+              <Input
+                id="password"
+                name="password"
+                label="Password"
+                style={{ width: "33.7vw", marginLeft: 14, marginTop: 10 }}
+                type={showPassword ? "text" : "password"}
+                value={formik.values.password}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                onChange={formik.handleChange}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {" "}
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={prevHandleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              <FormHelperText>
+                {formik.touched.password && Boolean(formik.errors.password)
+                  ? formik.errors.password
+                  : null}
+              </FormHelperText>
+            </FormControl>
+          </Box>
+          <Box style={{ display: "flex", justifyContent: "space-evenly" }}>
+            <Button
+              data-testid="button-login"
+              size="small"
+              variant="contained"
               style={{
-                display: "flex",
-                justifyContent: "center",
-                fontSize: 25,
-                margin: "20px 0px 0px",
+                width: "13vw",
+                margin: "15px 0px",
+                color: "black",
+              }}
+              type="submit"
+            >
+              Enter
+            </Button>
+
+            <Link
+              to={`/signUp`}
+              data-testid="link-to-register"
+              style={{
+                textDecoration: "none",
+                alignSelf: "center",
+                color: theme.palette.primary.contrastText,
               }}
             >
-              Авторизація
-            </span>
-
-            <SignInForm
-              label="Email"
-              name="email"
-              type="email"
-              autoFocus={true}
-            />
-            <>
-              <Field name="password">
-                {(props) => {
-                  return (
-                    <>
-                      <FormControl
-                        name="password"
-                        style={{ width: "33.7vw" }}
-                        id="password"
-                        color="input"
-                      >
-                        <InputLabel>Password</InputLabel>
-                        <Input
-                          type={valuess.showPassword ? "text" : "password"}
-                          //value={values.password}
-                          onChange={prevHandleChange("password")}
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={prevHandleClickShowPassword}
-                                onMouseDown={handleMouseDownPassword}
-                              >
-                                {valuess.showPassword ? (
-                                  <Visibility />
-                                ) : (
-                                  <VisibilityOff />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          }
-                        />
-                      </FormControl>
-                    </>
-                  );
-                }}
-              </Field>
-            </>
-            <ErrorMessage
-              name="password"
-              render={(msg) => <div className="auth-form__error">{msg}</div>}
-            />
-            <Box style={{ display: "flex" }}>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                style={{
-                  width: "9vw",
-                  margin: "15px",
-                }}
-                type="submit"
-              >
-                Enter
-              </Button>
-
-              <Link to={`/signUp`} style={{ textDecoration: "none" }}>
-                <Button
-                  size="small"
-                  color="secondary"
-                  variant="contained"
-                  sx={{ margin: "15px" }}
-                >
-                  Go to register
-                </Button>
-              </Link>
-            </Box>
-            {loading ? <AuthLoader /> : null}
-          </Form>
-        </Formik>
+              Are you is`nt registered?
+            </Link>
+          </Box>
+          {loading ? <AuthLoader /> : null}
+        </form>
       </Paper>
     </div>
   );

@@ -1,19 +1,17 @@
-import React, { useRef, useEffect } from 'react';
-import Modal from 'react-modal';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import { withStyles } from '@mui/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import { SelectPeople } from '../SelectPeople/SelectPeople.jsx';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
-import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars';
-Modal.setAppElement('#root');
+import React, { useRef, useEffect } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import { withStyles } from "@mui/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
+import { AUTH, GET_USERS } from "../../../GraphQLApp/queryes";
+import { CHANNELS } from "../../SetsUser/SetsUserGraphQL/queryes";
+import { activeChatId } from "../../../GraphQLApp/reactiveVars";
 
 const styles = (theme) => ({
   titleRoot: {
-    padding: '24px 16px 0px 16px',
+    padding: "24px 16px 0px 16px",
   },
 });
 
@@ -60,16 +58,16 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     <>
       <Dialog
         sx={{
-          '& .MuiDialog-paper': {
+          "& .MuiDialog-paper": {
             backgroundColor: theme.palette.primary.main,
           },
         }}
         open={modalAddPeopleIsOpen}
         onClose={() => setModalAddPeopleIsOpen(false)}
-        aria-labelledby='form-dialog-title'
+        aria-labelledby="form-dialog-title"
       >
         <DialogTitle
-          id='form-dialog-title'
+          id="form-dialog-title"
           classes={{ root: classes.titleRoot }}
         >
           Invite people to #{chatNameRef.current}

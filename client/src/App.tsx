@@ -1,11 +1,12 @@
-import React, { useState, createContext } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { BrowserRouter as Router, Routes } from 'react-router-dom';
-import { routesCreater } from './routes';
-//import CustomThemeProvider from './components/Theme/CustomeThemeProvider';
-import getTheme from './components/Theme/base';
-import { SnackbarProvider } from 'notistack';
-import './css/style.sass';
+import React, { useState, createContext, useCallback } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AppRoutes } from "./router/routes";
+import getTheme from "./components/Theme/base";
+import { SnackbarProvider } from "notistack";
+import { ApolloProvider } from "@apollo/client";
+import { client } from "./GraphQLApp/apolloClient";
+import "./css/style.sass";
 
 type SetThemeType = (name: string) => void;
 
@@ -15,25 +16,20 @@ interface Context {
 }
 
 export const CustomThemeContext = createContext<Context>({
-  currentTheme: 'light',
+  currentTheme: "light",
   setTheme: null,
 });
 
 export default function App() {
-  // Read current theme from localStorage or maybe from an api
-  const currentTheme = localStorage.getItem('appTheme') || 'light';
-
-  // State to hold the selected theme name
+  const currentTheme = localStorage.getItem("appTheme") || "light";
   const [themeName, _setThemeName] = useState(currentTheme);
-
-  // Retrieve the theme object by theme name
   const theme = getTheme(themeName);
 
-  // Wrap _setThemeName to store new theme names in localStorage
-  const setThemeName = (name: string): void => {
-    localStorage.setItem('appTheme', name);
+  const setThemeName = useCallback((name: string): void => {
+    console.log("theme changed");
+    localStorage.setItem("appTheme", name);
     _setThemeName(name);
-  };
+  }, []);
 
   const contextValue: Context = {
     currentTheme: themeName,
@@ -41,14 +37,16 @@ export default function App() {
   };
 
   return (
-    <Router>
-      <SnackbarProvider maxSnack={3}>
-        <CustomThemeContext.Provider value={contextValue}>
-          <ThemeProvider theme={theme}>
-            <Routes>{routesCreater()}</Routes>
-          </ThemeProvider>
-        </CustomThemeContext.Provider>
-      </SnackbarProvider>
-    </Router>
+    <CustomThemeContext.Provider value={contextValue}>
+      <ThemeProvider theme={theme}>
+        <Router>
+          <ApolloProvider client={client}>
+            <SnackbarProvider maxSnack={3}>
+              <AppRoutes />
+            </SnackbarProvider>
+          </ApolloProvider>
+        </Router>
+      </ThemeProvider>
+    </CustomThemeContext.Provider>
   );
 }

@@ -1,13 +1,13 @@
-import React, { useMemo, memo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useQuery } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import imageProfile from '../../../../images/User-Icon.png';
-import { messageDate } from '../../../Helpers/DateCreators';
-import { GET_USERS } from '../../../../GraphQLApp/queryes';
-import { Loader } from '../../../Helpers/Loader';
-import './message.sass';
+import React, { useMemo, memo } from "react";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import imageProfile from "../../../../images/User-Icon.png";
+import { messageDate } from "../../../Helpers/Date/DateCreators";
+import { GET_USERS } from "../../../../GraphQLApp/queryes";
+import { Loader } from "../../../Helpers/Loader";
+import "./message.sass";
 
 interface IMessage {
   id: string;
@@ -56,37 +56,36 @@ const Message = memo(
 
     const style: { root: React.CSSProperties } = {
       root: {
-        cursor: 'pointer',
-        position: 'relative',
-        backgroundColor: openPopup === id ? theme.palette.primary.dark : 'none',
+        cursor: "pointer",
+        position: "relative",
+        backgroundColor: openPopup === id ? theme.palette.primary.dark : "none",
       },
     };
 
     const senderName = useMemo(() => {
-      console.log(users, senderId);
       return users.users.find((user: IUser) => {
         return user.id === senderId;
       }).name;
     }, [users]);
 
-    const classMessage = replyOn ? 'container-reply' : 'container';
+    const classMessage = replyOn ? "container-reply" : "container";
     const replyMessage = replyOn ? (
       <div className={`${classMessage}__reply`}>
         <p
           style={{
             fontWeight: 600,
             color: theme.palette.primary.contrastText,
-            margin: '15px 0px 20px 0px',
+            margin: "15px 0px 20px 0px",
           }}
         >
           {senderName}
         </p>
-        <p style={{ margin: '0px 0px 10px 0px' }}>{replyOn}</p>
+        <p style={{ margin: "0px 0px 10px 0px" }}>{replyOn}</p>
       </div>
     ) : null;
 
     const handleClick = () => {
-      setOpenPopup((prevState: string) => (prevState === id ? '' : id));
+      setOpenPopup((prevState: string) => (prevState === id ? "" : id));
       setCloseBtnChangeMsg(false);
       setCloseBtnReplyMsg(false);
       setPopupMessage(message);
@@ -117,17 +116,17 @@ const Message = memo(
           </p>
           <p
             style={{
-              display: updatedAt && updatedAt !== createdAt ? 'block' : 'none',
+              display: updatedAt && updatedAt !== createdAt ? "block" : "none",
               fontSize: 11,
             }}
             className={`${classMessage}__info`}
           >
-            {`${t('description.editedMessage')}: ${messageDate(
+            {`${t("description.editedMessage")}: ${messageDate(
               parseInt(updatedAt) || parseInt(createdAt)
             )}`}
           </p>
           <p
-            style={{ maxWidth: 'fit-content' }}
+            style={{ maxWidth: "fit-content" }}
             className={`${classMessage}__message`}
           >
             {text}

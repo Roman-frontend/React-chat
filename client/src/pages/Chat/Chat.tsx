@@ -25,18 +25,8 @@ import {
 import { Loader } from "../../components/Helpers/Loader";
 import { activeChatId } from "../../GraphQLApp/reactiveVars";
 import setStylesChat from "./styles";
-
-interface IStyles {
-  root?: React.CSSProperties;
-  workSpace?: React.CSSProperties;
-  header?: React.CSSProperties;
-  conversation?: React.CSSProperties;
-}
-
-interface IBadge {
-  id: string;
-  num: number;
-}
+import IBadge from "../../Models/IBadge";
+import IStyles from "./Models/IStyles";
 
 export const Chat = memo(() => {
   const usersOnline = useReactiveVar(reactiveOnlineMembers);

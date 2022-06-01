@@ -2,31 +2,21 @@ import React, { useMemo, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@apollo/client";
 import { useTheme } from "@mui/material/styles";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import DoneIcon from "@mui/icons-material/Done";
 import Box from "@mui/material/Box";
 import imageProfile from "../../../../images/User-Icon.png";
 import { messageDate } from "../../../Helpers/Date/DateCreators";
 import { GET_USERS } from "../../../../GraphQLApp/queryes";
 import { Loader } from "../../../Helpers/Loader";
+import IMessage from "../../Models/IMessage";
 import "./message.sass";
-
-interface IMessage {
-  id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  replyOn: string;
-  chatType: string;
-  chatId: string;
-}
-
-type TMessage = null | IMessage;
 
 interface IProps {
   message: IMessage;
   openPopup: string;
   setOpenPopup: React.Dispatch<React.SetStateAction<string>>;
-  setPopupMessage: React.Dispatch<React.SetStateAction<TMessage>>;
+  setPopupMessage: React.Dispatch<React.SetStateAction<null | IMessage>>;
   setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
   setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -49,7 +39,8 @@ const Message = memo(
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   }: IProps) => {
-    const { text, createdAt, updatedAt, id, senderId, replyOn } = message;
+    const { text, createdAt, updatedAt, status, id, senderId, replyOn } =
+      message;
     const { t } = useTranslation();
     const theme = useTheme();
     const { data: users, loading } = useQuery(GET_USERS);
@@ -94,7 +85,7 @@ const Message = memo(
     if (loading) return <Loader />;
 
     return (
-      <Box style={style.root}>
+      <Box data-testid="main-message-div" style={style.root}>
         <Box className={classMessage} id={id} onClick={handleClick}>
           <img
             src={imageProfile}
@@ -114,6 +105,15 @@ const Message = memo(
           <p className={`${classMessage}__date`}>
             {messageDate(parseInt(createdAt))}
           </p>
+          {/* Відправлено, доставлено, прочитано */}
+          {status === "delivered" ? (
+            <DoneIcon
+              className={`${classMessage}__status`}
+              style={{ color: theme.palette.primary.contrastText }}
+            />
+          ) : (
+            <AccessTimeIcon className={`${classMessage}__status`} />
+          )}
           <p
             style={{
               display: updatedAt && updatedAt !== createdAt ? "block" : "none",

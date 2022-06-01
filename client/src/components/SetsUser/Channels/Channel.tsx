@@ -1,19 +1,11 @@
-import React from 'react';
-import { useReactiveVar } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars';
-
-interface IChannel {
-  id: string;
-  name: string;
-  admin: string;
-  description?: string;
-  members: string[] | [];
-  isPrivate: boolean;
-}
+import React from "react";
+import { useReactiveVar } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Avatar from "@mui/material/Avatar";
+import { activeChatId } from "../../../GraphQLApp/reactiveVars";
+import IChannel from "../../Models/IChannel";
 
 interface IProps {
   isOpenLeftBar: boolean;
@@ -37,7 +29,7 @@ export const Channel = (props: IProps) => {
   const theme: TTheme = useTheme();
 
   if (
-    typeof channel === 'object' &&
+    typeof channel === "object" &&
     channel?.id &&
     theme?.palette?.leftBarItem?.contrastText
   ) {
@@ -45,10 +37,10 @@ export const Channel = (props: IProps) => {
       <ListItem
         button
         sx={{
-          '&.Mui-selected': {
+          "&.Mui-selected": {
             background: theme.palette.action.active,
             color: theme.palette.leftBarItem.contrastText,
-            '&:hover': {
+            "&:hover": {
               background: theme.palette.action.active,
             },
           },
@@ -56,7 +48,7 @@ export const Channel = (props: IProps) => {
         onClick={() =>
           activeChatId({
             activeChannelId: channel.id,
-            activeDirectMessageId: '',
+            activeDirectMessageId: "",
           })
         }
         selected={activeChannelId === channel.id && true}
@@ -66,7 +58,7 @@ export const Channel = (props: IProps) => {
           {isOpenLeftBar && (
             <ListItemText
               primary={channel.name}
-              style={{ textAlign: 'center' }}
+              style={{ textAlign: "center" }}
             />
           )}
         </>

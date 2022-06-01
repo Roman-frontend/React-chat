@@ -66,7 +66,6 @@ export const SignUpPage = memo(() => {
         navigate("/chat");
         enqueueSnackbar(data.register.error.message, { variant: "success" });
       } else {
-        console.log("register record...", data);
         enqueueSnackbar(data.register.error.message, { variant: "error" });
       }
     },

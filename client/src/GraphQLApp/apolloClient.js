@@ -4,9 +4,9 @@ import {
   createHttpLink,
   HttpLink,
   from,
-} from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
-import { setContext } from '@apollo/client/link/context';
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { setContext } from "@apollo/client/link/context";
 import {
   reactiveVarName,
   reactiveVarToken,
@@ -17,10 +17,10 @@ import {
   reactiveOnlineMembers,
   reactiveVarPrevAuth,
   activeChatId,
-} from './reactiveVars';
+} from "./reactiveVars";
 
 //const httpLink = createHttpLink({ uri: '/graphql' });
-const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' });
+const httpLink = new HttpLink({ uri: "http://localhost:3000/graphql" });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
@@ -34,9 +34,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const authLink = setContext((_, { headers }) => {
-  const auth = JSON.parse(sessionStorage.getItem('storageData'));
+  const auth = JSON.parse(sessionStorage.getItem("storageData"));
   // return the headers to the context so httpLink can read them
-  const token = auth && auth.token ? auth.token : '';
+  const token = auth && auth.token ? auth.token : "";
   return { headers: { ...headers, authorization: token } };
 });
 
@@ -88,15 +88,15 @@ export const client = new ApolloClient({
           activeChatType() {
             if (reactiveVarToken()) {
               if (activeChatId().activeChannelId) {
-                return 'Channel';
+                return "Channel";
               } else if (activeChatId().activeDirectMessageId) {
-                return 'DirectMessage';
+                return "DirectMessage";
               }
             }
             return null;
           },
           emailTo() {
-            return 'romalicevich@gmail.com';
+            return "romalicevich@gmail.com";
           },
         },
       },

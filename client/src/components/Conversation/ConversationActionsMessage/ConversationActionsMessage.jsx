@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
-import { useMutation, useReactiveVar } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import { Box } from '@mui/system';
-import Button from '@mui/material/Button';
-import ReplyIcon from '@mui/icons-material/Reply';
-import EditIcon from '@mui/icons-material/Edit';
-import ForwardIcon from '@mui/icons-material/Forward';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { REMOVE_MESSAGE } from '../ConversationGraphQL/queryes';
-import { reactiveVarId, activeChatId } from '../../../GraphQLApp/reactiveVars';
+import React, { useEffect, useState } from "react";
+import { nanoid } from "nanoid";
+import { useMutation, useReactiveVar } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/system";
+import Button from "@mui/material/Button";
+import ReplyIcon from "@mui/icons-material/Reply";
+import EditIcon from "@mui/icons-material/Edit";
+import ForwardIcon from "@mui/icons-material/Forward";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { REMOVE_MESSAGE } from "../ConversationGraphQL/queryes";
+import { reactiveVarId, activeChatId } from "../../../GraphQLApp/reactiveVars";
 
 const stylesButton = { margin: 1 /* border: '1px solid rebeccapurple' */ };
 
@@ -31,7 +31,7 @@ export function ConversationActionsMessage(props) {
   const [focusRootInput, setFocusRootInput] = useState(false);
 
   useEffect(() => {
-    setOpenPopup('');
+    setOpenPopup("");
     setCloseBtnReplyMsg(false);
     setCloseBtnChangeMsg(false);
   }, [activeChannelId, activeDirectMessageId]);
@@ -58,44 +58,44 @@ export function ConversationActionsMessage(props) {
   });
 
   const handleAnswer = () => {
-    setOpenPopup('');
+    setOpenPopup("");
     setCloseBtnReplyMsg(true);
     setFocusRootInput(nanoid());
-    inputRef.current.value = '';
+    inputRef.current.value = "";
   };
 
   const handleChange = () => {
     setCloseBtnChangeMsg(true);
-    setOpenPopup('');
+    setOpenPopup("");
     changeMessageRef.current = popupMessage;
     setFocusRootInput(nanoid());
     inputRef.current.value = popupMessage.text;
   };
 
   const handleDelete = () => {
-    setOpenPopup('');
+    setOpenPopup("");
     removeMessage({
       variables: { id: popupMessage.id, chatType: popupMessage.chatType },
     });
   };
 
   const handleCancel = () => {
-    setOpenPopup('');
+    setOpenPopup("");
   };
 
   return (
     <Box
       sx={{
         background: theme.palette.primary.main,
-        maxWidth: 'initial',
+        maxWidth: "initial",
       }}
-      style={{ display: !openPopup && 'none' }}
+      style={{ display: !openPopup && "none" }}
     >
       <Button
         sx={stylesButton}
-        size='small'
-        variant='contained'
-        color='primary'
+        size="small"
+        variant="contained"
+        color="primary"
         startIcon={<ReplyIcon />}
         onClick={handleAnswer}
       >
@@ -104,9 +104,9 @@ export function ConversationActionsMessage(props) {
       {popupMessage && popupMessage.senderId === userId && (
         <Button
           sx={stylesButton}
-          size='small'
-          variant='contained'
-          color='primary'
+          size="small"
+          variant="contained"
+          color="primary"
           startIcon={<EditIcon />}
           onClick={handleChange}
         >
@@ -115,20 +115,20 @@ export function ConversationActionsMessage(props) {
       )}
       <Button
         sx={stylesButton}
-        size='small'
-        variant='contained'
-        color='primary'
+        size="small"
+        variant="contained"
+        color="primary"
         startIcon={<ForwardIcon />}
-        onClick={() => setOpenPopup('')}
+        onClick={() => setOpenPopup("")}
       >
         FORWARD
       </Button>
       {popupMessage && popupMessage.senderId === userId && (
         <Button
           sx={stylesButton}
-          size='small'
-          variant='contained'
-          color='error'
+          size="small"
+          variant="contained"
+          color="error"
           startIcon={<DeleteIcon />}
           onClick={handleDelete}
         >
@@ -137,9 +137,9 @@ export function ConversationActionsMessage(props) {
       )}
       <Button
         sx={stylesButton}
-        size='small'
-        variant='contained'
-        color='info'
+        size="small"
+        variant="contained"
+        color="info"
         onClick={handleCancel}
       >
         CANCEL

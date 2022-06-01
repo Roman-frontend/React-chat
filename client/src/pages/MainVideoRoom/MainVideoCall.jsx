@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import socket from '../../socket.io';
-import ACTIONS from '../../socket.io/actions';
-import { v4 } from 'uuid'; //v4 генерує унікальний ід
-import { useNavigate } from 'react-router-dom';
-import defaultVideoWebm from '../../images/Mail_Digital.webm';
-import defaultVideoMp4 from '../../images/Mail_Digital.mp4';
-import posterImage from '../../images/crispus.jpg';
+import { useState, useEffect, useRef } from "react";
+import socket from "../../socket.io";
+import ACTIONS from "../../socket.io/actions";
+import { v4 } from "uuid"; //v4 генерує унікальний ід
+import { useNavigate } from "react-router-dom";
+import defaultVideoWebm from "../../images/Mail_Digital.webm";
+import defaultVideoMp4 from "../../images/Mail_Digital.mp4";
+import posterImage from "../../images/crispus.jpg";
 
 export default function MainVideoCall() {
   const navigate = useNavigate();
@@ -21,8 +21,6 @@ export default function MainVideoCall() {
       }
     });
   }, []);
-
-  console.log('rooms... ', rooms);
 
   return (
     <div ref={rootNode}>
@@ -59,12 +57,12 @@ export default function MainVideoCall() {
         muted
         autoPlay
         height={400}
-        width='100%'
+        width="100%"
         poster={posterImage}
       >
         {/* В source - подані різні елементи тегу video якщо не спрацює src-першого то тег video спробує запустити наступний варіант. Черговість іде зверху до низу */}
-        <source src={defaultVideoWebm} type='video/webm' />
-        <source src={defaultVideoMp4} type='video/mp4' />
+        <source src={defaultVideoWebm} type="video/webm" />
+        <source src={defaultVideoMp4} type="video/mp4" />
       </video>
     </div>
   );

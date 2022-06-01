@@ -2,5 +2,5 @@
   "port": 5001,
   "jwtSecret": "Roman React-chat",
   "mongoUri": "mongodb+srv://Roman:Roman11@cluster0-94has.azure.mongodb.net/app?retryWrites=true&w=majority",
-  "baseUrl": "http://localhost:5001/"
+  "baseUrl": "http://localhost:5001"
 }

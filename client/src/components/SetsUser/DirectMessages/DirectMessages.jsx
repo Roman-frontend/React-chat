@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { gql, useQuery, useMutation, useReactiveVar } from '@apollo/client';
-import { useSnackbar } from 'notistack';
-import { useTheme } from '@mui/material/styles';
-import Button from '@mui/material/Button';
-import { makeStyles } from '@mui/styles';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { AUTH } from '../../../GraphQLApp/queryes';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { gql, useQuery, useMutation, useReactiveVar } from "@apollo/client";
+import { useSnackbar } from "notistack";
+import { useTheme } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import { makeStyles } from "@mui/styles";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import { AUTH } from "../../../GraphQLApp/queryes";
 import {
   CREATE_DIRECT_MESSAGE,
   GET_DIRECT_MESSAGES,
-} from '../../SetsUser/SetsUserGraphQL/queryes';
+} from "../../SetsUser/SetsUserGraphQL/queryes";
 import {
   reactiveDirectMessages,
   reactiveVarId,
-} from '../../../GraphQLApp/reactiveVars';
-import { AddDirectMessage } from '../../Modals/AddDirectMessage/AddDirectMessage.jsx';
-import { DirectMessage } from './DirectMessage';
-import { wsSend } from '../../../WebSocket/soket';
-import { nanoid } from 'nanoid';
+} from "../../../GraphQLApp/reactiveVars";
+import { AddDirectMessage } from "../../Modals/AddDirectMessage/AddDirectMessage.jsx";
+import { DirectMessage } from "./DirectMessage";
+import { wsSend } from "../../../WebSocket/soket";
+import { nanoid } from "nanoid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: "100%",
     maxWidth: 360,
   },
 }));
@@ -78,30 +78,30 @@ export function DirectMessages(props) {
     },
     onError(error) {
       console.log(`Помилка ${error}`);
-      enqueueSnackbar('Direct Message created!', { variant: 'error' });
+      enqueueSnackbar("Direct Message created!", { variant: "error" });
     },
     onCompleted(data) {
-      const storage = JSON.parse(sessionStorage.getItem('storageData'));
+      const storage = JSON.parse(sessionStorage.getItem("storageData"));
       const newDrMsgIds = data.directMessages.create.record.map(({ id }) => id);
       const toStorage = JSON.stringify({
         ...storage,
         directMessages: [...storage.directMessages, ...newDrMsgIds],
       });
-      sessionStorage.setItem('storageData', toStorage);
+      sessionStorage.setItem("storageData", toStorage);
       reactiveDirectMessages([...reactiveDirectMessages(), ...newDrMsgIds]);
-      enqueueSnackbar('Direct Message created!', { variant: 'success' });
+      enqueueSnackbar("Direct Message created!", { variant: "success" });
       const dms = data.directMessages.create.record;
       dms.forEach((dm) => {
         const invitedId = dm.members.find((memberId) => {
           return memberId !== userId;
         });
-        wsSend({ meta: 'addedDm', userId, dmId: dm.id, invitedId });
+        wsSend({ meta: "addedDm", userId, dmId: dm.id, invitedId });
       });
     },
   });
 
   function doneInvite(action, invited) {
-    if (action === 'done' && invited && invited[0]) {
+    if (action === "done" && invited && invited[0]) {
       createDirectMessage({
         variables: { inviter: auth.id, invited },
       });
@@ -114,7 +114,7 @@ export function DirectMessages(props) {
   return (
     <>
       <div>
-        <List component='nav' className={classes.root}>
+        <List component="nav" className={classes.root}>
           {isOpenLeftBar ? (
             <ListItem
               sx={{ paddingLeft: 0 }}
@@ -122,29 +122,29 @@ export function DirectMessages(props) {
               button
               onClick={() => setOpen(!open)}
             >
-              <ListItemIcon style={{ justifyContent: 'center' }}>
-                <EmojiPeopleIcon color='action' />
+              <ListItemIcon style={{ justifyContent: "center" }}>
+                <EmojiPeopleIcon color="action" />
               </ListItemIcon>
               <ListItemText
-                style={{ textAlign: 'center' }}
-                primary={t('description.dirrectMessageTitle')}
+                style={{ textAlign: "center" }}
+                primary={t("description.dirrectMessageTitle")}
               />
               {open ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
           ) : (
             <ListItem
-              style={{ padding: 0, margin: 0, justifyContent: 'center' }}
+              style={{ padding: 0, margin: 0, justifyContent: "center" }}
               key={nanoid()}
               button
               onClick={() => setOpen(!open)}
             >
-              <ListItemIcon style={{ padding: '0', justifyContent: 'center' }}>
-                <EmojiPeopleIcon color='action' />
+              <ListItemIcon style={{ padding: "0", justifyContent: "center" }}>
+                <EmojiPeopleIcon color="action" />
               </ListItemIcon>
             </ListItem>
           )}
           {dDms?.directMessages?.length ? (
-            <Collapse in={open} timeout='auto' unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit>
               <List>
                 {dDms.directMessages.map((drMsg) => (
                   <React.Fragment key={drMsg.id}>
@@ -162,16 +162,16 @@ export function DirectMessages(props) {
         </List>
       </div>
       <Button
-        size='small'
+        size="small"
         sx={{
-          width: '100%',
+          width: "100%",
           padding: 0,
-          '&:hover': { color: theme.palette.leftBarItem.light },
+          "&:hover": { color: theme.palette.leftBarItem.light },
         }}
-        color='warning'
+        color="warning"
         onClick={() => setModalAddDmIsOpen(true)}
       >
-        {isOpenLeftBar ? `+ ${t('description.addDm')}` : '+'}
+        {isOpenLeftBar ? `+ ${t("description.addDm")}` : "+"}
       </Button>
       <AddDirectMessage
         done={doneInvite}

@@ -14,16 +14,16 @@ import TestRenderer from "react-test-renderer";
 // https://www.apollographql.com/docs/react/development-testing/testing
 import { MockedProvider } from "@apollo/client/testing";
 // import { handleMouseDownPassword } from "./SignInPage";
-import { LOGIN } from "../../GraphQLApp/queryes";
+import { LOGIN } from "../../../GraphQLApp/queryes";
 import "@testing-library/jest-dom";
-import App from "../../App";
+import App from "../../../App";
 import { GraphQLError } from "graphql";
 
 const successMocks = [
   {
     request: {
       query: LOGIN,
-      variables: { email: "p@gmail.com", password: "11111111" },
+      variables: { email: "j@gmail.com", password: "11111111" },
     },
     result: {
       login: {
@@ -38,7 +38,7 @@ const successMocks = [
             "628cd1739b2063839aef7129",
           ],
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mjg4NjYxYzIyY2Y4ZTg5NTA3NjJlMTQiLCJpYXQiOjE2NTM0NjM0MjV9.dds_KsMC1_4Z8KDSr1buDK_tHOoqfsY_CxTzqiVShS8",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mjg4NjYxYzIyY2Y4ZTg5NTA3NjJlMTQiLCJpYXQiOjE2NTQwOTMzMzN9.XWZOkdwf1bdzNRdJsFEmhhVJAWj-k8c9IpovnqWKeXE",
           __typename: "Auth",
         },
         status: "OK",
@@ -47,28 +47,6 @@ const successMocks = [
     },
   },
 ];
-
-// const errorMocks = [
-//   {
-//     request: {
-//       query: LOGIN,
-//       variables: { email: "aswwcs@gmail.com", password: "11111111" },
-//     },
-//     result: {
-//       login: {
-//         __typename: "LoginPayload",
-//         record: null,
-//         status: "UNAUTHORIZED",
-//         error: {
-//           __typename: "AuthError",
-//           message: "email or password is not correct",
-//           value: "unauthorized",
-//           code: 401,
-//         },
-//       },
-//     },
-//   },
-// ];
 
 const errorMocks = [
   {
@@ -141,17 +119,26 @@ describe("SignInPage", () => {
       const loginBtn = screen.getByTestId("button-login");
       expect(loginBtn).toBeInTheDocument();
 
-      // screen.debug();
-
-      // expect(screen.queryByText(/Successful/i)).toBeNull();
+      const loginInputEmail = screen.getByTestId("login-email-input");
+      expect(loginInputEmail).toBeInTheDocument();
+      fireEvent.change(loginInputEmail, { target: { value: "j@gmail.com" } });
+      expect(loginInputEmail).toHaveValue("j@gmail.com");
+      const loginInputPassword = screen.getByTestId("login-password-input");
+      expect(loginInputPassword).toBeInTheDocument();
+      fireEvent.change(loginInputPassword, { target: { value: "11111111" } });
+      expect(loginInputPassword).toHaveValue("11111111");
       await userEvent.click(loginBtn);
-      // await act(async () => await screen.findByText(/Successful/i));
-      const loader = await waitFor(() => screen.getByTestId("circular-loader"));
+
+      const loader = await screen.findByTestId("circular-loader");
       expect(loader).toBeInTheDocument();
+      waitForElementToBeRemoved(() => loader);
       expect(await screen.findByTestId("chat")).toBeInTheDocument();
       expect(
         await screen.findByTestId("conversation-main-block")
       ).toBeInTheDocument();
+
+      const messageDiv = await screen.findAllByTestId("main-message-div");
+      expect(messageDiv).toHaveLength(7);
 
       const profileBtn = await screen.findByTestId("profile-button");
       expect(profileBtn).toBeInTheDocument();
@@ -162,14 +149,14 @@ describe("SignInPage", () => {
 
       const logoutButton = await screen.findByTestId("logout-button");
       expect(logoutButton).toBeInTheDocument();
-      expect(logoutButton).toMatchSnapshot();
+      // expect(logoutButton).toMatchSnapshot();
 
       userEvent.click(logoutButton);
 
       const loginButton = await screen.findByTestId("button-login");
       expect(loginButton).toBeInTheDocument();
 
-      screen.debug();
+      // screen.debug();
     });
   });
 });

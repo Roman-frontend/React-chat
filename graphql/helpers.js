@@ -1,4 +1,4 @@
-const Channel = require('../models/Channel');
+const Channel = require("../models/Channel");
 
 exports.checkAccesToChannel = async (chatId, userId) => {
   const channel = await Channel.findById(chatId);
@@ -7,7 +7,6 @@ exports.checkAccesToChannel = async (chatId, userId) => {
 
 exports.infoError = (err) => {
   if (err) console.log(err);
-  console.log('updated');
   return true;
 };
 
@@ -20,16 +19,10 @@ exports.formatYupError = (err) => {
     });
   });
 
-  console.log({
-    errors: errors[0].message,
-    name: 'errorName',
-    email: 'errorEmail',
-    password: 'errorPassword',
-  });
   return JSON.stringify({
     errors: errors[0].message,
-    name: 'errorName',
-    email: 'errorEmail',
-    password: 'errorPassword',
+    name: "errorName",
+    email: "errorEmail",
+    password: "errorPassword",
   });
 };

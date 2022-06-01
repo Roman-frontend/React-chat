@@ -1,39 +1,36 @@
 // Замість того щоб з кожним повідомленням відправляти назву чату, коли юзер переключає чат відправляти запит на бекенд аби коли відправлятимуться повідомлення, на бекенді було вказано в якому це чаті.
 
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 const server = new WebSocket.Server({ port: 8080 });
 //Надає унікальний код
-const { v4 } = require('uuid');
+const { v4 } = require("uuid");
 let rooms = [];
 let onlineUsers = [];
 
 //Підписуюсь на події, ця подія (connection) спрацює коли клієнт підключиться до сервера, другим об'єктом передається функція зворотнього виклику. Аргумент ws - назва параметру веб-сокет зєднання
-server.on('connection', (ws) => {
+server.on("connection", (ws) => {
   const uuid = v4(); // create here a uuid for this connection
   const ip = ws._socket.remoteAddress;
 
-  ws.on('message', (data) => {
+  ws.on("message", (data) => {
     const parseData = JSON.parse(data);
     const { meta } = parseData;
 
-    if (meta === 'join') {
+    if (meta === "join") {
       const { userRooms, userId } = parseData;
-      console.log('parseData join: ', parseData);
       joinToRooms(userRooms, userId, ws, uuid); // User has joined
       joinToUsers(userId, ws, uuid);
       resOnline(userRooms);
     }
 
-    if (meta === 'leave') {
-      console.log('parseData leave: ', parseData);
+    if (meta === "leave") {
       parseData.userRooms.forEach((resRoom) => {
         leave(resRoom, parseData.userId);
       });
       resOnline(parseData.userRooms);
     }
 
-    if (meta === 'sendMessage') {
-      console.log('parseData of sendMessage :', parseData);
+    if (meta === "sendMessage") {
       rooms.forEach((room) => {
         if (room.chatId === parseData.room) {
           room.members.forEach((member) => {
@@ -45,33 +42,32 @@ server.on('connection', (ws) => {
       });
     }
 
-    if (meta === 'addedDm') {
-      console.log('parseData of addedDm: ', parseData);
+    if (meta === "addedDm") {
       addNewDmToRooms(parseData.dmId, parseData.userId, ws, uuid);
       const invitedWs = onlineUsers.find((user) => {
         return Object.keys(user)[0] === parseData.invitedId;
       });
       if (invitedWs) {
         invitedWs[parseData.invitedId].send(
-          JSON.stringify({ message: 'added dm', id: parseData.dmId })
+          JSON.stringify({ message: "added dm", id: parseData.dmId })
         );
       }
     }
 
-    if (meta === 'removedDm') {
+    if (meta === "removedDm") {
       rooms = rooms.filter((room) => room.chatId !== parseData.dmId);
       const invitedWs = onlineUsers.find((user) => {
         return Object.keys(user)[0] === parseData.removedUserId;
       });
       if (invitedWs) {
         invitedWs[parseData.removedUserId].send(
-          JSON.stringify({ message: 'removed dm', id: parseData.dmId })
+          JSON.stringify({ message: "removed dm", id: parseData.dmId })
         );
       }
     }
 
-    if (meta === 'exit') {
-      ws.on('close', () => {
+    if (meta === "exit") {
+      ws.on("close", () => {
         Object.keys(rooms).forEach((room) => leave(room));
       });
     }
@@ -155,7 +151,7 @@ function informMembersNewOnline(userRooms, members) {
 
         if (!responsed.includes(memberId)) {
           Object.values(member)[0].send(
-            JSON.stringify({ message: 'online', members })
+            JSON.stringify({ message: "online", members })
           );
           responsed = responsed.concat(memberId);
         }

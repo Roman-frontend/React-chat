@@ -1,10 +1,10 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
-import freeice from 'freeice';
-import useStateWithCallback from './useStateWithCallback';
-import socket from '../socket.io';
-import ACTIONS from '../socket.io/actions';
+import { useEffect, useRef, useCallback, useState } from "react";
+import freeice from "freeice";
+import useStateWithCallback from "./useStateWithCallback";
+import socket from "../socket.io";
+import ACTIONS from "../socket.io/actions";
 
-export const LOCAL_VIDEO = 'LOCAL_VIDEO';
+export const LOCAL_VIDEO = "LOCAL_VIDEO";
 
 export default function useWebRTC(roomID) {
   //Приймає ід кімнати
@@ -15,7 +15,6 @@ export default function useWebRTC(roomID) {
     (newClient, cb) => {
       //Приймає нового клієнта і колбек. Якщо newClient це функція то list в цій функції це буде state з хука useStateWithCallback
       updateClients((list) => {
-        console.log('newClient... ', newClient, 'clients... ', clients);
         //Якщо state з хуку useStateWithCallback не містить newClient то буде викликано цей if, якщо ж містить то просто повернено state і оскільки state в useStateWithCallback не змінився то useEffect в хуку useStateWithCallback не буде викликано а значить і cb(другий параметр в updateClients) теж не буде викликано при цьому він залишиться як значення cbRef.current
         if (!list.includes(newClient)) {
           //Перевіряємо що якщо в списку клієнтів немає newClient то тоді викликатимо updateClients і передавати далі по цепочці колбек
@@ -92,9 +91,7 @@ export default function useWebRTC(roomID) {
         }
       };
 
-      console.log('localMediaStream... ', localMediaStream);
       localMediaStream.current.getTracks().forEach((track) => {
-        console.log('track...', track);
         //Експеремент...
         // if (track.kind === 'video') {
         //   track.enabled = !track.enabled;
@@ -140,7 +137,7 @@ export default function useWebRTC(roomID) {
         new RTCSessionDescription(remoteDescription)
       );
 
-      if (remoteDescription.type === 'offer') {
+      if (remoteDescription.type === "offer") {
         //Оскільки в await peerConnections.current[peerID]?.setRemoteDescription( ми можемо отримувати і offer і answer. То якщо тип remoteDescription це offer то тоді нам треба створити відповідь.
         const answer = await peerConnections.current[peerID].createAnswer(); //Відповідь на offer description
 
@@ -214,10 +211,6 @@ export default function useWebRTC(roomID) {
         // Якщо захват екрану відбувся успішно то викличеться ця функція. Тут описано що буде відбуватися коли ми додали нового клієнта в LOCAL_VIDEO (в локал відео) - він відрендериться в нас і всередині рендера ми його запишемо в список наших peerMediaElements з ключем LOCAL_VIDEO
         const localVideoElement = peerMediaElements.current[LOCAL_VIDEO]; //Дістаємо дані з об'єкту peerMediaElements зі свойства LOCAL_VIDEO
 
-        console.log(
-          'localMediaStream при підключенні до кімнати... ',
-          localMediaStream
-        );
         if (localVideoElement) {
           //Якщо localVideoElement містить якісь дані то це вже буде html тег відео до якого ми отримуємо доступ через реф
           localVideoElement.volume = 0; //присвоюємо 0 щоб ми самі себе не чули.
@@ -228,7 +221,7 @@ export default function useWebRTC(roomID) {
 
     startCapture() //Після захвату екрану викликатимо socket.emit для підключення до кімнати і передаватимо туди до якої кімнати треба підключитись
       .then(() => socket.emit(ACTIONS.JOIN, { room: roomID })) //startCapture запитає користувача чи бажає він включити відео і тільки якщо він дасть згоду його підключать до кімнати тобто логіка перейде до цього then.
-      .catch((e) => console.error('Error getting userMedia:', e)); //Якщо користувач не дозволив ввімкнути камеру то буде спрацьовувати цей кетч
+      .catch((e) => console.error("Error getting userMedia:", e)); //Якщо користувач не дозволив ввімкнути камеру то буде спрацьовувати цей кетч
 
     return () => {
       //Додаємо логіку виходу з кімнати коли у нас компонент MainVideoCall демонтується.

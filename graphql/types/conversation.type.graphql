@@ -10,6 +10,7 @@ type CreateMessagePayload {
   text: String
   createdAt: String
   updatedAt: String
+  status: String
   replyOn: String
   chatType: ChatType
   chatId: ID
@@ -21,6 +22,7 @@ type ChangeMessagePayload {
   text: String
   createdAt: String
   updatedAt: String
+  status: String
   replyOn: String
   chatType: ChatType
   chatId: ID
@@ -32,6 +34,7 @@ type MessagePayload {
   text: String
   createdAt: String
   updatedAt: String
+  status: String
   replyOn: String
   chatType: ChatType
   chatId: ID

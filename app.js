@@ -1,17 +1,17 @@
-const path = require('path');
-const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
-const config = require('config');
-const mongoose = require('mongoose');
-const typeDefs = require('./graphql/types/index');
-const resolvers = require('./graphql/resolvers/index');
-const { verifyToken } = require('./middlewares');
-const cors = require('cors');
-const socketio = require('socket.io');
-const { version, validate } = require('uuid');
-require('./Soket/soket');
+const path = require("path");
+const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
+const config = require("config");
+const mongoose = require("mongoose");
+const typeDefs = require("./graphql/types/index");
+const resolvers = require("./graphql/resolvers/index");
+const { verifyToken } = require("./middlewares");
+const cors = require("cors");
+const socketio = require("socket.io");
+const { version, validate } = require("uuid");
+require("./Soket/soket");
 
-const ACTIONS = require('./client/src/socket.io/actions');
+const ACTIONS = require("./client/src/socket.io/actions");
 
 const PORT = process.env.PORT || 5001;
 
@@ -21,8 +21,8 @@ const PORT = process.env.PORT || 5001;
     resolvers,
     context: ({ req }) => {
       if (
-        req.body.operationName !== 'Login' &&
-        req.body.operationName !== 'Register'
+        req.body.operationName !== "Login" &&
+        req.body.operationName !== "Register"
       ) {
         return verifyToken(req.headers.authorization);
       }
@@ -35,16 +35,16 @@ const PORT = process.env.PORT || 5001;
 
   server.applyMiddleware({ app });
 
-  const publicPath = path.join(__dirname, 'client', 'public');
+  const publicPath = path.join(__dirname, "client", "public");
 
   app.use(express.static(publicPath));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(publicPath, "index.html"));
   });
 
   try {
-    await mongoose.connect(config.get('mongoUri'), {
+    await mongoose.connect(config.get("mongoUri"), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
@@ -68,11 +68,10 @@ const PORT = process.env.PORT || 5001;
       });
     }
 
-    io.on('connection', (socket) => {
+    io.on("connection", (socket) => {
       shareRoomsInfo();
 
       socket.on(ACTIONS.JOIN, (config) => {
-        console.log('config... ', config);
         const { room: roomID } = config;
         const { rooms: joinedRooms } = socket;
 
@@ -126,7 +125,7 @@ const PORT = process.env.PORT || 5001;
       }
 
       socket.on(ACTIONS.LEAVE, leaveRoom);
-      socket.on('disconnecting', leaveRoom);
+      socket.on("disconnecting", leaveRoom);
 
       socket.on(ACTIONS.RELAY_SDP, ({ peerID, sessionDescription }) => {
         io.to(peerID).emit(ACTIONS.SESSION_DESCRIPTION, {
@@ -143,7 +142,7 @@ const PORT = process.env.PORT || 5001;
       });
     });
   } catch (e) {
-    console.log('Чтото пошло не так ', e.message);
+    console.log("Чтото пошло не так ", e.message);
     process.exit(1);
   }
 })();

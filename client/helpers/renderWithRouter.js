@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { AppRoutes } from "../../router/routes";
+import { AppRoutes } from "../src/router/routes";
 import { SnackbarProvider } from "notistack";
 import { render } from "@testing-library/react";
 

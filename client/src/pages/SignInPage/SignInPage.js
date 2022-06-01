@@ -89,25 +89,20 @@ export const SignInPage = () => {
 
     //variables: { email: 'r@gmail.com', password: '11111111' },
     onError(error) {
-      console.log(
-        `Помилка авторизації request: ${
-          (loginData.email,
-          {
-            email: loginData.email,
-            password: loginData.password,
-          })
-        } отримано помилку: ${error}`
-      );
+      // console.log(
+      //   `Помилка авторизації request: ${loginData.email} ${loginData.password}
+      //    отримано помилку`,
+      //   error
+      // );
       enqueueSnackbar("Fail login", { variant: "error" });
     },
     onCompleted(data) {
       if (data.login.status === "OK") {
-        // console.log("res login... ", data);
         auth(data.login.record);
         enqueueSnackbar("Successful login", { variant: "success" });
         navigate("/chat");
       } else {
-        console.log("error ", data.login.error.message);
+        // console.log("error ", data.login.error.message);
         enqueueSnackbar(data.login.error.message, { variant: "error" });
       }
     },
@@ -157,6 +152,7 @@ export const SignInPage = () => {
               variant="standard"
               value={formik.values.email}
               onChange={formik.handleChange}
+              inputProps={{ "data-testid": "login-email-input" }}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
               color="input"
@@ -182,6 +178,7 @@ export const SignInPage = () => {
                 id="password"
                 name="password"
                 label="Password"
+                inputProps={{ "data-testid": "login-password-input" }}
                 style={{ width: "33.7vw", marginLeft: 14, marginTop: 10 }}
                 type={showPassword ? "text" : "password"}
                 value={formik.values.password}

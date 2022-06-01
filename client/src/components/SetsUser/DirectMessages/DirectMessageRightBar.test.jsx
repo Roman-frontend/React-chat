@@ -27,7 +27,6 @@ describe("handleMouseDownPassword test", () => {
 
     // // По ід отримую силки
     // const usersLink = screen.getByTestId("sign-in");
-    // console.log(usersLink);
     // // Клікаємо на силку яка має свойство data-testid="users-link"
     // userEvent.click(usersLink);
     // // Після кліку має відмалюватись сторінка Users

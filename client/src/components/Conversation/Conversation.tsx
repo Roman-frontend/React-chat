@@ -1,5 +1,4 @@
 import React, { useState, useRef, useCallback } from "react";
-import { useTheme } from "@mui/material/styles";
 import { Box } from "@mui/system";
 import { ConversationHeaderChannel } from "./ConversationHeader/ConversationHeaderChannel.jsx";
 import { ConversationHeaderDrMsg } from "./ConversationHeader/ConversationHeaderDrMsg.jsx";
@@ -11,11 +10,9 @@ import imageError from "../../images/error.png";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { CHANNELS } from "../SetsUser/SetsUserGraphQL/queryes";
 import { activeChatId, reactiveVarId } from "../../GraphQLApp/reactiveVars";
-
-interface IBadge {
-  id: string;
-  num: number;
-}
+import IMessage from "./Models/IMessage";
+import IChannel from "../Models/IChannel";
+import IBadge from "../../Models/IBadge";
 
 interface IProps {
   isErrorInPopap: boolean;
@@ -26,28 +23,6 @@ interface IProps {
   setChatsHasNewMsgs: React.Dispatch<React.SetStateAction<IBadge[]>>;
 }
 
-interface IChannel {
-  id: string;
-  name: string;
-  admin: string;
-  description: string;
-  members: string[];
-  isPrivate: boolean;
-}
-
-interface IMessage {
-  id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  replyOn: string;
-  chatType: string;
-  chatId: string;
-}
-
-type IChangeMessageRef = null | IMessage;
-
 export default function Conversation(props: IProps) {
   const {
     isErrorInPopap,
@@ -57,13 +32,12 @@ export default function Conversation(props: IProps) {
     dataForBadgeInformNewMsg,
     setChatsHasNewMsgs,
   } = props;
-  const theme = useTheme();
   const { data: dChannels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState<null | IMessage>(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(false);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const changeMessageRef = useRef<IChangeMessageRef>(null);
+  const changeMessageRef = useRef<null | IMessage>(null);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
@@ -96,12 +70,9 @@ export default function Conversation(props: IProps) {
         <Messages
           openPopup={openPopup}
           setOpenPopup={setOpenPopup}
-          popupMessage={popupMessage}
           setPopupMessage={setPopupMessage}
           setCloseBtnChangeMsg={setCloseBtnChangeMsg}
           setCloseBtnReplyMsg={setCloseBtnReplyMsg}
-          inputRef={inputRef}
-          changeMessageRef={changeMessageRef}
           dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
           setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
@@ -138,6 +109,13 @@ export default function Conversation(props: IProps) {
       <ConversationHeaderDrMsg />
     );
   }, [activeChannelId, activeDirectMessageId, modalAddPeopleIsOpen]);
+
+  console.log(
+    "activeDirectMessageId: ",
+    activeDirectMessageId,
+    "activeChannelId: ",
+    activeChannelId
+  );
 
   return (
     <Box data-testid="conversation-main-block">

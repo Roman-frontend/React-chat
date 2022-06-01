@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_MESSAGES = gql`
   query messages($chatId: ID!, $chatType: ChatType!, $userId: ID!) {
@@ -16,6 +16,7 @@ export const GET_MESSAGES = gql`
         chatId
         createdAt
         updatedAt
+        status
       }
     }
   }
@@ -43,6 +44,7 @@ export const CREATE_MESSAGE = gql`
         chatType
         createdAt
         updatedAt
+        status
       }
     }
   }
@@ -60,6 +62,7 @@ export const CHANGE_MESSAGE = gql`
         chatType
         createdAt
         updatedAt
+        status
       }
     }
   }

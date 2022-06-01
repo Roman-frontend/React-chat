@@ -1,16 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import Divider from '@mui/material/Divider';
-import { CHANNELS, GET_DIRECT_MESSAGES } from './SetsUserGraphQL/queryes';
-import { activeChatId } from '../../GraphQLApp/reactiveVars';
-import { Channels } from './Channels/Channels';
-import { DirectMessages } from './DirectMessages/DirectMessages.jsx';
-
-interface IBadge {
-  id: string;
-  num: number;
-}
+import React, { useRef, useEffect, useState } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import Divider from "@mui/material/Divider";
+import { CHANNELS, GET_DIRECT_MESSAGES } from "./SetsUserGraphQL/queryes";
+import { activeChatId } from "../../GraphQLApp/reactiveVars";
+import { Channels } from "./Channels/Channels";
+import { DirectMessages } from "./DirectMessages/DirectMessages.jsx";
+import IBadge from "../../Models/IBadge";
 
 interface IProps {
   isOpenLeftBar: boolean;
@@ -46,15 +42,15 @@ export default function SetsUser(props: IProps) {
     useReactiveVar(activeChatId).activeDirectMessageId;
   const [modalAddChannelIsOpen, setModalAddChannelIsOpen] = useState(false);
   const [modalAddDmIsOpen, setModalAddDmIsOpen] = useState(false);
-  const prevActiveChatIdRef = useRef('');
+  const prevActiveChatIdRef = useRef("");
 
   const styles: IStyles = {
     leftBar: {
-      borderRight: 'solid 1px',
+      borderRight: "solid 1px",
       height: 500,
       minWidth: isOpenLeftBar ? 260 : 0,
-      margin: '10px 0px',
-      overflowY: 'scroll',
+      margin: "10px 0px",
+      overflowY: "scroll",
     },
   };
 
@@ -75,12 +71,12 @@ export default function SetsUser(props: IProps) {
         if (dChannels.userChannels[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeChannelId: dChannels.userChannels[0].id,
-            activeDirectMessageId: '',
+            activeDirectMessageId: "",
           });
         } else {
           activeChatId({
             activeChannelId: dChannels.userChannels[1].id,
-            activeDirectMessageId: '',
+            activeDirectMessageId: "",
           });
         }
       } else if (
@@ -92,12 +88,12 @@ export default function SetsUser(props: IProps) {
         if (dDms.directMessages[0].id !== prevActiveChatIdRef.current) {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[0].id,
-            activeChannelId: '',
+            activeChannelId: "",
           });
         } else {
           activeChatId({
             activeDirectMessageId: dDms.directMessages[1].id,
-            activeChannelId: '',
+            activeChannelId: "",
           });
         }
       }
@@ -108,7 +104,7 @@ export default function SetsUser(props: IProps) {
         ? activeChatId().activeChannelId
         : activeChatId().activeDirectMessageId
         ? activeChatId().activeDirectMessageId
-        : '';
+        : "";
     }
   }, [dChannels, dDms, activeChannelId, activeDirectMessageId]);
 

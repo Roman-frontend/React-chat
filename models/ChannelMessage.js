@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 /** Модель повідомлення */
 let ChannelMessage = new Schema(
@@ -11,8 +11,9 @@ let ChannelMessage = new Schema(
     /** Можливі свойства: Schema.Types.Mixed - задати будь-який тип в схемі, []: Массив элементов,
      * для типу Numder - min: 1, max: 100 - встроєний валідатор що вказує доступні дані для запису: від 1 до 100
      * required: true - вказує що поле обовʼязково має бути задане перед збереженням  */
+    status: { type: String, default: "delivered" },
     chatId: { type: String },
-    chatType: { type: String, default: 'Channel' },
+    chatType: { type: String, default: "Channel" },
   },
   { timestamps: true }
 );
@@ -31,4 +32,4 @@ ChannelMessage.options.toObject.transform = function (doc, ret, options) {
  * @params - Первый аргумент - уникальное имя создаваемой для модели коллекции(Mongoose создаст коллекцию для модели Message),
  * @params - Второй аргумент - схема, которая используется для создания модели.
  */
-module.exports = model('ChannelMessage', ChannelMessage);
+module.exports = model("ChannelMessage", ChannelMessage);

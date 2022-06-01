@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useQuery } from '@apollo/client';
-import { useTheme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import Collapse from '@mui/material/Collapse';
-import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
-import { CHANNELS } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { AddChannel } from '../../Modals/AddChannel/AddChannel';
-import { Channel } from './Channel';
-import { nanoid } from 'nanoid';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@apollo/client";
+import { useTheme } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Collapse from "@mui/material/Collapse";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import { CHANNELS } from "../../SetsUser/SetsUserGraphQL/queryes";
+import { AddChannel } from "../../Modals/AddChannel/AddChannel";
+import { Channel } from "./Channel";
+import { nanoid } from "nanoid";
+import IChannel from "../../Models/IChannel";
 
 interface IProps {
   isOpenLeftBar: boolean;
@@ -23,15 +24,6 @@ interface IProps {
   setModalAddChannelIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isErrorInPopap: boolean;
   setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-interface IChannel {
-  id: string;
-  name: string;
-  admin: string;
-  description?: string;
-  members: string[] | [];
-  isPrivate: boolean;
 }
 
 type TTheme = {
@@ -44,7 +36,7 @@ type TTheme = {
 
 const useStyles = makeStyles(() => ({
   root: {
-    width: '100%',
+    width: "100%",
     maxWidth: 360,
   },
 }));
@@ -66,7 +58,7 @@ export function Channels(props: IProps) {
   return (
     <>
       <div>
-        <List component='nav' className={classes.root}>
+        <List component="nav" className={classes.root}>
           {isOpenLeftBar ? (
             <ListItem
               key={nanoid()}
@@ -74,29 +66,29 @@ export function Channels(props: IProps) {
               button
               onClick={() => setOpen(!open)}
             >
-              <ListItemIcon style={{ justifyContent: 'center' }}>
-                <SupervisedUserCircleIcon color='action' />
+              <ListItemIcon style={{ justifyContent: "center" }}>
+                <SupervisedUserCircleIcon color="action" />
               </ListItemIcon>
               <ListItemText
-                style={{ textAlign: 'center' }}
-                primary={t('description.channelTitle')}
+                style={{ textAlign: "center" }}
+                primary={t("description.channelTitle")}
               />
               {open ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
           ) : (
             <ListItem
               key={nanoid()}
-              style={{ padding: 0, margin: 0, justifyContent: 'center' }}
+              style={{ padding: 0, margin: 0, justifyContent: "center" }}
               button
               onClick={() => setOpen(!open)}
             >
-              <ListItemIcon style={{ padding: '0', justifyContent: 'center' }}>
-                <SupervisedUserCircleIcon color='action' />
+              <ListItemIcon style={{ padding: "0", justifyContent: "center" }}>
+                <SupervisedUserCircleIcon color="action" />
               </ListItemIcon>
             </ListItem>
           )}
           {allChannels ? (
-            <Collapse in={open} timeout='auto' unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit>
               <List>
                 {allChannels.userChannels.map((channel: IChannel) =>
                   channel ? (
@@ -114,16 +106,16 @@ export function Channels(props: IProps) {
         </List>
       </div>
       <Button
-        size='small'
+        size="small"
         sx={{
-          width: '100%',
+          width: "100%",
           padding: 0,
-          '&:hover': { color: theme.palette.leftBarItem.light },
+          "&:hover": { color: theme.palette.leftBarItem.light },
         }}
-        color='warning'
+        color="warning"
         onClick={() => setModalAddChannelIsOpen(true)}
       >
-        {isOpenLeftBar ? `+ ${t('description.addChannel')}` : '+'}
+        {isOpenLeftBar ? `+ ${t("description.addChannel")}` : "+"}
       </Button>
       <AddChannel
         modalAddChannelIsOpen={modalAddChannelIsOpen}

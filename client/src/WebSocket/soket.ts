@@ -1,13 +1,4 @@
-interface IMessage {
-  id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  replyOn: string;
-  chatType: string;
-  chatId: string;
-}
+import IMessage from "../components/Conversation/Models/IMessage";
 
 interface IWsSend {
   meta: string;
@@ -27,7 +18,7 @@ class Ws extends Object {
   onclose: ((response: any) => void) | undefined;
   get newClientPromise() {
     return new Promise((resolve, reject) => {
-      let wsClient = new WebSocket('ws://localhost:8080');
+      let wsClient = new WebSocket("ws://localhost:8080");
       wsClient.onopen = () => {
         resolve(wsClient);
       };

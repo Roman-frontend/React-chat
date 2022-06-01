@@ -1,48 +1,26 @@
-import React, { useState, useMemo, Profiler, memo, useCallback } from 'react';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { wsSingleton } from '../../../WebSocket/soket';
-import Message from './Message/Message';
-import { GET_MESSAGES } from '../ConversationGraphQL/queryes';
-import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
+import React, { useState, useMemo, Profiler, memo, useCallback } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { wsSingleton } from "../../../WebSocket/soket";
+import Message from "./Message/Message";
+import { GET_MESSAGES } from "../ConversationGraphQL/queryes";
+import { GET_DIRECT_MESSAGES } from "../../SetsUser/SetsUserGraphQL/queryes";
 import {
   reactiveVarId,
   activeChatId,
   reactiveDirectMessages,
-} from '../../../GraphQLApp/reactiveVars';
-import { Loader } from '../../Helpers/Loader';
-
-interface IBadge {
-  id: string;
-  num: number;
-}
+} from "../../../GraphQLApp/reactiveVars";
+import { Loader } from "../../Helpers/Loader";
+import IMessage from "../Models/IMessage";
+import IBadge from "../../../Models/IBadge";
 
 type TBadges = IBadge[] | [];
-
-interface IMessage {
-  id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  replyOn: string;
-  chatType: string;
-  chatId: string;
-}
-
-type TMessage = null | IMessage;
 
 interface IProps {
   openPopup: string;
   setOpenPopup: React.Dispatch<React.SetStateAction<string>>;
-  popupMessage: null | IMessage;
-  setPopupMessage: React.Dispatch<React.SetStateAction<TMessage>>;
+  setPopupMessage: React.Dispatch<React.SetStateAction<null | IMessage>>;
   setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
   setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
-  inputRef: React.MutableRefObject<HTMLInputElement | null>;
-  changeMessageRef:
-    | null
-    | React.MutableRefObject<IMessage>
-    | React.MutableRefObject<null>;
   dataForBadgeInformNewMsg: TBadges;
   setChatsHasNewMsgs: React.Dispatch<React.SetStateAction<TBadges>>;
 }
@@ -65,9 +43,9 @@ export const Messages = memo((props: IProps) => {
   const { refetch } = useQuery(GET_DIRECT_MESSAGES);
   const chatType = useMemo(() => {
     return activeDirectMessageId
-      ? 'DirectMessage'
+      ? "DirectMessage"
       : activeChannelId
-      ? 'Channel'
+      ? "Channel"
       : null;
   }, [activeChannelId, activeDirectMessageId]);
 
@@ -80,14 +58,19 @@ export const Messages = memo((props: IProps) => {
     data: messages,
     client,
   } = useQuery(GET_MESSAGES, {
-    variables: { chatId, chatType, userId },
+    variables: {
+      chatId: "6288671cb24f6a89e861b98d",
+      chatType: "DirectMessage",
+      userId: "6288661c22cf8e8950762e14",
+    },
     onCompleted(data) {
+      console.log(data);
       if (data && data.messages) {
         renderMessages();
       }
     },
     onError(data) {
-      console.log('error __', data);
+      console.log("error __", data);
     },
   });
 
@@ -96,7 +79,6 @@ export const Messages = memo((props: IProps) => {
     .then((wsClient: any) => {
       wsClient.onmessage = (response: { data: string }) => {
         const parsedRes = JSON.parse(response.data);
-        console.log(parsedRes);
         if (parsedRes && parsedRes.text && parsedRes.chatId === chatId) {
           const oldMsg = client.readQuery({
             query: GET_MESSAGES,
@@ -125,7 +107,6 @@ export const Messages = memo((props: IProps) => {
               (chat) => chat.id === parsedRes.chatId
             );
           }
-          console.log(isFirstNewMsgInChat);
           const num: number = isFirstNewMsgInChat
             ? isFirstNewMsgInChat.num + 1
             : 1;
@@ -141,22 +122,22 @@ export const Messages = memo((props: IProps) => {
 
         if (
           parsedRes?.message &&
-          parsedRes.message === ('added dm' || 'removed dm')
+          parsedRes.message === ("added dm" || "removed dm")
         ) {
           const sessionStorageUnParse: string | null =
-            sessionStorage.getItem('storageData');
+            sessionStorage.getItem("storageData");
           let storage;
           if (sessionStorageUnParse)
             storage = JSON.parse(sessionStorageUnParse);
           let toStorage;
           let newDrMsgIds = [];
-          if (parsedRes.message === 'added dm' && storage) {
+          if (parsedRes.message === "added dm" && storage) {
             toStorage = JSON.stringify({
               ...storage,
               directMessages: [...storage.directMessages, parsedRes.id],
             });
             newDrMsgIds = [...userDmIds, parsedRes.id];
-          } else if (parsedRes.message === 'removed dm' && storage) {
+          } else if (parsedRes.message === "removed dm" && storage) {
             newDrMsgIds = storage.directMessages.filter(
               (dmId: string) => dmId !== parsedRes.id
             );
@@ -165,7 +146,7 @@ export const Messages = memo((props: IProps) => {
               directMessages: newDrMsgIds,
             });
           }
-          if (toStorage) sessionStorage.setItem('storageData', toStorage);
+          if (toStorage) sessionStorage.setItem("storageData", toStorage);
           reactiveDirectMessages(newDrMsgIds);
           refetch();
         }
@@ -176,8 +157,8 @@ export const Messages = memo((props: IProps) => {
   //Підписуємось на закриття події
   wsSingleton.onclose = (response) => {
     const disconnectStatus = response.wasClean
-      ? 'DISCONNECTED CLEAN'
-      : 'DISCONNECTED BROKEN';
+      ? "DISCONNECTED CLEAN"
+      : "DISCONNECTED BROKEN";
     console.log(
       `${disconnectStatus} with code ${response.code} reason ${response.reason}`
     );
@@ -205,7 +186,7 @@ export const Messages = memo((props: IProps) => {
         .reverse();
       return reversedMessages.map((message: IMessage) => {
         return (
-          <Profiler id='Message' key={message.id} onRender={callback}>
+          <Profiler id="Message" key={message.id} onRender={callback}>
             <Message
               key={message.id}
               message={message}

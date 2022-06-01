@@ -1,9 +1,9 @@
 .container 
   display: grid
-  grid-template-columns: 2.8rem minmax(1rem, auto) 1fr 150px
+  grid-template-columns: 2.8rem minmax(1rem, auto) 3.8rem minmax(1rem, auto) 1fr 150px
   grid-auto-rows: minmax(20px, auto)
   align-items: start
-  grid-template-areas: "icon messager date info" "icon message message message"
+  grid-template-areas: "icon messager date status info" "icon message message message message"
   margin: 8px 50px
 
   .container__message 
@@ -22,6 +22,12 @@
   .container__date 
     margin: 0rem
     grid-area: date
+    font-size: 0.8rem
+    align-self: start
+
+  .container__status 
+    margin: 0rem
+    grid-area: status
     font-size: 0.8rem
     align-self: start
 

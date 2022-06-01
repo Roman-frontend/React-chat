@@ -73,12 +73,10 @@ const Header = memo((props: IProps) => {
   );
 
   const openRightBar: () => void = (): void => {
-    console.log("open");
     setIsOpenRightBarUser(true);
   };
 
   const closeRightBar: () => void = (): void => {
-    console.log("close");
     setIsOpenRightBarUser(false);
   };
 

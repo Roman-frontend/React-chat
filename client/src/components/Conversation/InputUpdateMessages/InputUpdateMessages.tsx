@@ -12,17 +12,7 @@ import {
 } from "../ConversationGraphQL/queryes";
 import { wsSend } from "../../../WebSocket/soket";
 import { activeChatId } from "../../../GraphQLApp/reactiveVars";
-
-interface IMessage {
-  id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  updatedAt: string;
-  replyOn: string;
-  chatType: string;
-  chatId: string;
-}
+import IMessage from "../Models/IMessage";
 
 interface IProps {
   testData: string;
@@ -84,16 +74,19 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   const { loading, data: messages } = useQuery(GET_MESSAGES, {
     variables: {
-      chatId: chatId || "6288671cb24f6a89e861b98d",
-      chatType: chatType || "DirectMessage",
-      userId: auth?.id || "6288661c22cf8e8950762e14",
+      chatId: "6288671cb24f6a89e861b98d",
+      chatType: "DirectMessage",
+      userId: "6288661c22cf8e8950762e14",
     },
     onError(data) {
       console.log("error __", data);
     },
   });
 
-  const [createMessage] = useMutation(CREATE_MESSAGE, {
+  const [
+    createMessage,
+    { loading: loadingCreate, error: errorCreate, data: dataCreate },
+  ] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data }) => {
       const cacheMsg: ICacheMessage | null = cache.readQuery({
         query: GET_MESSAGES,
@@ -103,7 +96,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
           userId: auth?.id || "6288661c22cf8e8950762e14",
         },
       });
-      // console.log(cacheMsg);
       if (cacheMsg && data?.message) {
         const chatMessages = cacheMsg?.messages?.chatMessages || [];
         const newMsg = data.message.create;
@@ -120,7 +112,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
       }
     },
     onCompleted(data) {
-      console.log("data", data);
       setInputText("bla la la");
       sendMessageToWS(data.message.create);
     },
@@ -166,7 +157,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
     const value = inputRef?.current?.value || "";
 
     //event.shiftKey - містить значення true - коли користувач нажме деякі з клавіш утримуючи shift
-    console.log("value", value, value.trim(), !event.shiftKey, event.key);
     if (value.trim() !== "" && !event.shiftKey && event.key === "Enter") {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
@@ -201,6 +191,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
             chatId,
             chatType,
             createdAt: Date.now(),
+            status: "sent",
             id: Date.now(),
             replyOn: popupMessage?.text || "",
             text,
@@ -216,12 +207,11 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   function newMessage(text: string) {
     const newMsg = {
-      chatId,
-      chatType,
+      chatId: chatId || "6288671cb24f6a89e861b98d",
+      chatType: chatType || "DirectMessage",
       senderId: auth?.id || "6288661c22cf8e8950762e14",
       text,
     };
-    console.log("newMsg");
     createMessage({
       variables: newMsg,
       optimisticResponse: {
@@ -230,6 +220,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
             chatId,
             chatType,
             createdAt: Date.now(),
+            status: "sent",
             id: Date.now(),
             replyOn: null,
             text,
@@ -257,7 +248,11 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   return (
     <div className={classes.root} id="mainInput">
-      <p>{messages.messages.chatMessages[0].text}</p>
+      {dataCreate && (
+        <p data-testid="success-created-message">
+          {dataCreate.message.create.text}
+        </p>
+      )}
       <Grid container spacing={1}>
         <Grid item xs={1}>
           <BorderColorIcon

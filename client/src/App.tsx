@@ -26,7 +26,6 @@ export default function App() {
   const theme = getTheme(themeName);
 
   const setThemeName = useCallback((name: string): void => {
-    console.log("theme changed");
     localStorage.setItem("appTheme", name);
     _setThemeName(name);
   }, []);

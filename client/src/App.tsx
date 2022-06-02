@@ -1,4 +1,4 @@
-import React, { useState, createContext, useCallback } from "react";
+import React, { useState, createContext, useCallback, useId } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./router/routes";
@@ -6,23 +6,18 @@ import getTheme from "./components/Theme/base";
 import { SnackbarProvider } from "notistack";
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./GraphQLApp/apolloClient";
+import { IAppContext } from "./Context/Models/IAppContext";
+import { ICustomThemeContext } from "./Context/Models/ICustomThemeContext";
+import IBadge from "./Models/IBadge";
+import { AppContext, CustomThemeContext } from "./Context/AppContext";
 import "./css/style.sass";
 
-type SetThemeType = (name: string) => void;
-
-interface Context {
-  currentTheme: string;
-  setTheme: SetThemeType | null;
-}
-
-export const CustomThemeContext = createContext<Context>({
-  currentTheme: "light",
-  setTheme: null,
-});
-
 export default function App() {
+  const appId = useId();
   const currentTheme = localStorage.getItem("appTheme") || "light";
   const [themeName, _setThemeName] = useState(currentTheme);
+  const [newMsgsBadge, setNewMsgsBadge] = useState<[] | IBadge[]>([]);
+  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const theme = getTheme(themeName);
 
   const setThemeName = useCallback((name: string): void => {
@@ -30,9 +25,17 @@ export default function App() {
     _setThemeName(name);
   }, []);
 
-  const contextValue: Context = {
+  const contextValue: ICustomThemeContext = {
     currentTheme: themeName,
     setTheme: setThemeName,
+  };
+
+  const appContextValue: IAppContext = {
+    appId,
+    newMsgsBadge,
+    setNewMsgsBadge,
+    modalAddPeopleIsOpen,
+    setModalAddPeopleIsOpen,
   };
 
   return (
@@ -41,7 +44,9 @@ export default function App() {
         <Router>
           <ApolloProvider client={client}>
             <SnackbarProvider maxSnack={3}>
-              <AppRoutes />
+              <AppContext.Provider value={appContextValue}>
+                <AppRoutes />
+              </AppContext.Provider>
             </SnackbarProvider>
           </ApolloProvider>
         </Router>

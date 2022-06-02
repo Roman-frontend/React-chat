@@ -1,11 +1,9 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useContext } from "react";
 import { useSnackbar } from "notistack";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useTheme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import GroupIcon from "@mui/icons-material/Group";
-import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
 import { Box } from "@mui/system";
 import { Members } from "./Members";
@@ -17,14 +15,11 @@ import {
 } from "../../SetsUser/SetsUserGraphQL/queryes";
 import { activeChatId } from "../../../GraphQLApp/reactiveVars";
 import ChannelsRightBar from "../../SetsUser/Channels/ChannelsRightBar";
+import { AppContext } from "../../../Context/AppContext";
 
 export const ConversationHeaderChannel = (props) => {
-  const {
-    isErrorInPopap,
-    setIsErrorInPopap,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
-  } = props;
+  const { isErrorInPopap, setIsErrorInPopap } = props;
+  const { setModalAddPeopleIsOpen } = useContext(AppContext);
   const theme = useTheme();
   const { data: dChannels } = useQuery(CHANNELS);
   const { enqueueSnackbar } = useSnackbar();
@@ -103,7 +98,7 @@ export const ConversationHeaderChannel = (props) => {
       >
         <Grid
           item
-          xs={7}
+          xs={8}
           style={{
             height: "inherit",
             padding: "0vw 1.5vw",
@@ -124,12 +119,6 @@ export const ConversationHeaderChannel = (props) => {
           >
             ✩ {activeChannel ? activeChannel.name : ""}
           </p>
-        </Grid>
-        <Grid item xs={1} style={{ textAlign: "center", margin: "0px 8px" }}>
-          <GroupAddIcon
-            style={{ fontSize: 50, cursor: "pointer" }}
-            onClick={() => setModalAddPeopleIsOpen(true)}
-          />
         </Grid>
         <Grid
           item
@@ -175,15 +164,11 @@ export const ConversationHeaderChannel = (props) => {
         setModalIsShowsMembers={setModalIsShowsMembers}
         chatNameRef={chatNameRef}
         doneInvite={doneInvite}
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         isErrorInPopap={isErrorInPopap}
       />
       <AddPeopleToChannel
         chatNameRef={chatNameRef}
         doneInvite={doneInvite}
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         isErrorInPopap={isErrorInPopap}
       />
     </div>

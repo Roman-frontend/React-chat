@@ -17,7 +17,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HeaderProfile from "./HeaderProfile/HeaderProfile.jsx";
 import { MaterialUISwitch } from "./HeaderStyles";
-import { CustomThemeContext } from "../../App";
+import { CustomThemeContext } from "../../Context/AppContext";
 import imageProfile from "../../images/User-Icon.png";
 import "tippy.js/dist/tippy.css";
 import "../../i18n";

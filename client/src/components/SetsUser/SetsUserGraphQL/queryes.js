@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_DIRECT_MESSAGES = gql`
   query directMessages($id: [ID]) {
@@ -76,15 +76,15 @@ export const REMOVE_DIRECT_MESSAGE = gql`
   }
 `;
 
-export const APP = gql`
-  {
-    usersOnline @client
-    activeChannelId @client
-    activeDirectMessageId @client
-    activeChatId @client
-    activeChatType @client
-  }
-`;
+// export const APP = gql`
+//   {
+//     usersOnline @client
+//     activeChannelId @client
+//     activeDirectMessageId @client
+//     activeChatId @client
+//     activeChatType @client
+//   }
+// `;
 
 export const CHANNELS = gql`
   query userChannels($channelsId: [ID], $userId: ID!) {

@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  HttpLink,
-  from,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import {
@@ -36,7 +30,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const authLink = setContext((_, { headers }) => {
   const auth = JSON.parse(sessionStorage.getItem("storageData"));
   // return the headers to the context so httpLink can read them
-  const token = auth && auth.token ? auth.token : "";
+  const token = auth?.token || "";
   return { headers: { ...headers, authorization: token } };
 });
 
@@ -66,30 +60,52 @@ export const client = new ApolloClient({
             return reactiveVarToken() ? reactiveVarEmail() : null;
           },
           id() {
+            // console.log("id: ", reactiveVarToken() ? reactiveVarId() : null);
             return reactiveVarToken() ? reactiveVarId() : null;
           },
           usersOnline() {
             return reactiveVarToken() ? reactiveOnlineMembers() : null;
           },
           activeChannelId() {
-            return reactiveVarToken() ? activeChatId().activeChannelId : null;
+            // console.log("activeChannelId: ", reactiveVarToken() ? activeChatId()?.activeChannelId : null)
+            return reactiveVarToken() ? activeChatId()?.activeChannelId : null;
           },
           activeDirectMessageId() {
             return reactiveVarToken()
-              ? activeChatId().activeDirectMessageId
+              ? activeChatId()?.activeDirectMessageId
               : null;
           },
-          activeChatId() {
+          chatId() {
+            // console.log(
+            //   "activeChatId: ",
+            //   reactiveVarToken(),
+            //   activeChatId()?.activeChannelId,
+            //   reactiveVarToken()
+            //     ? activeChatId()?.activeChannelId ||
+            //         activeChatId()?.activeDirectMessageId
+            //     : null
+            // );
+            // return "6288671cb24f6a89e861b98d";
             return reactiveVarToken()
-              ? activeChatId().activeChannelId ||
-                  activeChatId().activeDirectMessageId
+              ? activeChatId()?.activeChannelId ||
+                  activeChatId()?.activeDirectMessageId
               : null;
           },
           activeChatType() {
+            // console.log(
+            //   "activeChatType reactiveVarToken: ",
+            //   reactiveVarToken()
+            // );
             if (reactiveVarToken()) {
-              if (activeChatId().activeChannelId) {
+              // console.log(
+              //   "activeChatId()?.activeChannelId: ",
+              //   activeChatId()?.activeChannelId,
+              //   "activeChatId()?.activeDirectMessageId: ",
+              //   activeChatId()?.activeDirectMessageId
+              // );
+              if (activeChatId()?.activeChannelId) {
                 return "Channel";
-              } else if (activeChatId().activeDirectMessageId) {
+              } else if (activeChatId()?.activeDirectMessageId) {
                 return "DirectMessage";
               }
             }

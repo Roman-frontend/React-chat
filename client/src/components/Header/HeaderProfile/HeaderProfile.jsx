@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import { useAuth } from "../../../hooks/auth.hook.js";
-import { CustomThemeContext } from "../../../App";
+import { CustomThemeContext } from "../../../Context/AppContext";
 import { AUTH } from "../../../GraphQLApp/queryes";
 import imageProfile from "../../../images/User-Icon.png";
 import { useNavigate } from "react-router-dom";

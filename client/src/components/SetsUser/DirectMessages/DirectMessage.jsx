@@ -1,5 +1,5 @@
-import React, { memo, useState } from "react";
-import { useQuery, useReactiveVar } from "@apollo/client";
+import React, { memo, useState, useContext } from "react";
+import { useQuery, useReactiveVar, useApolloClient } from "@apollo/client";
 import { useTheme } from "@mui/material/styles";
 import ListItem from "@mui/material/ListItem";
 import Badge from "@mui/material/Badge";
@@ -10,45 +10,29 @@ import {
   reactiveOnlineMembers,
 } from "../../../GraphQLApp/reactiveVars";
 import { GET_USERS } from "../../../GraphQLApp/queryes";
-import { GET_MESSAGES } from "../../Conversation/ConversationGraphQL/queryes";
 import { determineActiveChat } from "../../Helpers/determineActiveChat";
 import { StyledBadgeWraper } from "../../Helpers/StyledBadge";
+import { GET_MESSAGES } from "../../Conversation/ConversationGraphQL/queryes";
+import { AppContext } from "../../../Context/AppContext";
 
 export const DirectMessage = memo((props) => {
-  const {
-    drMsg,
-    key,
-    isOpenLeftBar,
-    dataForBadgeInformNewMsg,
-    setChatsHasNewMsgs,
-  } = props;
-  const [stopLogin, setStopLogin] = useState(true);
+  const { drMsg, key, isOpenLeftBar } = props;
   const { data: users } = useQuery(GET_USERS);
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const authId = useReactiveVar(reactiveVarId);
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;
-  const { refetch } = useQuery(GET_MESSAGES, {
-    skip: stopLogin,
-    variables: {
-      chatId: "6288671cb24f6a89e861b98d",
-      chatType: "DirectMessage",
-      userId: "6288661c22cf8e8950762e14",
-    },
-    onError(data) {
-      console.log("error of get messages", data);
-    },
-  });
   const theme = useTheme();
+  const client = useApolloClient();
+  const { newMsgsBadge, setNewMsgsBadge } = useContext(AppContext);
 
   function drawItem(name) {
     const friendId =
       drMsg.members[0] === authId ? drMsg.members[1] : drMsg.members[0];
     const friendIsOnline = usersOnline.includes(friendId);
     const variantDot = friendIsOnline ? "dot" : "standard";
-    const thisDmHasNewMsgs = dataForBadgeInformNewMsg.find(
-      (dm) => dm.id === drMsg.id
-    );
+    console.log("newMsgsBadge... ", newMsgsBadge);
+    const thisDmHasNewMsgs = newMsgsBadge.find((dm) => dm.id === drMsg.id);
     const numNewMsgs = thisDmHasNewMsgs ? thisDmHasNewMsgs.num : 0;
 
     return (
@@ -66,24 +50,23 @@ export const DirectMessage = memo((props) => {
     );
   }
 
-  function handleClick() {
+  async function handleClick() {
     activeChatId({ activeDirectMessageId: drMsg.id });
-    if (dataForBadgeInformNewMsg[0]) {
-      const thisDmHasNewMsgs = dataForBadgeInformNewMsg.find(
-        (dm) => dm.id === drMsg.id
-      );
+    if (newMsgsBadge[0]) {
+      const thisDmHasNewMsgs = newMsgsBadge.find((dm) => dm.id === drMsg.id);
       if (thisDmHasNewMsgs) {
-        setStopLogin(false);
-        refetch({
-          chatId: drMsg.id,
-          chatType: "DirectMessage",
-          userId: authId,
-        });
-        const filteredChatHasNewMsgs = dataForBadgeInformNewMsg.filter(
+        const filteredChatHasNewMsgs = newMsgsBadge.filter(
           (dm) => dm.id !== drMsg.id
         );
-        setChatsHasNewMsgs(filteredChatHasNewMsgs);
-        setStopLogin(true);
+        setNewMsgsBadge(filteredChatHasNewMsgs);
+        await client.query({
+          query: GET_MESSAGES,
+          variables: {
+            chatId: drMsg.id,
+            chatType: "DirectMessage",
+            userId: authId,
+          },
+        });
       }
     }
   }

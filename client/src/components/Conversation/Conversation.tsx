@@ -17,21 +17,10 @@ import IBadge from "../../Models/IBadge";
 interface IProps {
   isErrorInPopap: boolean;
   setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
-  modalAddPeopleIsOpen: boolean;
-  setModalAddPeopleIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  dataForBadgeInformNewMsg: IBadge[] | [];
-  setChatsHasNewMsgs: React.Dispatch<React.SetStateAction<IBadge[]>>;
 }
 
 export default function Conversation(props: IProps) {
-  const {
-    isErrorInPopap,
-    setIsErrorInPopap,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
-    dataForBadgeInformNewMsg,
-    setChatsHasNewMsgs,
-  } = props;
+  const { isErrorInPopap, setIsErrorInPopap } = props;
   const { data: dChannels } = useQuery(CHANNELS);
   const [popupMessage, setPopupMessage] = useState<null | IMessage>(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(false);
@@ -73,8 +62,6 @@ export default function Conversation(props: IProps) {
           setPopupMessage={setPopupMessage}
           setCloseBtnChangeMsg={setCloseBtnChangeMsg}
           setCloseBtnReplyMsg={setCloseBtnReplyMsg}
-          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
-          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
       );
     }
@@ -100,22 +87,20 @@ export default function Conversation(props: IProps) {
   const setHeader = useCallback(() => {
     return activeChannelId ? (
       <ConversationHeaderChannel
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         isErrorInPopap={isErrorInPopap}
         setIsErrorInPopap={setIsErrorInPopap}
       />
     ) : (
       <ConversationHeaderDrMsg />
     );
-  }, [activeChannelId, activeDirectMessageId, modalAddPeopleIsOpen]);
+  }, [activeChannelId, activeDirectMessageId]);
 
-  console.log(
-    "activeDirectMessageId: ",
-    activeDirectMessageId,
-    "activeChannelId: ",
-    activeChannelId
-  );
+  // console.log(
+  //   "activeDirectMessageId: ",
+  //   activeDirectMessageId,
+  //   "activeChannelId: ",
+  //   activeChannelId
+  // );
 
   return (
     <Box data-testid="conversation-main-block">
@@ -142,7 +127,6 @@ export default function Conversation(props: IProps) {
       />
       <Box style={{ display: openPopup ? "none" : "block" }}>
         <InputUpdateMessages
-          testData="client"
           popupMessage={popupMessage}
           inputRef={inputRef}
           changeMessageRef={changeMessageRef}

@@ -35,11 +35,13 @@ export const routes: RouteObject[] = [
 ];
 
 const createRoutes = () => {
+  // console.log("createRoutes... ");
   return routes.map((route: RouteObject) => {
     return <Route path={route.path} element={route.element} key={route.path} />;
   });
 };
 
 export function AppRoutes(): ReactElement {
+  // console.log("AppRoutes");
   return <Routes>{createRoutes()}</Routes>;
 }

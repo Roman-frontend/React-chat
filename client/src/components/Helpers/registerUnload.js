@@ -1,29 +1,33 @@
 import { wsSend, wsSingleton } from "../../WebSocket/soket";
 import { reactiveOnlineMembers } from "../../GraphQLApp/reactiveVars";
 
-function online() {
+function online(appId) {
   wsSingleton.clientPromise
     .then((wsClient) => console.log("ONLINE"))
     .catch((error) => console.log(error));
   const storage = JSON.parse(sessionStorage.getItem("storageData"));
-  if (storage && storage.channels && storage.directMessages) {
+  if (storage?.channels && storage?.directMessages) {
     const allUserChats = storage.channels.concat(storage.directMessages);
-    wsSend({ userRooms: allUserChats, meta: "join", userId: storage.id });
+    wsSend({
+      userRooms: allUserChats,
+      meta: "join",
+      userId: storage.id,
+      clientId: appId,
+    });
   }
 }
 
-export function registerEnterPage() {
+export function registerEnterPage(appId) {
   //console.info(performance.navigation.type);
-  if (
-    performance?.navigation?.type &&
-    performance.navigation.type == performance.navigation.TYPE_RELOAD
-  ) {
-    online();
+  if (performance?.navigation?.type == performance.navigation.TYPE_RELOAD) {
+    console.log("online...", performance?.navigation?.type, "appId: ", appId);
+    online(appId);
     //console.info('This page is reloaded');
   } else if (window.performance) {
+    console.log("window.performance: ", window.performance);
     //check for Navigation Timing API support
-    console.info("window.performance works fine on this browser");
-    online();
+    // console.info("window.performance works fine on this browser");
+    online(appId);
   } else {
     //console.info('This page is not reloaded');
   }
@@ -75,6 +79,7 @@ export function registerUnloadPage(msg, onunloadFunc) {
 }
 
 export function registerOfflineUser() {
+  console.log("registerOfflineUser ~~~ ");
   const storageData = JSON.parse(sessionStorage.getItem("storageData"));
   if (storageData && storageData.channels[0]) {
     const allUserChats = storageData.channels.concat(

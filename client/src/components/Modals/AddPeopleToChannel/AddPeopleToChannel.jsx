@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { useTheme } from "@mui/material/styles";
 import { withStyles } from "@mui/styles";
@@ -8,6 +8,7 @@ import { SelectPeople } from "../SelectPeople/SelectPeople.jsx";
 import { AUTH, GET_USERS } from "../../../GraphQLApp/queryes";
 import { CHANNELS } from "../../SetsUser/SetsUserGraphQL/queryes";
 import { activeChatId } from "../../../GraphQLApp/reactiveVars";
+import { AppContext } from "../../../Context/AppContext";
 
 const styles = (theme) => ({
   titleRoot: {
@@ -16,14 +17,9 @@ const styles = (theme) => ({
 });
 
 export const AddPeopleToChannel = withStyles(styles)((props) => {
-  const {
-    chatNameRef,
-    isErrorInPopap,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
-    doneInvite,
-    classes,
-  } = props;
+  const { chatNameRef, isErrorInPopap, doneInvite, classes } = props;
+  const { modalAddPeopleIsOpen, setModalAddPeopleIsOpen } =
+    useContext(AppContext);
   const theme = useTheme();
   const { data: auth } = useQuery(AUTH);
   const { data: dChannels } = useQuery(CHANNELS);
@@ -54,6 +50,8 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
     setModalAddPeopleIsOpen(false);
   };
 
+  console.log("modalAddPeopleIsOpen: ", modalAddPeopleIsOpen);
+
   return (
     <>
       <Dialog
@@ -63,7 +61,7 @@ export const AddPeopleToChannel = withStyles(styles)((props) => {
           },
         }}
         open={modalAddPeopleIsOpen}
-        onClose={() => setModalAddPeopleIsOpen(false)}
+        onClose={closePopap}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle

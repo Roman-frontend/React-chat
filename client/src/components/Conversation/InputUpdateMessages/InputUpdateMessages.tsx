@@ -15,7 +15,6 @@ import { activeChatId } from "../../../GraphQLApp/reactiveVars";
 import IMessage from "../Models/IMessage";
 
 interface IProps {
-  testData: string;
   changeMessageRef: null | React.MutableRefObject<IMessage | null>;
   closeBtnChangeMsg: boolean;
   setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const InputUpdateMessages = memo((props: IProps) => {
   const {
-    testData,
     changeMessageRef,
     closeBtnChangeMsg,
     setCloseBtnChangeMsg,
@@ -72,28 +70,19 @@ export const InputUpdateMessages = memo((props: IProps) => {
     return activeDirectMessageId || activeChannelId || null;
   }, [activeChannelId, activeDirectMessageId]);
 
-  const { loading, data: messages } = useQuery(GET_MESSAGES, {
-    variables: {
-      chatId: "6288671cb24f6a89e861b98d",
-      chatType: "DirectMessage",
-      userId: "6288661c22cf8e8950762e14",
-    },
-    onError(data) {
-      console.log("error __", data);
-    },
-  });
-
-  const [
-    createMessage,
-    { loading: loadingCreate, error: errorCreate, data: dataCreate },
-  ] = useMutation(CREATE_MESSAGE, {
+  const [createMessage] = useMutation(CREATE_MESSAGE, {
     update: (cache, { data }) => {
       const cacheMsg: ICacheMessage | null = cache.readQuery({
         query: GET_MESSAGES,
+        // variables: {
+        //   chatId: chatId || "6288671cb24f6a89e861b98d",
+        //   chatType: chatType || "DirectMessage",
+        //   userId: auth?.id || "6288661c22cf8e8950762e14",
+        // },
         variables: {
-          chatId: chatId || "6288671cb24f6a89e861b98d",
-          chatType: chatType || "DirectMessage",
-          userId: auth?.id || "6288661c22cf8e8950762e14",
+          chatId,
+          chatType,
+          userId: auth?.id,
         },
       });
       if (cacheMsg && data?.message) {
@@ -112,7 +101,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
       }
     },
     onCompleted(data) {
-      setInputText("bla la la");
       sendMessageToWS(data.message.create);
     },
   });
@@ -161,7 +149,10 @@ export const InputUpdateMessages = memo((props: IProps) => {
       if (closeBtnChangeMsg) changeMessageText(value);
       else if (closeBtnReplyMsg) messageInReply(value);
       else newMessage(value);
-      if (inputRef?.current?.value) inputRef.current.value = "";
+      if (inputRef?.current?.value && inputText) {
+        inputRef.current.value = "";
+        setInputText("");
+      }
     }
   }
 
@@ -233,14 +224,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
     });
   }
 
-  if (loading) {
-    return (
-      <>
-        <p>loading</p>
-      </>
-    );
-  }
-
   function changeInput(event: any) {
     if (inputRef?.current?.value) inputRef.current.value = event.target.value;
     setInputText(event.target.value);
@@ -248,11 +231,6 @@ export const InputUpdateMessages = memo((props: IProps) => {
 
   return (
     <div className={classes.root} id="mainInput">
-      {dataCreate && (
-        <p data-testid="success-created-message">
-          {dataCreate.message.create.text}
-        </p>
-      )}
       <Grid container spacing={1}>
         <Grid item xs={1}>
           <BorderColorIcon

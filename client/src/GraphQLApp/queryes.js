@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const LOGIN = gql`
   query Login($email: Email!, $password: AuthPassword!) {
@@ -43,15 +43,15 @@ export const AUTH = gql`
   }
 `;
 
-export const APP = gql`
-  {
-    usersOnline @client
-    activeChannelId @client
-    activeDirectMessageId @client
-    activeChatId @client
-    activeChatType @client
-  }
-`;
+// export const APP = gql`
+//   {
+//     usersOnline @client
+//     activeChannelId @client
+//     activeDirectMessageId @client
+//     activeChatId @client
+//     activeChatType @client
+//   }
+// `;
 
 export const REGISTER = gql`
   mutation Register(

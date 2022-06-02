@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState, useContext } from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
@@ -25,10 +25,11 @@ import {
 import { Loader } from "../../components/Helpers/Loader";
 import { activeChatId } from "../../GraphQLApp/reactiveVars";
 import setStylesChat from "./styles";
-import IBadge from "../../Models/IBadge";
 import IStyles from "./Models/IStyles";
+import { AppContext } from "../../Context/AppContext";
 
 export const Chat = memo(() => {
+  const { appId } = useContext(AppContext);
   const usersOnline = useReactiveVar(reactiveOnlineMembers);
   const activeChat = useReactiveVar(activeChatId);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -39,11 +40,7 @@ export const Chat = memo(() => {
   const { loading: lDms, data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const [isErrorInPopap, setIsErrorInPopap] = useState(false);
   const [isOpenLeftBar, setIsOpenLeftBar] = useState(true);
-  const [modalAddPeopleIsOpen, setModalAddPeopleIsOpen] = useState(false);
   const [show, setShow] = useState(false);
-  const [dataForBadgeInformNewMsg, setChatsHasNewMsgs] = useState<
-    [] | IBadge[]
-  >([]);
   const [styles, setStyles] = useState<IStyles>({});
   const theme = useTheme();
 
@@ -53,7 +50,7 @@ export const Chat = memo(() => {
 
   useEffect(() => {
     showConversation();
-  }, [activeChat, modalAddPeopleIsOpen]);
+  }, [activeChat]);
 
   useEffect(() => {
     if (
@@ -73,26 +70,23 @@ export const Chat = memo(() => {
   }, [dChannels, dDms]);
 
   useEffect(() => {
+    // console.log("chat useEffect");
     const storage = sessionStorage.getItem("storageData");
     if (storage) {
       const parsedStorage = JSON.parse(storage);
       reactiveVarPrevAuth(parsedStorage);
     }
     registerOnlineUser(usersOnline);
-    registerEnterPage();
-    return registerUnloadPage("Leaving page", registerOfflineUser);
+    registerEnterPage(appId);
+    return () => registerUnloadPage("Leaving page", registerOfflineUser);
   }, []);
 
   const showConversation = useCallback(() => {
     if (show) {
       return (
         <Conversation
-          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-          setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
           isErrorInPopap={isErrorInPopap}
           setIsErrorInPopap={setIsErrorInPopap}
-          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
-          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
       );
     }
@@ -101,8 +95,10 @@ export const Chat = memo(() => {
   }, [show]);
 
   if (lUsers && lChannels && lDms) {
+    // console.log("load lUsers && lChannels && lDms");
     return <Loader />;
   }
+  // console.log("chat after loader");
 
   return (
     <Box data-testid="chat" style={styles.root}>
@@ -119,9 +115,6 @@ export const Chat = memo(() => {
           setIsErrorInPopap={setIsErrorInPopap}
           isOpenLeftBar={isOpenLeftBar}
           setIsOpenLeftBar={setIsOpenLeftBar}
-          modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-          dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
-          setChatsHasNewMsgs={setChatsHasNewMsgs}
         />
         <Box component="main" sx={styles.conversation}>
           <main>{showConversation()}</main>

@@ -1,23 +1,17 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
-import { useTheme } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
 import { CHANNELS, GET_DIRECT_MESSAGES } from "./SetsUserGraphQL/queryes";
 import { activeChatId } from "../../GraphQLApp/reactiveVars";
 import { Channels } from "./Channels/Channels";
 import { DirectMessages } from "./DirectMessages/DirectMessages.jsx";
-import IBadge from "../../Models/IBadge";
+import { AppContext } from "../../Context/AppContext";
 
 interface IProps {
   isOpenLeftBar: boolean;
   setIsOpenLeftBar: React.Dispatch<React.SetStateAction<boolean>>;
   isErrorInPopap: boolean;
   setIsErrorInPopap: React.Dispatch<React.SetStateAction<boolean>>;
-  modalAddPeopleIsOpen: boolean;
-  setChatsHasNewMsgs:
-    | React.Dispatch<React.SetStateAction<IBadge[]>>
-    | React.Dispatch<React.SetStateAction<never[]>>;
-  dataForBadgeInformNewMsg: IBadge[] | [];
 }
 
 interface IStyles {
@@ -25,16 +19,9 @@ interface IStyles {
 }
 
 export default function SetsUser(props: IProps) {
-  const {
-    isErrorInPopap,
-    setIsErrorInPopap,
-    isOpenLeftBar,
-    setIsOpenLeftBar,
-    modalAddPeopleIsOpen,
-    dataForBadgeInformNewMsg,
-    setChatsHasNewMsgs,
-  } = props;
-  const theme = useTheme();
+  const { isErrorInPopap, setIsErrorInPopap, isOpenLeftBar, setIsOpenLeftBar } =
+    props;
+  const { modalAddPeopleIsOpen } = useContext(AppContext);
   const { data: dChannels } = useQuery(CHANNELS);
   const { data: dDms } = useQuery(GET_DIRECT_MESSAGES);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
@@ -125,8 +112,6 @@ export default function SetsUser(props: IProps) {
         setModalAddDmIsOpen={setModalAddDmIsOpen}
         isErrorInPopap={isErrorInPopap}
         setIsErrorInPopap={setIsErrorInPopap}
-        dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
-        setChatsHasNewMsgs={setChatsHasNewMsgs}
       />
     </div>
   );

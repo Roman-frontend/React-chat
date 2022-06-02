@@ -17,13 +17,15 @@ server.on("connection", (ws) => {
     const { meta } = parseData;
 
     if (meta === "join") {
-      const { userRooms, userId } = parseData;
+      const { userRooms, userId, clientId } = parseData;
       joinToRooms(userRooms, userId, ws, uuid); // User has joined
       joinToUsers(userId, ws, uuid);
+      console.log("userId: ", userId);
       resOnline(userRooms);
     }
 
     if (meta === "leave") {
+      console.log("meta === leave");
       parseData.userRooms.forEach((resRoom) => {
         leave(resRoom, parseData.userId);
       });
@@ -80,37 +82,77 @@ server.on("connection", (ws) => {
   );
 });
 
-function joinToRooms(userRooms, userId, ws, roomId) {
-  //console.log('userRooms: ', userRooms, 'userId: ', userId, 'roomId: ', roomId);
-  userRooms.forEach((resRoomId) => {
-    let roomsHasResRoom = false;
-    rooms.forEach((chat, index) => {
-      if (chat && chat.chatId === resRoomId) {
-        const chatHasNewMember = Object.keys(chat.members).includes(userId);
-        if (!chatHasNewMember) {
-          rooms[index].members = rooms[index].members.concat({
-            [userId]: ws,
-            roomId,
-          });
-        }
-        roomsHasResRoom = true;
-      }
-    });
-    if (!rooms[0] || !roomsHasResRoom) {
-      const newChat = {
-        chatId: resRoomId,
-        members: [{ [userId]: ws, roomId }],
-      };
-      rooms = rooms.concat(newChat);
+function createNewRoom(resRoomId, userId, ws, roomId) {
+  const newChat = {
+    chatId: resRoomId,
+    members: [{ [userId]: ws, roomId }],
+  };
+  rooms = rooms.concat(newChat);
+}
+
+function addMemberToRoom(index, chat, userId, ws, roomId) {
+  let chatHasMember = undefined;
+  const f = chat.members.forEach((member, index) => {
+    if (Object.keys(member)[0] === userId) {
+      // console.log("member are is in room", Object.keys(member)[0], userId);
+      chatHasMember = index;
     }
   });
-  //console.log('rooms completed join() :', rooms);
+
+  if (typeof chatHasMember === "undefined") {
+    // Add user to chat
+    rooms[index].members = rooms[index].members.concat({
+      [userId]: ws,
+      roomId,
+    });
+  } else {
+    rooms[index].members[chatHasMember] = {
+      [userId]: ws,
+      roomId,
+    };
+  }
+}
+
+function joinToRooms(userRooms, userId, ws, roomId) {
+  // console.log("userRooms: ", userRooms, "userId: ", userId, "roomId: ", roomId);
+  if (!rooms[0]) {
+    userRooms.forEach((resRoomId) => {
+      createNewRoom(resRoomId, userId, ws, roomId);
+    });
+    return;
+  } else {
+    userRooms.forEach((resRoomId) => {
+      let isNotFoundChat = true;
+      rooms.forEach((chat, index) => {
+        if (chat?.chatId === resRoomId) {
+          isNotFoundChat = false;
+          addMemberToRoom(index, chat, userId, ws, roomId);
+        }
+      });
+      if (isNotFoundChat) {
+        // console.log("isNotFoundChat: ", resRoomId, "userRooms: ", userRooms, "rooms: ", rooms );
+        createNewRoom(resRoomId, userId, ws, roomId);
+      }
+    });
+  }
+  // console.log(rooms);
 }
 
 function joinToUsers(userId, ws, uuid) {
   const newOnline = { [userId]: ws, uniqueIdForAPI: uuid };
-  onlineUsers = onlineUsers.concat(newOnline);
-  //console.log('onlineUsers of joinToUsers: ', onlineUsers);
+  let onlineUsersHasNotUserId = true;
+  onlineUsers.forEach((user, index) => {
+    if (Object.keys(user)[0] === userId) {
+      onlineUsersHasNotUserId = false;
+      onlineUsers[index] = newOnline;
+    }
+  });
+
+  if (onlineUsersHasNotUserId) {
+    onlineUsers = onlineUsers.concat(newOnline);
+  }
+
+  // console.log("onlineUsers: ", onlineUsers);
 }
 
 function addNewDmToRooms(dmId, userId, ws, roomId) {
@@ -118,7 +160,6 @@ function addNewDmToRooms(dmId, userId, ws, roomId) {
     chatId: dmId,
     members: [{ [userId]: ws, roomId }],
   };
-  //console.log('newChat of addNewDmToRooms: ', newChat);
   rooms = rooms.concat(newChat);
 }
 
@@ -129,16 +170,23 @@ function resOnline(userRooms) {
 
 function getRoomOnline(userRooms) {
   let arrOfOnlineUsersId = [];
+  // console.log("rooms: ", rooms);
+  // Серед усіх кімнат шукаю кімнати юзера
   rooms.forEach((room) => {
+    // console.log("room: ", room);
     if (userRooms.includes(room.chatId) && room.members[0]) {
+      // Cкладаю список учасників кімнат юзера кому треба повідомити що юзер онлайн, або вийшов з онлайну
       room.members.forEach((member) => {
         const idMember = Object.keys(member)[0];
+        // console.log("idMember: ", idMember);
         const arrInclude = arrOfOnlineUsersId.includes(idMember);
+        console.log(idMember, arrOfOnlineUsersId);
         if (!arrInclude)
           arrOfOnlineUsersId = arrOfOnlineUsersId.concat(idMember);
       });
     }
   });
+  // console.log("arrOfOnlineUsersId: ", arrOfOnlineUsersId);
   return arrOfOnlineUsersId;
 }
 
@@ -161,6 +209,7 @@ function informMembersNewOnline(userRooms, members) {
 }
 
 function leave(resRoom, userId) {
+  console.log("leave... ");
   if (onlineUsers[0]) {
     onlineUsers = onlineUsers.filter((user) => {
       return Object.keys(user)[0] !== userId;

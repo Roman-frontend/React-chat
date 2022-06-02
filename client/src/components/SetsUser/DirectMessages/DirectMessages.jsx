@@ -41,8 +41,6 @@ export function DirectMessages(props) {
     setIsErrorInPopap,
     modalAddDmIsOpen,
     setModalAddDmIsOpen,
-    dataForBadgeInformNewMsg,
-    setChatsHasNewMsgs,
   } = props;
   const theme = useTheme();
   const { t } = useTranslation();
@@ -95,6 +93,7 @@ export function DirectMessages(props) {
         const invitedId = dm.members.find((memberId) => {
           return memberId !== userId;
         });
+        console.log(invitedId);
         wsSend({ meta: "addedDm", userId, dmId: dm.id, invitedId });
       });
     },
@@ -110,6 +109,24 @@ export function DirectMessages(props) {
       setIsErrorInPopap(true);
     }
   }
+
+  const createDMList = () => {
+    if (dDms?.directMessages?.length) {
+      // console.log(dDms?.directMessages);
+      return (
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <List>
+            {dDms.directMessages.map((drMsg) => (
+              <React.Fragment key={drMsg.id}>
+                <DirectMessage drMsg={drMsg} isOpenLeftBar={isOpenLeftBar} />
+              </React.Fragment>
+            ))}
+          </List>
+        </Collapse>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -143,22 +160,7 @@ export function DirectMessages(props) {
               </ListItemIcon>
             </ListItem>
           )}
-          {dDms?.directMessages?.length ? (
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <List>
-                {dDms.directMessages.map((drMsg) => (
-                  <React.Fragment key={drMsg.id}>
-                    <DirectMessage
-                      drMsg={drMsg}
-                      isOpenLeftBar={isOpenLeftBar}
-                      dataForBadgeInformNewMsg={dataForBadgeInformNewMsg}
-                      setChatsHasNewMsgs={setChatsHasNewMsgs}
-                    />
-                  </React.Fragment>
-                ))}
-              </List>
-            </Collapse>
-          ) : null}
+          {createDMList()}
         </List>
       </div>
       <Button

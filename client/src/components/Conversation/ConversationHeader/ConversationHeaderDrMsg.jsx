@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import PersonIcon from '@mui/icons-material/Person';
-import { Drawer, Box } from '@mui/material';
-import { useQuery, useReactiveVar } from '@apollo/client';
-import { AUTH, GET_USERS } from '../../../GraphQLApp/queryes';
-import { GET_DIRECT_MESSAGES } from '../../SetsUser/SetsUserGraphQL/queryes';
-import { activeChatId } from '../../../GraphQLApp/reactiveVars';
-import { determineActiveChat } from '../../Helpers/determineActiveChat';
-import DirectMessageRightBar from '../../SetsUser/DirectMessages/DirectMessageRightBar';
+import React, { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import PersonIcon from "@mui/icons-material/Person";
+import { Drawer, Box } from "@mui/material";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { AUTH, GET_USERS } from "../../../GraphQLApp/queryes";
+import { GET_DIRECT_MESSAGES } from "../../SetsUser/SetsUserGraphQL/queryes";
+import { activeChatId } from "../../../GraphQLApp/reactiveVars";
+import { determineActiveChat } from "../../Helpers/determineActiveChat";
+import DirectMessageRightBar from "../../SetsUser/DirectMessages/DirectMessageRightBar";
 
 export const ConversationHeaderDrMsg = (props) => {
   const theme = useTheme();
@@ -37,7 +37,7 @@ export const ConversationHeaderDrMsg = (props) => {
           allUsers.users,
           auth.id
         );
-        return <b className='conversation__name'>✩ {name}</b>;
+        return <b className="conversation__name">✩ {name}</b>;
       }
     }
     return null;
@@ -45,8 +45,8 @@ export const ConversationHeaderDrMsg = (props) => {
 
   const toggleDrawer = (open) => (event) => {
     if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
     ) {
       return null;
     }
@@ -55,23 +55,23 @@ export const ConversationHeaderDrMsg = (props) => {
   };
 
   return (
-    <div style={{ background: theme.palette.primary.main }}>
+    <div style={{ background: theme.palette.primary.main, marginLeft: 8 }}>
       <Grid
         container
         spacing={1}
         style={{
-          alignItems: 'center',
-          height: '4.3rem',
-          cursor: 'pointer',
-          padding: '0vh 2vw',
+          alignItems: "center",
+          height: "4.3rem",
+          cursor: "pointer",
+          padding: "0vh 2vw",
         }}
         sx={{
-          '&:hover': {
+          "&:hover": {
             color: theme.palette.action.active,
             background: theme.palette.action.hover,
           },
         }}
-        justify='space-between'
+        justify="space-between"
         onClick={toggleDrawer(true)}
       >
         {createName()}
@@ -80,20 +80,20 @@ export const ConversationHeaderDrMsg = (props) => {
         <React.Fragment>
           <Drawer
             sx={{
-              '& .MuiDrawer-paperAnchorRight': {
+              "& .MuiDrawer-paperAnchorRight": {
                 background: theme.palette.primary.main,
               },
             }}
-            anchor='right'
+            anchor="right"
             open={isOpenRightBarDrMsg}
             onClose={toggleDrawer(false)}
           >
             <Box
               sx={{
                 width: 250,
-                margin: '56px 0px 0px 0px',
+                margin: "56px 0px 0px 0px",
               }}
-              role='presentation'
+              role="presentation"
               onClick={toggleDrawer(false)}
               onKeyDown={toggleDrawer(false)}
             >

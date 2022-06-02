@@ -2,12 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "target": "es2016",
-    "lib": [
-      "es6",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["es6", "dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "module": "esnext",
     "rootDir": "src",
@@ -26,10 +21,6 @@
     "noImplicitThis": true,
     "strictNullChecks": true
   },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "./dist"
-  ]
+  "include": ["./src"],
+  "exclude": ["./dist"]
 }

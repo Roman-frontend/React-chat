@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -8,6 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { AddPeopleToChannel } from "../../Modals/AddPeopleToChannel/AddPeopleToChannel";
 import { CreateListMembers } from "./CreateListMembers";
+import { AppContext } from "../../../Context/AppContext";
 
 export const ConversationMembers = (props) => {
   const {
@@ -16,10 +17,9 @@ export const ConversationMembers = (props) => {
     setModalIsShowsMembers,
     chatNameRef,
     doneInvite,
-    modalAddPeopleIsOpen,
-    setModalAddPeopleIsOpen,
     isErrorInPopap,
   } = props;
+  const { setModalAddPeopleIsOpen } = useContext(AppContext);
   const theme = useTheme();
   const [search, setSearch] = useState("[A-Z]");
 
@@ -81,8 +81,6 @@ export const ConversationMembers = (props) => {
       <AddPeopleToChannel
         chatNameRef={chatNameRef}
         doneInvite={doneInvite}
-        modalAddPeopleIsOpen={modalAddPeopleIsOpen}
-        setModalAddPeopleIsOpen={setModalAddPeopleIsOpen}
         isErrorInPopap={isErrorInPopap}
       />
     </div>

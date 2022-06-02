@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const GET_MESSAGES = gql`
   query messages($chatId: ID!, $chatType: ChatType!, $userId: ID!) {
     id @client @export(as: $userId)
-    activeChatId @client @export(as: $chatId)
+    chatId @client @export(as: $chatId)
     activeChatType @client @export(as: $chatType)
     messages(chatId: $chatId, chatType: $chatType, userId: $userId) {
       id

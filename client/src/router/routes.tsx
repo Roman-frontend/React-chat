@@ -1,20 +1,19 @@
 import React, { ReactElement } from "react";
 import { Routes, Route, RouteObject } from "react-router-dom";
 import { RequireAuth } from "../components/Helpers/RequireAuth.jsx";
-import SignUpPage from "../pages/SignUpPage/SignUpPage.js";
-import { SignInPage } from "../pages/SignInPage/SignInPage.js";
-import { Chat } from "../pages/Chat/Chat";
-import MainVideoCall from "../pages/MainVideoRoom/MainVideoCall.jsx";
-import Room from "../pages/Room/index.js";
+import { BackgroundAuth } from "../pages/public/BackgroundAuth.jsx";
+import { Chat } from "../pages/private/Chat/Chat";
+import MainVideoCall from "../pages/private/MainVideoRoom/MainVideoCall.jsx";
+import Room from "../pages/private/Room/index.js";
 
 export const routes: RouteObject[] = [
   {
     path: "/signIn",
-    element: <SignInPage />,
+    element: <BackgroundAuth />,
   },
   {
     path: "/signUp",
-    element: <SignUpPage />,
+    element: <BackgroundAuth />,
   },
   {
     path: "/chat",
@@ -30,7 +29,7 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/",
-    element: <RequireAuth redirectTo="/chat" children={<SignInPage />} />,
+    element: <RequireAuth redirectTo="/chat" children={<BackgroundAuth />} />,
   },
 ];
 

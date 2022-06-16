@@ -17,7 +17,7 @@ server.on("connection", (ws) => {
     const { meta } = parseData;
 
     if (meta === "join") {
-      const { userRooms, userId, clientId } = parseData;
+      const { userRooms, userId } = parseData;
       joinToRooms(userRooms, userId, ws, uuid); // User has joined
       joinToUsers(userId, ws, uuid);
       console.log("userId: ", userId);

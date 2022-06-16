@@ -31,7 +31,6 @@ export const DirectMessage = memo((props) => {
       drMsg.members[0] === authId ? drMsg.members[1] : drMsg.members[0];
     const friendIsOnline = usersOnline.includes(friendId);
     const variantDot = friendIsOnline ? "dot" : "standard";
-    console.log("newMsgsBadge... ", newMsgsBadge);
     const thisDmHasNewMsgs = newMsgsBadge.find((dm) => dm.id === drMsg.id);
     const numNewMsgs = thisDmHasNewMsgs ? thisDmHasNewMsgs.num : 0;
 

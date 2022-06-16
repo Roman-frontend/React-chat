@@ -115,14 +115,6 @@ const DirectMessageRightBar = (props) => {
 
   return (
     <List data-testid="dm-right-bar">
-      <input type="button" />
-      <button
-        onClick={() => {
-          console.log("clicked...");
-        }}
-      >
-        aa
-      </button>
       <ListItem button>
         <ListItemIcon>
           <PersonIcon
@@ -147,9 +139,9 @@ const DirectMessageRightBar = (props) => {
         </ListItemIcon>
         <ListItemText primary="Remove chat" />
       </ListItem>
-      <ListItem button onClick={gmailHandler}>
+      {/* <ListItem button onClick={gmailHandler}>
         <ListItemText primary="Send to Gmail" />
-      </ListItem>
+      </ListItem> */}
     </List>
   );
 };

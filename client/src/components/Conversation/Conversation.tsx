@@ -10,7 +10,7 @@ import imageError from "../../images/error.png";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { CHANNELS } from "../SetsUser/SetsUserGraphQL/queryes";
 import { activeChatId, reactiveVarId } from "../../GraphQLApp/reactiveVars";
-import IMessage from "./Models/IMessage";
+import { IQueryMessage, IMapedMessage } from "./Models/IMessage";
 import IChannel from "../Models/IChannel";
 import IBadge from "../../Models/IBadge";
 
@@ -22,11 +22,11 @@ interface IProps {
 export default function Conversation(props: IProps) {
   const { isErrorInPopap, setIsErrorInPopap } = props;
   const { data: dChannels } = useQuery(CHANNELS);
-  const [popupMessage, setPopupMessage] = useState<null | IMessage>(null);
+  const [popupMessage, setPopupMessage] = useState<null | IMapedMessage>(null);
   const [closeBtnChangeMsg, setCloseBtnChangeMsg] = useState(false);
   const [closeBtnReplyMsg, setCloseBtnReplyMsg] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const changeMessageRef = useRef<null | IMessage>(null);
+  const changeMessageRef = useRef<null | IQueryMessage>(null);
   const activeChannelId = useReactiveVar(activeChatId).activeChannelId;
   const activeDirectMessageId =
     useReactiveVar(activeChatId).activeDirectMessageId;

@@ -12,6 +12,7 @@ type CreateMessagePayload {
   updatedAt: String
   status: String
   replyOn: String
+  replySenderId: String
   chatType: ChatType
   chatId: ID
 }
@@ -36,6 +37,7 @@ type MessagePayload {
   updatedAt: String
   status: String
   replyOn: String
+  replySenderId: String
   chatType: ChatType
   chatId: ID
 }
@@ -58,6 +60,7 @@ type MessageMutations {
     chat: ChatMessageInput!
     text: String!
     replyOn: String
+    replySenderId: String
   ): CreateMessagePayload!
   change(input: MessageChangeInput!): ChangeMessagePayload!
   remove(id: ID!, chatType: ChatType!): RemoveMessagePayload

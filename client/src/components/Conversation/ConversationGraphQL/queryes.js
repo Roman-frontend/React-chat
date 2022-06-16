@@ -12,6 +12,7 @@ export const GET_MESSAGES = gql`
         senderId
         text
         replyOn
+        replySenderId
         chatType
         chatId
         createdAt
@@ -27,6 +28,7 @@ export const CREATE_MESSAGE = gql`
     $senderId: ID!
     $text: String!
     $replyOn: String
+    $replySenderId: String
     $chatId: ID!
     $chatType: ChatType!
   ) {
@@ -35,11 +37,13 @@ export const CREATE_MESSAGE = gql`
         chat: { senderId: $senderId, chatId: $chatId, chatType: $chatType }
         text: $text
         replyOn: $replyOn
+        replySenderId: $replySenderId
       ) {
         id
         senderId
         text
         replyOn
+        replySenderId
         chatId
         chatType
         createdAt

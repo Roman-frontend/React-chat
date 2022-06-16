@@ -1,10 +1,10 @@
-import IMessage from "../components/Conversation/Models/IMessage";
+import { IQueryMessage } from "../components/Conversation/Models/IMessage";
 
 interface IWsSend {
   meta: string;
   action?: string;
   room?: string;
-  message: IMessage;
+  message: IQueryMessage;
   userRooms?: string[] | [];
   userId?: string;
   path?: string;

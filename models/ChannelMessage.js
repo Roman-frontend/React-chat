@@ -4,6 +4,7 @@ const { Schema, model } = require("mongoose");
 let ChannelMessage = new Schema(
   {
     replyOn: { type: String },
+    replySenderId: { type: String },
     senderId: { type: String, required: true },
     text: { type: String, required: true },
     /** default: Date.now - вказує дату по замовчуванні*/

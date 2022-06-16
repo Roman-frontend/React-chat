@@ -12,22 +12,22 @@ import {
 } from "../ConversationGraphQL/queryes";
 import { wsSend } from "../../../WebSocket/soket";
 import { activeChatId } from "../../../GraphQLApp/reactiveVars";
-import IMessage from "../Models/IMessage";
+import { IQueryMessage } from "../Models/IMessage";
 
 interface IProps {
-  changeMessageRef: null | React.MutableRefObject<IMessage | null>;
+  changeMessageRef: null | React.MutableRefObject<IQueryMessage | null>;
   closeBtnChangeMsg: boolean;
   setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
   closeBtnReplyMsg: boolean;
   setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
-  popupMessage: null | IMessage;
+  popupMessage: null | IQueryMessage;
 }
 
 interface ICacheMessage {
   messages: {
     id: string;
-    chatMessages: IMessage[] | [];
+    chatMessages: IQueryMessage[] | [];
   };
 }
 
@@ -112,7 +112,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
         variables: { chatId, chatType, userId: auth.id },
       });
       if (cacheMsg && message?.change) {
-        const cacheMessages: IMessage[] | [] =
+        const cacheMessages: IQueryMessage[] | [] =
           cacheMsg?.messages?.chatMessages || [];
         const chatMessages = cacheMessages.map((msg) => {
           return msg.id === message.change.id ? message.change : msg;
@@ -131,7 +131,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
     },
   });
 
-  function sendMessageToWS(data: IMessage) {
+  function sendMessageToWS(data: IQueryMessage) {
     wsSend({
       meta: "sendMessage",
       action: "change",
@@ -172,6 +172,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
       chatType,
       senderId: auth?.id || "6288661c22cf8e8950762e14",
       replyOn: popupMessage?.text || "",
+      replySenderId: popupMessage?.senderId,
       text,
     };
     createMessage({
@@ -185,6 +186,7 @@ export const InputUpdateMessages = memo((props: IProps) => {
             status: "sent",
             id: Date.now(),
             replyOn: popupMessage?.text || "",
+            replySenderId: popupMessage?.senderId,
             text,
             updatedAt: "",
             senderId: auth?.id || "6288661c22cf8e8950762e14",

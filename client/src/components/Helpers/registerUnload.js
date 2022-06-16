@@ -1,7 +1,7 @@
 import { wsSend, wsSingleton } from "../../WebSocket/soket";
 import { reactiveOnlineMembers } from "../../GraphQLApp/reactiveVars";
 
-function online(appId) {
+function online() {
   wsSingleton.clientPromise
     .then((wsClient) => console.log("ONLINE"))
     .catch((error) => console.log(error));
@@ -12,22 +12,21 @@ function online(appId) {
       userRooms: allUserChats,
       meta: "join",
       userId: storage.id,
-      clientId: appId,
     });
   }
 }
 
-export function registerEnterPage(appId) {
+export function registerEnterPage() {
   //console.info(performance.navigation.type);
   if (performance?.navigation?.type == performance.navigation.TYPE_RELOAD) {
-    console.log("online...", performance?.navigation?.type, "appId: ", appId);
-    online(appId);
+    console.log("online...", performance?.navigation?.type);
+    online();
     //console.info('This page is reloaded');
   } else if (window.performance) {
     console.log("window.performance: ", window.performance);
     //check for Navigation Timing API support
     // console.info("window.performance works fine on this browser");
-    online(appId);
+    online();
   } else {
     //console.info('This page is not reloaded');
   }

@@ -37,11 +37,11 @@ const resolvers = {
   },
 
   MessageMutations: {
-    create: async (_, { text, replyOn, chat }, context) => {
+    create: async (_, { text, replyOn, replySenderId, chat }, context) => {
       if (!context.isAuth) {
         throw new Error("you must be logged in");
       }
-      const data = { text, replyOn, ...chat };
+      const data = { text, replyOn, replySenderId, ...chat };
       let newMessage;
       if (chat.chatType === "Channel") {
         return await ConversationService.createMessageInChannel(data);

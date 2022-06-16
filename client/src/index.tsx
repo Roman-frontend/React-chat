@@ -11,10 +11,8 @@ const root = createRoot(container!); // createRoot(container!) if you use TypeSc
 
 //цей ApolloProvider - для - apollo-client
 const app = (
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
 );
 root.render(app);

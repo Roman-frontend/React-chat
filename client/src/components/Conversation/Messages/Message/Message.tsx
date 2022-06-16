@@ -1,24 +1,24 @@
-import React, { useMemo, memo } from "react";
-import { useTranslation } from "react-i18next";
-import { useQuery } from "@apollo/client";
+import React, { memo, Dispatch, SetStateAction, useCallback } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import { useTheme } from "@mui/material/styles";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import DoneIcon from "@mui/icons-material/Done";
-import Box from "@mui/material/Box";
-import imageProfile from "../../../../images/User-Icon.png";
-import { messageDate } from "../../../Helpers/Date/DateCreators";
+import { Box } from "@mui/material";
+import { reactiveVarId } from "../../../../GraphQLApp/reactiveVars";
 import { GET_USERS } from "../../../../GraphQLApp/queryes";
 import { Loader } from "../../../Helpers/Loader";
-import IMessage from "../../Models/IMessage";
+import MessageHeader from "./MessageHeader";
+import MessageText from "./MessageText";
+import MessageReplyOn from "./MessageReplyOn";
+import { IMapedMessage } from "../../Models/IMessage";
+import "./reply-message.sass";
 import "./message.sass";
 
 interface IProps {
-  message: IMessage;
+  arrMsgs: IMapedMessage[];
   openPopup: string;
-  setOpenPopup: React.Dispatch<React.SetStateAction<string>>;
-  setPopupMessage: React.Dispatch<React.SetStateAction<null | IMessage>>;
-  setCloseBtnChangeMsg: React.Dispatch<React.SetStateAction<boolean>>;
-  setCloseBtnReplyMsg: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenPopup: Dispatch<SetStateAction<string>>;
+  setPopupMessage: Dispatch<SetStateAction<null | IMapedMessage>>;
+  setCloseBtnChangeMsg: Dispatch<SetStateAction<boolean>>;
+  setCloseBtnReplyMsg: Dispatch<SetStateAction<boolean>>;
 }
 
 interface IUser {
@@ -32,109 +32,129 @@ interface IUser {
 
 const Message = memo(
   ({
-    message,
+    arrMsgs,
     openPopup,
     setOpenPopup,
     setPopupMessage,
     setCloseBtnChangeMsg,
     setCloseBtnReplyMsg,
   }: IProps) => {
-    const { text, createdAt, updatedAt, status, id, senderId, replyOn } =
-      message;
-    const { t } = useTranslation();
     const theme = useTheme();
+    const authId = useReactiveVar(reactiveVarId);
     const { data: users, loading } = useQuery(GET_USERS);
 
-    const style: { root: React.CSSProperties } = {
-      root: {
-        cursor: "pointer",
-        position: "relative",
-        backgroundColor: openPopup === id ? theme.palette.primary.dark : "none",
+    console.log("message");
+
+    const getStyle = useCallback(
+      (message: IMapedMessage): { root: React.CSSProperties } => {
+        return {
+          root: {
+            cursor: "pointer",
+            position: "relative",
+            backgroundColor:
+              openPopup === message.id
+                ? theme.palette.primary.dark
+                : theme.palette.primary.light,
+          },
+        };
       },
-    };
+      [theme, openPopup]
+    );
 
-    const senderName = useMemo(() => {
-      return users.users.find((user: IUser) => {
-        return user.id === senderId;
-      }).name;
-    }, [users]);
+    const getSenderName = useCallback(
+      (id: string): string => {
+        return users.users.find((user: IUser) => {
+          return user.id === id;
+        }).name;
+      },
+      [users]
+    );
 
-    const classMessage = replyOn ? "container-reply" : "container";
-    const replyMessage = replyOn ? (
-      <div className={`${classMessage}__reply`}>
-        <p
-          style={{
-            fontWeight: 600,
-            color: theme.palette.primary.contrastText,
-            margin: "15px 0px 20px 0px",
-          }}
-        >
-          {senderName}
-        </p>
-        <p style={{ margin: "0px 0px 10px 0px" }}>{replyOn}</p>
-      </div>
-    ) : null;
-
-    const handleClick = () => {
-      setOpenPopup((prevState: string) => (prevState === id ? "" : id));
+    const handleClick = (message: IMapedMessage) => {
+      setOpenPopup((prevState: string) =>
+        prevState === message.id ? "" : message.id
+      );
       setCloseBtnChangeMsg(false);
       setCloseBtnReplyMsg(false);
       setPopupMessage(message);
     };
 
+    function drawMessages() {
+      return arrMsgs.map((m, index) => {
+        const position: string = index === 0 ? "footer" : "middle";
+        const style = getStyle(m);
+        const classMessage = m.replyOn ? "container-reply" : "container";
+        const senderName = getSenderName(m.senderId);
+        const replySenderName = m.replySenderId
+          ? getSenderName(m.replySenderId)
+          : senderName;
+        console.log(m);
+
+        return (
+          <Box
+            key={m.id}
+            id={m.id}
+            data-testid="main-message-div"
+            style={style.root}
+            onClick={() => handleClick(m)}
+          >
+            {m.replyOn || arrMsgs.length - 1 === index ? (
+              <Box
+                className={classMessage}
+                style={{
+                  margin:
+                    authId === m.senderId
+                      ? "6px 0px 0px 35px"
+                      : "6px 0px 0px 38%",
+                }}
+                id={m.id}
+              >
+                <MessageHeader
+                  status={m.status}
+                  classMessage={classMessage}
+                  senderName={senderName}
+                />
+                <MessageText
+                  isOnceMsg={arrMsgs.length === 1}
+                  status={m.status}
+                  time={{
+                    data: m.updatedAt || m.createdAt,
+                    isUpdated: m.updatedAt !== m.createdAt,
+                  }}
+                  position="header"
+                  text={m.text}
+                  senderId={m.senderId}
+                  className={`${classMessage}__message`}
+                />
+                {m.replyOn && (
+                  <MessageReplyOn
+                    classMessage={classMessage}
+                    replyOn={m.replyOn}
+                    replySenderName={replySenderName}
+                  />
+                )}
+              </Box>
+            ) : (
+              <MessageText
+                status={m.status}
+                time={{
+                  data: m.updatedAt || m.createdAt,
+                  isUpdated: m.updatedAt !== m.createdAt,
+                }}
+                position={position}
+                text={m.text}
+                senderId={m.senderId}
+                className={"message-text"}
+              />
+            )}
+          </Box>
+        );
+      });
+    }
+
     if (loading) return <Loader />;
 
-    return (
-      <Box data-testid="main-message-div" style={style.root}>
-        <Box className={classMessage} id={id} onClick={handleClick}>
-          <img
-            src={imageProfile}
-            className={`${classMessage}__icon`}
-            style={{
-              borderRadius: 0,
-              height: 40,
-              width: 40,
-            }}
-          />
-          <p
-            style={{ color: theme.palette.primary.contrastText }}
-            className={`${classMessage}__messager`}
-          >
-            {senderName}
-          </p>
-          <p className={`${classMessage}__date`}>
-            {messageDate(parseInt(createdAt))}
-          </p>
-          {/* Відправлено, доставлено, прочитано */}
-          {status === "delivered" ? (
-            <DoneIcon
-              className={`${classMessage}__status`}
-              style={{ color: theme.palette.primary.contrastText }}
-            />
-          ) : (
-            <AccessTimeIcon className={`${classMessage}__status`} />
-          )}
-          <p
-            style={{
-              display: updatedAt && updatedAt !== createdAt ? "block" : "none",
-              fontSize: 11,
-            }}
-            className={`${classMessage}__info`}
-          >
-            {`${t("description.editedMessage")}: ${messageDate(
-              parseInt(updatedAt) || parseInt(createdAt)
-            )}`}
-          </p>
-          <p
-            style={{ maxWidth: "fit-content" }}
-            className={`${classMessage}__message`}
-          >
-            {text}
-          </p>
-          {replyMessage}
-        </Box>
-      </Box>
-    );
+    return <>{drawMessages()}</>;
   }
 );
 

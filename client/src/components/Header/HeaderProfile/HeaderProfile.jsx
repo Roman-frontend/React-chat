@@ -37,12 +37,12 @@ const HeaderProfile = () => {
         </ListItemIcon>
         <ListItemText primary={auth && auth.name ? auth.name : "#general"} />
       </ListItem>
-      <ListItem button onClick={() => navigate(`/video`)}>
+      {/* <ListItem button onClick={() => navigate(`/video`)}>
         <ListItemIcon>
           <MeetingRoomIcon />
         </ListItemIcon>
         <ListItemText primary="Enter to call-rooms" />
-      </ListItem>
+      </ListItem> */}
       <ListItem data-testid="logout-button" button onClick={handleLogout}>
         <ListItemIcon>
           <MeetingRoomIcon />

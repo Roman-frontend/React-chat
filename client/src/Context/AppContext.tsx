@@ -3,7 +3,6 @@ import { IAppContext } from "./Models/IAppContext";
 import { ICustomThemeContext } from "./Models/ICustomThemeContext";
 
 export const AppContext = createContext<IAppContext>({
-  appId: null,
   newMsgsBadge: [],
   setNewMsgsBadge: () => {},
   modalAddPeopleIsOpen: false,

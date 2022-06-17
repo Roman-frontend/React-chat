@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/React-chat/index.html/static/css/main.bebef679.css",
-    "main.js": "/React-chat/index.html/static/js/main.149fb5fa.js",
+    "main.js": "/React-chat/index.html/static/js/main.9c5ee6f1.js",
     "static/media/Mail_Digital.mp4": "/React-chat/index.html/static/media/Mail_Digital.6559232a83e0f1a63883.mp4",
     "static/media/Mail_Digital.webm": "/React-chat/index.html/static/media/Mail_Digital.13fcf3584919dd5c0210.webm",
     "static/media/test.png": "/React-chat/index.html/static/media/test.e11e4d329b717ed9e07b.png",
@@ -12,10 +12,10 @@
     "index.html": "/React-chat/index.html/index.html",
     "static/media/getFetch.cjs": "/React-chat/index.html/static/media/getFetch.c780682470504fffbd04.cjs",
     "main.bebef679.css.map": "/React-chat/index.html/static/css/main.bebef679.css.map",
-    "main.149fb5fa.js.map": "/React-chat/index.html/static/js/main.149fb5fa.js.map"
+    "main.9c5ee6f1.js.map": "/React-chat/index.html/static/js/main.9c5ee6f1.js.map"
   },
   "entrypoints": [
     "static/css/main.bebef679.css",
-    "static/js/main.149fb5fa.js"
+    "static/js/main.9c5ee6f1.js"
   ]
 }

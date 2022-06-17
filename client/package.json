@@ -2,6 +2,7 @@
   "_comment": "scripts => start => PORT=3000... - Міняє дефолтний localhost-порт",
   "name": "client",
   "version": "0.1.0",
+  "homepage": "https://roman-frontend.github.io/react-chat",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.6.6",

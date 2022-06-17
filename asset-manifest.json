@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/React-Chat/static/css/main.bebef679.css",
+    "main.js": "/React-Chat/static/js/main.0f35f5f8.js",
+    "static/media/Mail_Digital.mp4": "/React-Chat/static/media/Mail_Digital.6559232a83e0f1a63883.mp4",
+    "static/media/Mail_Digital.webm": "/React-Chat/static/media/Mail_Digital.13fcf3584919dd5c0210.webm",
+    "static/media/test.png": "/React-Chat/static/media/test.e11e4d329b717ed9e07b.png",
+    "static/media/crispus.jpg": "/React-Chat/static/media/crispus.5212dfd5dc4239f70597.jpg",
+    "static/media/error.png": "/React-Chat/static/media/error.916e1d727a4e43b54f0e.png",
+    "static/media/User-Icon.png": "/React-Chat/static/media/User-Icon.5c27c9e3771aa776be8f.png",
+    "static/media/test-2-chat.jpeg": "/React-Chat/static/media/test-2-chat.320bc78faa5970631781.jpeg",
+    "index.html": "/React-Chat/index.html",
+    "static/media/getFetch.cjs": "/React-Chat/static/media/getFetch.c780682470504fffbd04.cjs",
+    "main.bebef679.css.map": "/React-Chat/static/css/main.bebef679.css.map",
+    "main.0f35f5f8.js.map": "/React-Chat/static/js/main.0f35f5f8.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bebef679.css",
+    "static/js/main.0f35f5f8.js"
+  ]
+}

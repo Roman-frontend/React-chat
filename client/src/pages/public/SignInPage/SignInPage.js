@@ -21,7 +21,7 @@ import { AuthLoader } from "../../../components/Helpers/Loader";
 
 const useStyles = makeStyles((theme) => ({
   label: {
-    margin: "0px 8px",
+    margin: "0px 6px",
   },
 }));
 
@@ -132,11 +132,11 @@ export const SignInPage = () => {
       </Box>
       <Box>
         <FormControl
-          style={{ width: "33.7vw", margin: "2vh 0vw" }}
+          style={{ width: "33.7vw", margin: "2vh 1vw" }}
           name="password"
           error={formik.touched.password && Boolean(formik.errors.password)}
         >
-          <InputLabel label="Password" style={{ margin: "0px 8px" }}>
+          <InputLabel label="Password" style={{ left: -8 }}>
             Password
           </InputLabel>
           <Input
@@ -144,7 +144,7 @@ export const SignInPage = () => {
             name="password"
             label="Password"
             inputProps={{ "data-testid": "login-password-input" }}
-            style={{ width: "33.7vw", marginLeft: 14, marginTop: 10 }}
+            style={{ width: "33.7vw", marginTop: 10 }}
             type={showPassword ? "text" : "password"}
             value={formik.values.password}
             error={formik.touched.password && Boolean(formik.errors.password)}
